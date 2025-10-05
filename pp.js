@@ -11023,26 +11023,60 @@ ${existingQuestionsContext}
 
       // 安全地设置元素值 - 统一使用默认头像
       const defaultAvatar = 'https://i.postimg.cc/4xmx7V4R/mmexport1759081128356.jpg';
-      if (avatarElement) avatarElement.src = defaultAvatar;
-      if (avatarUrlElement) avatarUrlElement.value = defaultAvatar;
-      if (coverPreviewElement)
-        coverPreviewElement.src = xProfile.xCover || 'https://i.postimg.cc/qRzMB6nQ/default-cover.jpg';
+      const defaultCover = 'https://i.postimg.cc/qRzMB6nQ/default-cover.jpg';
+
+      // 头像设置
+      if (avatarElement) avatarElement.src = xProfile.xAvatar || defaultAvatar;
+      if (avatarUrlElement) avatarUrlElement.value = xProfile.xAvatar || defaultAvatar;
+
+      // 背景图设置
+      if (coverPreviewElement) coverPreviewElement.src = xProfile.xCover || defaultCover;
       if (coverUrlElement) coverUrlElement.value = xProfile.xCover || '';
-      if (nameElement) nameElement.value = xProfile.xName;
-      if (handleElement) handleElement.value = xProfile.xHandle;
-      if (verifiedElement) verifiedElement.checked = xProfile.xVerified;
+
+      // 基本信息设置（必填字段提供默认值）
+      if (nameElement) nameElement.value = xProfile.xName || character.name || '';
+      if (handleElement) handleElement.value = xProfile.xHandle || '';
+      if (verifiedElement) verifiedElement.checked = xProfile.xVerified || false;
+
+      // 自定义标签设置
       if (tag1IconElement) tag1IconElement.value = xProfile.customTag1?.icon || '';
       if (tag1TextElement) tag1TextElement.value = xProfile.customTag1?.text || '';
       if (tag1ColorElement) tag1ColorElement.value = xProfile.customTag1?.color || '#71767b';
       if (tag2IconElement) tag2IconElement.value = xProfile.customTag2?.icon || '';
       if (tag2TextElement) tag2TextElement.value = xProfile.customTag2?.text || '';
       if (tag2ColorElement) tag2ColorElement.value = xProfile.customTag2?.color || '#71767b';
+
+      // 关注数量设置
       if (followingCountElement) followingCountElement.value = xProfile.followingCount || '';
       if (followersCountElement) followersCountElement.value = xProfile.followersCount || '';
+
+      // 简介和公众身份设置
       if (bioElement) bioElement.value = xProfile.xBio || '';
       if (publicIdentityElement) publicIdentityElement.value = xProfile.publicIdentity || '';
+
+      // 真名设置
       if (showRealNameElement) showRealNameElement.checked = xProfile.showRealName || false;
       if (realNameElement) realNameElement.value = xProfile.realName || '';
+
+      // 显示弹窗（提前显示，确保DOM元素已挂载）
+      const modal = document.getElementById('character-x-profile-modal');
+      if (!modal) {
+        console.error('❌ 角色X资料弹窗元素未找到');
+        showXToast('无法打开X资料设置，请刷新页面重试', 'error');
+        return;
+      }
+      modal.style.display = 'block';
+
+      // 等待DOM更新后再操作内部元素
+      await new Promise(resolve => setTimeout(resolve, 50));
+
+      // 设置当前编辑的角色ID
+      const formElement = document.getElementById('character-x-profile-form');
+      if (formElement) {
+        formElement.setAttribute('data-character-id', characterId);
+      } else {
+        console.warn('⚠️ 角色X资料表单元素未找到');
+      }
 
       // 根据复选框状态显示/隐藏真名输入框
       toggleCharacterRealNameInput();
@@ -11050,14 +11084,8 @@ ${existingQuestionsContext}
       // 更新字符计数
       updateCharacterXProfileCounts();
 
-      // 设置当前编辑的角色ID
-      document.getElementById('character-x-profile-form').setAttribute('data-character-id', characterId);
-
       // 渲染关系列表
       renderRelationshipsList(xProfile.relationships || []);
-
-      // 显示弹窗
-      document.getElementById('character-x-profile-modal').style.display = 'block';
     } catch (error) {
       ValidationUtils.handleError(error, '打开角色X资料');
     }
@@ -11158,28 +11186,52 @@ ${existingQuestionsContext}
   async function saveCharacterXProfile(event) {
     event.preventDefault();
 
-    const characterId = document.getElementById('character-x-profile-form').getAttribute('data-character-id');
-    const xName = document.getElementById('character-x-name').value.trim();
-    const xHandle = document.getElementById('character-x-handle').value.trim();
-    const xAvatarUrl = document.getElementById('character-x-avatar-url').value.trim();
-    const xAvatar = xAvatarUrl || 'https://i.postimg.cc/4xmx7V4R/mmexport1759081128356.jpg';
-    const xVerified = document.getElementById('character-x-verified').checked;
-    const xCoverUrl = document.getElementById('character-x-cover-url').value.trim();
-    const xCover = xCoverUrl || 'https://i.postimg.cc/qRzMB6nQ/default-cover.jpg';
-    const tag1Icon = document.getElementById('character-tag1-icon').value.trim();
-    const tag1Text = document.getElementById('character-custom-tag1').value.trim();
-    const tag1Color = document.getElementById('character-tag1-color').value;
-    const tag2Icon = document.getElementById('character-tag2-icon').value.trim();
-    const tag2Text = document.getElementById('character-custom-tag2').value.trim();
-    const tag2Color = document.getElementById('character-tag2-color').value;
-    const followingCount = document.getElementById('character-following-count').value.trim();
-    const followersCount = document.getElementById('character-followers-count').value.trim();
-    const xBio = document.getElementById('character-x-bio').value.trim();
-    const publicIdentity = document.getElementById('character-public-identity').value.trim();
-    const showRealName = document.getElementById('character-show-real-name').checked;
-    const realName = document.getElementById('character-real-name').value.trim();
+    const formElement = document.getElementById('character-x-profile-form');
+    if (!formElement) {
+      showXToast('表单元素未找到', 'error');
+      return;
+    }
 
-    // 验证数据
+    const characterId = formElement.getAttribute('data-character-id');
+    if (!characterId) {
+      showXToast('角色ID未找到', 'error');
+      return;
+    }
+
+    // 获取表单值，使用安全的访问方式
+    const getElementValue = (id, defaultValue = '') => {
+      const element = document.getElementById(id);
+      return element ? element.value.trim() : defaultValue;
+    };
+
+    const getElementChecked = (id, defaultValue = false) => {
+      const element = document.getElementById(id);
+      return element ? element.checked : defaultValue;
+    };
+
+    const xName = getElementValue('character-x-name');
+    const xHandle = getElementValue('character-x-handle');
+    const xAvatarUrl = getElementValue('character-x-avatar-url');
+    const xAvatar = xAvatarUrl || 'https://i.postimg.cc/4xmx7V4R/mmexport1759081128356.jpg';
+    const xVerified = getElementChecked('character-x-verified');
+    const xCoverUrl = getElementValue('character-x-cover-url');
+    const xCover = xCoverUrl || 'https://i.postimg.cc/qRzMB6nQ/default-cover.jpg';
+    const tag1Icon = getElementValue('character-tag1-icon');
+    const tag1Text = getElementValue('character-custom-tag1');
+    const tag1ColorElement = document.getElementById('character-tag1-color');
+    const tag1Color = tag1ColorElement ? tag1ColorElement.value : '#71767b';
+    const tag2Icon = getElementValue('character-tag2-icon');
+    const tag2Text = getElementValue('character-custom-tag2');
+    const tag2ColorElement = document.getElementById('character-tag2-color');
+    const tag2Color = tag2ColorElement ? tag2ColorElement.value : '#71767b';
+    const followingCount = getElementValue('character-following-count');
+    const followersCount = getElementValue('character-followers-count');
+    const xBio = getElementValue('character-x-bio');
+    const publicIdentity = getElementValue('character-public-identity');
+    const showRealName = getElementChecked('character-show-real-name');
+    const realName = getElementValue('character-real-name');
+
+    // 仅验证必填字段（用户名和句柄）
     if (!xName) {
       showXToast('X用户名不能为空', 'error');
       return;
@@ -11190,6 +11242,7 @@ ${existingQuestionsContext}
       return;
     }
 
+    // 验证长度限制（仅对已填写的字段）
     if (xName.length > 50) {
       showXToast('X用户名不能超过50个字符', 'error');
       return;
@@ -11200,30 +11253,27 @@ ${existingQuestionsContext}
       return;
     }
 
-    if (xBio.length > 160) {
+    if (xBio && xBio.length > 160) {
       showXToast('X简介不能超过160个字符', 'error');
       return;
     }
 
-    // 公众身份已移除字符限制
-
-    if (showRealName && realName.length > 50) {
+    if (showRealName && realName && realName.length > 50) {
       showXToast('真实姓名不能超过50个字符', 'error');
       return;
     }
 
+    // 如果选择公开真名但未填写，给予警告但不阻止保存
     if (showRealName && !realName) {
-      showXToast('选择公开真名时必须填写真实姓名', 'error');
-      return;
+      showXToast('建议填写真实姓名', 'warning');
     }
 
-    // 验证头像URL
+    // 验证头像URL（如果填写了）
     if (xAvatarUrl) {
       try {
         new URL(xAvatarUrl);
       } catch (e) {
-        showXToast('头像URL格式无效', 'error');
-        return;
+        showXToast('头像URL格式无效，将使用默认头像', 'warning');
       }
     }
 
