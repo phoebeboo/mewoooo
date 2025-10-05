@@ -10965,6 +10965,14 @@ ${existingQuestionsContext}
   // 打开角色X资料设置
   async function openCharacterXProfile(characterId) {
     try {
+      // 首先检查弹窗元素是否存在
+      const modalElement = document.getElementById('character-x-profile-modal');
+      if (!modalElement) {
+        console.error('❌ 角色X资料弹窗元素不存在于DOM中');
+        showXToast('无法打开X资料设置，请先绑定角色', 'error');
+        return;
+      }
+
       const db = getDB(); // 修正：chats表在全局数据库中
       const xDb = getXDB(); // X专用数据库用于xCharacterProfiles
 
@@ -10994,13 +11002,24 @@ ${existingQuestionsContext}
         xProfile.relationships = [];
       }
 
+      // 检查表单元素是否存在
+      const formElement = document.getElementById('character-x-profile-form');
+      if (!formElement) {
+        console.error('❌ 角色X资料表单不存在，弹窗可能未正确加载');
+        showXToast('弹窗加载失败，请先勾选绑定该角色，然后刷新页面重试', 'error');
+        // 关闭弹窗
+        const modal = document.getElementById('character-x-profile-modal');
+        if (modal) modal.style.display = 'none';
+        return;
+      }
+
       // 填充弹窗内容
       const infoDisplay = document.getElementById('character-info-display');
       if (infoDisplay) {
         infoDisplay.innerHTML = TemplateBuilders.buildCharacterInfoDisplay(character);
       }
 
-      // 获取所有表单元素
+      // 获取所有表单元素（使用安全的方式）
       const avatarElement = document.getElementById('character-x-avatar');
       const avatarUrlElement = document.getElementById('character-x-avatar-url');
       const coverPreviewElement = document.getElementById('character-x-cover-preview');
@@ -11058,34 +11077,23 @@ ${existingQuestionsContext}
       if (showRealNameElement) showRealNameElement.checked = xProfile.showRealName || false;
       if (realNameElement) realNameElement.value = xProfile.realName || '';
 
-      // 显示弹窗（提前显示，确保DOM元素已挂载）
-      const modal = document.getElementById('character-x-profile-modal');
-      if (!modal) {
-        console.error('❌ 角色X资料弹窗元素未找到');
-        showXToast('无法打开X资料设置，请刷新页面重试', 'error');
-        return;
-      }
-      modal.style.display = 'block';
-
-      // 等待DOM更新后再操作内部元素
-      await new Promise(resolve => setTimeout(resolve, 50));
-
-      // 设置当前编辑的角色ID
-      const formElement = document.getElementById('character-x-profile-form');
-      if (formElement) {
-        formElement.setAttribute('data-character-id', characterId);
-      } else {
-        console.warn('⚠️ 角色X资料表单元素未找到');
-      }
-
       // 根据复选框状态显示/隐藏真名输入框
       toggleCharacterRealNameInput();
 
       // 更新字符计数
       updateCharacterXProfileCounts();
 
+      // 设置当前编辑的角色ID（formElement已在前面声明）
+      formElement.setAttribute('data-character-id', characterId);
+
       // 渲染关系列表
       renderRelationshipsList(xProfile.relationships || []);
+
+      // 显示弹窗
+      const modal = document.getElementById('character-x-profile-modal');
+      if (modal) {
+        modal.style.display = 'block';
+      }
     } catch (error) {
       ValidationUtils.handleError(error, '打开角色X资料');
     }
@@ -11093,7 +11101,10 @@ ${existingQuestionsContext}
 
   // 关闭角色X资料设置弹窗
   function closeCharacterXProfileModal() {
-    document.getElementById('character-x-profile-modal').style.display = 'none';
+    const modal = document.getElementById('character-x-profile-modal');
+    if (modal) {
+      modal.style.display = 'none';
+    }
   }
 
   // 更新角色X头像
