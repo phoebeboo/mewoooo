@@ -778,7 +778,7 @@
     container.innerHTML = `
     <!-- 顶部栏 -->
     <div class="x-top-bar"
-        style="display: flex; justify-content: space-between; align-items: center; padding: 35px 15px; border-bottom: 1px solid #333; position: relative;">
+        style="display: flex; justify-content: space-between; align-items: center; padding: 55px 15px 15px 15px; border-bottom: 1px solid #333; position: relative;">
       <!-- 返回按钮 -->
       <div class="x-back-btn" onclick="showScreen('home-screen')" style="cursor: pointer;">
         <svg viewBox="0 0 24 24" aria-hidden="true" style="width: 20px; height: 20px; fill: #fff;">
