@@ -10541,7 +10541,7 @@ ${existingQuestionsContext}
           characterId: characterId,
           xName: character.name,
           xHandle: character.name.toLowerCase().replace(/\s+/g, '_'),
-          xAvatar: character.settings.aiAvatar,
+          xAvatar: 'https://i.postimg.cc/4xmx7V4R/mmexport1759081128356.jpg',
           xVerified: false,
           xBio: '',
           relationships: [],
@@ -10580,9 +10580,10 @@ ${existingQuestionsContext}
       const showRealNameElement = document.getElementById('character-show-real-name');
       const realNameElement = document.getElementById('character-real-name');
 
-      // 安全地设置元素值
-      if (avatarElement) avatarElement.src = xProfile.xAvatar;
-      if (avatarUrlElement) avatarUrlElement.value = xProfile.xAvatar;
+      // 安全地设置元素值 - 统一使用默认头像
+      const defaultAvatar = 'https://i.postimg.cc/4xmx7V4R/mmexport1759081128356.jpg';
+      if (avatarElement) avatarElement.src = defaultAvatar;
+      if (avatarUrlElement) avatarUrlElement.value = defaultAvatar;
       if (coverPreviewElement)
         coverPreviewElement.src = xProfile.xCover || 'https://i.postimg.cc/qRzMB6nQ/default-cover.jpg';
       if (coverUrlElement) coverUrlElement.value = xProfile.xCover || '';
