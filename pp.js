@@ -1669,6 +1669,91 @@
             </div>
           </div>
 
+          <!-- 角色关系册设置 -->
+          <div class="settings-section" style="margin-bottom: 40px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+              <label style="color: #fff; font-size: 17px; font-weight: 600;">
+                角色关系册
+              </label>
+              <div class="x-toggle" onclick="toggleCharacterRelationship()" style="cursor: pointer;">
+                <div id="x-relationship-toggle" class="toggle-switch"
+                  style="width: 50px; height: 30px; background-color: #333; border-radius: 15px; position: relative; transition: all 0.3s ease;">
+                  <div class="toggle-circle"
+                    style="width: 26px; height: 26px; background-color: #fff; border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: all 0.3s ease;">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <p style="color: #71767b; font-size: 14px; margin: 0 0 15px 0; line-height: 1.4;">
+              开启后，可以为已绑定的角色建立关系网络，设置角色之间的双向关系
+            </p>
+
+            <!-- 角色关系册管理区域 -->
+            <div id="relationship-binding-area" style="display: none;">
+              <div style="background-color: #1a1a1a; border: 1px solid #333; border-radius: 12px; padding: 16px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                  <div style="color: #fff; font-size: 15px; font-weight: 600;">角色关系图</div>
+                  <button onclick="openCharacterRelationshipGraph()" style="
+                    background-color: #1d9bf0;
+                    color: #fff;
+                    border: none;
+                    border-radius: 20px;
+                    padding: 6px 16px;
+                    font-size: 14px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: all 0.2s;
+                  " onmouseover="this.style.backgroundColor='#1a8cd8'" onmouseout="this.style.backgroundColor='#1d9bf0'">
+                    编辑关系图
+                  </button>
+                </div>
+                
+                <!-- 关系图预览 -->
+                <div id="relationship-preview" style="
+                  background-color: #0a0a0a;
+                  border: 1px solid #2f3336;
+                  border-radius: 8px;
+                  padding: 20px;
+                  min-height: 150px;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  position: relative;
+                ">
+                  <canvas id="relationship-preview-canvas" width="400" height="150" style="width: 100%; height: 100%;"></canvas>
+                  <div id="relationship-preview-placeholder" style="
+                    color: #71767b;
+                    font-size: 14px;
+                    text-align: center;
+                  ">
+                    暂无关系数据<br>
+                    <span style="font-size: 12px;">点击上方按钮开始创建角色关系</span>
+                  </div>
+                </div>
+
+                <!-- 关系统计 -->
+                <div id="relationship-stats" style="
+                  margin-top: 12px;
+                  padding: 12px;
+                  background-color: rgba(29, 155, 240, 0.1);
+                  border-radius: 8px;
+                  display: none;
+                ">
+                  <div style="color: #1d9bf0; font-size: 13px; display: flex; justify-content: space-around;">
+                    <div style="text-align: center;">
+                      <div style="font-weight: 700; font-size: 18px;" id="relationship-character-count">0</div>
+                      <div style="opacity: 0.8;">角色数</div>
+                    </div>
+                    <div style="text-align: center;">
+                      <div style="font-weight: 700; font-size: 18px;" id="relationship-link-count">0</div>
+                      <div style="opacity: 0.8;">关系数</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- NPC绑定设置 -->
           <div class="settings-section" style="margin-bottom: 40px;">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
@@ -1874,8 +1959,8 @@
                   <!-- 隐藏的文件输入 -->
                   <input type="file" id="detail-comment-image-input" accept="image/*" style="display: none;" onchange="handleDetailCommentImageUpload(event)">
                 </div>
-              </div>
             </div>
+          </div>
         </div>
       </div>
 
@@ -3276,6 +3361,367 @@
       </div>
     </div>
 
+    <!-- 角色关系图编辑器弹窗 -->
+    <div id="character-relationship-graph-modal" style="
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.85);
+      z-index: 25;
+      overflow-y: auto;
+      backdrop-filter: blur(8px);
+    " onclick="closeCharacterRelationshipGraph(event)">
+      <div style="
+        background-color: #000;
+        margin: 20px auto;
+        border-radius: 16px;
+        max-width: 900px;
+        width: calc(100% - 40px);
+        max-height: calc(100vh - 40px);
+        position: relative;
+        overflow: hidden;
+        border: 1px solid #333;
+      " onclick="event.stopPropagation()">
+        <!-- 弹窗头部 -->
+        <div style="
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 16px 20px;
+          border-bottom: 1px solid #333;
+          background-color: #000;
+        ">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <h2 style="color: #fff; font-size: 20px; font-weight: 700; margin: 0;">角色关系图编辑器</h2>
+            <div style="color: #71767b; font-size: 13px; display: flex; align-items: center; gap: 8px;">
+              <span id="graph-character-count">0 角色</span>
+              <span>·</span>
+              <span id="graph-link-count">0 关系</span>
+            </div>
+          </div>
+          <div onclick="closeCharacterRelationshipGraph()" style="
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: background-color 0.2s;
+          " onmouseover="this.style.backgroundColor='rgba(239,243,244,0.1)'"
+            onmouseout="this.style.backgroundColor='transparent'">
+            <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; fill: #fff;">
+              <g><path d="M10.59 12L4.54 5.96l1.42-1.42L12 10.59l6.04-6.05 1.42 1.42L13.41 12l6.05 6.04-1.42 1.42L12 13.41l-6.04 6.05-1.42-1.42L10.59 12z"></path></g>
+            </svg>
+          </div>
+        </div>
+
+        <!-- 工具栏 -->
+        <div style="
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 12px 20px;
+          border-bottom: 1px solid #333;
+          background-color: #0a0a0a;
+        ">
+          <button onclick="addRelationshipLink()" style="
+            background-color: #1d9bf0;
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+          " onmouseover="this.style.backgroundColor='#1a8cd8'"
+            onmouseout="this.style.backgroundColor='#1d9bf0'">
+            <svg viewBox="0 0 24 24" style="width: 16px; height: 16px; fill: currentColor;">
+              <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+            </svg>
+            添加关系
+          </button>
+          
+          <button onclick="clearAllRelationships()" style="
+            background-color: transparent;
+            color: #f4212e;
+            border: 1px solid #f4212e;
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+          " onmouseover="this.style.backgroundColor='rgba(244,33,46,0.1)'"
+            onmouseout="this.style.backgroundColor='transparent'">
+            <svg viewBox="0 0 24 24" style="width: 16px; height: 16px; fill: currentColor;">
+              <path d="M5 20a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8h2V6h-4V4a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H3v2h2zM9 4h6v2H9zM8 8h9v12H7V8z"/>
+            </svg>
+            清空所有
+          </button>
+
+          <div style="margin-left: auto; color: #71767b; font-size: 12px;">
+            点击角色头像连线，点击连线编辑关系
+          </div>
+        </div>
+
+        <!-- 关系图画布区域 -->
+        <div style="
+          height: 500px;
+          background-color: #000;
+          position: relative;
+          overflow: hidden;
+        ">
+          <canvas id="relationship-graph-canvas" style="
+            width: 100%;
+            height: 100%;
+            display: block;
+            cursor: grab;
+          "></canvas>
+          
+          <!-- 空状态提示 -->
+          <div id="graph-empty-state" style="
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: #71767b;
+            pointer-events: none;
+          ">
+            <svg viewBox="0 0 24 24" style="width: 64px; height: 64px; fill: #2f3336; margin-bottom: 12px;">
+              <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+            </svg>
+            <div style="font-size: 15px; margin-bottom: 4px;">暂无角色关系</div>
+            <div style="font-size: 13px; opacity: 0.7;">请先绑定角色，然后点击"添加关系"</div>
+          </div>
+        </div>
+
+        <!-- 关系列表 -->
+        <div style="
+          max-height: 200px;
+          overflow-y: auto;
+          background-color: #0a0a0a;
+          border-top: 1px solid #333;
+        ">
+          <div style="padding: 12px 20px; border-bottom: 1px solid #333;">
+            <div style="color: #fff; font-size: 15px; font-weight: 600;">关系列表</div>
+          </div>
+          <div id="relationship-links-list" style="padding: 12px 20px;">
+            <!-- 关系列表将动态生成 -->
+          </div>
+        </div>
+
+        <!-- 底部按钮 -->
+        <div style="
+          display: flex;
+          gap: 12px;
+          padding: 16px 20px;
+          border-top: 1px solid #333;
+          background-color: #000;
+        ">
+          <button onclick="closeCharacterRelationshipGraph()" style="
+            flex: 1;
+            background-color: transparent;
+            color: #fff;
+            border: 1px solid #536471;
+            border-radius: 20px;
+            padding: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+          " onmouseover="this.style.backgroundColor='rgba(255,255,255,0.1)'"
+            onmouseout="this.style.backgroundColor='transparent'">
+            取消
+          </button>
+          <button onclick="saveRelationshipGraph()" style="
+            flex: 1;
+            background-color: #1d9bf0;
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            padding: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+          " onmouseover="this.style.backgroundColor='#1a8cd8'"
+            onmouseout="this.style.backgroundColor='#1d9bf0'">
+            保存关系图
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 编辑关系详情弹窗 -->
+    <div id="edit-relationship-detail-modal" style="
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      z-index: 30;
+      backdrop-filter: blur(4px);
+    " onclick="closeEditRelationshipDetail(event)">
+      <div style="
+        background-color: #000;
+        margin: 60px auto;
+        border-radius: 16px;
+        max-width: 500px;
+        width: calc(100% - 40px);
+        border: 1px solid #333;
+      " onclick="event.stopPropagation()">
+        <!-- 弹窗头部 -->
+        <div style="
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 16px 20px;
+          border-bottom: 1px solid #333;
+        ">
+          <h3 style="color: #fff; font-size: 18px; font-weight: 700; margin: 0;">编辑关系</h3>
+          <div onclick="closeEditRelationshipDetail()" style="
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: background-color 0.2s;
+          " onmouseover="this.style.backgroundColor='rgba(239,243,244,0.1)'"
+            onmouseout="this.style.backgroundColor='transparent'">
+            <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; fill: #fff;">
+              <path d="M10.59 12L4.54 5.96l1.42-1.42L12 10.59l6.04-6.05 1.42 1.42L13.41 12l6.05 6.04-1.42 1.42L12 13.41l-6.04 6.05-1.42-1.42L10.59 12z"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- 表单内容 -->
+        <div style="padding: 20px;">
+          <!-- 关系方向说明 -->
+          <div id="relationship-characters-info" style="
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            background-color: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            margin-bottom: 20px;
+          ">
+            <div style="flex: 1; text-align: center;">
+              <div id="char-a-name" style="color: #fff; font-size: 14px; font-weight: 600;"></div>
+            </div>
+            <div style="color: #71767b; font-size: 20px; margin: 0 12px;">⇆</div>
+            <div style="flex: 1; text-align: center;">
+              <div id="char-b-name" style="color: #fff; font-size: 14px; font-weight: 600;"></div>
+            </div>
+          </div>
+
+          <!-- A 对 B 的关系 -->
+          <div style="margin-bottom: 20px;">
+            <label style="display: block; color: #fff; font-size: 14px; font-weight: 600; margin-bottom: 8px;">
+              <span id="char-a-to-b-label"></span>
+            </label>
+            <input type="text" id="relationship-a-to-b" placeholder="例如：好朋友、同事、哥哥等" style="
+              width: 100%;
+              background-color: #1a1a1a;
+              border: 1px solid #333;
+              border-radius: 8px;
+              color: #fff;
+              padding: 12px;
+              font-size: 14px;
+              outline: none;
+              box-sizing: border-box;
+            " onfocus="this.style.borderColor='#1d9bf0'" onblur="this.style.borderColor='#333'">
+          </div>
+
+          <!-- B 对 A 的关系 -->
+          <div style="margin-bottom: 20px;">
+            <label style="display: block; color: #fff; font-size: 14px; font-weight: 600; margin-bottom: 8px;">
+              <span id="char-b-to-a-label"></span>
+            </label>
+            <input type="text" id="relationship-b-to-a" placeholder="例如：好朋友、同事、妹妹等" style="
+              width: 100%;
+              background-color: #1a1a1a;
+              border: 1px solid #333;
+              border-radius: 8px;
+              color: #fff;
+              padding: 12px;
+              font-size: 14px;
+              outline: none;
+              box-sizing: border-box;
+            " onfocus="this.style.borderColor='#1d9bf0'" onblur="this.style.borderColor='#333'">
+          </div>
+
+          <!-- 关系情节 -->
+          <div style="margin-bottom: 24px;">
+            <label style="display: block; color: #fff; font-size: 14px; font-weight: 600; margin-bottom: 8px;">
+              关系情节 (可选)
+            </label>
+            <textarea id="relationship-story" placeholder="补充背景故事、相识经历等..." style="
+              width: 100%;
+              min-height: 80px;
+              background-color: #1a1a1a;
+              border: 1px solid #333;
+              border-radius: 8px;
+              color: #fff;
+              padding: 12px;
+              font-size: 14px;
+              outline: none;
+              box-sizing: border-box;
+              resize: vertical;
+              font-family: inherit;
+              line-height: 1.4;
+            " onfocus="this.style.borderColor='#1d9bf0'" onblur="this.style.borderColor='#333'"></textarea>
+            <div style="color: #71767b; font-size: 12px; margin-top: 4px;">
+              例如：如何相识、共同经历、特殊事件等
+            </div>
+          </div>
+
+          <!-- 操作按钮 -->
+          <div style="display: flex; gap: 12px;">
+            <button onclick="deleteRelationshipLink()" style="
+              flex: 1;
+              background-color: transparent;
+              color: #f4212e;
+              border: 1px solid #f4212e;
+              border-radius: 20px;
+              padding: 10px;
+              font-size: 14px;
+              font-weight: 700;
+              cursor: pointer;
+              transition: all 0.2s;
+            " onmouseover="this.style.backgroundColor='rgba(244,33,46,0.1)'"
+              onmouseout="this.style.backgroundColor='transparent'">
+              删除关系
+            </button>
+            <button onclick="saveRelationshipDetail()" style="
+              flex: 1;
+              background-color: #1d9bf0;
+              color: #fff;
+              border: none;
+              border-radius: 20px;
+              padding: 10px;
+              font-size: 14px;
+              font-weight: 700;
+              cursor: pointer;
+              transition: all 0.2s;
+            " onmouseover="this.style.backgroundColor='#1a8cd8'"
+              onmouseout="this.style.backgroundColor='#1d9bf0'">
+              保存
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- NPC编辑弹窗 -->
     <div id="npc-edit-modal" style="
       display: none;
@@ -3607,7 +4053,7 @@
           </div>
           
           <!-- 刷新按钮 -->
-          <div onclick="refreshAccountProfile()" style="cursor: pointer; padding: 8px; border-radius: 50%; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='rgba(239,243,244,0.1)'" onmouseout="this.style.backgroundColor='transparent'" title="刷新账户主页">
+          <div onclick="refreshAccountProfile()" onmousedown="handleRefreshButtonMouseDown()" onmouseup="handleRefreshButtonMouseUp()" ontouchstart="handleRefreshButtonMouseDown()" ontouchend="handleRefreshButtonMouseUp()" style="cursor: pointer; padding: 8px; border-radius: 50%; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='rgba(239,243,244,0.1)'" onmouseout="this.style.backgroundColor='transparent'" title="刷新账户主页">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M9 4.55a8 8 0 0 1 6 14.9m0 -4.45v5h5" />
               <path d="M5.63 7.16l0 .01" />
@@ -3977,6 +4423,22 @@
       xAccountProfiles: '&handle, name, updatedAt',
       xAccountAskbox: '&id',
     });
+    // 版本3：添加角色关系册表
+    db.version(3).stores({
+      xTweetsData: '&id',
+      xSettings: '&id',
+      xPresets: '++id, name, createdAt',
+      xUserProfile: '&id',
+      xUserTweets: '&id',
+      xCharacterProfiles: '&characterId',
+      xActiveAccount: '&id',
+      xAccountList: '&accountId, name, createdAt',
+      xNPCs: '&id',
+      xAskbox: '&id',
+      xAccountProfiles: '&handle, name, updatedAt',
+      xAccountAskbox: '&id',
+      xCharacterRelationships: '&id, accountId, lastUpdated',
+    });
     return db;
   }
 
@@ -4251,8 +4713,10 @@ ${worldSetting.trim()}
 **绝对禁止以用户身份生成任何内容！**
 
 用户身份标识（禁止使用）：
-- 用户名标识：[USER_NAME_RESTRICTED]
-- 用户句柄标识：[USER_HANDLE_RESTRICTED]
+- 用户名：${userXProfileInfo.name}
+- 用户句柄：${userXProfileInfo.handle}
+- 🚨 警告：用户是独立的个体，不要与任何绑定角色混淆！
+- 🚨 警告：不要将绑定角色误认为用户！
 - 用户信息：仅供理解上下文，严禁在生成内容中使用
 
 **你只能生成以下身份的内容**：
@@ -4262,6 +4726,8 @@ ${worldSetting.trim()}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 【用户X平台公开身份】（所有观众都知道的公开信息）：
+- 用户名：${userXProfileInfo.name}（这是用户，不是角色！）
+- 用户句柄：${userXProfileInfo.handle}（这是用户的唯一标识！）
 - 认证状态：${userXProfileInfo.verified ? '已认证' : '未认证'}
 - 认证类型：${verificationDesc}
 ${
@@ -4271,6 +4737,12 @@ ${
 }
 ${userXProfileInfo.publicIdentity ? `- 公众身份：${userXProfileInfo.publicIdentity}` : ''}
 ${userXProfileInfo.bio ? `- 个人简介：${userXProfileInfo.bio}` : ''}
+
+【身份识别关键点】：
+🚨 用户 vs 角色的区别：
+- 用户（${userXProfileInfo.name} / ${userXProfileInfo.handle}）：真实操作者，你绝对不能模拟其发言
+- 绑定角色：已设定的虚拟角色，有各自的X平台身份（xName、xHandle），你可以生成他们的内容
+- 🚨 特别注意：即使某个角色与用户有关系（如情侣），也不要将该角色当成用户本人！
 
 【权限分级】：
 - 观众可知：认证状态、简介、公众身份、公开的情侣关系
@@ -4328,6 +4800,119 @@ ${userXProfileInfo.bio ? `- 个人简介：${userXProfileInfo.bio}` : ''}
 - 可以适当使用emoji表情，但不要过度`;
 
       return scenarioPrompt;
+    },
+
+    // 构建角色关系信息
+    async buildCharacterRelationships(boundCharacters, currentAccountId) {
+      if (!boundCharacters || boundCharacters.length === 0) return '';
+
+      try {
+        const xDB = getXDB();
+        const currentAccount = currentAccountId || 'main';
+        const dataId = `xCharacterRelationships_${currentAccount}`;
+
+        // 加载角色关系数据
+        const relationshipRecord = await xDB.xCharacterRelationships.get(dataId);
+
+        if (!relationshipRecord || !relationshipRecord.data) {
+          return '';
+        }
+
+        const relationshipData = relationshipRecord.data;
+        const links = relationshipData.links || [];
+
+        if (links.length === 0) {
+          return '';
+        }
+
+        // 获取角色名称和X资料映射
+        const mainDB = getDB();
+        const allChats = await mainDB.chats.toArray();
+        const allXProfiles = await xDB.xCharacterProfiles.toArray();
+
+        const charMap = new Map();
+        const xProfileMap = new Map();
+
+        allChats.forEach(chat => {
+          if (!chat.isGroup) {
+            charMap.set(chat.id, chat.name);
+          }
+        });
+
+        allXProfiles.forEach(profile => {
+          xProfileMap.set(profile.characterId, profile);
+        });
+
+        // 构建关系信息
+        let relationshipsInfo = `
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+💞 角色关系网络（角色之间的关系）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🚨 重要提示：以下是已绑定角色彼此之间的关系，这些关系与用户无关！
+- 用户是独立的个体，不要将任何角色误认为用户
+- 这些关系描述的是角色A与角色B之间的互动，而非用户参与的关系
+
+`;
+
+        links.forEach((link, index) => {
+          const charAName = charMap.get(link.charA) || '未知角色A';
+          const charBName = charMap.get(link.charB) || '未知角色B';
+          const xProfileA = xProfileMap.get(link.charA);
+          const xProfileB = xProfileMap.get(link.charB);
+
+          relationshipsInfo += `【角色关系 ${index + 1}】（角色之间的关系，与用户无关）\n`;
+
+          // 角色A的基本身份信息
+          relationshipsInfo += `- 角色A：${charAName}\n`;
+          if (xProfileA) {
+            relationshipsInfo += `  X平台身份：${xProfileA.xName} (${xProfileA.xHandle})\n`;
+          }
+
+          // 角色B的基本身份信息
+          relationshipsInfo += `- 角色B：${charBName}\n`;
+          if (xProfileB) {
+            relationshipsInfo += `  X平台身份：${xProfileB.xName} (${xProfileB.xHandle})\n`;
+          }
+
+          relationshipsInfo += `- ${charAName}对${charBName}的关系：${link.relationshipAtoB || '未设置'}\n`;
+          relationshipsInfo += `- ${charBName}对${charAName}的关系：${link.relationshipBtoA || '未设置'}\n`;
+
+          if (link.story && link.story.trim()) {
+            relationshipsInfo += `- 关系情节：${link.story}\n`;
+          }
+
+          relationshipsInfo += `\n`;
+        });
+
+        relationshipsInfo += `
+【角色关系互动规则】：
+🚨 核心原则：这些是角色之间的关系，不要与用户关系混淆！
+
+1. 角色互动对象识别：
+   - 当角色A与角色B互动时，使用上述列出的X平台身份（xName和xHandle）
+   - 绝对不要将角色B误认为用户
+   - 用户有独立的用户名和句柄，不要与角色身份混淆
+
+2. 互动频率和类型根据关系亲密度决定：
+   - 亲密关系（情侣、挚友、家人等）：互动频率较高（30-50%），可以亲昵称呼、开玩笑
+   - 普通关系（朋友、同事、熟人等）：互动频率中等（15-30%），保持礼貌友好
+   - 紧张关系（竞争、冷战、敌对等）：互动频率较低（5-15%），可能带有暗讽、针锋相对
+
+3. 互动内容要符合关系设定和情节背景
+
+4. 避免强行制造互动，保持自然真实
+
+5. 如果关系情节中有具体故事，可以在互动中体现相关细节
+
+6. 🚨 再次强调：所有上述关系都是"角色↔角色"的关系，不是"角色↔用户"的关系！
+`;
+
+        return relationshipsInfo;
+      } catch (error) {
+        console.error('构建角色关系信息失败:', error);
+        return '';
+      }
     },
   };
 
@@ -4494,6 +5079,55 @@ ${userXProfileInfo.bio ? `- 个人简介：${userXProfileInfo.bio}` : ''}
     handleError(error, context = '') {
       console.error(`${context} 错误:`, error);
       showXToast(`${context}失败: ${error.message}`, 'error');
+    },
+  };
+
+  // Token计数工具 - 用于监控AI调用的token使用量
+  const TokenUtils = {
+    // 估算文本的token数量（粗略估计：1个token ≈ 4个字符）
+    estimateTokens(text) {
+      if (!text) return 0;
+      // 对于中文，大约2个汉字=1个token；对于英文，大约4个字符=1个token
+      const chineseChars = (text.match(/[\u4e00-\u9fa5]/g) || []).length;
+      const otherChars = text.length - chineseChars;
+      return Math.ceil(chineseChars / 2 + otherChars / 4);
+    },
+
+    // 记录token使用情况
+    logTokenUsage(sceneName, step, content, cumulativeTokens = 0) {
+      const tokens = this.estimateTokens(content);
+      const newTotal = cumulativeTokens + tokens;
+      console.log(
+        `📊 [${sceneName}] ${step}: ${tokens.toLocaleString()} tokens | 累计: ${newTotal.toLocaleString()} tokens`,
+      );
+      return newTotal;
+    },
+
+    // 记录完整prompt的token使用情况
+    logFinalPrompt(sceneName, systemPrompt, userMessage = '', contextInfo = '') {
+      const systemTokens = this.estimateTokens(systemPrompt);
+      const userTokens = this.estimateTokens(userMessage);
+      const contextTokens = this.estimateTokens(contextInfo);
+      const totalTokens = systemTokens + userTokens + contextTokens;
+
+      console.log(`
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📊 [${sceneName}] Token使用统计
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+系统提示词: ${systemTokens.toLocaleString()} tokens
+用户消息: ${userTokens.toLocaleString()} tokens
+上下文信息: ${contextTokens.toLocaleString()} tokens
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+总计: ${totalTokens.toLocaleString()} tokens
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      `);
+
+      return {
+        systemTokens,
+        userTokens,
+        contextTokens,
+        totalTokens,
+      };
     },
   };
 
@@ -5054,11 +5688,15 @@ ${userXProfileInfo.bio ? `- 个人简介：${userXProfileInfo.bio}` : ''}
         bio,
       });
 
+      // Token计数器
+      let tokenCount = 0;
+
       // 5. 构建基础系统提示词（提示词 + 世界观）
       let systemPrompt = StringBuilders.buildBaseSystemPrompt({
         userPrompt,
         worldSetting,
       });
+      tokenCount = TokenUtils.logTokenUsage('热搜生成器', '基础系统提示词', systemPrompt, tokenCount);
 
       // 6. 获取启用的自定义分类
       const enabledCustomCategories = customCategories.filter(cat => cat.enabled && cat.name);
@@ -5238,7 +5876,13 @@ ${enabledCustomCategories.length > 0 ? `7. 自定义分类的热搜要紧密围�
 【最终检查】：确认话题真实可信，分类准确，数量合理，${worldSetting.trim() ? '严格遵守世界观设定，' : ''}格式正确。
 `;
 
+      const requirementsSection = systemPrompt.substring(systemPrompt.indexOf('🎯 核心任务说明 🎯'));
+      tokenCount = TokenUtils.logTokenUsage('热搜生成器', '任务说明与格式要求', requirementsSection, tokenCount);
+
       const messages = [{ role: 'user', content: '请生成最新的X平台热搜话题列表' }];
+
+      // 最终统计
+      TokenUtils.logFinalPrompt('热搜生成器', systemPrompt, messages[0].content);
 
       // 11. 发送API请求
       let isGemini = proxyUrl.includes('generativelanguage');
@@ -5530,12 +6174,22 @@ ${enabledCustomCategories.length > 0 ? `7. 自定义分类的热搜要紧密围�
           transition: background-color 0.2s;
         " onmouseover="this.style.backgroundColor='rgba(255,255,255,0.03)'"
           onmouseout="this.style.backgroundColor='transparent'">
-          <img src="${user.avatar}" alt="${user.name}" style="
+          <img 
+            src="${user.avatar}" 
+            alt="${user.name}" 
+            onclick="event.stopPropagation(); openAccountProfile('${user.name.replace(/'/g, "\\'")}', '${
+            user.handle.startsWith('@') ? user.handle : '@' + user.handle
+          }', '${user.avatar}')"
+            style="
             width: 48px;
             height: 48px;
             border-radius: 50%;
             flex-shrink: 0;
-          ">
+              cursor: pointer;
+              transition: opacity 0.2s;
+            "
+            onmouseover="this.style.opacity='0.8'"
+            onmouseout="this.style.opacity='1'">
           <div style="flex: 1; min-width: 0;">
             <div style="display: flex; align-items: center; gap: 4px; margin-bottom: 2px;">
               <span style="color: #fff; font-weight: 700; font-size: 15px;">${user.name}</span>
@@ -5709,11 +6363,15 @@ ${enabledCustomCategories.length > 0 ? `7. 自定义分类的热搜要紧密围�
         allowedList: allowedCharacters.map(c => c.xProfile.xName),
       });
 
+      // Token计数器
+      let tokenCount = 0;
+
       // 7. 构建基础系统提示词
       let systemPrompt = StringBuilders.buildBaseSystemPrompt({
         userPrompt,
         worldSetting,
       });
+      tokenCount = TokenUtils.logTokenUsage('搜索生成器', '基础系统提示词', systemPrompt, tokenCount);
 
       // 8. 添加搜索任务说明
       systemPrompt += `
@@ -5763,8 +6421,12 @@ ${
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 `;
 
+      const taskSection = systemPrompt.substring(systemPrompt.indexOf('🎯 核心任务说明 🎯'));
+      tokenCount = TokenUtils.logTokenUsage('搜索生成器', '搜索任务说明', taskSection, tokenCount);
+
       // 9. 如果有允许出现的角色，添加角色资料
       if (allowedCharacters.length > 0) {
+        const charSectionStart = systemPrompt.length;
         systemPrompt += `
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -5795,10 +6457,15 @@ ${xProfile.showRealName && xProfile.realName ? `- 真实姓名：${xProfile.real
 - 其他未列出的角色严禁出现
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 `;
+        const charSection = systemPrompt.substring(charSectionStart);
+        tokenCount = TokenUtils.logTokenUsage('搜索生成器', '允许角色信息', charSection, tokenCount);
       }
 
       // 10. 用户资料
+      const userConstraintsStart = systemPrompt.length;
       systemPrompt += StringBuilders.buildUniversalConstraints(userXProfileInfo);
+      const userConstraints = systemPrompt.substring(userConstraintsStart);
+      tokenCount = TokenUtils.logTokenUsage('搜索生成器', '用户资料约束', userConstraints, tokenCount);
 
       // 11. 添加格式要求
       systemPrompt += `
@@ -5835,7 +6502,13 @@ ${xProfile.showRealName && xProfile.realName ? `- 真实姓名：${xProfile.real
 5. stats中所有数字必须是纯数字${worldSetting.trim() ? '\n6. 严格遵守世界观设定' : ''}
 `;
 
+      const formatSection = systemPrompt.substring(systemPrompt.lastIndexOf('【JSON返回格式】'));
+      tokenCount = TokenUtils.logTokenUsage('搜索生成器', 'JSON格式要求', formatSection, tokenCount);
+
       const messages = [{ role: 'user', content: `请生成关键词"${query}"的搜索结果` }];
+
+      // 最终统计
+      TokenUtils.logFinalPrompt('搜索生成器', systemPrompt, messages[0].content);
 
       // 12. 发送API请求
       let isGemini = proxyUrl.includes('generativelanguage');
@@ -6792,6 +7465,27 @@ ${xProfile.showRealName && xProfile.realName ? `- 真实姓名：${xProfile.real
     return Math.floor(Math.random() * 50) + 1;
   }
 
+  // 动态计算评论时间显示
+  function formatCommentTime(commentTimestamp) {
+    const now = Date.now();
+    const diff = now - commentTimestamp;
+
+    const minutes = Math.floor(diff / (1000 * 60));
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+    if (minutes < 1) return '刚刚';
+    if (minutes < 60) return `${minutes}分钟前`;
+    if (hours < 24) return `${hours}小时前`;
+    if (days < 7) return `${days}天前`;
+
+    // 超过7天显示具体日期
+    const date = new Date(commentTimestamp);
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    return `${month}月${day}日`;
+  }
+
   // 创建评论元素
   function createCommentElement(comment, isReply = false) {
     const commentEl = document.createElement('div');
@@ -6814,8 +7508,10 @@ ${xProfile.showRealName && xProfile.realName ? `- 真实姓名：${xProfile.real
                       : ''
                   }
                   <span class="tweet-user-handle">${comment.user.handle}</span>
-                  <span class="tweet-time">·${comment.time}</span>
-                  <div style="margin-left: auto; cursor: pointer; padding: 4px; border-radius: 50%; transition: background-color 0.2s; display: flex; align-items: center;" onmouseover="this.style.backgroundColor='rgba(29, 155, 240, 0.1)'" onmouseout="this.style.backgroundColor='transparent'" onclick="${
+                  <span class="tweet-time">·${
+                    comment.timestamp ? formatCommentTime(comment.timestamp) : comment.time || '刚刚'
+                  }</span>
+                  <div style="margin-left: auto; cursor: pointer; padding: 4px; border-radius: 50%; transition: background-color: 0.2s; display: flex; align-items: center;" onmouseover="this.style.backgroundColor='rgba(29, 155, 240, 0.1)'" onmouseout="this.style.backgroundColor='transparent'" onclick="${
                     comment.user.handle === userProfileData.handle
                       ? `deleteUserComment('${comment.id}')`
                       : `event.stopPropagation(); showXToast('更多选项开发中', 'info')`
@@ -6840,42 +7536,44 @@ ${xProfile.showRealName && xProfile.realName ? `- 真实姓名：${xProfile.real
                       : ''
                   }
                 </div>
-                <div class="comment-actions">
+                <div class="comment-actions" style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px; gap: 2px; max-width: 100%; overflow-x: hidden;">
                   <div class="comment-action reply-action" onclick="showReplyInput('${comment.id}', '${
       comment.user.handle
-    }')">
-                    <svg class="action-icon" viewBox="0 0 24 24" fill="currentColor">
+    }')" style="display: flex; align-items: center; gap: 2px; cursor: pointer; color: #71767b; transition: color 0.2s; flex: 0 1 auto; min-width: 0;">
+                    <svg class="action-icon" viewBox="0 0 24 24" fill="currentColor" style="width: 16px; height: 16px; flex-shrink: 0;">
                       <g><path d="M1.751 10c0-4.42 3.584-8.005 8.005-8.005h4.366c4.49 0 8.129 3.64 8.129 8.13 0 2.96-1.607 5.68-4.196 7.11l-8.054 4.46v-3.69h-.067c-4.49.1-8.183-3.51-8.183-8.005zm8.005-6.005c-3.317 0-6.005 2.69-6.005 6.005 0 3.37 2.77 6.08 6.138 6.01l.351-.01h1.761v2.3l5.087-2.81c1.951-1.08 3.163-3.13 3.163-5.36 0-3.39-2.744-6.13-6.129-6.13H9.756z"></path></g>
                     </svg>
-                    <span>${randomComments}</span>
+                    <span style="font-size: 12px; white-space: nowrap;">${randomComments}</span>
                   </div>
-                  <div class="comment-action" onclick="handleQuoteRetweetFromData('comment', '${comment.id}')">
-                    <svg class="action-icon" viewBox="0 0 24 24" fill="currentColor">
+                  <div class="comment-action" onclick="handleQuoteRetweetFromData('comment', '${
+                    comment.id
+                  }')" style="display: flex; align-items: center; gap: 2px; cursor: pointer; color: #71767b; transition: color 0.2s; flex: 0 1 auto; min-width: 0;">
+                    <svg class="action-icon" viewBox="0 0 24 24" fill="currentColor" style="width: 16px; height: 16px; flex-shrink: 0;">
                       <g><path d="M4.5 3.88l4.432 4.14-1.364 1.46L5.5 7.55V16c0 1.1.896 2 2 2H13v2H7.5c-2.209 0-4-1.791-4-4V7.55L1.432 9.48.068 8.02 4.5 3.88zM16.5 6H11V4h5.5c2.209 0 4 1.791 4 4v8.45l2.068-1.93 1.364 1.46-4.432 4.14-4.432-4.14 1.364-1.46 2.068 1.93V8c0-1.1-.896-2-2-2z"></path></g>
                     </svg>
-                    <span>${randomRetweets}</span>
+                    <span style="font-size: 12px; white-space: nowrap;">${randomRetweets}</span>
                   </div>
                   <div class="comment-action like" onclick="toggleCommentLike('${
                     comment.id
-                  }', this)" data-liked="false" data-likes="${randomLikes}">
-                    <svg class="action-icon like-icon" viewBox="0 0 24 24" fill="currentColor">
+                  }', this)" data-liked="false" data-likes="${randomLikes}" style="display: flex; align-items: center; gap: 2px; cursor: pointer; color: #71767b; transition: color 0.2s; flex: 0 1 auto; min-width: 0;">
+                    <svg class="action-icon like-icon" viewBox="0 0 24 24" fill="currentColor" style="width: 16px; height: 16px; flex-shrink: 0;">
                       <g><path d="M16.697 5.5c-1.222-.06-2.679.51-3.89 2.16l-.805 1.09-.806-1.09C9.984 6.01 8.526 5.44 7.304 5.5c-1.243.07-2.349.78-2.91 1.91-.552 1.12-.633 2.78.479 4.82 1.074 1.97 3.257 4.27 7.129 6.61 3.87-2.34 6.052-4.64 7.126-6.61 1.111-2.04 1.03-3.7.477-4.82-.561-1.13-1.666-1.84-2.908-1.91zm4.187 7.69c-1.351 2.48-4.001 5.12-8.379 7.67l-.503.3-.504-.3c-4.379-2.55-7.029-5.19-8.382-7.67-1.36-2.5-1.41-4.86-.514-6.67.887-1.79 2.647-2.91 4.601-3.01 1.651-.09 3.368.56 4.798 2.01 1.429-1.45 3.146-2.1 4.796-2.01 1.954.1 3.714 1.22 4.601 3.01.896 1.81.846 4.17-.514 6.67z"></path></g>
                     </svg>
-                    <span class="like-count">${randomLikes}</span>
+                    <span class="like-count" style="font-size: 12px; white-space: nowrap;">${randomLikes}</span>
                   </div>
-                  <div class="comment-action">
-                    <svg class="action-icon" viewBox="0 0 24 24" fill="currentColor">
+                  <div class="comment-action" style="display: flex; align-items: center; gap: 2px; cursor: pointer; color: #71767b; transition: color 0.2s; flex: 0 1 auto; min-width: 0;">
+                    <svg class="action-icon" viewBox="0 0 24 24" fill="currentColor" style="width: 16px; height: 16px; flex-shrink: 0;">
                       <g><path d="M8.75 21V3h2v18h-2zM18 21V8.5h2V21h-2zM4 21l.004-10H6v10H4zm9.248 0v-7h2v7h-2z"></path></g>
                     </svg>
-                    <span>${formatNumber(randomViews)}</span>
+                    <span style="font-size: 12px; white-space: nowrap;">${formatNumber(randomViews)}</span>
                   </div>
-                  <div class="comment-action bookmark">
-                    <svg class="action-icon" viewBox="0 0 24 24" fill="currentColor">
+                  <div class="comment-action bookmark" style="display: flex; align-items: center; cursor: pointer; color: #71767b; transition: color 0.2s; flex: 0 0 auto; min-width: 16px;">
+                    <svg class="action-icon" viewBox="0 0 24 24" fill="currentColor" style="width: 16px; height: 16px; flex-shrink: 0;">
                       <g><path d="M4 4.5C4 3.12 5.119 2 6.5 2h11C18.881 2 20 3.12 20 4.5v18.44l-8-5.71-8 5.71V4.5zM6.5 4c-.276 0-.5.22-.5.5v14.56l6-4.29 6 4.29V4.5c0-.28-.224-.5-.5-.5h-11z"></path></g>
                     </svg>
                   </div>
-                  <div class="comment-action share">
-                    <svg class="action-icon" viewBox="0 0 24 24" fill="currentColor">
+                  <div class="comment-action share" style="display: flex; align-items: center; cursor: pointer; color: #71767b; transition: color 0.2s; flex: 0 0 auto; min-width: 16px;">
+                    <svg class="action-icon" viewBox="0 0 24 24" fill="currentColor" style="width: 16px; height: 16px; flex-shrink: 0;">
                       <g><path d="M12 2.59l5.7 5.7-1.41 1.42L13 6.41V16h-2V6.41l-3.29 3.3-1.42-1.42L12 2.59zM21 15l-.02 3.51c0 1.38-1.12 2.49-2.5 2.49H5.5C4.11 21 3 19.88 3 18.5V15h2v3.5c0 .28.22.5.5.5h12.98c.28 0 .5-.22.5-.5L19 15h2z"></path></g>
                     </svg>
                   </div>
@@ -7267,9 +7965,19 @@ ${xProfile.showRealName && xProfile.realName ? `- 真实姓名：${xProfile.real
 
     if (content.length === 0 || !currentTweetId) return;
 
-    // 获取当前推文数据
+    // 获取当前推文数据 - 需要同时检查账户推文
+    let tweet = null;
+    let isAccountTweet = false;
+
+    // 先从主页推文中查找
     const allTweets = [...forYouTweets, ...followingTweets];
-    const tweet = allTweets.find(t => t.id === currentTweetId);
+    tweet = allTweets.find(t => t.id === currentTweetId);
+
+    // 如果没找到，检查是否为账户推文
+    if (!tweet && currentViewingAccount && currentViewingAccount.tweets) {
+      tweet = currentViewingAccount.tweets.find(t => t.id === currentTweetId);
+      isAccountTweet = !!tweet;
+    }
 
     if (!tweet) {
       showXToast('无法找到对应的推文', 'error');
@@ -7292,7 +8000,7 @@ ${xProfile.showRealName && xProfile.realName ? `- 真实姓名：${xProfile.real
         verified: window.userProfileData.verified,
       },
       content: content,
-      time: '刚刚',
+      timestamp: Date.now(), // 使用时间戳而不是固定文本
       replies: [],
     };
 
@@ -7328,14 +8036,40 @@ ${xProfile.showRealName && xProfile.realName ? `- 真实姓名：${xProfile.real
       try {
         const db = getXDB();
 
-        await db.xTweetsData.put({
-          id: 'tweets',
-          forYouTweets: forYouTweets,
-          followingTweets: followingTweets,
-          lastUpdated: new Date().toISOString(),
-        });
+        if (isAccountTweet) {
+          // 保存到账户主页数据
+          const accountHandle =
+            tweet._accountHandle || (currentViewingAccount.accountInfo || currentViewingAccount).handle;
+          const cleanHandle = accountHandle.replace('@', '');
 
-        console.log('用户评论已保存到数据库，评论ID:', newComment.id);
+          // 更新currentViewingAccount中的推文
+          const tweetIndex = currentViewingAccount.tweets.findIndex(t => t.id === tweet.id);
+          if (tweetIndex !== -1) {
+            currentViewingAccount.tweets[tweetIndex] = tweet;
+          }
+
+          // 保存到数据库
+          await db.xAccountProfiles.put({
+            handle: cleanHandle,
+            name: (currentViewingAccount.accountInfo || currentViewingAccount).name,
+            accountInfo: currentViewingAccount.accountInfo || currentViewingAccount,
+            tweets: currentViewingAccount.tweets,
+            accountReplies: currentViewingAccount.accountReplies || [],
+            updatedAt: new Date().toISOString(),
+          });
+
+          console.log('✅ 用户评论已保存到账户推文，评论ID:', newComment.id, '账户:', cleanHandle);
+        } else {
+          // 保存到主页推文数据
+          await db.xTweetsData.put({
+            id: 'tweets',
+            forYouTweets: forYouTweets,
+            followingTweets: followingTweets,
+            lastUpdated: new Date().toISOString(),
+          });
+
+          console.log('用户评论已保存到数据库，评论ID:', newComment.id);
+        }
       } catch (saveError) {
         console.error('保存评论数据失败:', saveError);
       }
@@ -7548,7 +8282,7 @@ ${xProfile.showRealName && xProfile.realName ? `- 真实姓名：${xProfile.real
         verified: window.userProfileData.verified,
       },
       content: content,
-      time: '刚刚',
+      timestamp: Date.now(), // 使用时间戳而不是固定文本
       replyTo: replyToHandle,
       replies: [],
     };
@@ -7623,10 +8357,38 @@ ${xProfile.showRealName && xProfile.realName ? `- 真实姓名：${xProfile.real
             // 同时保存到数据库
             const db = getXDB();
             const isUserTweet = updatedTweetData.id.startsWith('user_');
+            const isAccountTweet = updatedTweetData._source === 'account';
 
             console.log('💬 [楼中楼回复] 是否为用户推文:', isUserTweet);
+            console.log('💬 [楼中楼回复] 是否为账户推文:', isAccountTweet);
 
-            if (isUserTweet) {
+            if (isAccountTweet) {
+              // 账户推文，保存到 xAccountProfiles
+              console.log('💬 [楼中楼回复] 保存到账户推文数据库');
+              const accountHandle =
+                updatedTweetData._accountHandle || (currentViewingAccount.accountInfo || currentViewingAccount).handle;
+              const cleanHandle = accountHandle.replace('@', '');
+
+              if (currentViewingAccount && currentViewingAccount.tweets) {
+                const tweetIndex = currentViewingAccount.tweets.findIndex(t => t.id === updatedTweetData.id);
+                if (tweetIndex !== -1) {
+                  currentViewingAccount.tweets[tweetIndex] = updatedTweetData;
+
+                  await db.xAccountProfiles.put({
+                    handle: cleanHandle,
+                    name: (currentViewingAccount.accountInfo || currentViewingAccount).name,
+                    accountInfo: currentViewingAccount.accountInfo || currentViewingAccount,
+                    tweets: currentViewingAccount.tweets,
+                    accountReplies: currentViewingAccount.accountReplies || [],
+                    updatedAt: new Date().toISOString(),
+                  });
+
+                  console.log('✅ [楼中楼回复] 账户推文已更新，账户:', cleanHandle);
+                } else {
+                  console.warn('⚠️ [楼中楼回复] 未找到目标账户推文');
+                }
+              }
+            } else if (isUserTweet) {
               // 用户自己的推文，保存到 xUserTweets
               console.log('💬 [楼中楼回复] 保存到用户推文数据库');
               const accountTweetsId = `userTweets_${currentAccountId || 'main'}`;
@@ -8083,11 +8845,104 @@ ${xProfile.showRealName && xProfile.realName ? `- 真实姓名：${xProfile.real
         console.log('👤 已知身份角色列表:', window.userProfileData.knownIdentityCharacters);
       }
 
+      // 检测用户是否为高曝光身份（明星/网红等公众人物）
+      const userPublicIdentity = userXProfileInfo.publicIdentity || '';
+      const userBio = userXProfileInfo.bio || '';
+      const isUserHighExposure =
+        /明星|网红|博主|演员|歌手|艺人|主播|up主|偶像|导演|制片|编剧|作家|influencer|celebrity|singer|actor|artist|streamer|idol/i.test(
+          userPublicIdentity + ' ' + userBio,
+        );
+
+      // 检测角色是否为高曝光身份
+      const highExposureCharacters = [];
+      if (boundCharacters.length > 0) {
+        const allXProfiles = await xDb.xCharacterProfiles.toArray();
+        for (const charId of boundCharacters) {
+          const xProfile = allXProfiles.find(p => p.characterId === charId);
+          if (xProfile && xProfile.publicIdentity) {
+            const isCharHighExposure =
+              /明星|网红|博主|演员|歌手|艺人|主播|up主|偶像|导演|制片|编剧|作家|influencer|celebrity|singer|actor|artist|streamer|idol/i.test(
+                xProfile.publicIdentity,
+              );
+            if (isCharHighExposure) {
+              highExposureCharacters.push({
+                characterId: charId,
+                xProfile: xProfile,
+              });
+            }
+          }
+        }
+      }
+
+      console.log('🌟 高曝光身份检测:', {
+        isUserHighExposure,
+        highExposureCharactersCount: highExposureCharacters.length,
+        highExposureCharactersList: highExposureCharacters.map(c => c.xProfile.xName),
+      });
+
+      // 如果有高曝光身份，读取近期推文
+      let recentTweetsContext = '';
+      if (isUserHighExposure || highExposureCharacters.length > 0) {
+        const userTweetsId = `userTweets_${currentAccountId || 'main'}`;
+        const userTweetsData = await xDb.xUserTweets.get(userTweetsId);
+        const recentUserTweets = userTweetsData?.tweets?.slice(0, 3) || [];
+
+        if (recentUserTweets.length > 0 || highExposureCharacters.length > 0) {
+          recentTweetsContext = `
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🌟 高曝光身份 - 近期推文上下文
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+以下是高曝光身份的公众人物近期发布的推文，其他用户可能会讨论这些内容：
+`;
+
+          // 添加用户近期推文
+          if (isUserHighExposure && recentUserTweets.length > 0) {
+            recentTweetsContext += `
+【${userXProfileInfo.name} 的近期推文】（${userXProfileInfo.publicIdentity}）
+`;
+            recentUserTweets.forEach((tweet, index) => {
+              recentTweetsContext += `
+${index + 1}. "${tweet.content}"
+   - 发布时间：${tweet.time || '最近'}
+   - 互动数据：${tweet.stats?.likes || 0}喜欢，${tweet.stats?.retweets || 0}转发，${tweet.stats?.comments || 0}评论
+`;
+            });
+          }
+
+          // 添加高曝光角色的近期推文（如果有）
+          for (const { xProfile } of highExposureCharacters) {
+            recentTweetsContext += `
+【${xProfile.xName} 的信息】（${xProfile.publicIdentity}）
+- 可能会发布与其身份相关的推文
+- 可能会被其他用户讨论或提及
+`;
+          }
+
+          recentTweetsContext += `
+【高曝光身份推文生成规则】：
+- 约20-30%的新推文可以包含对上述推文的讨论、转发、或评论
+- 讨论应该是其他普通用户或粉丝的视角，而非本人
+- 可以是支持、批评、分析、或单纯的转发评论
+- 不要在每条推文中都提及，保持自然和多样性
+- 其余70-80%的推文应该是与高曝光身份无关的通用热门内容
+- 如果生成讨论推文，要体现公众人物的影响力（较高的互动数据）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
+
+          console.log('📰 已加载高曝光身份近期推文上下文，用户推文数:', recentUserTweets.length);
+        }
+      }
+
+      // Token计数器
+      let tokenCount = 0;
+
       // 1. 提示词 + 世界书
       let systemPrompt = StringBuilders.buildBaseSystemPrompt({
         userPrompt,
         worldSetting,
       });
+      tokenCount = TokenUtils.logTokenUsage('推文生成器', '基础系统提示词', systemPrompt, tokenCount);
 
       // 2. 角色定义（推文生成专用）
       systemPrompt += `
@@ -8123,6 +8978,11 @@ ${
     : '- **普通情侣关系**：如果生成情侣内容，确保只在适合的场景下出现，且不应有粉丝群体'
 }`;
 
+      const coreTaskSection = systemPrompt.substring(
+        tokenCount > 0 ? systemPrompt.lastIndexOf('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━') : 0,
+      );
+      tokenCount = TokenUtils.logTokenUsage('推文生成器', '核心任务说明', coreTaskSection, tokenCount);
+
       // 3. 角色资料（推文发布场景）
       const charactersInfo = await StringBuilders.buildCompleteCharacterInfo(
         boundCharacters,
@@ -8131,10 +8991,23 @@ ${
       );
       if (charactersInfo) {
         systemPrompt += charactersInfo;
+        tokenCount = TokenUtils.logTokenUsage('推文生成器', '角色资料信息', charactersInfo, tokenCount);
+      }
+
+      // 3.3. 角色关系网络（新增）
+      const relationshipsInfo = await StringBuilders.buildCharacterRelationships(
+        boundCharacters,
+        currentAccountId || 'main',
+      );
+      if (relationshipsInfo) {
+        systemPrompt += relationshipsInfo;
+        tokenCount = TokenUtils.logTokenUsage('推文生成器', '角色关系网络', relationshipsInfo, tokenCount);
+        console.log('💞 已加载角色关系网络信息');
       }
 
       // 3.5. NPC资料（绑定NPC信息）
       if (boundNPCs.length > 0) {
+        const npcSectionStart = systemPrompt.length;
         systemPrompt += `
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -8173,10 +9046,21 @@ ${npc.homepage || '暂无主页内容设置'}
 5. 严格使用NPC的X姓名(${boundNPCs.map(n => n.name).join('、')})、句柄(${boundNPCs.map(n => n.handle).join('、')})和头像
 6. NPC认证状态固定为 false
 `;
+        const npcSection = systemPrompt.substring(npcSectionStart);
+        tokenCount = TokenUtils.logTokenUsage('推文生成器', 'NPC资料信息', npcSection, tokenCount);
+      }
+
+      // 3.7. 高曝光身份近期推文上下文（如果有）
+      if (recentTweetsContext) {
+        systemPrompt += recentTweetsContext;
+        tokenCount = TokenUtils.logTokenUsage('推文生成器', '高曝光身份推文上下文', recentTweetsContext, tokenCount);
       }
 
       // 4. 用户资料
+      const userConstraintsStart = systemPrompt.length;
       systemPrompt += StringBuilders.buildUniversalConstraints(userXProfileInfo);
+      const userConstraints = systemPrompt.substring(userConstraintsStart);
+      tokenCount = TokenUtils.logTokenUsage('推文生成器', '用户资料约束', userConstraints, tokenCount);
 
       systemPrompt += `
 
@@ -8207,7 +9091,13 @@ ${npc.homepage || '暂无主页内容设置'}
 3. 可选字段不使用时完全省略，不要设为null
 4. content直接写内容，不用引号包裹`;
 
+      const formatSection = systemPrompt.substring(systemPrompt.lastIndexOf('【JSON返回格式】'));
+      tokenCount = TokenUtils.logTokenUsage('推文生成器', 'JSON格式要求', formatSection, tokenCount);
+
       const messages = [{ role: 'user', content: '请生成新的X社交平台推文数据' }];
+
+      // 最终统计
+      TokenUtils.logFinalPrompt('推文生成器', systemPrompt, messages[0].content);
 
       // 判断API类型并发送请求
       let isGemini = proxyUrl.includes('generativelanguage');
@@ -8452,6 +9342,10 @@ ${npc.homepage || '暂无主页内容设置'}
   // 当前查看的账户数据
   let currentViewingAccount = null;
 
+  // 推进模式状态
+  let isProgressMode = false;
+  let progressLongPressTimer = null;
+
   // 打开账户主页
   window.openAccountProfile = async function (accountName, accountHandle, accountAvatar) {
     try {
@@ -8520,12 +9414,23 @@ ${npc.homepage || '暂无主页内容设置'}
         const character = allChats.find(chat => chat.id === xProfile.characterId);
         if (character) {
           console.log('✅ 识别为角色账户:', accountName);
+
+          // 判断认证类型：检查该角色是否是用户的情侣认证对象
+          let verificationType = 'verified'; // 默认为普通认证
+          if (
+            window.userProfileData.verificationType === 'couple' &&
+            window.userProfileData.coupleCharacterId === character.id
+          ) {
+            verificationType = 'couple'; // 情侣认证
+          }
+
           return {
             accountType: 'character',
             name: xProfile.xName,
             handle: xProfile.xHandle,
             avatar: xProfile.xAvatar,
             verified: xProfile.xVerified || false,
+            verificationType: xProfile.xVerified || false ? verificationType : 'none', // 只有认证时才设置类型
             cover: xProfile.xCover || 'https://i.postimg.cc/tT8Rfsf1/mmexport1759603246385.jpg',
             bio: xProfile.xBio || '',
             publicIdentity: xProfile.publicIdentity || '',
@@ -8536,6 +9441,7 @@ ${npc.homepage || '暂无主页内容设置'}
             personality: character.settings.aiPersona || '',
             characterData: character,
             xProfileData: xProfile,
+            characterId: character.id, // 添加角色ID，用于后续查找关系
           };
         }
       }
@@ -8589,8 +9495,10 @@ ${npc.homepage || '暂无主页内容设置'}
   }
 
   // 调用AI生成账户主页内容
-  async function generateAccountProfileContent(accountData) {
+  async function generateAccountProfileContent(accountData, options = {}) {
     try {
+      const { isProgressMode = false, existingTweets = [], existingReplies = [] } = options;
+
       const db = getDB();
       const xDb = getXDB();
 
@@ -8612,12 +9520,41 @@ ${npc.homepage || '暂无主页内容设置'}
       // 构建用户X资料信息
       const userXProfileInfo = StringBuilders.buildUserXProfileInfo(window.userProfileData);
 
+      // Token计数器
+      let tokenCount = 0;
+
       // ▼▼▼ 构建SystemPrompt ▼▼▼
       // 1. 提示词 + 世界书
       let systemPrompt = StringBuilders.buildBaseSystemPrompt({ userPrompt, worldSetting });
+      tokenCount = TokenUtils.logTokenUsage('账户主页生成器', '基础系统提示词', systemPrompt, tokenCount);
 
       // 2. 核心任务说明
-      systemPrompt += `
+      if (isProgressMode) {
+        systemPrompt += `
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 核心任务：推进账户主页内容 🎯
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+你需要为X平台账户生成**新的**主页展示内容，包括：
+- **新的**推文（3-5条，必须与已有内容不重复）
+- **新的**回复互动（2-4条，必须与已有内容不重复）
+
+**重要**：
+- 账户基本信息已固定，不需要生成
+- 已有的推文和回复会在下方提供，作为上下文参考
+- 生成的新内容应当延续现有风格，但必须是全新的内容
+- 新推文的时间应该比已有推文更新
+- 可以在新推文中提及或回应已有推文的话题
+
+**生成原则**：
+- 严格遵循账户已有的风格和人设
+- 确保内容的连贯性和一致性
+- 避免重复已有的内容
+- **禁止生成置顶推文**：所有新推文的 pinned 字段必须设置为 false 或不设置，账户只能有一条置顶推文
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
+      } else {
+        systemPrompt += `
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🎯 核心任务：生成账户主页内容 🎯
@@ -8633,6 +9570,7 @@ ${npc.homepage || '暂无主页内容设置'}
 - 如果是未知账户，根据昵称、句柄、简介进行合理推断
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 `;
+      }
 
       // 3. 目标账户信息
       systemPrompt += `
@@ -8686,11 +9624,256 @@ ${accountData.followersCount ? `- 关注者：${accountData.followersCount}` : '
 - 保持账户身份的一致性`;
       }
 
-      // 5. 用户资料约束
-      systemPrompt += StringBuilders.buildUniversalConstraints(userXProfileInfo);
+      const accountInfoSection = systemPrompt.substring(systemPrompt.indexOf('【目标账户信息】'));
+      tokenCount = TokenUtils.logTokenUsage('账户主页生成器', '账户信息与要求', accountInfoSection, tokenCount);
+
+      // 4.3. 如果是角色账户，添加角色关系网络和关系角色的详细资料
+      if (accountData.accountType === 'character' && accountData.characterId) {
+        const relationshipsInfo = await StringBuilders.buildCharacterRelationships(
+          [accountData.characterId],
+          currentAccountId || 'main',
+        );
+
+        if (relationshipsInfo) {
+          systemPrompt += relationshipsInfo;
+          tokenCount = TokenUtils.logTokenUsage('账户主页生成器', '角色关系网络', relationshipsInfo, tokenCount);
+
+          // 获取关系网络中涉及的其他角色的完整资料
+          try {
+            const mainDB = getDB();
+            const currentAccount = currentAccountId || 'main';
+            const dataId = `xCharacterRelationships_${currentAccount}`;
+
+            const relationshipRecord = await xDb.xCharacterRelationships.get(dataId);
+            if (relationshipRecord && relationshipRecord.data) {
+              const links = relationshipRecord.data.links || [];
+              const relatedCharacterIds = new Set();
+
+              // 收集所有关系中的其他角色ID
+              links.forEach(link => {
+                if (link.charA === accountData.characterId) {
+                  relatedCharacterIds.add(link.charB);
+                } else if (link.charB === accountData.characterId) {
+                  relatedCharacterIds.add(link.charA);
+                }
+              });
+
+              if (relatedCharacterIds.size > 0) {
+                const allChats = await mainDB.chats.toArray();
+                const allXProfiles = await xDb.xCharacterProfiles.toArray();
+
+                let relatedCharsInfo = `
+
+【关系角色详细资料】（可能出现在评论或互动中的角色）：
+`;
+
+                for (const charId of relatedCharacterIds) {
+                  const charData = allChats.find(c => c.id === charId);
+                  const xProfile = allXProfiles.find(p => p.characterId === charId);
+
+                  if (charData && xProfile) {
+                    relatedCharsInfo += `
+- 角色名：${charData.name}
+  人设：${charData.settings.aiPersona || '无特定人设'}
+  X平台身份（必须严格使用）：
+    - X用户名：${xProfile.xName}
+    - X句柄：${xProfile.xHandle}
+    - X头像：${xProfile.xAvatar}
+    - 认证状态：${xProfile.xVerified ? '是' : '否'}`;
+                    if (xProfile.xBio) relatedCharsInfo += `\n    - X简介：${xProfile.xBio}`;
+                    if (xProfile.publicIdentity) relatedCharsInfo += `\n    - 公众身份：${xProfile.publicIdentity}`;
+                    relatedCharsInfo += `\n`;
+                  }
+                }
+
+                relatedCharsInfo += `
+【关系角色互动要求】：
+- 关系角色可能在推文评论或回复中出现，体现彼此的关系
+- 必须严格使用上述X平台身份信息（xName、xHandle、xAvatar等）
+- 互动内容要符合角色人设和关系设定
+- 保持各角色身份的一致性和准确性
+`;
+
+                systemPrompt += relatedCharsInfo;
+                tokenCount = TokenUtils.logTokenUsage(
+                  '账户主页生成器',
+                  '关系角色详细资料',
+                  relatedCharsInfo,
+                  tokenCount,
+                );
+              }
+            }
+          } catch (error) {
+            console.error('获取关系角色详细资料失败:', error);
+          }
+        }
+      }
+
+      // 4.5. 智能检测账户资料中的关键词，动态添加相关用户/角色信息
+      if (accountData.accountType !== 'character') {
+        // 收集账户所有文本信息用于关键词检测
+        const accountTexts = [
+          accountData.bio || '',
+          accountData.publicIdentity || '',
+          accountData.personality || '',
+          accountData.postingHabits || '',
+          accountData.homepage || '',
+        ].join(' ');
+
+        // 检测是否提及用户
+        const mentionsUser =
+          accountTexts.includes(userXProfileInfo.name) ||
+          accountTexts.includes(userXProfileInfo.handle) ||
+          accountTexts.includes(userXProfileInfo.handle.replace('@', ''));
+
+        // 检测是否提及角色
+        const mainDB = getDB();
+        const allChats = await mainDB.chats.toArray();
+        const allXProfiles = await xDb.xCharacterProfiles.toArray();
+        const mentionedCharacters = [];
+
+        for (const xProfile of allXProfiles) {
+          if (
+            accountTexts.includes(xProfile.xName) ||
+            accountTexts.includes(xProfile.xHandle) ||
+            accountTexts.includes(xProfile.xHandle.replace('@', ''))
+          ) {
+            const character = allChats.find(c => c.id === xProfile.characterId);
+            if (character) {
+              mentionedCharacters.push({ character, xProfile });
+            }
+          }
+        }
+
+        // 如果检测到提及用户或角色，添加相关信息
+        if (mentionsUser || mentionedCharacters.length > 0) {
+          systemPrompt += `
+
+【相关身份信息】（该账户资料中提及，仅供讨论参考，不可假扮）：
+`;
+
+          if (mentionsUser) {
+            systemPrompt += `
+- 用户：${userXProfileInfo.name} (${userXProfileInfo.handle}) - 公众身份：${
+              userXProfileInfo.publicIdentity || '未设置'
+            }`;
+          }
+
+          if (mentionedCharacters.length > 0) {
+            for (const { character, xProfile } of mentionedCharacters) {
+              systemPrompt += `
+- 角色：${character.name} (${xProfile.xName} / ${xProfile.xHandle}) - ${character.settings.aiPersona || '无特定人设'}`;
+            }
+          }
+
+          systemPrompt += `
+
+⚠️ 该账户可评论上述身份，但不可假扮其发布内容。
+`;
+
+          const relationInfo = systemPrompt.substring(systemPrompt.lastIndexOf('【相关身份信息】'));
+          tokenCount = TokenUtils.logTokenUsage('账户主页生成器', '相关身份信息', relationInfo, tokenCount);
+        }
+      }
+
+      // 4.6. 如果是推进模式，添加现有内容作为上下文
+      if (isProgressMode && (existingTweets.length > 0 || existingReplies.length > 0)) {
+        systemPrompt += `
+
+【已有内容上下文】：
+
+**已有推文（${existingTweets.length}条）**：
+`;
+        existingTweets.slice(0, 5).forEach((tweet, index) => {
+          systemPrompt += `
+${index + 1}. "${tweet.content}" 
+   - 时间：${tweet.time}
+   - 互动数据：${tweet.stats.comments || 0}评论，${tweet.stats.likes || 0}喜欢
+${tweet.media && tweet.media.length > 0 ? `   - 媒体：${tweet.media[0].description}\n` : ''}`;
+        });
+
+        if (existingReplies.length > 0) {
+          systemPrompt += `
+
+**已有回复（${existingReplies.length}条）**：
+`;
+          existingReplies.slice(0, 3).forEach((reply, index) => {
+            systemPrompt += `
+${index + 1}. 回复了：${reply.type === 'tweet' ? '推文' : '评论'} - "${reply.accountReply.content}"
+   - 时间：${reply.accountReply.time}`;
+          });
+        }
+
+        systemPrompt += `
+
+**生成新内容时的要求**：
+- 新推文的话题可以延续上述内容，但不能重复
+- 时间设置应该比最新的已有推文更新
+- 保持与已有内容一致的风格和语气
+- 可以在新推文中提及或回应之前的话题
+`;
+
+        const existingContentSection = systemPrompt.substring(systemPrompt.indexOf('【已有内容上下文】'));
+        tokenCount = TokenUtils.logTokenUsage('账户主页生成器', '已有内容上下文', existingContentSection, tokenCount);
+      }
+
+      // 5. 用户资料约束（仅在需要时使用）
+      // 只在角色账户或检测到用户/角色关键词时才提供用户信息
+      const needsUserInfo =
+        accountData.accountType === 'character' ||
+        (accountData.accountType !== 'character' &&
+          ((accountData.bio || '').includes(userXProfileInfo.name) ||
+            (accountData.bio || '').includes(userXProfileInfo.handle) ||
+            (accountData.publicIdentity || '').includes(userXProfileInfo.name)));
+
+      if (needsUserInfo) {
+        const userConstraintsStart = systemPrompt.length;
+
+        // 精简版用户约束（仅用于账户生成场景）
+        const verificationDesc =
+          {
+            verified: '蓝色勾标认证',
+            couple: '情侣认证',
+            married: '已婚认证',
+            vip: 'VIP认证',
+          }[userXProfileInfo.verificationType] || '无认证';
+
+        systemPrompt += `
+
+🚫 【用户身份禁令】
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**绝对禁止生成用户本人的内容**
+
+用户标识（仅供参考，禁止假扮）：
+${userXProfileInfo.name} (${userXProfileInfo.handle}) - ${verificationDesc}
+${userXProfileInfo.publicIdentity ? `公众身份：${userXProfileInfo.publicIdentity}` : ''}
+${
+  userXProfileInfo.verificationType === 'couple' && userXProfileInfo.coupleCharacterName
+    ? `情侣关系：与${userXProfileInfo.coupleCharacterName}为公开情侣`
+    : ''
+}
+
+✅ 可生成：${accountData.accountType === 'character' ? '目标角色账户、其他角色、虚构用户' : '虚构用户、其他角色'}
+❌ 禁止生成：用户本人的推文/评论/回复
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
+
+        const userConstraints = systemPrompt.substring(userConstraintsStart);
+        tokenCount = TokenUtils.logTokenUsage('账户主页生成器', '用户身份禁令', userConstraints, tokenCount);
+      }
 
       // 6. JSON返回格式
-      systemPrompt += `
+      if (isProgressMode) {
+        systemPrompt += `
+
+【JSON返回格式】：
+\`\`\`json
+{"tweets": [推文数组], "accountReplies": [回复数组]}
+\`\`\`
+
+**注意**：推进模式下不需要返回accountInfo，只需返回新的推文和回复`;
+      } else {
+        systemPrompt += `
 
 【JSON返回格式】：
 \`\`\`json
@@ -8702,7 +9885,10 @@ accountInfo对象结构：
 - verificationType: "verified" | "couple" (当账户有情侣关系时使用"couple"，显示心形认证图标)
 - cover, bio (可补充)
 - customTag1/2: {icon, text, color} (可选)
-- followingCount, followersCount (可补充)
+- followingCount, followersCount (可补充)`;
+      }
+
+      systemPrompt += `
 
 tweets数组（3-5条）：
 - user: {name, handle, avatar, verified, verificationType}
@@ -8717,14 +9903,14 @@ tweets数组（3-5条）：
 - id: 评论唯一ID（可留空，系统自动生成）
 - user: {name, handle, avatar, verified}
 - content: 评论文本
-- time: 时间描述
+- timeOffset: 相对推文发布的分钟数（负数，如-5表示推文发布后5分钟的评论）
 - replies: [楼中楼回复数组] (可选，0-2条)
 
 楼中楼回复对象结构：
 - id: 回复唯一ID（可留空，系统自动生成）
 - user: {name, handle, avatar, verified}
 - content: 回复文本
-- time: 时间描述
+- timeOffset: 相对推文发布的分钟数（负数，如-10表示推文发布后10分钟的回复）
 - replyTo: "@被回复者句柄" (必填)
 
 accountReplies数组（2-4条，账户的回复记录）：
@@ -8733,7 +9919,7 @@ accountReplies数组（2-4条，账户的回复记录）：
 - originalTweet: 原始推文对象
   - user: {name, handle, avatar, verified}
   - content: 推文内容
-  - time: 时间描述
+- time: 时间描述
   - stats: {comments, retweets, likes, views}
   - media: [{type:"description", description:"图片描述"}] (可选)
 - originalComment: 原始评论对象（仅当type="comment"时存在）
@@ -8751,17 +9937,33 @@ accountReplies数组（2-4条，账户的回复记录）：
 2. 未提供字段由AI合理补充
 3. verified必须是布尔值(true/false)
 4. 如果该账户在角色X资料或NPC设置中标注为情侣关系，必须设置verificationType为"couple"
-5. 建议将最重要或最新的一条推文设置为pinned: true（置顶）
+5. ${
+        isProgressMode
+          ? '**禁止生成置顶推文**：所有推文的 pinned 必须为 false 或不设置'
+          : '建议将最重要或最新的一条推文设置为pinned: true（置顶）'
+      }
 6. stats所有数字必须是纯数字，不带引号
 7. 每条推文必须包含1-5条评论，评论内容要与推文相关
 8. 评论可以包含楼中楼回复（replies数组），形成对话链
 9. accountReplies必须生成2-4条，展示账户的互动历史
 10. accountReplies中的accountReply.user必须使用目标账户的信息
 11. 除了角色和npc以外所有账号都使用统一头像：https://i.postimg.cc/4xmx7V4R/mmexport1759081128356.jpg
-12. 默认背景图：https://i.postimg.cc/tT8Rfsf1/mmexport1759603246385.jpg`;
+12. 默认背景图：https://i.postimg.cc/tT8Rfsf1/mmexport1759603246385.jpg
+13. ${
+        needsUserInfo
+          ? `🚫 禁止在user字段使用：${userXProfileInfo.name} 或 ${userXProfileInfo.handle}（这是用户，不可假扮）`
+          : '所有user字段必须是虚构账户，不得使用任何真实用户信息'
+      }`;
+
+      const formatSection = systemPrompt.substring(systemPrompt.lastIndexOf('【JSON返回格式】'));
+      tokenCount = TokenUtils.logTokenUsage('账户主页生成器', 'JSON格式要求', formatSection, tokenCount);
+
       // ▲▲▲ 构建SystemPrompt ▲▲▲
 
       const messages = [{ role: 'user', content: `请生成账户 ${accountData.name} (${accountData.handle}) 的主页内容` }];
+
+      // 最终统计
+      TokenUtils.logFinalPrompt('账户主页生成器', systemPrompt, messages[0].content);
 
       // 判断API类型并发送请求
       let isGemini = proxyUrl.includes('generativelanguage');
@@ -8844,8 +10046,16 @@ accountReplies数组（2-4条，账户的回复记录）：
       }
 
       // 验证数据格式
-      if (!profileData.accountInfo || !profileData.tweets) {
-        throw new Error('AI返回的数据格式不正确');
+      if (isProgressMode) {
+        // 推进模式下只需要推文数据
+        if (!profileData.tweets) {
+          throw new Error('AI返回的数据格式不正确：缺少推文数据');
+        }
+      } else {
+        // 正常模式需要完整数据
+        if (!profileData.accountInfo || !profileData.tweets) {
+          throw new Error('AI返回的数据格式不正确');
+        }
       }
 
       // 为推文和评论分配唯一ID和时间戳
@@ -8873,18 +10083,36 @@ accountReplies数组（2-4条，账户的回复记录）：
           };
         }
 
-        // 为评论分配ID
+        // 为评论分配ID和时间戳
         if (tweet.comments && tweet.comments.length > 0) {
           tweet.comments.forEach((comment, commentIndex) => {
             if (!comment.id) {
               comment.id = `account_comment_${timestamp}_${tweetIndex}_${commentIndex}`;
             }
 
-            // 为楼中楼回复分配ID
+            // 转换timeOffset为实际时间戳
+            if (comment.timeOffset !== undefined) {
+              comment.timestamp = tweet.timestamp + Math.abs(comment.timeOffset) * 60 * 1000;
+              delete comment.timeOffset;
+            } else if (!comment.timestamp) {
+              // 如果没有timeOffset，随机生成一个时间戳
+              comment.timestamp = tweet.timestamp + (5 + Math.random() * 30) * 60 * 1000;
+            }
+
+            // 为楼中楼回复分配ID和时间戳
             if (comment.replies && comment.replies.length > 0) {
               comment.replies.forEach((reply, replyIndex) => {
                 if (!reply.id) {
                   reply.id = `account_reply_${timestamp}_${tweetIndex}_${commentIndex}_${replyIndex}`;
+                }
+
+                // 转换timeOffset为实际时间戳
+                if (reply.timeOffset !== undefined) {
+                  reply.timestamp = tweet.timestamp + Math.abs(reply.timeOffset) * 60 * 1000;
+                  delete reply.timeOffset;
+                } else if (!reply.timestamp) {
+                  // 回复时间应该比评论晚
+                  reply.timestamp = comment.timestamp + (1 + Math.random() * 10) * 60 * 1000;
                 }
               });
             }
@@ -9371,6 +10599,12 @@ accountReplies数组（2-4条，账户的回复记录）：
 
   // 关闭账户主页
   window.closeAccountProfile = function () {
+    // 重置推进模式
+    if (isProgressMode) {
+      isProgressMode = false;
+      updateRefreshButtonUI();
+    }
+
     document.getElementById('account-profile-page').style.display = 'none';
     document.getElementById('x-home-page').style.display = 'flex';
   };
@@ -9526,20 +10760,119 @@ accountReplies数组（2-4条，账户的回复记录）：
     }
   }
 
-  // 刷新账户主页（重新生成）
+  // 切换推进模式
+  window.toggleProgressMode = function () {
+    isProgressMode = !isProgressMode;
+    updateRefreshButtonUI();
+
+    if (isProgressMode) {
+      showXToast('已切换到推进模式 - 将生成新内容并追加', 'success');
+    } else {
+      showXToast('已切换到重新生成模式 - 将覆盖现有内容', 'info');
+    }
+  };
+
+  // 更新刷新按钮UI
+  function updateRefreshButtonUI() {
+    const refreshBtn = document.querySelector('#account-profile-page [onclick="refreshAccountProfile()"]');
+    if (!refreshBtn) return;
+
+    if (isProgressMode) {
+      // 推进模式 - 绿色心电图图标
+      refreshBtn.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 12h4.5l1.5 -6l4 12l2 -9l1.5 3h4.5" />
+        </svg>
+      `;
+      refreshBtn.setAttribute('title', '推进账户主页（生成新内容并追加）');
+    } else {
+      // 重新生成模式 - 白色图标
+      refreshBtn.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 4.55a8 8 0 0 1 6 14.9m0 -4.45v5h5" />
+          <path d="M5.63 7.16l0 .01" />
+          <path d="M4.06 11l0 .01" />
+          <path d="M4.63 15.1l0 .01" />
+          <path d="M7.16 18.37l0 .01" />
+          <path d="M11 19.94l0 .01" />
+        </svg>
+      `;
+      refreshBtn.setAttribute('title', '重新生成账户主页');
+    }
+  }
+
+  // 刷新按钮长按处理
+  window.handleRefreshButtonMouseDown = function () {
+    progressLongPressTimer = setTimeout(() => {
+      toggleProgressMode();
+    }, 800); // 长按800ms触发
+  };
+
+  window.handleRefreshButtonMouseUp = function () {
+    if (progressLongPressTimer) {
+      clearTimeout(progressLongPressTimer);
+      progressLongPressTimer = null;
+    }
+  };
+
+  // 刷新账户主页（重新生成或推进）
   window.refreshAccountProfile = async function () {
+    // 清除长按定时器
+    if (progressLongPressTimer) {
+      clearTimeout(progressLongPressTimer);
+      progressLongPressTimer = null;
+    }
+
     if (!currentViewingAccount) {
       showXToast('未找到当前账户信息', 'error');
       return;
     }
 
     try {
-      showXToast('正在重新生成账户主页...', 'info');
+      if (isProgressMode) {
+        // 推进模式：生成新内容并追加
+        showXToast('正在推进账户主页...', 'info');
+        await progressAccountProfile();
+      } else {
+        // 重新生成模式：覆盖现有内容
+        showXToast('正在重新生成账户主页...', 'info');
 
-      // 从当前账户数据中提取基本信息
+        // 从当前账户数据中提取基本信息
+        const accountInfo = currentViewingAccount.accountInfo || currentViewingAccount;
+
+        // 查询账户数据（重新判断账户类型）
+        const accountData = await queryAccountData(accountInfo.name, accountInfo.handle, accountInfo.avatar);
+
+        if (!accountData) {
+          showXToast('无法加载账户信息', 'error');
+          return;
+        }
+
+        // 调用AI重新生成账户主页内容
+        const profileData = await generateAccountProfileContent(accountData);
+
+        if (profileData) {
+          // 更新账户数据
+          currentViewingAccount = { ...accountData, ...profileData };
+          renderAccountProfile(currentViewingAccount);
+
+          // 保存到数据库（覆盖旧数据）
+          await saveAccountProfile(currentViewingAccount);
+          showXToast('账户主页已刷新', 'success');
+        }
+      }
+    } catch (error) {
+      console.error('刷新账户主页失败:', error);
+      showXToast(`刷新失败: ${error.message}`, 'error');
+    }
+  };
+
+  // 推进账户主页（生成新内容并追加）
+  async function progressAccountProfile() {
+    try {
       const accountInfo = currentViewingAccount.accountInfo || currentViewingAccount;
 
-      // 查询账户数据（重新判断账户类型）
+      // 查询账户数据
       const accountData = await queryAccountData(accountInfo.name, accountInfo.handle, accountInfo.avatar);
 
       if (!accountData) {
@@ -9547,23 +10880,68 @@ accountReplies数组（2-4条，账户的回复记录）：
         return;
       }
 
-      // 调用AI重新生成账户主页内容
-      const profileData = await generateAccountProfileContent(accountData);
+      // 调用AI生成新的推文和回复（传入现有内容作为上下文）
+      const newProfileData = await generateAccountProfileContent(accountData, {
+        isProgressMode: true,
+        existingTweets: currentViewingAccount.tweets || [],
+        existingReplies: currentViewingAccount.accountReplies || [],
+      });
 
-      if (profileData) {
+      if (newProfileData) {
+        // 确保新推文没有置顶标记
+        if (newProfileData.tweets) {
+          newProfileData.tweets.forEach(tweet => {
+            tweet.pinned = false;
+          });
+        }
+
+        // 合并推文：置顶动态 → 新动态 → 旧动态
+        const existingTweets = currentViewingAccount.tweets || [];
+        const pinnedTweet = existingTweets.find(t => t.pinned);
+        const unpinnedOldTweets = existingTweets.filter(t => !t.pinned);
+        const newTweets = newProfileData.tweets || [];
+
+        let updatedTweets;
+        if (pinnedTweet) {
+          // 如果有置顶：置顶 → 新推文 → 旧推文
+          updatedTweets = [pinnedTweet, ...newTweets, ...unpinnedOldTweets];
+        } else {
+          // 如果没有置顶：新推文 → 旧推文
+          updatedTweets = [...newTweets, ...unpinnedOldTweets];
+        }
+
+        // 合并回复：新回复 → 旧回复
+        const updatedReplies = [
+          ...(newProfileData.accountReplies || []),
+          ...(currentViewingAccount.accountReplies || []),
+        ];
+
         // 更新账户数据
-        currentViewingAccount = { ...accountData, ...profileData };
+        currentViewingAccount = {
+          ...currentViewingAccount,
+          tweets: updatedTweets,
+          accountReplies: updatedReplies,
+          // 保持 accountInfo 不变
+          accountInfo: currentViewingAccount.accountInfo || accountInfo,
+        };
+
         renderAccountProfile(currentViewingAccount);
 
-        // 保存到数据库（覆盖旧数据）
+        // 保存到数据库
         await saveAccountProfile(currentViewingAccount);
-        showXToast('账户主页已刷新', 'success');
+
+        showXToast(
+          `已推进：新增 ${newProfileData.tweets?.length || 0} 条推文，${
+            newProfileData.accountReplies?.length || 0
+          } 条回复`,
+          'success',
+        );
       }
     } catch (error) {
-      console.error('刷新账户主页失败:', error);
-      showXToast(`刷新失败: ${error.message}`, 'error');
+      console.error('推进账户主页失败:', error);
+      showXToast(`推进失败: ${error.message}`, 'error');
     }
-  };
+  }
   // ▲▲▲ 【主要！！！】第七个情景：账户主页生成器 ▲▲▲
 
   // ============================================
@@ -10477,7 +11855,7 @@ ${existingQuestionsContext}
       const savedSettings = await db.xSettings.get(settingsId);
       if (savedSettings) {
         xSettingsData = savedSettings;
-        loadXSettingsToUI();
+        await loadXSettingsToUI();
       } else {
         // 如果当前账号没有设置，使用默认设置
         xSettingsData = {
@@ -10487,7 +11865,7 @@ ${existingQuestionsContext}
           boundCharacters: [],
           npcBinding: false,
         };
-        loadXSettingsToUI();
+        await loadXSettingsToUI();
       }
 
       // 加载预设列表
@@ -10500,7 +11878,7 @@ ${existingQuestionsContext}
   }
 
   // 将设置数据加载到UI
-  function loadXSettingsToUI() {
+  async function loadXSettingsToUI() {
     document.getElementById('x-system-prompt').value = xSettingsData.systemPrompt || '';
     document.getElementById('x-world-setting').value = xSettingsData.worldSetting || '';
 
@@ -10518,6 +11896,21 @@ ${existingQuestionsContext}
       loadCharactersList();
     } else {
       bindingArea.style.display = 'none';
+    }
+
+    // 更新角色关系册UI
+    updateRelationshipToggleUI();
+
+    // 如果开启了角色关系册，显示关系册管理区域并更新预览
+    const relationshipArea = document.getElementById('relationship-binding-area');
+    if (xSettingsData.characterRelationship?.enabled) {
+      relationshipArea.style.display = 'block';
+      await loadRelationshipData();
+      setTimeout(() => {
+        updateRelationshipPreview();
+      }, 200);
+    } else {
+      relationshipArea.style.display = 'none';
     }
 
     // 更新NPC绑定UI
@@ -11087,6 +12480,7 @@ ${existingQuestionsContext}
       formElement.setAttribute('data-character-id', characterId);
 
       // 渲染关系列表
+      console.log('📖 [打开X资料] 加载关系数据，关系数:', (xProfile.relationships || []).length);
       renderRelationshipsList(xProfile.relationships || []);
 
       // 显示弹窗
@@ -11290,11 +12684,10 @@ ${existingQuestionsContext}
 
     try {
       const db = getXDB();
-      // 获取当前关系数据
-      const currentProfile = await db.xCharacterProfiles.get(characterId);
-      const currentRelationships = currentProfile?.relationships || [];
 
-      // 保存X资料
+      console.log('💾 [保存X资料] 开始保存，当前关系数:', currentRelationships.length);
+
+      // 保存X资料（使用全局的 currentRelationships，而不是重新从数据库读取）
       await db.xCharacterProfiles.put({
         characterId: characterId,
         xName: xName,
@@ -11310,14 +12703,15 @@ ${existingQuestionsContext}
         publicIdentity: publicIdentity,
         showRealName: showRealName,
         realName: showRealName ? realName : '', // 只有选择公开时才保存真名
-        relationships: currentRelationships,
+        relationships: JSON.parse(JSON.stringify(currentRelationships)), // 深拷贝避免引用问题
         lastUpdated: new Date().toISOString(),
       });
 
+      console.log('✅ [保存X资料] X资料已保存，关系数:', currentRelationships.length);
       showXToast('X资料已保存', 'success');
       closeCharacterXProfileModal();
     } catch (error) {
-      console.error('保存角色X资料失败:', error);
+      console.error('❌ [保存X资料] 保存角色X资料失败:', error);
       showXToast('保存失败: ' + error.message, 'error');
     }
   }
@@ -11331,7 +12725,10 @@ ${existingQuestionsContext}
 
   // 渲染关系列表
   function renderRelationshipsList(relationships) {
-    currentRelationships = relationships || [];
+    // 深拷贝数组，避免引用问题导致数据不同步
+    currentRelationships = relationships ? JSON.parse(JSON.stringify(relationships)) : [];
+    console.log('📋 [渲染关系列表] 当前关系数:', currentRelationships.length);
+
     const container = document.getElementById('character-relationships-list');
 
     if (currentRelationships.length === 0) {
@@ -11416,8 +12813,21 @@ ${existingQuestionsContext}
     if (!confirm('确定要删除这个关系绑定吗？')) return;
 
     try {
+      console.log('🗑️ [删除关系] 开始删除关系:', relationshipId);
+      console.log('🗑️ [删除关系] 删除前关系数:', currentRelationships.length);
+
       // 从当前列表中移除
+      const beforeLength = currentRelationships.length;
       currentRelationships = currentRelationships.filter(rel => rel.id !== relationshipId);
+      const afterLength = currentRelationships.length;
+
+      console.log('🗑️ [删除关系] 删除后关系数:', afterLength);
+
+      if (beforeLength === afterLength) {
+        console.warn('⚠️ [删除关系] 未找到要删除的关系');
+        showXToast('未找到要删除的关系', 'warning');
+        return;
+      }
 
       // 保存到数据库
       await saveRelationshipsToDatabase();
@@ -11427,8 +12837,8 @@ ${existingQuestionsContext}
 
       showXToast('关系已删除', 'success');
     } catch (error) {
-      console.error('删除关系失败:', error);
-      showXToast('删除失败', 'error');
+      console.error('❌ [删除关系] 删除关系失败:', error);
+      showXToast(`删除失败: ${error.message}`, 'error');
     }
   }
 
@@ -11448,20 +12858,28 @@ ${existingQuestionsContext}
   // 保存关系到数据库
   async function saveRelationshipsToDatabase() {
     const characterId = document.getElementById('character-x-profile-form').getAttribute('data-character-id');
-    if (!characterId) return;
+    if (!characterId) {
+      console.error('❌ [保存关系] 无法获取角色ID');
+      throw new Error('无法获取角色ID，保存失败');
+    }
 
     try {
       const db = getXDB();
 
       // 获取当前X资料
       const currentProfile = await db.xCharacterProfiles.get(characterId);
-      if (currentProfile) {
-        // 更新关系数据
-        currentProfile.relationships = currentRelationships;
-        await db.xCharacterProfiles.put(currentProfile);
+      if (!currentProfile) {
+        console.error('❌ [保存关系] 未找到角色资料:', characterId);
+        throw new Error('未找到角色资料');
       }
+
+      // 更新关系数据（深拷贝数组，避免引用问题）
+      currentProfile.relationships = JSON.parse(JSON.stringify(currentRelationships));
+      await db.xCharacterProfiles.put(currentProfile);
+
+      console.log('✅ [保存关系] 关系已保存到数据库，当前关系数:', currentProfile.relationships.length);
     } catch (error) {
-      console.error('保存关系到数据库失败:', error);
+      console.error('❌ [保存关系] 保存关系到数据库失败:', error);
       throw error;
     }
   }
@@ -11528,6 +12946,734 @@ ${existingQuestionsContext}
       showXToast(currentEditingRelationshipId ? '关系已更新' : '关系已添加', 'success');
     } catch (error) {
       console.error('保存关系失败:', error);
+      showXToast('保存失败', 'error');
+    }
+  }
+
+  // ============================================
+  // 角色关系册功能
+  // ============================================
+
+  // 角色关系册数据结构
+  let characterRelationshipData = {
+    characters: [], // 已绑定角色列表
+    links: [], // 关系连线列表 { id, charA, charB, relationAtoB, relationBtoA }
+  };
+
+  // 当前编辑的关系连线ID
+  let currentEditingLinkId = null;
+
+  // 切换角色关系册开关
+  async function toggleCharacterRelationship() {
+    if (!xSettingsData.characterRelationship) {
+      xSettingsData.characterRelationship = {};
+    }
+    xSettingsData.characterRelationship.enabled = !xSettingsData.characterRelationship.enabled;
+
+    // 更新UI
+    updateRelationshipToggleUI();
+
+    // 显示/隐藏关系册管理区域
+    const relationshipArea = document.getElementById('relationship-binding-area');
+    if (xSettingsData.characterRelationship.enabled) {
+      relationshipArea.style.display = 'block';
+      await loadRelationshipData();
+      // 稍微延迟更新预览，确保画布已渲染
+      setTimeout(() => {
+        updateRelationshipPreview();
+      }, 100);
+    } else {
+      relationshipArea.style.display = 'none';
+    }
+
+    // 自动保存设置
+    await saveXSettings();
+  }
+
+  // 更新关系册切换按钮UI
+  function updateRelationshipToggleUI() {
+    const toggle = document.getElementById('x-relationship-toggle');
+    const circle = toggle?.querySelector('.toggle-circle');
+
+    if (!toggle || !circle) return;
+
+    const enabled = xSettingsData.characterRelationship?.enabled || false;
+
+    if (enabled) {
+      toggle.style.backgroundColor = '#1d9bf0';
+      circle.style.left = '22px';
+    } else {
+      toggle.style.backgroundColor = '#333';
+      circle.style.left = '2px';
+    }
+  }
+
+  // 加载关系册数据
+  async function loadRelationshipData() {
+    try {
+      const db = getXDB();
+      const currentAccount = currentAccountId || 'main';
+      const dataId = `xCharacterRelationships_${currentAccount}`;
+
+      const savedData = await db.xCharacterRelationships.get(dataId);
+
+      if (savedData && savedData.data) {
+        characterRelationshipData = savedData.data;
+      } else {
+        // 初始化为已绑定角色
+        const boundChars = xSettingsData.boundCharacters || [];
+        const mainDB = getDB();
+        const allChats = await mainDB.chats.toArray();
+
+        characterRelationshipData.characters = allChats
+          .filter(chat => !chat.isGroup && boundChars.includes(chat.id))
+          .map(chat => ({
+            id: chat.id,
+            name: chat.name,
+            avatar: chat.settings?.aiAvatar || 'https://i.postimg.cc/4xmx7V4R/mmexport1759081128356.jpg',
+          }));
+
+        characterRelationshipData.links = [];
+      }
+
+      console.log('✅ 已加载角色关系数据:', characterRelationshipData);
+    } catch (error) {
+      console.error('❌ 加载关系数据失败:', error);
+    }
+  }
+
+  // 更新预览画布
+  function updateRelationshipPreview() {
+    const canvas = document.getElementById('relationship-preview-canvas');
+    const placeholder = document.getElementById('relationship-preview-placeholder');
+    const stats = document.getElementById('relationship-stats');
+
+    if (!canvas) return;
+
+    const linkCount = characterRelationshipData.links?.length || 0;
+    const charCount = characterRelationshipData.characters?.length || 0;
+    const chars = characterRelationshipData.characters || [];
+    const links = characterRelationshipData.links || [];
+
+    if (charCount > 0) {
+      placeholder.style.display = 'none';
+      stats.style.display = 'block';
+      document.getElementById('relationship-character-count').textContent = charCount;
+      document.getElementById('relationship-link-count').textContent = linkCount;
+
+      // 绘制缩小版关系图预览
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // 缩放比例
+      const scale = 0.5;
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+      const radius = Math.min(canvas.width, canvas.height) / 2 - 20;
+
+      // 计算角色位置
+      chars.forEach((char, index) => {
+        const angle = (index / chars.length) * Math.PI * 2 - Math.PI / 2;
+        char.previewX = centerX + radius * Math.cos(angle);
+        char.previewY = centerY + radius * Math.sin(angle);
+      });
+
+      // 绘制连线
+      ctx.strokeStyle = '#1d9bf0';
+      ctx.lineWidth = 1.5;
+      links.forEach(link => {
+        const charA = chars.find(c => c.id === link.charA);
+        const charB = chars.find(c => c.id === link.charB);
+
+        if (charA && charB) {
+          ctx.beginPath();
+          ctx.moveTo(charA.previewX, charA.previewY);
+          ctx.lineTo(charB.previewX, charB.previewY);
+          ctx.stroke();
+        }
+      });
+
+      // 绘制角色节点
+      chars.forEach(char => {
+        ctx.beginPath();
+        ctx.arc(char.previewX, char.previewY, 15, 0, Math.PI * 2);
+        ctx.fillStyle = '#1d9bf0';
+        ctx.fill();
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // 绘制首字母
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 10px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(char.name.charAt(0), char.previewX, char.previewY);
+      });
+    } else {
+      placeholder.style.display = 'block';
+      stats.style.display = 'none';
+    }
+  }
+
+  // 打开关系图编辑器
+  async function openCharacterRelationshipGraph() {
+    await loadRelationshipData();
+
+    const modal = document.getElementById('character-relationship-graph-modal');
+    if (modal) {
+      modal.style.display = 'block';
+      document.body.style.overflow = 'hidden';
+
+      // 初始化画布
+      initRelationshipCanvas();
+      renderRelationshipGraph();
+      renderRelationshipList();
+    }
+  }
+
+  // 关闭关系图编辑器
+  function closeCharacterRelationshipGraph(event) {
+    if (event && event.target !== event.currentTarget) return;
+
+    const modal = document.getElementById('character-relationship-graph-modal');
+    if (modal) {
+      modal.style.display = 'none';
+      document.body.style.overflow = 'auto';
+    }
+  }
+
+  // 拖拽状态
+  let isDragging = false;
+  let draggedCharId = null;
+  let dragOffsetX = 0;
+  let dragOffsetY = 0;
+
+  // 初始化关系图画布
+  function initRelationshipCanvas() {
+    const canvas = document.getElementById('relationship-graph-canvas');
+    if (!canvas) return;
+
+    // 设置画布实际大小
+    const container = canvas.parentElement;
+    canvas.width = container.clientWidth;
+    canvas.height = container.clientHeight;
+
+    // 绑定事件
+    canvas.onmousedown = handleCanvasMouseDown;
+    canvas.onmousemove = handleCanvasMouseMove;
+    canvas.onmouseup = handleCanvasMouseUp;
+    canvas.onclick = handleCanvasClick;
+  }
+
+  // 缓存加载的头像图片
+  const avatarImageCache = {};
+
+  // 渲染关系图
+  function renderRelationshipGraph() {
+    const canvas = document.getElementById('relationship-graph-canvas');
+    const emptyState = document.getElementById('graph-empty-state');
+
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    const chars = characterRelationshipData.characters || [];
+    const links = characterRelationshipData.links || [];
+
+    // 更新统计
+    document.getElementById('graph-character-count').textContent = `${chars.length} 角色`;
+    document.getElementById('graph-link-count').textContent = `${links.length} 关系`;
+
+    if (chars.length === 0) {
+      emptyState.style.display = 'block';
+      return;
+    }
+
+    emptyState.style.display = 'none';
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // 初始化位置（圆形布局）- 只在没有位置时设置
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    const radius = Math.min(canvas.width, canvas.height) / 3;
+
+    chars.forEach((char, index) => {
+      if (char.x === undefined || char.y === undefined) {
+        const angle = (index / chars.length) * Math.PI * 2 - Math.PI / 2;
+        char.x = centerX + radius * Math.cos(angle);
+        char.y = centerY + radius * Math.sin(angle);
+      }
+    });
+
+    // 绘制连线
+    links.forEach(link => {
+      const charA = chars.find(c => c.id === link.charA);
+      const charB = chars.find(c => c.id === link.charB);
+
+      if (charA && charB) {
+        ctx.beginPath();
+        ctx.moveTo(charA.x, charA.y);
+        ctx.lineTo(charB.x, charB.y);
+        ctx.strokeStyle = '#1d9bf0';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // 绘制关系文本
+        const midX = (charA.x + charB.x) / 2;
+        const midY = (charA.y + charB.y) / 2;
+
+        // 绘制文本背景
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+        ctx.fillRect(midX - 40, midY - 20, 80, 35);
+
+        ctx.fillStyle = '#1d9bf0';
+        ctx.font = '11px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(link.relationAtoB || '关系', midX, midY - 5);
+        ctx.fillText(link.relationBtoA || '关系', midX, midY + 10);
+      }
+    });
+
+    // 绘制角色头像和名称
+    chars.forEach(char => {
+      // 绘制圆形背景
+      ctx.beginPath();
+      ctx.arc(char.x, char.y, 35, 0, Math.PI * 2);
+      ctx.fillStyle = '#1d9bf0';
+      ctx.fill();
+      ctx.strokeStyle = '#000';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // 绘制头像图片
+      if (char.avatar) {
+        if (avatarImageCache[char.avatar]) {
+          // 使用缓存的图片
+          const img = avatarImageCache[char.avatar];
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(char.x, char.y, 33, 0, Math.PI * 2);
+          ctx.closePath();
+          ctx.clip();
+          ctx.drawImage(img, char.x - 33, char.y - 33, 66, 66);
+          ctx.restore();
+        } else {
+          // 加载图片
+          const img = new Image();
+          img.crossOrigin = 'anonymous';
+          img.onload = () => {
+            avatarImageCache[char.avatar] = img;
+            renderRelationshipGraph(); // 重新渲染
+          };
+          img.onerror = () => {
+            // 加载失败，显示默认文本
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 14px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(char.name.charAt(0), char.x, char.y);
+          };
+          img.src = char.avatar;
+
+          // 在图片加载前显示首字母
+          ctx.fillStyle = '#fff';
+          ctx.font = 'bold 14px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(char.name.charAt(0), char.x, char.y);
+        }
+      } else {
+        // 没有头像，显示首字母
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 14px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(char.name.charAt(0), char.x, char.y);
+      }
+
+      // 绘制名称
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 12px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+      ctx.fillText(char.name, char.x, char.y + 45);
+    });
+  }
+
+  // 鼠标按下处理
+  function handleCanvasMouseDown(event) {
+    const canvas = event.target;
+    const rect = canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+
+    const chars = characterRelationshipData.characters || [];
+
+    // 检查是否点击了角色
+    for (const char of chars) {
+      const dx = x - char.x;
+      const dy = y - char.y;
+      if (Math.sqrt(dx * dx + dy * dy) < 35) {
+        isDragging = true;
+        draggedCharId = char.id;
+        dragOffsetX = dx;
+        dragOffsetY = dy;
+        canvas.style.cursor = 'grabbing';
+        return;
+      }
+    }
+  }
+
+  // 鼠标移动处理
+  function handleCanvasMouseMove(event) {
+    const canvas = event.target;
+    const rect = canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+
+    const chars = characterRelationshipData.characters || [];
+
+    if (isDragging && draggedCharId) {
+      // 拖拽角色
+      const char = chars.find(c => c.id === draggedCharId);
+      if (char) {
+        char.x = x - dragOffsetX;
+        char.y = y - dragOffsetY;
+        renderRelationshipGraph();
+      }
+    } else {
+      // 检查是否悬停在角色上
+      const hoveredChar = chars.find(char => {
+        const dx = x - char.x;
+        const dy = y - char.y;
+        return Math.sqrt(dx * dx + dy * dy) < 35;
+      });
+
+      canvas.style.cursor = hoveredChar ? 'grab' : 'default';
+    }
+  }
+
+  // 鼠标释放处理
+  function handleCanvasMouseUp(event) {
+    if (isDragging) {
+      isDragging = false;
+      draggedCharId = null;
+      event.target.style.cursor = 'default';
+    }
+  }
+
+  // 画布点击处理
+  function handleCanvasClick(event) {
+    // 如果刚才在拖拽，不触发点击事件
+    if (isDragging) return;
+
+    const canvas = event.target;
+    const rect = canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+
+    const chars = characterRelationshipData.characters || [];
+    const links = characterRelationshipData.links || [];
+
+    // 检查是否点击了连线
+    for (const link of links) {
+      const charA = chars.find(c => c.id === link.charA);
+      const charB = chars.find(c => c.id === link.charB);
+
+      if (charA && charB) {
+        const dist = distanceToLine(x, y, charA.x, charA.y, charB.x, charB.y);
+        if (dist < 15) {
+          openEditRelationshipDetailModal(link);
+          return;
+        }
+      }
+    }
+  }
+
+  // 计算点到线段的距离
+  function distanceToLine(px, py, x1, y1, x2, y2) {
+    const A = px - x1;
+    const B = py - y1;
+    const C = x2 - x1;
+    const D = y2 - y1;
+
+    const dot = A * C + B * D;
+    const lenSq = C * C + D * D;
+    let param = -1;
+
+    if (lenSq !== 0) param = dot / lenSq;
+
+    let xx, yy;
+
+    if (param < 0) {
+      xx = x1;
+      yy = y1;
+    } else if (param > 1) {
+      xx = x2;
+      yy = y2;
+    } else {
+      xx = x1 + param * C;
+      yy = y1 + param * D;
+    }
+
+    const dx = px - xx;
+    const dy = py - yy;
+    return Math.sqrt(dx * dx + dy * dy);
+  }
+
+  // 添加关系连线
+  function addRelationshipLink() {
+    // 简化版：打开选择器让用户选择两个角色
+    const chars = characterRelationshipData.characters || [];
+
+    if (chars.length < 2) {
+      showXToast('至少需要2个已绑定角色才能创建关系', 'error');
+      return;
+    }
+
+    // 创建新关系（默认选择前两个角色）
+    const newLink = {
+      id: 'link_' + Date.now(),
+      charA: chars[0].id,
+      charB: chars[1].id,
+      relationAtoB: '',
+      relationBtoA: '',
+      story: '',
+    };
+
+    characterRelationshipData.links.push(newLink);
+
+    // 立即渲染
+    renderRelationshipGraph();
+    renderRelationshipList();
+
+    // 更新全局引用
+    window.characterRelationshipData = characterRelationshipData;
+
+    // 延迟打开编辑，确保渲染完成
+    setTimeout(() => {
+      openEditRelationshipDetailModal(newLink);
+    }, 100);
+  }
+
+  // 打开编辑关系详情弹窗
+  function openEditRelationshipDetailModal(link) {
+    currentEditingLinkId = link.id;
+
+    const chars = characterRelationshipData.characters || [];
+    const charA = chars.find(c => c.id === link.charA);
+    const charB = chars.find(c => c.id === link.charB);
+
+    if (!charA || !charB) return;
+
+    document.getElementById('char-a-name').textContent = charA.name;
+    document.getElementById('char-b-name').textContent = charB.name;
+    document.getElementById('char-a-to-b-label').textContent = `${charA.name} 是 ${charB.name} 的：`;
+    document.getElementById('char-b-to-a-label').textContent = `${charB.name} 是 ${charA.name} 的：`;
+    document.getElementById('relationship-a-to-b').value = link.relationAtoB || '';
+    document.getElementById('relationship-b-to-a').value = link.relationBtoA || '';
+    document.getElementById('relationship-story').value = link.story || '';
+
+    const modal = document.getElementById('edit-relationship-detail-modal');
+    if (modal) {
+      modal.style.display = 'block';
+    }
+  }
+
+  // 关闭编辑关系详情弹窗
+  function closeEditRelationshipDetail(event) {
+    if (event && event.target !== event.currentTarget) return;
+
+    const modal = document.getElementById('edit-relationship-detail-modal');
+    if (modal) {
+      modal.style.display = 'none';
+    }
+    currentEditingLinkId = null;
+  }
+
+  // 保存关系详情
+  async function saveRelationshipDetail() {
+    if (!currentEditingLinkId) return;
+
+    const link = characterRelationshipData.links.find(l => l.id === currentEditingLinkId);
+    if (!link) return;
+
+    link.relationAtoB = document.getElementById('relationship-a-to-b').value.trim();
+    link.relationBtoA = document.getElementById('relationship-b-to-a').value.trim();
+    link.story = document.getElementById('relationship-story').value.trim();
+
+    renderRelationshipGraph();
+    renderRelationshipList();
+    closeEditRelationshipDetail();
+
+    // 自动保存到数据库
+    try {
+      const db = getXDB();
+      const currentAccount = currentAccountId || 'main';
+      const dataId = `xCharacterRelationships_${currentAccount}`;
+
+      await db.xCharacterRelationships.put({
+        id: dataId,
+        accountId: currentAccount,
+        data: characterRelationshipData,
+        lastUpdated: new Date().toISOString(),
+      });
+
+      updateRelationshipPreview();
+
+      showXToast('关系已更新并保存', 'success');
+      console.log('✅ 关系已自动保存:', link);
+    } catch (error) {
+      console.error('❌ 保存关系失败:', error);
+      showXToast('关系已更新但保存失败', 'error');
+    }
+  }
+
+  // 删除关系连线
+  async function deleteRelationshipLink() {
+    if (!currentEditingLinkId) return;
+
+    if (!confirm('确定要删除这条关系吗？')) return;
+
+    characterRelationshipData.links = characterRelationshipData.links.filter(l => l.id !== currentEditingLinkId);
+
+    renderRelationshipGraph();
+    renderRelationshipList();
+    closeEditRelationshipDetail();
+
+    // 自动保存到数据库
+    try {
+      const db = getXDB();
+      const currentAccount = currentAccountId || 'main';
+      const dataId = `xCharacterRelationships_${currentAccount}`;
+
+      await db.xCharacterRelationships.put({
+        id: dataId,
+        accountId: currentAccount,
+        data: characterRelationshipData,
+        lastUpdated: new Date().toISOString(),
+      });
+
+      updateRelationshipPreview();
+
+      showXToast('关系已删除', 'success');
+    } catch (error) {
+      console.error('❌ 删除关系失败:', error);
+      showXToast('关系已删除但保存失败', 'error');
+    }
+  }
+
+  // 清空所有关系
+  async function clearAllRelationships() {
+    if (!confirm('确定要清空所有关系吗？此操作不可恢复。')) return;
+
+    characterRelationshipData.links = [];
+    renderRelationshipGraph();
+    renderRelationshipList();
+
+    // 自动保存到数据库
+    try {
+      const db = getXDB();
+      const currentAccount = currentAccountId || 'main';
+      const dataId = `xCharacterRelationships_${currentAccount}`;
+
+      await db.xCharacterRelationships.put({
+        id: dataId,
+        accountId: currentAccount,
+        data: characterRelationshipData,
+        lastUpdated: new Date().toISOString(),
+      });
+
+      updateRelationshipPreview();
+
+      showXToast('已清空所有关系', 'success');
+    } catch (error) {
+      console.error('❌ 清空关系失败:', error);
+      showXToast('已清空但保存失败', 'error');
+    }
+  }
+
+  // 渲染关系列表
+  function renderRelationshipList() {
+    const listContainer = document.getElementById('relationship-links-list');
+    if (!listContainer) return;
+
+    const links = characterRelationshipData.links || [];
+    const chars = characterRelationshipData.characters || [];
+
+    if (links.length === 0) {
+      listContainer.innerHTML = '<div style="color: #71767b; text-align: center; padding: 20px;">暂无关系</div>';
+      return;
+    }
+
+    listContainer.innerHTML = links
+      .map(link => {
+        const charA = chars.find(c => c.id === link.charA);
+        const charB = chars.find(c => c.id === link.charB);
+
+        if (!charA || !charB) return '';
+
+        const storyPreview = link.story
+          ? `
+          <div style="color: #71767b; font-size: 11px; margin-top: 6px; padding-top: 6px; border-top: 1px solid #2f3336;">
+            ${link.story.length > 50 ? link.story.substring(0, 50) + '...' : link.story}
+          </div>
+        `
+          : '';
+
+        return `
+        <div style="
+          background-color: #1a1a1a;
+          border: 1px solid #333;
+          border-radius: 8px;
+          padding: 12px;
+          margin-bottom: 8px;
+          cursor: pointer;
+          transition: background-color 0.2s;
+        " onclick="openEditRelationshipDetailModal(window.characterRelationshipData.links.find(l => l.id === '${
+          link.id
+        }'))" 
+          onmouseover="this.style.backgroundColor='#2a2a2a'" 
+          onmouseout="this.style.backgroundColor='#1a1a1a'">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="color: #fff; font-weight: 600; font-size: 14px;">${charA.name}</span>
+              <span style="color: #71767b;">⇆</span>
+              <span style="color: #fff; font-weight: 600; font-size: 14px;">${charB.name}</span>
+            </div>
+          </div>
+          <div style="display: flex; gap: 12px; font-size: 12px;">
+            <div style="color: #1d9bf0;">${charA.name}: ${link.relationAtoB || '(未设置)'}</div>
+            <div style="color: #1d9bf0;">${charB.name}: ${link.relationBtoA || '(未设置)'}</div>
+          </div>
+          ${storyPreview}
+        </div>
+      `;
+      })
+      .join('');
+  }
+
+  // 保存关系图
+  async function saveRelationshipGraph() {
+    try {
+      const db = getXDB();
+      const currentAccount = currentAccountId || 'main';
+      const dataId = `xCharacterRelationships_${currentAccount}`;
+
+      await db.xCharacterRelationships.put({
+        id: dataId,
+        accountId: currentAccount,
+        data: characterRelationshipData,
+        lastUpdated: new Date().toISOString(),
+      });
+
+      updateRelationshipPreview();
+      closeCharacterRelationshipGraph();
+
+      showXToast('关系图已保存', 'success');
+      console.log('✅ 关系图已保存:', characterRelationshipData);
+    } catch (error) {
+      console.error('❌ 保存关系图失败:', error);
       showXToast('保存失败', 'error');
     }
   }
@@ -14375,7 +16521,7 @@ ${existingQuestionsContext}
                 </div>
 
                 <!-- 推文内容 -->
-                <div style="color: #fff; font-size: 23px; line-height: 1.3; margin-bottom: 16px; word-wrap: break-word;">
+                <div style="color: #fff; font-size: 20px; line-height: 1.3; margin-bottom: 16px; word-wrap: break-word;">
                   ${processContent(tweet.content)}
                 </div>
 
@@ -14480,6 +16626,27 @@ ${existingQuestionsContext}
 
   // 渲染推文媒体内容
   function renderTweetMedia(tweet) {
+    // 支持两种格式：tweet.image（旧格式）和 tweet.media（账户推文格式）
+
+    // 1. 处理账户推文的 media 数组格式
+    if (tweet.media && Array.isArray(tweet.media) && tweet.media.length > 0) {
+      const media = tweet.media[0];
+      if (media.type === 'description' && media.description) {
+        return `
+                <div style="margin-bottom: 16px; background-color: #202327; border: 1px solid #2f3336; border-radius: 16px; padding: 16px;">
+                  <div style="color: #e7e9ea; font-size: 15px; line-height: 20px;">${media.description}</div>
+                </div>
+              `;
+      } else if (media.type === 'upload' && media.url) {
+        return `
+                <div style="margin-bottom: 16px; border-radius: 16px; overflow: hidden;">
+                  <img src="${media.url}" style="width: 100%; max-height: 400px; object-fit: cover; display: block;" alt="推文图片">
+                </div>
+              `;
+      }
+    }
+
+    // 2. 处理旧的 image 格式（兼容性）
     if (!tweet.image) return '';
 
     if (tweet.image.type === 'description') {
@@ -14945,11 +17112,15 @@ ${existingQuestionsContext}
         }
       }
 
+      // Token计数器
+      let tokenCount = 0;
+
       // 1. 提示词 + 世界书
       let systemPrompt = StringBuilders.buildBaseSystemPrompt({
         userPrompt,
         worldSetting,
       });
+      tokenCount = TokenUtils.logTokenUsage('发帖生成器', '基础系统提示词', systemPrompt, tokenCount);
 
       // 2. 角色定义（帖子回复生成专用）
       systemPrompt += `
@@ -14964,6 +17135,9 @@ ${existingQuestionsContext}
 **明确：用户已经发布了推文，你只负责生成别人的回应！**
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
 
+      const coreTaskSection = systemPrompt.substring(systemPrompt.lastIndexOf('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'));
+      tokenCount = TokenUtils.logTokenUsage('发帖生成器', '核心任务说明', coreTaskSection, tokenCount);
+
       // 3. 角色资料（互动反应场景）
       const charactersInfo = await StringBuilders.buildCompleteCharacterInfo(
         boundCharacters,
@@ -14972,13 +17146,18 @@ ${existingQuestionsContext}
       );
       if (charactersInfo) {
         systemPrompt += charactersInfo;
+        tokenCount = TokenUtils.logTokenUsage('发帖生成器', '角色资料信息', charactersInfo, tokenCount);
       }
       if (knownIdentityCharactersInfo) {
         systemPrompt += knownIdentityCharactersInfo;
+        tokenCount = TokenUtils.logTokenUsage('发帖生成器', '已知身份角色', knownIdentityCharactersInfo, tokenCount);
       }
 
       // 4. 用户资料
+      const userConstraintsStart = systemPrompt.length;
       systemPrompt += StringBuilders.buildUniversalConstraints(userXProfileInfo);
+      const userConstraints = systemPrompt.substring(userConstraintsStart);
+      tokenCount = TokenUtils.logTokenUsage('发帖生成器', '用户资料约束', userConstraints, tokenCount);
 
       systemPrompt += `
 
@@ -15008,14 +17187,18 @@ ${
 评论对象结构：
 - user: {name, handle, avatar, verified}
 - content: 评论文本
-- time: 时间描述
+- timeOffset: 相对推文发布的分钟数（负数，如-5表示推文发布后5分钟的评论）
 - replies: [回复数组] (可选，楼中楼回复，不超过3层)
 - replyTo: "@被回复者句柄" (楼中楼回复时必填)
 
 关键规则：
 1. verified字段必须是布尔值(true/false)
 2. stats中所有数字必须是纯数字
-3. 支持多层对话链：A评论 → B回复A(replyTo:"@A") → C回复B(replyTo:"@B")`;
+3. timeOffset必须是负数，表示评论发布在推文之后多少分钟（如-5, -10, -30等）
+4. 支持多层对话链：A评论 → B回复A(replyTo:"@A") → C回复B(replyTo:"@B")`;
+
+      const formatSection = systemPrompt.substring(systemPrompt.lastIndexOf('【JSON返回格式】'));
+      tokenCount = TokenUtils.logTokenUsage('发帖生成器', 'JSON格式要求', formatSection, tokenCount);
 
       // 构建消息内容，支持图片识别
       const messageContent = [];
@@ -15076,6 +17259,13 @@ ${tweetData.link ? `链接：${tweetData.link.title || tweetData.link.url}` : ''
       }
 
       const messages = [{ role: 'user', content: messageContent }];
+
+      // 记录上下文信息token
+      const contextText = messageContent.map(c => c.text || '[图片]').join(' ');
+      tokenCount = TokenUtils.logTokenUsage('发帖生成器', '上下文信息', contextText, tokenCount);
+
+      // 最终统计
+      TokenUtils.logFinalPrompt('发帖生成器', systemPrompt, contextText);
 
       // 判断API类型并发送请求
       let isGemini = proxyUrl.includes('generativelanguage');
@@ -15179,15 +17369,36 @@ ${tweetData.link ? `链接：${tweetData.link.title || tweetData.link.url}` : ''
         throw new Error('AI返回的数据格式不正确');
       }
 
-      // 为评论分配ID
+      // 为评论分配ID和时间戳
       const timestamp = Date.now();
+      const tweetTimestamp = tweetData.timestamp || timestamp;
+
       interactionData.comments.forEach((comment, index) => {
         comment.id = `ai_${timestamp}_${index}`;
 
-        // 为回复分配ID
+        // 将timeOffset转换为实际时间戳
+        if (comment.timeOffset !== undefined) {
+          // timeOffset是负数，表示推文发布后多少分钟
+          comment.timestamp = tweetTimestamp + Math.abs(comment.timeOffset) * 60 * 1000;
+          delete comment.timeOffset; // 删除临时字段
+        } else if (!comment.timestamp) {
+          // 如果没有timeOffset，随机生成一个时间戳
+          comment.timestamp = tweetTimestamp + (5 + Math.random() * 30) * 60 * 1000;
+        }
+
+        // 为回复分配ID和时间戳
         if (comment.replies && comment.replies.length > 0) {
           comment.replies.forEach((reply, replyIndex) => {
             reply.id = `ai_${timestamp}_${index}_${replyIndex}`;
+
+            // 回复的时间应该在评论之后
+            if (reply.timeOffset !== undefined) {
+              reply.timestamp = tweetTimestamp + Math.abs(reply.timeOffset) * 60 * 1000;
+              delete reply.timeOffset;
+            } else if (!reply.timestamp) {
+              // 回复时间晚于评论
+              reply.timestamp = comment.timestamp + (1 + Math.random() * 10) * 60 * 1000;
+            }
           });
         }
       });
@@ -15571,7 +17782,9 @@ ${tweetData.link ? `链接：${tweetData.link.title || tweetData.link.url}` : ''
     let touchStartX = 0;
     let touchStartY = 0;
     let hasMoved = false;
+    let lastTouchEndTime = 0; // 上次触摸结束时间，用于防抖
     const TOUCH_THRESHOLD = 15; // 滑动阈值（像素）
+    const DEBOUNCE_TIME = 300; // 防抖时间（毫秒）
 
     tweetEl.addEventListener('touchstart', e => {
       // 记录初始触摸位置
@@ -15605,13 +17818,28 @@ ${tweetData.link ? `链接：${tweetData.link.title || tweetData.link.url}` : ''
     tweetEl.addEventListener('touchend', e => {
       clearTimeout(longPressTimer);
 
+      // 防抖：防止快速重复触发
+      const now = Date.now();
+      if (now - lastTouchEndTime < DEBOUNCE_TIME) {
+        console.log('🚫 [触摸] 防抖拦截，忽略重复触摸');
+        e.preventDefault();
+        return;
+      }
+      lastTouchEndTime = now;
+
       // 只有在没有滑动且没有长按的情况下才触发点击
       if (!isLongPressed && !hasMoved) {
+        // 阻止后续的点击事件，防止移动端触发两次
+        e.preventDefault();
+
         if (isMultiSelectMode) {
           toggleTweetSelection(tweet.id);
         } else {
           showTweetDetail(tweet);
         }
+      } else if (isLongPressed) {
+        // 长按后也要阻止点击事件
+        e.preventDefault();
       }
 
       isLongPressed = false;
@@ -15619,7 +17847,12 @@ ${tweetData.link ? `链接：${tweetData.link.title || tweetData.link.url}` : ''
     });
 
     // 桌面端鼠标事件保持原有逻辑
+    let lastMouseUpTime = 0;
+
     tweetEl.addEventListener('mousedown', e => {
+      // 只处理左键点击
+      if (e.button !== 0) return;
+
       longPressTimer = setTimeout(() => {
         isLongPressed = true;
         toggleTweetSelection(tweet.id);
@@ -15628,7 +17861,19 @@ ${tweetData.link ? `链接：${tweetData.link.title || tweetData.link.url}` : ''
     });
 
     tweetEl.addEventListener('mouseup', e => {
+      // 只处理左键点击
+      if (e.button !== 0) return;
+
       clearTimeout(longPressTimer);
+
+      // 防抖：防止快速重复点击
+      const now = Date.now();
+      if (now - lastMouseUpTime < DEBOUNCE_TIME) {
+        console.log('🚫 [鼠标] 防抖拦截，忽略重复点击');
+        return;
+      }
+      lastMouseUpTime = now;
+
       if (!isLongPressed) {
         if (isMultiSelectMode) {
           toggleTweetSelection(tweet.id);
@@ -15639,7 +17884,11 @@ ${tweetData.link ? `链接：${tweetData.link.title || tweetData.link.url}` : ''
       isLongPressed = false;
     });
 
-    tweetEl.onclick = null; // 移除原来的点击事件
+    // 阻止默认的点击事件，防止与触摸/鼠标事件冲突
+    tweetEl.addEventListener('click', e => {
+      e.preventDefault();
+      e.stopPropagation();
+    });
 
     // 格式化时间
     function formatTimeForProfile(timestamp) {
@@ -15984,6 +18233,35 @@ ${tweetData.link ? `链接：${tweetData.link.title || tweetData.link.url}` : ''
       const db = getDB(); // 用于访问API配置
       const xDb = getXDB(); // 用于访问X专用设置
 
+      // 🚨 关键修复：重新从数据库加载最新的推文数据，避免丢失用户刚发的评论
+      console.log('🔄 [AI回复] 重新加载最新推文数据，避免覆盖用户评论');
+      const tweetId = tweetData.id;
+      const isUserTweet = tweetId.startsWith('user_');
+      let latestTweetData = null;
+
+      if (isUserTweet) {
+        const userTweetsId = `userTweets_${currentAccountId || 'main'}`;
+        const userTweetsData = await xDb.xUserTweets.get(userTweetsId);
+        if (userTweetsData && userTweetsData.tweets) {
+          latestTweetData = userTweetsData.tweets.find(t => t.id === tweetId);
+        }
+      } else {
+        const tweetsData = await xDb.xTweetsData.get('tweets');
+        if (tweetsData) {
+          latestTweetData =
+            tweetsData.forYouTweets?.find(t => t.id === tweetId) ||
+            tweetsData.followingTweets?.find(t => t.id === tweetId);
+        }
+      }
+
+      // 如果成功加载到最新数据，使用最新数据；否则使用传入的数据
+      if (latestTweetData) {
+        console.log('✅ [AI回复] 已加载最新推文数据，评论数:', latestTweetData.comments?.length || 0);
+        tweetData = latestTweetData;
+      } else {
+        console.warn('⚠️ [AI回复] 未能加载最新推文数据，使用传入数据');
+      }
+
       const apiConfig = await db.apiConfig.get('main');
       if (!apiConfig || !apiConfig.proxyUrl || !apiConfig.apiKey || !apiConfig.model) {
         showXToast('请先配置API设置', 'error');
@@ -16002,11 +18280,15 @@ ${tweetData.link ? `链接：${tweetData.link.title || tweetData.link.url}` : ''
       // 使用工具函数构建用户X个人资料信息（使用window.userProfileData确保获取最新数据）
       const userXProfileInfo = StringBuilders.buildUserXProfileInfo(window.userProfileData);
 
+      // Token计数器
+      let tokenCount = 0;
+
       // 1. 提示词 + 世界书
       let systemPrompt = StringBuilders.buildBaseSystemPrompt({
         userPrompt,
         worldSetting,
       });
+      tokenCount = TokenUtils.logTokenUsage('统一AI回复生成器', '基础系统提示词', systemPrompt, tokenCount);
 
       // 2. 角色定义（评论回复生成专用）
       systemPrompt += `
@@ -16021,13 +18303,19 @@ ${tweetData.link ? `链接：${tweetData.link.title || tweetData.link.url}` : ''
 **明确：用户已经发表了评论，你只负责生成别人对这条评论的反应！**
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
 
+      const coreTaskSection = systemPrompt.substring(systemPrompt.lastIndexOf('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'));
+      tokenCount = TokenUtils.logTokenUsage('统一AI回复生成器', '核心任务说明', coreTaskSection, tokenCount);
+
       // 添加场景分支提示词（评论场景特有的详细逻辑）
+      const scenarioPromptStart = systemPrompt.length;
       systemPrompt += StringBuilders.buildScenarioPrompt({
         isOwnPost,
         commentType,
         pageType,
         parentComment,
       });
+      const scenarioPrompt = systemPrompt.substring(scenarioPromptStart);
+      tokenCount = TokenUtils.logTokenUsage('统一AI回复生成器', '场景分支提示词', scenarioPrompt, tokenCount);
 
       // 3. 角色资料（回复场景）
       const charactersInfo = await StringBuilders.buildCompleteCharacterInfo(
@@ -16037,10 +18325,14 @@ ${tweetData.link ? `链接：${tweetData.link.title || tweetData.link.url}` : ''
       );
       if (charactersInfo) {
         systemPrompt += charactersInfo;
+        tokenCount = TokenUtils.logTokenUsage('统一AI回复生成器', '角色资料信息', charactersInfo, tokenCount);
       }
 
       // 4. 用户资料
+      const userConstraintsStart = systemPrompt.length;
       systemPrompt += StringBuilders.buildUniversalConstraints(userXProfileInfo);
+      const userConstraints = systemPrompt.substring(userConstraintsStart);
+      tokenCount = TokenUtils.logTokenUsage('统一AI回复生成器', '用户资料约束', userConstraints, tokenCount);
 
       systemPrompt += `
 
@@ -16078,17 +18370,21 @@ ${
 回复对象结构：
 - user: {name, handle, avatar, verified}
 - content: 回复文本
-- time: 时间描述
+- timeOffset: 相对推文发布的分钟数（负数，如-5表示推文发布后5分钟的回复）
 - replyTo: "${commentType === 'reply_comment' && parentComment ? parentComment.user.handle : userComment.user.handle}"
 - replies: []
 
 关键规则：
 1. verified字段必须是布尔值(true/false)
+1.5. timeOffset必须是负数，表示回复发布在推文之后多少分钟（如-2, -5, -15等）
 2. ${
         boundCharacters.length > 0
           ? '生成角色回复时必须严格使用提供的角色X资料(xName、xHandle、xAvatar、xVerified)，不得使用默认值或自编信息'
           : '普通用户回复，自创用户名和句柄'
       }`;
+
+      const formatSection = systemPrompt.substring(systemPrompt.lastIndexOf('【JSON返回格式】'));
+      tokenCount = TokenUtils.logTokenUsage('统一AI回复生成器', 'JSON格式要求', formatSection, tokenCount);
 
       // 构建上下文信息
       let contextInfo = `【推文信息${pageType === 'detail' ? '（详情页）' : '（主页）'}】
@@ -16217,6 +18513,9 @@ ${tweetAuthorCharacter.relationships
         }
       }
 
+      // 记录上下文信息token
+      TokenUtils.logTokenUsage('统一AI回复生成器', '上下文信息', contextInfo, tokenCount);
+
       // 构建消息内容，支持图片识别
       const messageContent = [];
       messageContent.push({ type: 'text', text: contextInfo });
@@ -16235,6 +18534,10 @@ ${tweetAuthorCharacter.relationships
       }
 
       const messages = [{ role: 'user', content: messageContent }];
+
+      // 最终统计
+      const contextText = messageContent.map(c => c.text || '[图片]').join(' ');
+      TokenUtils.logFinalPrompt('统一AI回复生成器', systemPrompt, contextText);
 
       // API调用
       let isGemini = proxyUrl.includes('generativelanguage');
@@ -16338,10 +18641,21 @@ ${tweetAuthorCharacter.relationships
 
         // 详情页面：先更新数据，再渲染到页面
         // 将AI回复添加到推文数据中
+        const tweetTimestamp = tweetData.timestamp || Date.now();
+
         if (commentType === 'main_comment') {
           // 主评论回复
           replies.forEach((comment, index) => {
             comment.id = `ai_unified_${timestamp}_${index}`;
+
+            // 转换timeOffset为实际时间戳
+            if (comment.timeOffset !== undefined) {
+              comment.timestamp = tweetTimestamp + Math.abs(comment.timeOffset) * 60 * 1000;
+              delete comment.timeOffset;
+            } else if (!comment.timestamp) {
+              comment.timestamp = tweetTimestamp + (2 + Math.random() * 20) * 60 * 1000;
+            }
+
             tweetData.comments.push(comment);
           });
           tweetData.stats.comments += replies.length;
@@ -16353,9 +18667,27 @@ ${tweetAuthorCharacter.relationships
             if (!targetComment.replies) targetComment.replies = [];
             replies.forEach((reply, index) => {
               reply.id = `ai_unified_${timestamp}_${index}`;
+
+              // 转换timeOffset为实际时间戳
+              if (reply.timeOffset !== undefined) {
+                reply.timestamp = tweetTimestamp + Math.abs(reply.timeOffset) * 60 * 1000;
+                delete reply.timeOffset;
+              } else if (!reply.timestamp) {
+                // 回复时间应该比父评论晚
+                const parentTimestamp = targetComment.timestamp || tweetTimestamp;
+                reply.timestamp = parentTimestamp + (1 + Math.random() * 10) * 60 * 1000;
+              }
+
               targetComment.replies.push(reply);
             });
-            console.log('🤖 [AI回复] 楼中楼回复已添加，目标评论:', parentComment.id);
+            console.log(
+              '🤖 [AI回复] 楼中楼回复已添加，目标评论:',
+              parentComment.id,
+              '，当前回复总数:',
+              targetComment.replies.length,
+            );
+          } else {
+            console.error('❌ [AI回复] 未找到目标评论:', parentComment.id);
           }
         }
 
@@ -16363,8 +18695,32 @@ ${tweetAuthorCharacter.relationships
         try {
           const xDb = getXDB();
           const isUserTweet = tweetData.id.startsWith('user_');
+          const isAccountTweet = tweetData._source === 'account';
 
-          if (isUserTweet) {
+          if (isAccountTweet) {
+            console.log('🤖 [AI回复] 保存到账户推文数据');
+            const accountHandle =
+              tweetData._accountHandle || (currentViewingAccount.accountInfo || currentViewingAccount).handle;
+            const cleanHandle = accountHandle.replace('@', '');
+
+            if (currentViewingAccount && currentViewingAccount.tweets) {
+              const tweetIndex = currentViewingAccount.tweets.findIndex(t => t.id === tweetData.id);
+              if (tweetIndex !== -1) {
+                currentViewingAccount.tweets[tweetIndex] = tweetData;
+
+                await xDb.xAccountProfiles.put({
+                  handle: cleanHandle,
+                  name: (currentViewingAccount.accountInfo || currentViewingAccount).name,
+                  accountInfo: currentViewingAccount.accountInfo || currentViewingAccount,
+                  tweets: currentViewingAccount.tweets,
+                  accountReplies: currentViewingAccount.accountReplies || [],
+                  updatedAt: new Date().toISOString(),
+                });
+
+                console.log('✅ [AI回复] 账户推文已保存，账户:', cleanHandle);
+              }
+            }
+          } else if (isUserTweet) {
             console.log('🤖 [AI回复] 保存到用户推文数据');
             const userTweetsId = `userTweets_${currentAccountId || 'main'}`;
             const userTweetsData = await xDb.xUserTweets.get(userTweetsId);
@@ -16374,7 +18730,15 @@ ${tweetAuthorCharacter.relationships
               if (tweetIndex !== -1) {
                 userTweetsData.tweets[tweetIndex] = tweetData;
                 await xDb.xUserTweets.put(userTweetsData);
-                console.log('✅ [AI回复] 用户推文AI回复已保存');
+                console.log(
+                  '✅ [AI回复] 用户推文AI回复已保存，评论总数:',
+                  tweetData.comments.length,
+                  '，主评论',
+                  tweetData.comments.length,
+                  '条',
+                );
+              } else {
+                console.error('❌ [AI回复] 未在数据库中找到目标推文');
               }
             }
           } else {
@@ -16401,7 +18765,15 @@ ${tweetAuthorCharacter.relationships
 
               if (updated) {
                 await xDb.xTweetsData.put(tweetsData);
-                console.log('✅ [AI回复] 主页推文AI回复已保存');
+                console.log(
+                  '✅ [AI回复] 主页推文AI回复已保存，评论总数:',
+                  tweetData.comments.length,
+                  '，主评论',
+                  tweetData.comments.length,
+                  '条',
+                );
+              } else {
+                console.error('❌ [AI回复] 未在数据库中找到目标推文');
               }
             }
           }
@@ -16478,13 +18850,26 @@ ${tweetAuthorCharacter.relationships
         });
       } else {
         // 主页：更新数据并重新渲染
+        console.log('🤖 [AI回复] 主页模式 - 开始处理');
+        const tweetTimestamp = tweetData.timestamp || Date.now();
+
         if (commentType === 'main_comment') {
           // 主评论：添加到推文评论列表
           replies.forEach((comment, index) => {
             comment.id = `ai_main_unified_${timestamp}_${index}`;
+
+            // 转换timeOffset为实际时间戳
+            if (comment.timeOffset !== undefined) {
+              comment.timestamp = tweetTimestamp + Math.abs(comment.timeOffset) * 60 * 1000;
+              delete comment.timeOffset;
+            } else if (!comment.timestamp) {
+              comment.timestamp = tweetTimestamp + (2 + Math.random() * 20) * 60 * 1000;
+            }
+
             tweetData.comments.push(comment);
           });
           tweetData.stats.comments += replies.length;
+          console.log('🤖 [AI回复] 已添加主评论，新增:', replies.length, '条，总计:', tweetData.comments.length);
         } else {
           // 楼中楼回复：添加到主评论的replies（平级显示）
           const targetCommentId = mainCommentId || parentComment.id;
@@ -16492,23 +18877,55 @@ ${tweetAuthorCharacter.relationships
           if (mainCommentObj) {
             replies.forEach((reply, index) => {
               reply.id = `ai_main_sub_unified_${timestamp}_${index}`;
+
+              // 转换timeOffset为实际时间戳
+              if (reply.timeOffset !== undefined) {
+                reply.timestamp = tweetTimestamp + Math.abs(reply.timeOffset) * 60 * 1000;
+                delete reply.timeOffset;
+              } else if (!reply.timestamp) {
+                const parentTimestamp = mainCommentObj.timestamp || tweetTimestamp;
+                reply.timestamp = parentTimestamp + (1 + Math.random() * 10) * 60 * 1000;
+              }
+
               if (!mainCommentObj.replies) mainCommentObj.replies = [];
               mainCommentObj.replies.push(reply);
             });
+            console.log('🤖 [AI回复] 已添加楼中楼回复到主评论:', targetCommentId, '，新增:', replies.length, '条');
           } else {
-            console.warn('无法找到主评论，mainCommentId:', targetCommentId);
+            console.warn('⚠️ [AI回复] 无法找到主评论，mainCommentId:', targetCommentId);
           }
         }
 
-        // 保存数据并重新渲染 - 先从数据库重新加载数据以避免覆盖用户评论
+        // 保存数据并重新渲染
         try {
+          // 先更新全局数组中的推文数据
+          let updated = false;
+          const tweetIndex = forYouTweets.findIndex(t => t.id === tweetData.id);
+          if (tweetIndex !== -1) {
+            forYouTweets[tweetIndex] = tweetData;
+            updated = true;
+            console.log('🤖 [AI回复] 已更新forYouTweets中的推文');
+          } else {
+            const followingIndex = followingTweets.findIndex(t => t.id === tweetData.id);
+            if (followingIndex !== -1) {
+              followingTweets[followingIndex] = tweetData;
+              updated = true;
+              console.log('🤖 [AI回复] 已更新followingTweets中的推文');
+            }
+          }
+
+          if (!updated) {
+            console.warn('⚠️ [AI回复] 未在全局数组中找到推文:', tweetData.id);
+          }
+
+          // 保存到数据库
           const existingData = await xDb.xTweetsData.get('tweets');
           if (existingData) {
-            // 更新现有数据而不是完全覆盖
             existingData.forYouTweets = forYouTweets;
             existingData.followingTweets = followingTweets;
             existingData.lastUpdated = new Date().toISOString();
             await xDb.xTweetsData.put(existingData);
+            console.log('✅ [AI回复] 数据已保存到数据库');
           } else {
             await xDb.xTweetsData.put({
               id: 'tweets',
@@ -16516,17 +18933,23 @@ ${tweetAuthorCharacter.relationships
               followingTweets: followingTweets,
               lastUpdated: new Date().toISOString(),
             });
+            console.log('✅ [AI回复] 数据已创建并保存');
           }
         } catch (saveError) {
-          console.error('保存统一AI回复数据失败:', saveError);
+          console.error('❌ [AI回复] 保存统一AI回复数据失败:', saveError);
         }
 
+        // 重新渲染评论区
+        console.log('🤖 [AI回复] 开始重新渲染评论区，推文ID:', currentTweetId);
         renderComments(currentTweetId);
 
         // 滚动到底部
         const commentsContainer = document.querySelector('.comments-container');
         setTimeout(() => {
-          commentsContainer.scrollTop = commentsContainer.scrollHeight;
+          if (commentsContainer) {
+            commentsContainer.scrollTop = commentsContainer.scrollHeight;
+            console.log('✅ [AI回复] 评论区已滚动到底部');
+          }
         }, 100);
       }
 
@@ -17282,11 +19705,15 @@ ${tweetAuthorCharacter.relationships
         .map(q => `Q: ${q.question}\nA: ${q.answer}`)
         .join('\n\n');
 
+      // Token计数器
+      let tokenCount = 0;
+
       // 构建提问箱专用系统提示词
       let systemPrompt = StringBuilders.buildBaseSystemPrompt({
         userPrompt,
         worldSetting,
       });
+      tokenCount = TokenUtils.logTokenUsage('提问箱生成器', '基础系统提示词', systemPrompt, tokenCount);
 
       systemPrompt += `
 
@@ -17363,7 +19790,13 @@ ${
 
 现在，请为用户生成3-10个匿名提问（每行一个）：`;
 
+      const userInfoSection = systemPrompt.substring(systemPrompt.indexOf('【用户身份信息】'));
+      tokenCount = TokenUtils.logTokenUsage('提问箱生成器', '用户信息与要求', userInfoSection, tokenCount);
+
       const messages = [{ role: 'user', content: '请生成3-10个匿名提问，每行一个' }];
+
+      // 最终统计
+      TokenUtils.logFinalPrompt('提问箱生成器', systemPrompt, messages[0].content);
 
       // 判断API类型并发送请求
       let isGemini = proxyUrl.includes('generativelanguage');
@@ -17917,6 +20350,19 @@ ${
   window.handleDetailCommentImageUpload = handleDetailCommentImageUpload;
   window.removeDetailCommentImage = removeDetailCommentImage;
 
+  // 角色关系册相关函数
+  window.toggleCharacterRelationship = toggleCharacterRelationship;
+  window.openCharacterRelationshipGraph = openCharacterRelationshipGraph;
+  window.closeCharacterRelationshipGraph = closeCharacterRelationshipGraph;
+  window.addRelationshipLink = addRelationshipLink;
+  window.openEditRelationshipDetailModal = openEditRelationshipDetailModal;
+  window.closeEditRelationshipDetail = closeEditRelationshipDetail;
+  window.saveRelationshipDetail = saveRelationshipDetail;
+  window.deleteRelationshipLink = deleteRelationshipLink;
+  window.clearAllRelationships = clearAllRelationships;
+  window.saveRelationshipGraph = saveRelationshipGraph;
+  window.characterRelationshipData = characterRelationshipData;
+
   // NPC绑定相关函数
   window.toggleNPCBinding = toggleNPCBinding;
   window.openCreateNPCModal = openCreateNPCModal;
@@ -17970,6 +20416,9 @@ ${
   window.sendMessageToAccount = sendMessageToAccount;
   window.switchAccountTab = switchAccountTab;
   window.refreshAccountProfile = refreshAccountProfile;
+  window.toggleProgressMode = toggleProgressMode;
+  window.handleRefreshButtonMouseDown = handleRefreshButtonMouseDown;
+  window.handleRefreshButtonMouseUp = handleRefreshButtonMouseUp;
   window.goBackFromTweetDetail = goBackFromTweetDetail;
 
   console.log('✅ 全局接口已暴露');
