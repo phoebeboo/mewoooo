@@ -10663,16 +10663,28 @@ ${npc.homepage || '暂无主页内容设置'}
     const mainDB = getDB();
     const xDB = getXDB();
 
-    // 1. 检查是否是绑定的角色
+    // 1. 检查是否是绑定的角色（优先通过句柄匹配，因为句柄是唯一标识）
     const allChats = await mainDB.chats.toArray();
     const allXProfiles = await xDB.xCharacterProfiles.toArray();
 
+    // 规范化句柄格式（移除@符号进行比较）
+    const cleanHandle = accountHandle.replace('@', '');
+
     for (const xProfile of allXProfiles) {
-      if (xProfile.xHandle === accountHandle || xProfile.xName === accountName) {
+      const profileCleanHandle = xProfile.xHandle.replace('@', '');
+
+      // 只通过句柄匹配，确保唯一性和准确性
+      if (profileCleanHandle === cleanHandle) {
         // 找到对应的角色数据
         const character = allChats.find(chat => chat.id === xProfile.characterId);
         if (character) {
-          console.log('✅ 识别为角色账户:', accountName);
+          console.log(
+            '✅ 识别为角色账户 (通过句柄):',
+            xProfile.xName,
+            `(${accountHandle})`,
+            '-> 角色本名:',
+            character.name,
+          );
 
           // 判断认证类型：检查该角色是否是用户的情侣认证对象
           let verificationType = 'verified'; // 默认为普通认证
@@ -10706,14 +10718,17 @@ ${npc.homepage || '暂无主页内容设置'}
       }
     }
 
-    // 2. 检查是否是绑定的NPC
+    // 2. 检查是否是绑定的NPC（同样优先通过句柄匹配）
     const npcDataId = 'xNPCs_global';
     const npcData = await xDB.xNPCs.get(npcDataId);
     const allNPCs = npcData?.npcs || [];
 
     for (const npc of allNPCs) {
-      if (npc.handle === accountHandle || npc.name === accountName) {
-        console.log('✅ 识别为NPC账户:', accountName);
+      const npcCleanHandle = npc.handle.replace('@', '');
+
+      // 只通过句柄匹配NPC
+      if (npcCleanHandle === cleanHandle) {
+        console.log('✅ 识别为NPC账户 (通过句柄):', npc.name, `(${accountHandle})`);
         return {
           accountType: 'npc',
           name: npc.name,
@@ -11608,7 +11623,7 @@ accountReplies数组（2-4条，账户的回复记录）：
       // 情侣认证使用心形图标
       if (verificationType === 'couple') {
         verifiedBadge.innerHTML = `
-          <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; fill: #fff;">
+          <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; fill: var(--x-text-primary);">
             <g><path d="M16.697 5.5c-1.222-.06-2.679.51-3.89 2.16l-.805 1.09-.806-1.09C9.984 6.01 8.526 5.44 7.304 5.5c-1.243.07-2.349.78-2.91 1.91-.552 1.12-.633 2.78.479 4.82 1.074 1.97 3.257 4.27 7.129 6.61 3.87-2.34 6.052-4.64 7.126-6.61 1.111-2.04 1.03-3.7.477-4.82-.561-1.13-1.666-1.84-2.908-1.91zm4.187 7.69c-1.351 2.48-4.001 5.12-8.379 7.67l-.503.3-.504-.3c-4.379-2.55-7.029-5.19-8.382-7.67-1.36-2.5-1.41-4.86-.514-6.67.887-1.79 2.647-2.91 4.601-3.01 1.651-.09 3.368.56 4.798 2.01 1.429-1.45 3.146-2.1 4.796-2.01 1.954.1 3.714 1.22 4.601 3.01.896 1.81.846 4.17-.514 6.67z"></path></g>
           </svg>
         `;
@@ -11711,7 +11726,7 @@ accountReplies数组（2-4条，账户的回复记录）：
     if (accountInfo.verified) {
       if (accountInfo.verificationType === 'couple') {
         accountVerifiedBadgeHtml =
-          '<svg viewBox="0 0 24 24" style="width: 18px; height: 18px; fill: #fff;"><g><path d="M16.697 5.5c-1.222-.06-2.679.51-3.89 2.16l-.805 1.09-.806-1.09C9.984 6.01 8.526 5.44 7.304 5.5c-1.243.07-2.349.78-2.91 1.91-.552 1.12-.633 2.78.479 4.82 1.074 1.97 3.257 4.27 7.129 6.61 3.87-2.34 6.052-4.64 7.126-6.61 1.111-2.04 1.03-3.7.477-4.82-.561-1.13-1.666-1.84-2.908-1.91zm4.187 7.69c-1.351 2.48-4.001 5.12-8.379 7.67l-.503.3-.504-.3c-4.379-2.55-7.029-5.19-8.382-7.67-1.36-2.5-1.41-4.86-.514-6.67.887-1.79 2.647-2.91 4.601-3.01 1.651-.09 3.368.56 4.798 2.01 1.429-1.45 3.146-2.1 4.796-2.01 1.954.1 3.714 1.22 4.601 3.01.896 1.81.846 4.17-.514 6.67z"></path></g></svg>';
+          '<svg viewBox="0 0 24 24" style="width: 18px; height: 18px; fill: var(--x-text-primary);"><g><path d="M16.697 5.5c-1.222-.06-2.679.51-3.89 2.16l-.805 1.09-.806-1.09C9.984 6.01 8.526 5.44 7.304 5.5c-1.243.07-2.349.78-2.91 1.91-.552 1.12-.633 2.78.479 4.82 1.074 1.97 3.257 4.27 7.129 6.61 3.87-2.34 6.052-4.64 7.126-6.61 1.111-2.04 1.03-3.7.477-4.82-.561-1.13-1.666-1.84-2.908-1.91zm4.187 7.69c-1.351 2.48-4.001 5.12-8.379 7.67l-.503.3-.504-.3c-4.379-2.55-7.029-5.19-8.382-7.67-1.36-2.5-1.41-4.86-.514-6.67.887-1.79 2.647-2.91 4.601-3.01 1.651-.09 3.368.56 4.798 2.01 1.429-1.45 3.146-2.1 4.796-2.01 1.954.1 3.714 1.22 4.601 3.01.896 1.81.846 4.17-.514 6.67z"></path></g></svg>';
       } else {
         accountVerifiedBadgeHtml =
           '<svg viewBox="0 0 24 24" style="width: 18px; height: 18px; fill: var(--x-accent);"><g><path d="M22.25 12c0-1.43-.88-2.67-2.19-3.34.46-1.39.2-2.9-.81-3.91s-2.52-1.27-3.91-.81c-.66-1.31-1.91-2.19-3.34-2.19s-2.67.88-3.33 2.19c-1.4-.46-2.91-.2-3.92.81s-1.26 2.52-.8 3.91c-1.31.67-2.2 1.91-2.2 3.34s.89 2.67 2.2 3.34c-.46 1.39-.21 2.9.8 3.91s2.52 1.27 3.91.81c.67 1.31 1.91 2.19 3.34 2.19s2.68-.88 3.34-2.19c1.39.46 2.9.2 3.91-.81s1.27-2.52.81-3.91c1.31-.67 2.19-1.91 2.19-3.34zm-11.71 4.2L6.8 12.46l1.41-1.42 2.26 2.26 4.8-5.23 1.47 1.36-6.2 6.77z"></path></g></svg>';
@@ -11965,7 +11980,7 @@ accountReplies数组（2-4条，账户的回复记录）：
     if (user.verified) {
       if (user.verificationType === 'couple') {
         verifiedBadgeHtml =
-          '<svg viewBox="0 0 24 24" style="width: 18px; height: 18px; fill: #fff;"><g><path d="M16.697 5.5c-1.222-.06-2.679.51-3.89 2.16l-.805 1.09-.806-1.09C9.984 6.01 8.526 5.44 7.304 5.5c-1.243.07-2.349.78-2.91 1.91-.552 1.12-.633 2.78.479 4.82 1.074 1.97 3.257 4.27 7.129 6.61 3.87-2.34 6.052-4.64 7.126-6.61 1.111-2.04 1.03-3.7.477-4.82-.561-1.13-1.666-1.84-2.908-1.91zm4.187 7.69c-1.351 2.48-4.001 5.12-8.379 7.67l-.503.3-.504-.3c-4.379-2.55-7.029-5.19-8.382-7.67-1.36-2.5-1.41-4.86-.514-6.67.887-1.79 2.647-2.91 4.601-3.01 1.651-.09 3.368.56 4.798 2.01 1.429-1.45 3.146-2.1 4.796-2.01 1.954.1 3.714 1.22 4.601 3.01.896 1.81.846 4.17-.514 6.67z"></path></g></svg>';
+          '<svg viewBox="0 0 24 24" style="width: 18px; height: 18px; fill: var(--x-text-primary);"><g><path d="M16.697 5.5c-1.222-.06-2.679.51-3.89 2.16l-.805 1.09-.806-1.09C9.984 6.01 8.526 5.44 7.304 5.5c-1.243.07-2.349.78-2.91 1.91-.552 1.12-.633 2.78.479 4.82 1.074 1.97 3.257 4.27 7.129 6.61 3.87-2.34 6.052-4.64 7.126-6.61 1.111-2.04 1.03-3.7.477-4.82-.561-1.13-1.666-1.84-2.908-1.91zm4.187 7.69c-1.351 2.48-4.001 5.12-8.379 7.67l-.503.3-.504-.3c-4.379-2.55-7.029-5.19-8.382-7.67-1.36-2.5-1.41-4.86-.514-6.67.887-1.79 2.647-2.91 4.601-3.01 1.651-.09 3.368.56 4.798 2.01 1.429-1.45 3.146-2.1 4.796-2.01 1.954.1 3.714 1.22 4.601 3.01.896 1.81.846 4.17-.514 6.67z"></path></g></svg>';
       } else {
         verifiedBadgeHtml =
           '<svg viewBox="0 0 24 24" style="width: 18px; height: 18px; fill: var(--x-accent);"><g><path d="M22.25 12c0-1.43-.88-2.67-2.19-3.34.46-1.39.2-2.9-.81-3.91s-2.52-1.27-3.91-.81c-.66-1.31-1.91-2.19-3.34-2.19s-2.67.88-3.33 2.19c-1.4-.46-2.91-.2-3.92.81s-1.26 2.52-.8 3.91c-1.31.67-2.2 1.91-2.2 3.34s.89 2.67 2.2 3.34c-.46 1.39-.21 2.9.8 3.91s2.52 1.27 3.91.81c.67 1.31 1.91 2.19 3.34 2.19s2.68-.88 3.34-2.19c1.39.46 2.9.2 3.91-.81s1.27-2.52.81-3.91c1.31-.67 2.19-1.91 2.19-3.34zm-11.71 4.2L6.8 12.46l1.41-1.42 2.26 2.26 4.8-5.23 1.47 1.36-6.2 6.77z"></path></g></svg>';
@@ -16630,20 +16645,26 @@ ${existingQuestionsContext}
           'M22.25 12c0-1.43-.88-2.67-2.19-3.34.46-1.39.2-2.9-.81-3.91s-2.52-1.27-3.91-.81c-.66-1.31-1.91-2.19-3.34-2.19s-2.67.88-3.33 2.19c-1.4-.46-2.91-.2-3.92.81s-1.26 2.52-.8 3.91c-1.31.67-2.2 1.91-2.2 3.34s.89 2.67 2.2 3.34c-.46 1.39-.21 2.9.8 3.91s2.52 1.27 3.91.81c.67 1.31 1.91 2.19 3.34 2.19s2.68-.88 3.34-2.19c1.39.46 2.9.2 3.91-.81s1.27-2.52.81-3.91c1.31-.67 2.19-1.91 2.19-3.34zm-11.71 4.2L6.8 12.46l1.41-1.42 2.26 2.26 4.8-5.23 1.47 1.36-6.2 6.77z';
         break;
       case 'couple':
-        // 简约白色心形 - 情侣认证
-        badgeColor = '#ffffff';
+        // 心形 - 情侣认证（自适应主题颜色：日间黑色，夜间白色）
+        badgeColor =
+          getComputedStyle(document.getElementById('x-social-screen')).getPropertyValue('--x-text-primary').trim() ||
+          '#fff';
         badgePath =
           'M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z';
         break;
       case 'married':
-        // 简约白色圆环 - 已婚认证
-        badgeColor = '#ffffff';
+        // 圆环 - 已婚认证（自适应主题颜色：日间黑色，夜间白色）
+        badgeColor =
+          getComputedStyle(document.getElementById('x-social-screen')).getPropertyValue('--x-text-primary').trim() ||
+          '#fff';
         badgePath =
           'M12 4c4.42 0 8 3.58 8 8s-3.58 8-8 8-8-3.58-8-8 3.58-8 8-8zm0 2c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6z';
         break;
       case 'vip':
-        // 简约白色菱形 - VIP认证
-        badgeColor = '#ffffff';
+        // 菱形 - VIP认证（自适应主题颜色：日间黑色，夜间白色）
+        badgeColor =
+          getComputedStyle(document.getElementById('x-social-screen')).getPropertyValue('--x-text-primary').trim() ||
+          '#fff';
         badgePath = 'M12 3l6 6-6 6-6-6 6-6zm0 2.83L8.83 9 12 12.17 15.17 9 12 5.83z';
         break;
       default:
@@ -20268,7 +20289,217 @@ ${tweetData.link ? `链接：${tweetData.link.title || tweetData.link.url}` : ''
   let isMultiSelectMode = false;
   let selectedTweets = new Set();
 
-  // 切换推文选择状态
+  // 显示推文操作菜单（置顶/删除）
+  function showTweetActionMenu(tweetId, event) {
+    // 阻止事件冒泡
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
+    // 移除已存在的菜单
+    const existingMenu = document.getElementById('tweet-action-menu');
+    if (existingMenu) {
+      existingMenu.remove();
+    }
+
+    // 获取推文数据
+    getUserTweets().then(userTweets => {
+      const tweet = userTweets.find(t => t.id === tweetId);
+      if (!tweet) return;
+
+      const isPinned = tweet.pinned || false;
+
+      // 创建菜单
+      const menu = document.createElement('div');
+      menu.id = 'tweet-action-menu';
+      menu.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #000;
+        border: 1px solid #2f3336;
+        border-radius: 16px;
+        min-width: 280px;
+        z-index: 10000;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      `;
+
+      menu.innerHTML = `
+        <div style="padding: 12px 0;">
+          <div onclick="toggleTweetPin('${tweetId}')" style="
+            padding: 12px 16px;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: background-color 0.2s;
+          " onmouseover="this.style.backgroundColor='rgba(255,255,255,0.03)'" onmouseout="this.style.backgroundColor='transparent'">
+            <svg viewBox="0 0 32 32" style="width: 18px; height: 18px; fill: currentColor;">
+              <path d="M20.743 14.815l-0.933-12.065h5.191c0.414 0 0.75-0.336 0.75-0.75s-0.336-0.75-0.75-0.75v0h-18c-0.414 0-0.75 0.336-0.75 0.75s0.336 0.75 0.75 0.75v0h5.432l-1.275 12.103c-3.213 0.959-5.574 3.738-5.904 7.113l-0.003 0.034c0 0.414 0.336 0.75 0.75 0.75h9.25v7.25c0 0.414 0.336 0.75 0.75 0.75s0.75-0.336 0.75-0.75v0-7.25h9.25c0.414-0 0.75-0.336 0.75-0.75v0c0-3.017-2.35-5.787-6.007-7.185zM12.104 16.081c0.096-0.035 0.179-0.085 0.249-0.148l-0.001 0.001 0.005-0.003c0.126-0.117 0.211-0.275 0.233-0.453l0-0.004 0.011-0.022 1.337-12.701h4.367l0.979 12.681c0.033 0.35 0.303 0.627 0.647 0.67l0.004 0c2.542 0.682 4.512 2.623 5.222 5.096l0.013 0.052h-18.341c0.729-2.54 2.714-4.49 5.222-5.157l0.052-0.012z"></path>
+            </svg>
+            <span>${isPinned ? '取消置顶' : '置顶到个人资料'}</span>
+          </div>
+          <div onclick="enterMultiSelectModeFromMenu('${tweetId}')" style="
+            padding: 12px 16px;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: background-color 0.2s;
+          " onmouseover="this.style.backgroundColor='rgba(255,255,255,0.03)'" onmouseout="this.style.backgroundColor='transparent'">
+            <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; fill: currentColor;">
+              <g><path d="M9 2C6.243 2 4 4.243 4 7v10c0 2.757 2.243 5 5 5h6c2.757 0 5-2.243 5-5V7c0-2.757-2.243-5-5-5H9zm0 2h6c1.654 0 3 1.346 3 3v10c0 1.654-1.346 3-3 3H9c-1.654 0-3-1.346-3-3V7c0-1.654 1.346-3 3-3zm6.207 3.793l-5.5 5.5-2.414-2.414-1.414 1.414 3.121 3.121.707.707.707-.707 6.207-6.207-1.414-1.414z"></path></g>
+            </svg>
+            <span>选择多条推文</span>
+          </div>
+          <div onclick="deleteSingleTweet('${tweetId}')" style="
+            padding: 12px 16px;
+            color: #f4212e;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: background-color 0.2s;
+          " onmouseover="this.style.backgroundColor='rgba(244,33,46,0.1)'" onmouseout="this.style.backgroundColor='transparent'">
+            <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; fill: currentColor;">
+              <g><path d="M16 6V4.5C16 3.12 14.88 2 13.5 2h-3C9.11 2 8 3.12 8 4.5V6H3v2h1.06l.81 11.21C4.98 20.78 6.28 22 7.86 22h8.27c1.58 0 2.88-1.22 3-2.79L19.93 8H21V6h-5zm-6-1.5c0-.28.22-.5.5-.5h3c.27 0 .5.22.5.5V6h-4V4.5zm7.13 14.57c-.04.52-.47.93-1 .93H7.86c-.53 0-.96-.41-1-.93L6.07 8h11.85l-.79 11.07zM9 17v-6h2v6H9zm4 0v-6h2v6h-2z"></path></g>
+            </svg>
+            <span>删除</span>
+          </div>
+        </div>
+        <div onclick="closeTweetActionMenu()" style="
+          padding: 12px 16px;
+          color: #71767b;
+          font-size: 15px;
+          font-weight: 500;
+          cursor: pointer;
+          text-align: center;
+          border-top: 1px solid #2f3336;
+          transition: background-color 0.2s;
+        " onmouseover="this.style.backgroundColor='rgba(255,255,255,0.03)'" onmouseout="this.style.backgroundColor='transparent'">
+          取消
+        </div>
+      `;
+
+      document.body.appendChild(menu);
+
+      // 点击菜单外部关闭
+      setTimeout(() => {
+        document.addEventListener('click', function closeMenuOnClickOutside(e) {
+          if (!menu.contains(e.target)) {
+            menu.remove();
+            document.removeEventListener('click', closeMenuOnClickOutside);
+          }
+        });
+      }, 100);
+    });
+  }
+
+  // 关闭操作菜单
+  window.closeTweetActionMenu = function () {
+    const menu = document.getElementById('tweet-action-menu');
+    if (menu) {
+      menu.remove();
+    }
+  };
+
+  // 切换推文置顶状态
+  window.toggleTweetPin = async function (tweetId) {
+    try {
+      const db = getXDB();
+      const accountTweetsId = `userTweets_${currentAccountId || 'main'}`;
+      const userTweets = await db.xUserTweets.get(accountTweetsId);
+
+      if (userTweets && userTweets.tweets) {
+        const tweet = userTweets.tweets.find(t => t.id === tweetId);
+        if (tweet) {
+          const wasPinned = tweet.pinned || false;
+
+          // 如果要置顶，先取消其他推文的置顶
+          if (!wasPinned) {
+            userTweets.tweets.forEach(t => {
+              if (t.pinned) {
+                t.pinned = false;
+              }
+            });
+          }
+
+          // 切换当前推文的置顶状态
+          tweet.pinned = !wasPinned;
+
+          // 保存到数据库
+          await db.xUserTweets.put(userTweets);
+
+          showXToast(wasPinned ? '已取消置顶' : '推文已置顶', 'success');
+
+          // 关闭菜单并刷新显示
+          closeTweetActionMenu();
+          loadUserProfileTweets();
+        }
+      }
+    } catch (error) {
+      console.error('切换置顶状态失败:', error);
+      showXToast('操作失败', 'error');
+    }
+  };
+
+  // 删除单条推文
+  window.deleteSingleTweet = async function (tweetId) {
+    const confirmDelete = confirm('确定要删除这条推文吗？删除后无法恢复。');
+    if (!confirmDelete) return;
+
+    try {
+      const db = getXDB();
+      const accountTweetsId = `userTweets_${currentAccountId || 'main'}`;
+      const userTweets = await db.xUserTweets.get(accountTweetsId);
+
+      if (userTweets && userTweets.tweets) {
+        userTweets.tweets = userTweets.tweets.filter(tweet => tweet.id !== tweetId);
+        await db.xUserTweets.put(userTweets);
+
+        // 同时从主推文数据中删除
+        const tweetsData = await db.xTweetsData.get('tweets');
+        if (tweetsData) {
+          let updated = false;
+
+          if (tweetsData.forYouTweets) {
+            const originalLength = tweetsData.forYouTweets.length;
+            tweetsData.forYouTweets = tweetsData.forYouTweets.filter(tweet => tweet.id !== tweetId);
+            if (tweetsData.forYouTweets.length !== originalLength) updated = true;
+          }
+
+          if (tweetsData.followingTweets) {
+            const originalLength = tweetsData.followingTweets.length;
+            tweetsData.followingTweets = tweetsData.followingTweets.filter(tweet => tweet.id !== tweetId);
+            if (tweetsData.followingTweets.length !== originalLength) updated = true;
+          }
+
+          if (updated) {
+            await db.xTweetsData.put(tweetsData);
+          }
+        }
+
+        showXToast('推文已删除', 'success');
+        closeTweetActionMenu();
+        loadUserProfileTweets();
+      }
+    } catch (error) {
+      console.error('删除推文失败:', error);
+      showXToast('删除失败', 'error');
+    }
+  };
+
+  // 切换推文选择状态（用于多选模式）
   function toggleTweetSelection(tweetId) {
     if (!isMultiSelectMode) {
       enterMultiSelectMode();
@@ -20290,6 +20521,16 @@ ${tweetData.link ? `链接：${tweetData.link.title || tweetData.link.url}` : ''
     updateDeleteUI();
   }
 
+  // 从菜单进入多选模式并选中当前推文
+  window.enterMultiSelectModeFromMenu = function (tweetId) {
+    closeTweetActionMenu();
+    enterMultiSelectMode();
+    // 自动选中触发菜单的推文
+    if (tweetId) {
+      toggleTweetSelection(tweetId);
+    }
+  };
+
   // 进入多选模式
   function enterMultiSelectMode() {
     isMultiSelectMode = true;
@@ -20304,7 +20545,7 @@ ${tweetData.link ? `链接：${tweetData.link.title || tweetData.link.url}` : ''
   }
 
   // 退出多选模式
-  function exitMultiSelectMode() {
+  window.exitMultiSelectMode = function () {
     isMultiSelectMode = false;
     selectedTweets.clear();
 
@@ -20317,7 +20558,7 @@ ${tweetData.link ? `链接：${tweetData.link.title || tweetData.link.url}` : ''
       item.style.backgroundColor = '';
       item.style.borderLeft = '';
     });
-  }
+  };
 
   // 显示删除工具栏
   function showDeleteToolbar() {
@@ -20376,7 +20617,7 @@ ${tweetData.link ? `链接：${tweetData.link.title || tweetData.link.url}` : ''
   }
 
   // 全选推文
-  function selectAllTweets() {
+  window.selectAllTweets = function () {
     document.querySelectorAll('.user-tweet-item').forEach(item => {
       const tweetId = item.dataset.tweetId;
       if (!selectedTweets.has(tweetId)) {
@@ -20386,10 +20627,10 @@ ${tweetData.link ? `链接：${tweetData.link.title || tweetData.link.url}` : ''
       }
     });
     updateDeleteUI();
-  }
+  };
 
   // 删除选中的推文
-  async function deleteSelectedTweets() {
+  window.deleteSelectedTweets = async function () {
     if (selectedTweets.size === 0) return;
 
     const confirmDelete = confirm(`确定要删除选中的 ${selectedTweets.size} 条推文吗？删除后无法恢复。`);
@@ -20440,7 +20681,7 @@ ${tweetData.link ? `链接：${tweetData.link.title || tweetData.link.url}` : ''
       console.error('删除推文失败:', error);
       showXToast('删除失败', 'error');
     }
-  }
+  };
 
   // 加载用户个人页面的推文
   async function loadUserProfileTweets() {
@@ -20456,8 +20697,17 @@ ${tweetData.link ? `链接：${tweetData.link.title || tweetData.link.url}` : ''
                   </div>
                 `;
       } else {
+        // 将置顶推文排在最前面
+        const sortedTweets = [...userTweets].sort((a, b) => {
+          const aPinned = a.pinned || false;
+          const bPinned = b.pinned || false;
+          if (aPinned && !bPinned) return -1;
+          if (!aPinned && bPinned) return 1;
+          return 0; // 保持原有顺序
+        });
+
         container.innerHTML = '';
-        userTweets.forEach(tweet => {
+        sortedTweets.forEach(tweet => {
           const tweetElement = createUserTweetElement(tweet);
           container.appendChild(tweetElement);
         });
@@ -20473,13 +20723,15 @@ ${tweetData.link ? `链接：${tweetData.link.title || tweetData.link.url}` : ''
     }
   }
 
-  // 创建用户推文元素（个人页面版本）
+  // 创建用户推文元素(个人页面版本)
   function createUserTweetElement(tweet) {
     const tweetEl = document.createElement('div');
-    tweetEl.className = 'tweet-item user-tweet-item';
+    tweetEl.className = 'user-tweet-item';
     tweetEl.dataset.tweetId = tweet.id;
     tweetEl.style.cursor = 'pointer';
     tweetEl.style.position = 'relative';
+    tweetEl.style.borderBottom = '1px solid var(--x-border-color)';
+    tweetEl.style.display = 'block';
 
     // 触摸事件处理变量
     let longPressTimer;
@@ -20502,7 +20754,8 @@ ${tweetData.link ? `链接：${tweetData.link.title || tweetData.link.url}` : ''
         if (!hasMoved) {
           // 只有没有移动时才触发长按
           isLongPressed = true;
-          toggleTweetSelection(tweet.id);
+          // 显示操作菜单（置顶/删除）
+          showTweetActionMenu(tweet.id, e);
           e.preventDefault();
         }
       }, 800);
@@ -20560,7 +20813,8 @@ ${tweetData.link ? `链接：${tweetData.link.title || tweetData.link.url}` : ''
 
       longPressTimer = setTimeout(() => {
         isLongPressed = true;
-        toggleTweetSelection(tweet.id);
+        // 显示操作菜单（置顶/删除）
+        showTweetActionMenu(tweet.id, e);
         e.preventDefault();
       }, 800);
     });
@@ -20714,9 +20968,29 @@ ${tweetData.link ? `链接：${tweetData.link.title || tweetData.link.url}` : ''
               `;
     }
 
+    // 检查是否置顶
+    const isPinned = tweet.pinned || false;
+
     tweetEl.innerHTML = `
-              <img class="tweet-avatar" src="${tweet.user.avatar}" alt="${tweet.user.name}">
-              <div class="tweet-main">
+              ${
+                isPinned
+                  ? `
+              <div style="padding: 12px 16px 0; display: flex; align-items: center; gap: 12px;">
+                <div style="width: 40px; display: flex; justify-content: flex-end;">
+                  <svg viewBox="0 0 32 32" style="width: 16px; height: 16px; fill: #71767b;">
+                    <path d="M20.743 14.815l-0.933-12.065h5.191c0.414 0 0.75-0.336 0.75-0.75s-0.336-0.75-0.75-0.75v0h-18c-0.414 0-0.75 0.336-0.75 0.75s0.336 0.75 0.75 0.75v0h5.432l-1.275 12.103c-3.213 0.959-5.574 3.738-5.904 7.113l-0.003 0.034c0 0.414 0.336 0.75 0.75 0.75h9.25v7.25c0 0.414 0.336 0.75 0.75 0.75s0.75-0.336 0.75-0.75v0-7.25h9.25c0.414-0 0.75-0.336 0.75-0.75v0c0-3.017-2.35-5.787-6.007-7.185zM12.104 16.081c0.096-0.035 0.179-0.085 0.249-0.148l-0.001 0.001 0.005-0.003c0.126-0.117 0.211-0.275 0.233-0.453l0-0.004 0.011-0.022 1.337-12.701h4.367l0.979 12.681c0.033 0.35 0.303 0.627 0.647 0.67l0.004 0c2.542 0.682 4.512 2.623 5.222 5.096l0.013 0.052h-18.341c0.729-2.54 2.714-4.49 5.222-5.157l0.052-0.012z"></path>
+                  </svg>
+                </div>
+                <span style="color: #71767b; font-size: 13px; font-weight: 700;">已置顶</span>
+              </div>
+            `
+                  : ''
+              }
+              <div style="display: flex; gap: 12px; padding: 12px 16px;">
+                <img src="${tweet.user.avatar}" alt="${
+      tweet.user.name
+    }" style="width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;">
+                <div style="flex: 1; min-width: 0;" class="tweet-main">
                 <div class="tweet-user-info">
                   <span class="tweet-user-name">${tweet.user.name}</span>
                   ${
@@ -20777,6 +21051,7 @@ ${tweetData.link ? `链接：${tweetData.link.title || tweetData.link.url}` : ''
                     <svg class="action-icon" viewBox="0 0 24 24" fill="currentColor">
                       <g><path d="M12 2.59l5.7 5.7-1.41 1.42L13 6.41V16h-2V6.41l-3.29 3.3-1.42-1.42L12 2.59zM21 15l-.02 3.51c0 1.38-1.12 2.49-2.5 2.49H5.5C4.11 21 3 19.88 3 18.5V15h2v3.5c0 .28.22.5.5.5h12.98c.28 0 .5-.22.5-.5L19 15h2z"></path></g>
                     </svg>
+                  </div>
                   </div>
                 </div>
               </div>
