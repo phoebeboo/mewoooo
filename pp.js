@@ -14057,14 +14057,14 @@ ${existingQuestionsContext}
       const db = getXDB();
       const preset = await db.xPresets.get(presetId);
       if (preset) {
-        // 加载所有设定
-        document.getElementById('x-system-prompt').value = preset.systemPrompt || '';
-        document.getElementById('x-world-setting').value = preset.worldSetting || '';
+        // 先更新xSettingsData对象
+        xSettingsData.systemPrompt = preset.systemPrompt || '';
+        xSettingsData.worldSetting = preset.worldSetting || '';
         xSettingsData.characterBinding = preset.characterBinding || false;
         xSettingsData.boundCharacters = preset.boundCharacters || [];
 
-        // 更新UI
-        loadXSettingsToUI();
+        // 然后更新UI（会从xSettingsData读取数据）
+        await loadXSettingsToUI();
 
         showXToast(`已加载预设"${preset.name}"`, 'success');
       }
