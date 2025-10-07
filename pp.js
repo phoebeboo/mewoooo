@@ -21,6 +21,34 @@
     const style = document.createElement('style');
     style.id = styleId;
     style.textContent = `
+      /* ========== X社交页面主题变量 ========== */
+      :root {
+        --x-bg-primary: #000;
+        --x-bg-secondary: #1a1a1a;
+        --x-bg-hover: rgba(255,255,255,0.03);
+        --x-border-color: #2f3336;
+        --x-text-primary: #fff;
+        --x-text-secondary: #71767b;
+        --x-text-tertiary: #8b98a5;
+        --x-accent: #1d9bf0;
+        --x-input-bg: #1a1a1a;
+        --x-modal-overlay: rgba(91, 112, 131, 0.4);
+      }
+
+      /* 日间模式 */
+      .x-theme-light {
+        --x-bg-primary: #fff;
+        --x-bg-secondary: #f7f9f9;
+        --x-bg-hover: rgba(0,0,0,0.03);
+        --x-border-color: #eff3f4;
+        --x-text-primary: #0f1419;
+        --x-text-secondary: #536471;
+        --x-text-tertiary: #5b7083;
+        --x-accent: #1d9bf0;
+        --x-input-bg: #f7f9f9;
+        --x-modal-overlay: rgba(0, 0, 0, 0.4);
+      }
+
       /* ========== X社交页面基础样式 ========== */
       
                 /* 自定义滚动条样式 - X风格（细长短小亮蓝色） */
@@ -101,18 +129,1372 @@
           #x-social-screen {
             height: 100vh !important;
             overflow: hidden !important;
+            background-color: var(--x-bg-primary) !important;
+            color: var(--x-text-primary) !important;
           }
 
           .x-pages-container {
             min-height: 0 !important;
+            background-color: var(--x-bg-primary) !important;
           }
 
           .x-page {
             min-height: 0 !important;
+            background-color: var(--x-bg-primary) !important;
           }
 
           .x-bottom-nav {
             flex-shrink: 0 !important;
+            background-color: var(--x-bg-primary) !important;
+            border-top: 1px solid var(--x-border-color) !important;
+          }
+          
+          /* 所有页面容器使用主题背景色 */
+          #x-home-page,
+          #x-search-page,
+          #x-notifications-page,
+          #x-messages-page,
+          #x-comments-page,
+          #x-settings-page,
+          #x-tweet-detail-page,
+          #x-profile-page,
+          #account-profile-page {
+            background-color: var(--x-bg-primary) !important;
+          }
+          
+          /* 顶部导航栏 */
+          .x-top-bar,
+          .comments-header,
+          .settings-header,
+          .profile-header,
+          .tweet-detail-header {
+            background-color: var(--x-bg-primary) !important;
+            border-bottom: 1px solid var(--x-border-color) !important;
+          }
+          
+          /* 标签栏 */
+          .x-home-tabs,
+          .search-tabs,
+          .profile-tabs {
+            background-color: var(--x-bg-primary) !important;
+            border-bottom: 1px solid var(--x-border-color) !important;
+          }
+          
+          /* 输入区域 */
+          .comment-input-area,
+          .detail-comment-input-area {
+            background-color: var(--x-bg-primary) !important;
+            border-top: 1px solid var(--x-border-color) !important;
+          }
+          
+          /* 设置页面内容 */
+          .settings-content {
+            background-color: var(--x-bg-primary) !important;
+          }
+          
+          /* 搜索头部 */
+          .search-header {
+            background-color: var(--x-bg-primary) !important;
+            border-bottom: 1px solid var(--x-border-color) !important;
+          }
+          
+          /* 搜索框 */
+          .search-box {
+            background-color: var(--x-input-bg) !important;
+          }
+          
+          /* 热搜视图 */
+          #trending-view,
+          .trending-list {
+            background-color: var(--x-bg-primary) !important;
+          }
+          
+          /* 搜索结果内容 */
+          #search-results-content {
+            background-color: var(--x-bg-primary) !important;
+          }
+          
+          /* 弹窗和模态框 */
+          .modal-content,
+          .compose-modal-content,
+          #edit-profile-modal .modal-content,
+          #compose-tweet-modal .compose-modal-content,
+          #character-x-profile-modal > div > div,
+          #relationship-modal > div > div,
+          #category-manager-modal > div,
+          #character-relationship-graph-modal > div > div,
+          #edit-relationship-detail-modal > div > div,
+          #npc-edit-modal > div > div {
+            background-color: var(--x-bg-primary) !important;
+          }
+          
+          /* 模态框头部 */
+          .modal-header,
+          .compose-header {
+            background-color: var(--x-bg-primary) !important;
+            border-bottom: 1px solid var(--x-border-color) !important;
+          }
+          
+          /* 模态框主体内容区域 */
+          .modal-body,
+          .compose-body {
+            background-color: var(--x-bg-primary) !important;
+          }
+          
+          /* 表单元素 */
+          input[type="text"],
+          input[type="url"],
+          input[type="email"],
+          textarea,
+          select {
+            background-color: var(--x-input-bg) !important;
+            border-color: var(--x-border-color) !important;
+            color: var(--x-text-primary) !important;
+          }
+          
+          input[type="text"]:focus,
+          input[type="url"]:focus,
+          input[type="email"]:focus,
+          textarea:focus,
+          select:focus {
+            border-color: var(--x-accent) !important;
+          }
+          
+          /* 引用推文 */
+          .quoted-tweet {
+            border-color: var(--x-border-color) !important;
+            background-color: var(--x-bg-hover) !important;
+          }
+          
+          /* 回复连接线 */
+          .comment-item.has-replies::after,
+          .reply-item::before {
+            background-color: var(--x-border-color) !important;
+            border-color: var(--x-border-color) !important;
+          }
+          
+          /* 卡片和容器 */
+          #character-info-display,
+          #character-relationships-list,
+          #identity-characters-list,
+          #characters-list,
+          #npcs-list,
+          #npc-bind-users {
+            background-color: var(--x-input-bg) !important;
+            border-color: var(--x-border-color) !important;
+          }
+          
+          /* 内容容器 */
+          .tab-content,
+          .tweets-container,
+          .comments-container,
+          #detail-comments-container,
+          #tweet-detail-container,
+          #x-profile-tweets-container,
+          #account-tweets-container,
+          .profile-content {
+            background-color: var(--x-bg-primary) !important;
+          }
+          
+          /* 列表项悬停效果 */
+          .tweet-item:hover,
+          .comment-item:hover,
+          .trending-item:hover {
+            background-color: var(--x-bg-hover) !important;
+          }
+          
+          /* 账户资料页面 */
+          .user-info-section,
+          .edit-avatar-section,
+          .edit-form-section {
+            background-color: var(--x-bg-primary) !important;
+          }
+          
+          /* 设置区域的卡片 */
+          #character-binding-area > div,
+          #relationship-binding-area > div,
+          #npc-binding-area > div {
+            background-color: var(--x-input-bg) !important;
+            border-color: var(--x-border-color) !important;
+          }
+          
+          /* 热搜项目 */
+          .trending-item {
+            background-color: var(--x-bg-primary) !important;
+          }
+          
+          /* 推文详情页面 */
+          .tweet-detail-content {
+            background-color: var(--x-bg-primary) !important;
+          }
+          
+          /* 所有文本颜色 */
+          #x-social-screen span,
+          #x-social-screen div:not(.tweet-action):not(.comment-action) {
+            color: inherit;
+          }
+          
+          /* 标签文本 */
+          .x-tab {
+            color: var(--x-text-secondary) !important;
+          }
+          
+          .x-tab.active {
+            color: var(--x-text-primary) !important;
+          }
+          
+          /* SVG图标颜色 - 非激活状态 */
+          #x-social-screen .x-back-btn svg,
+          #x-social-screen .x-settings svg,
+          #x-social-screen .x-refresh-btn svg,
+          #x-social-screen .settings-back-btn svg,
+          #x-social-screen .comments-back-btn svg,
+          #x-social-screen .profile-back-btn svg,
+          #x-social-screen .tweet-detail-back-btn svg {
+            fill: var(--x-text-primary) !important;
+          }
+          
+          /* 次要SVG图标 */
+          #x-social-screen .tweet-more {
+            color: var(--x-text-secondary) !important;
+          }
+          
+          /* 按钮文本颜色 */
+          #x-social-screen button {
+            color: inherit;
+          }
+          
+          /* 占位符文本 */
+          #x-social-screen ::placeholder {
+            color: var(--x-text-secondary) !important;
+          }
+          
+                    /* 次要文本元素 */
+          .tweet-time,
+          .tweet-user-handle,
+          .comment-time,
+          .quoted-user-handle,
+          .quoted-user-time {
+            color: var(--x-text-secondary) !important;
+          }
+
+          /* 主要文本元素 */
+          .tweet-user-name,
+          .tweet-content,
+          .comment-content,
+          .quoted-user-name,
+          .quoted-content {
+            color: var(--x-text-primary) !important;
+          }
+
+          /* 热搜标题和类别 */
+          .trending-title {
+            color: var(--x-text-primary) !important;
+          }
+
+          .trending-category,
+          .trending-count {
+            color: var(--x-text-secondary) !important;
+          }
+
+          /* 关系预览区域 */
+          #relationship-preview {
+            background-color: var(--x-bg-secondary) !important;
+            border-color: var(--x-border-color) !important;
+          }
+
+          /* 关系图编辑器 */
+          #relationship-graph-canvas {
+            background-color: var(--x-bg-primary) !important;
+          }
+          
+          /* ========== 账户主页和详情页动态元素样式 ========== */
+          /* 账户主页推文容器内的所有span（覆盖内联样式） */
+          #account-tweets-container span[style*="color: #fff"],
+          #account-tweets-container span[style*="color:#fff"],
+          #account-tweets-container span[style*="color: rgb(255, 255, 255)"] {
+            color: var(--x-text-primary) !important;
+          }
+          
+          #account-tweets-container span[style*="color: #71767b"],
+          #account-tweets-container span[style*="color:#71767b"] {
+            color: var(--x-text-secondary) !important;
+          }
+          
+          /* 账户主页推文容器内的div文本颜色 */
+          #account-tweets-container div[style*="color: #fff"],
+          #account-tweets-container div[style*="color:#fff"],
+          #account-tweets-container div[style*="color: #e7e9ea"],
+          #account-tweets-container div[style*="color:#e7e9ea"] {
+            color: var(--x-text-primary) !important;
+          }
+          
+          #account-tweets-container div[style*="color: #71767b"],
+          #account-tweets-container div[style*="color:#71767b"] {
+            color: var(--x-text-secondary) !important;
+          }
+          
+          /* 账户主页推文容器内的边框 */
+          #account-tweets-container > div[style*="border-bottom"] {
+            border-bottom-color: var(--x-border-color) !important;
+          }
+          
+          /* 账户主页推文容器内的背景卡片 */
+          #account-tweets-container div[style*="background-color: #202327"],
+          #account-tweets-container div[style*="background-color:#202327"] {
+            background-color: var(--x-bg-secondary) !important;
+            border-color: var(--x-border-color) !important;
+          }
+          
+          /* 账户主页推文容器内的SVG图标 */
+          #account-tweets-container svg[style*="fill: currentColor"] {
+            fill: currentColor !important;
+          }
+          
+          #account-tweets-container svg[style*="fill: #71767b"],
+          #account-tweets-container svg[style*="fill:#71767b"] {
+            fill: var(--x-text-secondary) !important;
+          }
+          
+          /* 推文详情页评论容器内的所有文本 */
+          #detail-comments-container span[style*="color: #fff"],
+          #detail-comments-container span[style*="color:#fff"] {
+            color: var(--x-text-primary) !important;
+          }
+          
+          #detail-comments-container span[style*="color: #71767b"],
+          #detail-comments-container span[style*="color:#71767b"] {
+            color: var(--x-text-secondary) !important;
+          }
+          
+          #detail-comments-container div[style*="color: #fff"],
+          #detail-comments-container div[style*="color:#fff"] {
+            color: var(--x-text-primary) !important;
+          }
+          
+          #detail-comments-container div[style*="color: #71767b"],
+          #detail-comments-container div[style*="color:#71767b"] {
+            color: var(--x-text-secondary) !important;
+          }
+          
+          /* 推文详情页评论容器内的边框和连接线 */
+          #detail-comments-container div[style*="border-bottom"] {
+            border-bottom-color: var(--x-border-color) !important;
+          }
+          
+          #detail-comments-container div[style*="background-color: #2f3336"],
+          #detail-comments-container div[style*="background-color:#2f3336"] {
+            background-color: var(--x-border-color) !important;
+          }
+          
+          /* 推文详情页评论容器内的卡片背景 */
+          #detail-comments-container div[style*="background-color: #202327"],
+          #detail-comments-container div[style*="background-color:#202327"],
+          #detail-comments-container div[style*="background-color: #1a1a1a"],
+          #detail-comments-container div[style*="background-color:#1a1a1a"] {
+            background-color: var(--x-bg-secondary) !important;
+            border-color: var(--x-border-color) !important;
+          }
+          
+          /* 推文详情容器内的所有文本 */
+          #tweet-detail-container span[style*="color: #fff"],
+          #tweet-detail-container span[style*="color:#fff"] {
+            color: var(--x-text-primary) !important;
+          }
+          
+          #tweet-detail-container span[style*="color: #71767b"],
+          #tweet-detail-container span[style*="color:#71767b"] {
+            color: var(--x-text-secondary) !important;
+          }
+          
+          #tweet-detail-container div[style*="color: #fff"],
+          #tweet-detail-container div[style*="color:#fff"] {
+            color: var(--x-text-primary) !important;
+          }
+          
+          #tweet-detail-container div[style*="color: #71767b"],
+          #tweet-detail-container div[style*="color:#71767b"] {
+            color: var(--x-text-secondary) !important;
+          }
+          
+          /* 推文详情容器内的边框 */
+          #tweet-detail-container div[style*="border-bottom"],
+          #tweet-detail-container div[style*="border-top"] {
+            border-color: var(--x-border-color) !important;
+          }
+          
+          /* 所有动态生成的互动按钮悬停效果 */
+          #account-tweets-container div[style*="cursor: pointer"],
+          #detail-comments-container div[style*="cursor: pointer"],
+          #tweet-detail-container div[style*="cursor: pointer"] {
+            color: inherit !important;
+          }
+          
+          /* 蓝色高亮文本（@提及、链接等） */
+          span[style*="color: #1d9bf0"],
+          span[style*="color:#1d9bf0"],
+          div[style*="color: #1d9bf0"],
+          div[style*="color:#1d9bf0"] {
+            color: var(--x-accent) !important;
+          }
+          
+          /* 账户主页标签栏的"已置顶"文本 */
+          #account-tweets-container span[style*="color: #71767b"][style*="font-size: 13px"][style*="font-weight: 700"] {
+            color: var(--x-text-secondary) !important;
+          }
+          
+          /* 账户主页的所有互动数字 */
+          #account-tweets-container span[style*="font-size: 13px"]:not([style*="font-weight"]) {
+            color: var(--x-text-secondary) !important;
+          }
+          
+          /* ========== 账户主页完整样式修复 ========== */
+          /* 账户主页顶部导航栏背景 - 覆盖内联样式 */
+          #account-profile-page > div:first-child[style*="border-bottom"],
+          #account-profile-page > div[style*="backdrop-filter"] {
+            background-color: var(--x-bg-primary) !important;
+            border-bottom-color: var(--x-border-color) !important;
+          }
+          
+          /* 账户主页导航栏文字 */
+          #account-profile-nav-name {
+            color: var(--x-text-primary) !important;
+          }
+          
+          #account-profile-nav-count {
+            color: var(--x-text-secondary) !important;
+          }
+          
+          /* 账户主页返回按钮SVG */
+          #account-profile-page > div:first-child svg[viewBox="0 0 24 24"][style*="fill: #fff"] {
+            fill: var(--x-text-primary) !important;
+          }
+          
+          /* 账户主页顶部所有SVG图标（提问箱、刷新按钮） */
+          #account-profile-page > div:first-child svg[style*="fill: #fff"] {
+            fill: var(--x-text-primary) !important;
+          }
+          
+          #account-profile-page > div:first-child svg[style*="stroke"] {
+            stroke: var(--x-text-primary) !important;
+          }
+          
+          /* 私信按钮SVG */
+          #account-profile-page button[onclick="sendMessageToAccount()"] svg {
+            fill: var(--x-text-primary) !important;
+          }
+          
+          /* 通知按钮SVG */
+          #account-notify-btn svg {
+            fill: var(--x-text-primary) !important;
+          }
+          
+          /* 私信和通知按钮边框 */
+          #account-profile-page button[style*="border: 1px solid #536471"],
+          #account-profile-page button[style*="border-radius: 50%"] {
+            border-color: var(--x-border-color) !important;
+          }
+          
+          /* 关注按钮 */
+          #account-follow-btn {
+            background-color: var(--x-text-primary) !important;
+            color: var(--x-bg-primary) !important;
+          }
+          
+          /* 关注按钮悬停效果 - 日间模式 */
+          .x-theme-light #account-follow-btn:hover {
+            background-color: #d7d7d7 !important;
+          }
+          
+          /* 关注按钮悬停效果 - 夜间模式 */
+          #account-follow-btn:hover {
+            background-color: #e6e6e6 !important;
+          }
+          
+          /* 账户名称 */
+          #account-display-name {
+            color: var(--x-text-primary) !important;
+          }
+          
+          /* 账户句柄 */
+          #account-handle-text {
+            color: var(--x-text-secondary) !important;
+          }
+          
+          /* 账户简介 */
+          #account-bio-text {
+            color: var(--x-text-primary) !important;
+          }
+          
+          /* 账户认证徽章 - 强制显示 */
+          #account-verified-badge {
+            display: inline-flex !important;
+          }
+          
+          /* 自定义标签容器 */
+          #account-tags-container > div {
+            color: inherit !important;
+          }
+          
+          #account-tags-container span {
+            color: inherit !important;
+          }
+          
+          /* 关注数据文字 */
+          #account-following-count,
+          #account-followers-count {
+            color: var(--x-text-primary) !important;
+          }
+          
+          /* 关注数据容器内的次要文本 */
+          #account-profile-page div[style*="color: #71767b"] span {
+            color: var(--x-text-secondary) !important;
+          }
+          
+          /* 账户操作按钮 */
+          #account-follow-btn,
+          #account-notify-btn {
+            border-color: var(--x-border-color) !important;
+          }
+          
+          #account-follow-btn {
+            background-color: var(--x-bg-primary) !important;
+            color: var(--x-text-primary) !important;
+          }
+          
+          /* 账户标签栏 */
+          .account-tab {
+            color: var(--x-text-secondary) !important;
+          }
+          
+          .account-tab[style*="color: #fff"],
+          .account-tab[style*="font-weight: 700"] {
+            color: var(--x-text-primary) !important;
+          }
+          
+          /* 账户标签栏边框 */
+          .account-tab[style*="border-bottom"] {
+            border-bottom-color: var(--x-accent) !important;
+          }
+          
+          /* 账户主页所有内联白色文本 */
+          #account-profile-page span[style*="color: #fff"],
+          #account-profile-page span[style*="color:#fff"] {
+            color: var(--x-text-primary) !important;
+          }
+          
+          /* 账户主页所有内联灰色文本 */
+          #account-profile-page span[style*="color: #71767b"],
+          #account-profile-page span[style*="color:#71767b"] {
+            color: var(--x-text-secondary) !important;
+          }
+          
+          /* 账户主页所有div白色文本 */
+          #account-profile-page div[style*="color: #fff"],
+          #account-profile-page div[style*="color:#fff"] {
+            color: var(--x-text-primary) !important;
+          }
+          
+          /* 账户主页所有div灰色文本 */
+          #account-profile-page div[style*="color: #71767b"],
+          #account-profile-page div[style*="color:#71767b"] {
+            color: var(--x-text-secondary) !important;
+          }
+          
+          /* 账户主页所有边框 */
+          #account-profile-page div[style*="border-bottom"],
+          #account-profile-page div[style*="border-top"],
+          #account-profile-page div[style*="border: 1px"] {
+            border-color: var(--x-border-color) !important;
+          }
+          
+          /* 账户主页所有SVG图标 */
+          #account-profile-page svg[style*="fill: #71767b"],
+          #account-profile-page svg[style*="fill:#71767b"] {
+            fill: var(--x-text-secondary) !important;
+          }
+          
+          #account-profile-page svg[style*="fill: currentColor"] {
+            fill: currentColor !important;
+          }
+          
+          /* 账户主页背景卡片 */
+          #account-profile-page div[style*="background-color: #202327"],
+          #account-profile-page div[style*="background-color:#202327"] {
+            background-color: var(--x-bg-secondary) !important;
+          }
+          
+          /* 账户主页互动按钮区域 */
+          #account-profile-page div[style*="display: flex"][style*="justify-content: space-between"] div {
+            color: var(--x-text-secondary) !important;
+          }
+          
+          /* 强制覆盖所有认证图标颜色 */
+          #account-profile-page svg[viewBox="0 0 24 24"][style*="fill: #1d9bf0"],
+          #account-tweets-container svg[viewBox="0 0 24 24"][style*="fill: #1d9bf0"] {
+            fill: var(--x-accent) !important;
+          }
+          
+          /* 账户主页三点菜单图标 */
+          #account-profile-page svg[style*="fill: #71767b"][style*="width: 18px"] {
+            fill: var(--x-text-secondary) !important;
+          }
+          
+          /* ========== 角色X资料设置弹窗样式修复 ========== */
+          /* 弹窗背景遮罩 */
+          #character-x-profile-modal[style*="background-color: rgba(0,0,0,0.8)"],
+          #relationship-modal[style*="background-color: rgba(0,0,0,0.8)"] {
+            background-color: rgba(0,0,0,0.6) !important;
+          }
+          
+          /* 弹窗主容器 */
+          #character-x-profile-modal > div > div[style*="background-color: #000"],
+          #relationship-modal > div > div[style*="background-color: #000"] {
+            background-color: var(--x-bg-primary) !important;
+            border-color: var(--x-border-color) !important;
+          }
+          
+          /* 弹窗头部 */
+          #character-x-profile-modal h2,
+          #character-x-profile-modal h3,
+          #relationship-modal h3 {
+            color: var(--x-text-primary) !important;
+          }
+          
+          /* 弹窗头部关闭按钮 */
+          #character-x-profile-modal button[onclick*="close"] svg,
+          #relationship-modal button[onclick*="close"] svg {
+            fill: var(--x-text-secondary) !important;
+          }
+          
+          /* 弹窗所有边框 */
+          #character-x-profile-modal div[style*="border-bottom: 1px solid #333"],
+          #character-x-profile-modal div[style*="border: 1px solid #333"],
+          #relationship-modal div[style*="border-bottom: 1px solid #333"] {
+            border-color: var(--x-border-color) !important;
+          }
+          
+          /* 角色信息显示区域 */
+          #character-info-display[style*="background-color: #0a0a0a"] {
+            background-color: var(--x-bg-secondary) !important;
+          }
+          
+          /* 弹窗内所有label文字 */
+          #character-x-profile-modal label,
+          #relationship-modal label {
+            color: var(--x-text-primary) !important;
+          }
+          
+          /* 弹窗内所有次要文字 */
+          #character-x-profile-modal div[style*="color: #71767b"],
+          #relationship-modal div[style*="color: #71767b"] {
+            color: var(--x-text-secondary) !important;
+          }
+          
+          /* 弹窗内所有输入框 */
+          #character-x-profile-modal input[type="text"],
+          #character-x-profile-modal input[type="url"],
+          #character-x-profile-modal textarea,
+          #character-x-profile-modal select,
+          #relationship-modal input[type="text"],
+          #relationship-modal textarea,
+          #relationship-modal select {
+            background-color: var(--x-input-bg) !important;
+            border-color: var(--x-border-color) !important;
+            color: var(--x-text-primary) !important;
+          }
+          
+          /* 输入框焦点状态 */
+          #character-x-profile-modal input:focus,
+          #character-x-profile-modal textarea:focus,
+          #character-x-profile-modal select:focus,
+          #relationship-modal input:focus,
+          #relationship-modal textarea:focus,
+          #relationship-modal select:focus {
+            border-color: var(--x-accent) !important;
+          }
+          
+          /* 弹窗内的头像预览 */
+          #character-x-avatar,
+          #character-x-cover-preview {
+            border-color: var(--x-border-color) !important;
+          }
+          
+          /* 角色X资料弹窗头像填充 */
+          #character-x-avatar {
+            object-fit: cover !important;
+            overflow: hidden !important;
+            box-sizing: border-box !important;
+          }
+          
+          /* 弹窗内的span文字 */
+          #character-x-profile-modal span[style*="color: #fff"],
+          #relationship-modal span[style*="color: #fff"] {
+            color: var(--x-text-primary) !important;
+          }
+          
+          #character-x-profile-modal span[style*="color: #71767b"],
+          #relationship-modal span[style*="color: #71767b"] {
+            color: var(--x-text-secondary) !important;
+          }
+          
+          /* 提示框背景 */
+          #character-x-profile-modal div[style*="background-color: rgba(29, 155, 240, 0.1)"] {
+            background-color: rgba(29, 155, 240, 0.1) !important;
+            border-color: var(--x-accent) !important;
+          }
+          
+          /* 提示框内的文字 */
+          #character-x-profile-modal div[style*="color: #1d9bf0"] {
+            color: var(--x-accent) !important;
+          }
+          
+          /* 弹窗内的按钮 */
+          #character-x-profile-modal button[type="button"][style*="background-color: transparent"],
+          #relationship-modal button[type="button"][style*="background-color: transparent"] {
+            border-color: var(--x-border-color) !important;
+            color: var(--x-text-primary) !important;
+          }
+          
+          /* ========== X设置页面样式修复 ========== */
+          /* 设置页面头部 */
+          .settings-header[style*="background-color: #000"] {
+            background-color: var(--x-bg-primary) !important;
+            border-bottom-color: var(--x-border-color) !important;
+          }
+          
+          /* 设置页面标题和返回按钮 */
+          .settings-header span[style*="color: #fff"] {
+            color: var(--x-text-primary) !important;
+          }
+          
+          .settings-back-btn svg[style*="fill: #fff"] {
+            fill: var(--x-text-primary) !important;
+          }
+          
+          /* 主题切换按钮图标 */
+          #theme-icon-dark[style*="fill: #fff"] {
+            fill: var(--x-text-primary) !important;
+          }
+          
+          #theme-icon-light[style*="fill: #000"] {
+            fill: var(--x-text-primary) !important;
+          }
+          
+          /* 设置页面所有label */
+          #x-settings-page label {
+            color: var(--x-text-primary) !important;
+          }
+          
+          /* 设置页面所有次要文字 */
+          #x-settings-page p[style*="color: #71767b"],
+          #x-settings-page div[style*="color: #71767b"] {
+            color: var(--x-text-secondary) !important;
+          }
+          
+          /* 设置页面所有输入框和文本域 */
+          #x-settings-page textarea,
+          #x-settings-page input[type="text"] {
+            background-color: var(--x-input-bg) !important;
+            border-color: var(--x-border-color) !important;
+            color: var(--x-text-primary) !important;
+          }
+          
+          /* 设置页面输入框焦点状态 */
+          #x-settings-page textarea:focus,
+          #x-settings-page input:focus {
+            border-color: var(--x-accent) !important;
+          }
+          
+          /* 设置页面所有容器背景 */
+          #x-settings-page div[style*="background-color: #1a1a1a"] {
+            background-color: var(--x-bg-secondary) !important;
+            border-color: var(--x-border-color) !important;
+          }
+          
+          /* 设置页面所有容器边框 */
+          #x-settings-page div[style*="border: 1px solid #333"],
+          #x-settings-page div[style*="border-bottom: 1px solid #333"],
+          #x-settings-page div[style*="border-top: 1px solid #333"] {
+            border-color: var(--x-border-color) !important;
+          }
+          
+          /* 角色关系预览区域 */
+          #relationship-preview[style*="background-color: #0a0a0a"] {
+            background-color: var(--x-bg-secondary) !important;
+            border-color: var(--x-border-color) !important;
+          }
+          
+          /* 关系预览占位符文字 */
+          #relationship-preview-placeholder {
+            color: var(--x-text-secondary) !important;
+          }
+          
+          /* 关系统计框 */
+          #relationship-stats[style*="background-color: rgba(29, 155, 240, 0.1)"] {
+            background-color: rgba(29, 155, 240, 0.1) !important;
+          }
+          
+          #relationship-stats div[style*="color: #1d9bf0"] {
+            color: var(--x-accent) !important;
+          }
+          
+          /* 切换开关背景 */
+          .toggle-switch[style*="background-color: #333"] {
+            background-color: var(--x-border-color) !important;
+          }
+          
+          /* 切换开关圆圈 */
+          .toggle-circle[style*="background-color: #fff"] {
+            background-color: var(--x-text-primary) !important;
+          }
+          
+          /* 设置页面标题文字 */
+          #x-settings-page div[style*="color: #fff"] {
+            color: var(--x-text-primary) !important;
+          }
+          
+          /* 预设管理区域 */
+          .preset-management h3 {
+            color: var(--x-text-primary) !important;
+          }
+          
+          /* NPC列表和角色列表容器 */
+          #npcs-list,
+          #characters-list {
+            background-color: transparent !important;
+          }
+          
+          /* 底部导航栏图标颜色 */
+          .x-nav-item svg {
+            fill: var(--x-text-secondary) !important;
+          }
+          
+          .x-nav-item.active svg {
+            fill: var(--x-accent) !important;
+          }
+          
+          /* 底部导航栏的高亮点 */
+          .x-nav-item .nav-highlight {
+            background-color: var(--x-accent) !important;
+          }
+          
+          /* 浮动按钮 */
+          .compose-btn {
+            background-color: var(--x-accent) !important;
+          }
+          
+          /* ========== 用户主页样式修复 ========== */
+          /* 用户头像边框颜色和填充 - 更强制性地覆盖 */
+          #x-profile-main-avatar {
+            border: 5px solid var(--x-bg-primary) !important;
+            object-fit: cover !important;
+            background-color: var(--x-bg-primary) !important;
+            box-sizing: border-box !important;
+            overflow: hidden !important;
+          }
+          
+          #edit-main-avatar {
+            border: 4px solid var(--x-bg-primary) !important;
+            object-fit: cover !important;
+            background-color: var(--x-bg-primary) !important;
+            box-sizing: border-box !important;
+            overflow: hidden !important;
+          }
+          
+          /* 用户头像在账户主页 */
+          #account-avatar-image {
+            border: 4px solid var(--x-bg-primary) !important;
+            object-fit: cover !important;
+            background-color: var(--x-bg-primary) !important;
+            box-sizing: border-box !important;
+            overflow: hidden !important;
+          }
+          
+          /* 用户名和关注数据 */
+          #x-profile-user-name,
+          #x-profile-following-count,
+          #x-profile-followers-count {
+            color: var(--x-text-primary) !important;
+          }
+          
+          /* 用户简介 */
+          #x-profile-bio {
+            color: var(--x-text-primary) !important;
+          }
+          
+          /* 编辑资料按钮 */
+          .user-info-section button {
+            color: var(--x-text-primary) !important;
+            border-color: var(--x-border-color) !important;
+          }
+          
+          /* ========== 角色信息显示区域修复 ========== */
+          /* 角色信息显示区域内的所有文字 */
+          #character-info-display div[style*="color: #fff"] {
+            color: var(--x-text-primary) !important;
+          }
+          
+          #character-info-display div[style*="color: #71767b"] {
+            color: var(--x-text-secondary) !important;
+          }
+          
+          /* ========== 搜索结果用户卡片修复 ========== */
+          /* 搜索结果中的用户卡片边框 */
+          #search-results-content > div[style*="border-bottom: 1px solid #2f3336"] {
+            border-bottom-color: var(--x-border-color) !important;
+          }
+          
+          /* 搜索结果中的用户名 */
+          #search-results-content span[style*="color: #fff"] {
+            color: var(--x-text-primary) !important;
+          }
+          
+          /* 搜索结果中的用户句柄 */
+          #search-results-content div[style*="color: #71767b"] {
+            color: var(--x-text-secondary) !important;
+          }
+          
+          /* 搜索结果中的用户简介 */
+          #search-results-content div[style*="color: #e7e9ea"] {
+            color: var(--x-text-primary) !important;
+          }
+          
+          /* ========== NPC编辑弹窗修复 ========== */
+          /* NPC弹窗背景 */
+          #npc-edit-modal > div[style*="background-color: #000"] {
+            background-color: var(--x-bg-primary) !important;
+          }
+          
+          /* NPC弹窗头部边框 */
+          #npc-edit-modal div[style*="border-bottom: 1px solid #2f3336"] {
+            border-bottom-color: var(--x-border-color) !important;
+          }
+          
+          /* NPC弹窗标题 */
+          #npc-modal-title {
+            color: var(--x-text-primary) !important;
+          }
+          
+          /* NPC弹窗关闭按钮图标 */
+          #npc-edit-modal svg[style*="fill: #fff"] {
+            fill: var(--x-text-primary) !important;
+          }
+          
+          /* NPC弹窗所有label */
+          #npc-edit-modal label {
+            color: var(--x-text-secondary) !important;
+          }
+          
+          /* NPC弹窗所有输入框和文本域 */
+          #npc-edit-modal input,
+          #npc-edit-modal textarea {
+            background-color: var(--x-bg-secondary) !important;
+            border-color: var(--x-border-color) !important;
+            color: var(--x-text-primary) !important;
+          }
+          
+          /* NPC弹窗输入框焦点状态 */
+          #npc-edit-modal input:focus,
+          #npc-edit-modal textarea:focus {
+            border-color: var(--x-accent) !important;
+          }
+          
+          /* NPC绑定用户列表容器 */
+          #npc-bind-users {
+            background-color: var(--x-bg-secondary) !important;
+            border-color: var(--x-border-color) !important;
+          }
+          
+          /* ========== NPC列表修复 ========== */
+          /* NPC列表项背景和边框 */
+          #npcs-list > div[style*="background-color: #0a0a0a"] {
+            background-color: var(--x-bg-secondary) !important;
+            border-color: var(--x-border-color) !important;
+          }
+          
+          /* NPC列表中的主要文字 */
+          #npcs-list div[style*="color: #fff"] {
+            color: var(--x-text-primary) !important;
+          }
+          
+          /* NPC列表中的次要文字 */
+          #npcs-list div[style*="color: #71767b"] {
+            color: var(--x-text-secondary) !important;
+          }
+          
+          /* NPC列表项边框 */
+          #npcs-list > div[style*="border: 1px solid #2f3336"] {
+            border-color: var(--x-border-color) !important;
+          }
+          
+          /* NPC列表空状态文字 */
+          #npcs-list p[style*="color: #71767b"] {
+            color: var(--x-text-secondary) !important;
+          }
+          
+          /* ========== 角色关系册修复 ========== */
+          /* 角色关系册管理区域容器 */
+          #relationship-binding-area > div[style*="background-color: #1a1a1a"] {
+            background-color: var(--x-bg-secondary) !important;
+            border-color: var(--x-border-color) !important;
+          }
+          
+          /* 角色关系册标题 */
+          #relationship-binding-area div[style*="color: #fff"] {
+            color: var(--x-text-primary) !important;
+          }
+          
+          /* 角色关系册次要文字 */
+          #relationship-binding-area div[style*="color: #71767b"] {
+            color: var(--x-text-secondary) !important;
+          }
+          
+          /* 角色关系列表项 */
+          #relationship-links-list > div[style*="background-color: #1a1a1a"] {
+            background-color: var(--x-bg-secondary) !important;
+            border-color: var(--x-border-color) !important;
+          }
+          
+          /* 角色关系列表中的文字 */
+          #relationship-links-list span[style*="color: #fff"] {
+            color: var(--x-text-primary) !important;
+          }
+          
+          #relationship-links-list span[style*="color: #71767b"] {
+            color: var(--x-text-secondary) !important;
+          }
+          
+          #relationship-links-list div[style*="color: #71767b"] {
+            color: var(--x-text-secondary) !important;
+          }
+          
+          /* 角色关系列表项的边框 */
+          #relationship-links-list div[style*="border-top: 1px solid #2f3336"] {
+            border-top-color: var(--x-border-color) !important;
+          }
+          
+          /* 角色关系列表空状态 */
+          #relationship-links-list > div[style*="color: #71767b"] {
+            color: var(--x-text-secondary) !important;
+          }
+          
+          /* 角色关系详情弹窗背景 */
+          #relationship-detail-modal > div > div[style*="background-color: #000"] {
+            background-color: var(--x-bg-primary) !important;
+            border-color: var(--x-border-color) !important;
+          }
+          
+          /* 角色关系详情弹窗标题和label */
+          #relationship-detail-modal h3,
+          #relationship-detail-modal label {
+            color: var(--x-text-primary) !important;
+          }
+          
+          /* 角色关系详情弹窗次要文字 */
+          #relationship-detail-modal div[style*="color: #71767b"] {
+            color: var(--x-text-secondary) !important;
+          }
+          
+          /* 角色关系详情弹窗输入框 */
+          #relationship-detail-modal input,
+          #relationship-detail-modal textarea,
+          #relationship-detail-modal select {
+            background-color: var(--x-input-bg) !important;
+            border-color: var(--x-border-color) !important;
+            color: var(--x-text-primary) !important;
+          }
+          
+          /* 角色关系详情弹窗输入框焦点 */
+          #relationship-detail-modal input:focus,
+          #relationship-detail-modal textarea:focus,
+          #relationship-detail-modal select:focus {
+            border-color: var(--x-accent) !important;
+          }
+          
+          /* 角色关系详情弹窗边框 */
+          #relationship-detail-modal div[style*="border: 1px solid #333"],
+          #relationship-detail-modal div[style*="border-bottom: 1px solid #333"] {
+            border-color: var(--x-border-color) !important;
+          }
+          
+          /* 角色关系详情弹窗关闭按钮 */
+          #relationship-detail-modal button[onclick*="close"] svg {
+            fill: var(--x-text-secondary) !important;
+          }
+          
+          /* ========== 角色关系图编辑器弹窗修复 ========== */
+          /* 角色关系图弹窗背景 */
+          #character-relationship-graph-modal > div[style*="background-color: #000"] {
+            background-color: var(--x-bg-primary) !important;
+            border-color: var(--x-border-color) !important;
+          }
+          
+          /* 角色关系图弹窗头部 */
+          #character-relationship-graph-modal h2 {
+            color: var(--x-text-primary) !important;
+          }
+          
+          /* 角色关系图弹窗统计文字 */
+          #character-relationship-graph-modal div[style*="color: #71767b"] {
+            color: var(--x-text-secondary) !important;
+          }
+          
+          /* 角色关系图弹窗关闭按钮图标 */
+          #character-relationship-graph-modal svg[style*="fill: #fff"] {
+            fill: var(--x-text-primary) !important;
+          }
+          
+          /* 角色关系图工具栏 */
+          #character-relationship-graph-modal div[style*="background-color: #0a0a0a"] {
+            background-color: var(--x-bg-secondary) !important;
+          }
+          
+          /* 角色关系图工具栏提示文字 */
+          #character-relationship-graph-modal > div > div:nth-child(2) div[style*="color: #71767b"] {
+            color: var(--x-text-secondary) !important;
+          }
+          
+          /* 角色关系图画布区域背景 */
+          #character-relationship-graph-modal div[style*="height: 500px"][style*="background-color: #000"] {
+            background-color: var(--x-bg-primary) !important;
+          }
+          
+          /* 角色关系图空状态图标 */
+          #graph-empty-state svg {
+            fill: var(--x-border-color) !important;
+          }
+          
+          /* 角色关系图底部按钮区域 */
+          #character-relationship-graph-modal > div > div:last-child[style*="background-color: #000"] {
+            background-color: var(--x-bg-primary) !important;
+          }
+          
+          /* 角色关系图底部取消按钮 */
+          #character-relationship-graph-modal button[onclick*="closeCharacter"] {
+            border-color: var(--x-border-color) !important;
+            color: var(--x-text-primary) !important;
+          }
+          
+          /* 关系列表区域标题 */
+          #character-relationship-graph-modal div[style*="padding: 12px 20px"] div[style*="color: #fff"] {
+            color: var(--x-text-primary) !important;
+          }
+          
+          /* 角色关系图边框 */
+          #character-relationship-graph-modal div[style*="border: 1px solid #333"],
+          #character-relationship-graph-modal div[style*="border-bottom: 1px solid #333"] {
+            border-color: var(--x-border-color) !important;
+          }
+          
+          /* 角色关系图画布容器 */
+          #character-relationship-graph-modal > div[style*="border: 1px solid #333"] {
+            border-color: var(--x-border-color) !important;
+          }
+          
+          /* 角色关系图空状态 */
+          #graph-empty-state div[style*="color: #71767b"] {
+            color: var(--x-text-secondary) !important;
+          }
+          
+          /* 关系列表标题文字 */
+          #relationship-links-list-container h3 {
+            color: var(--x-text-primary) !important;
+          }
+          
+          /* 关系列表空状态 */
+          #relationship-links-list div[style*="color: #71767b"] {
+            color: var(--x-text-secondary) !important;
+          }
+          
+          /* 编辑关系详情弹窗背景遮罩 */
+          #edit-relationship-detail-modal[style*="background-color: rgba(0, 0, 0"] {
+            background-color: rgba(0, 0, 0, 0.85) !important;
+          }
+          
+          /* 编辑关系详情弹窗主容器 */
+          #edit-relationship-detail-modal > div > div[style*="background-color: #000"] {
+            background-color: var(--x-bg-primary) !important;
+            border-color: var(--x-border-color) !important;
+          }
+          
+          /* 编辑关系详情弹窗标题 */
+          #edit-relationship-detail-modal h3 {
+            color: var(--x-text-primary) !important;
+          }
+          
+          /* 编辑关系详情弹窗label */
+          #edit-relationship-detail-modal label {
+            color: var(--x-text-primary) !important;
+          }
+          
+          /* 编辑关系详情弹窗次要文字 */
+          #edit-relationship-detail-modal div[style*="color: #71767b"] {
+            color: var(--x-text-secondary) !important;
+          }
+          
+          /* 编辑关系详情弹窗角色信息区域 */
+          #relationship-characters-info {
+            background-color: var(--x-bg-secondary) !important;
+            border-color: var(--x-border-color) !important;
+          }
+          
+          /* 编辑关系详情弹窗角色名称 */
+          #char-a-name,
+          #char-b-name {
+            color: var(--x-text-primary) !important;
+          }
+          
+          /* 编辑关系详情弹窗箭头符号 */
+          #relationship-characters-info div[style*="color: #71767b"] {
+            color: var(--x-text-secondary) !important;
+          }
+          
+          /* 编辑关系详情弹窗关闭按钮图标 */
+          #edit-relationship-detail-modal svg[style*="fill: #fff"] {
+            fill: var(--x-text-primary) !important;
+          }
+          
+          /* 编辑关系详情弹窗输入框 */
+          #edit-relationship-detail-modal input,
+          #edit-relationship-detail-modal textarea {
+            background-color: var(--x-input-bg) !important;
+            border-color: var(--x-border-color) !important;
+            color: var(--x-text-primary) !important;
+          }
+          
+          /* 编辑关系详情弹窗输入框焦点 */
+          #edit-relationship-detail-modal input:focus,
+          #edit-relationship-detail-modal textarea:focus {
+            border-color: var(--x-accent) !important;
+          }
+          
+          /* 编辑关系详情弹窗边框 */
+          #edit-relationship-detail-modal div[style*="border: 1px solid #333"],
+          #edit-relationship-detail-modal div[style*="border-bottom: 1px solid #333"] {
+            border-color: var(--x-border-color) !important;
+          }
+          
+          /* 编辑关系详情弹窗关闭按钮 */
+          #edit-relationship-detail-modal button[onclick*="close"] svg {
+            fill: var(--x-text-secondary) !important;
+          }
+          
+          /* 个人资料标签栏 - 激活状态 */
+          .profile-tab.active {
+            color: var(--x-text-primary) !important;
+            font-weight: 700 !important;
+          }
+          
+          /* 个人资料标签栏 - 非激活状态 */
+          .profile-tab:not(.active) {
+            color: var(--x-text-secondary) !important;
+          }
+          
+          /* 个人资料页面的其他文本 */
+          #x-profile-header-name {
+            color: var(--x-text-primary) !important;
+          }
+          
+          /* 用户主页顶部功能按钮图标 */
+          .profile-header svg {
+            fill: var(--x-text-primary) !important;
+          }
+          
+          /* 返回按钮 */
+          .profile-back-btn svg {
+            fill: var(--x-text-primary) !important;
+          }
+          
+          /* 提问箱和更多选项按钮的图标 */
+          #x-profile-page .profile-header > div > div svg {
+            fill: var(--x-text-primary) !important;
+          }
+          
+          /* ========== 推文详情页样式修复 ========== */
+          /* 详情页顶栏背景和边框 */
+          .tweet-detail-header {
+            background-color: var(--x-bg-primary) !important;
+            border-bottom: 1px solid var(--x-border-color) !important;
+          }
+          
+          /* 详情页顶栏标题和返回按钮 */
+          .tweet-detail-header span {
+            color: var(--x-text-primary) !important;
+          }
+          
+          .tweet-detail-header svg,
+          .tweet-detail-back-btn svg {
+            fill: var(--x-text-primary) !important;
+          }
+          
+          /* 详情页主要内容区域 */
+          #x-tweet-detail-page {
+            background-color: var(--x-bg-primary) !important;
+          }
+          
+          #tweet-detail-container {
+            background-color: var(--x-bg-primary) !important;
+          }
+          
+          /* 详情页推文内容区域 */
+          .tweet-detail-content {
+            background-color: var(--x-bg-primary) !important;
+          }
+          
+          /* 详情页推文用户名和内容 */
+          #tweet-detail-container .tweet-user-name,
+          #tweet-detail-container .tweet-content,
+          #x-tweet-detail-page .tweet-user-name,
+          #x-tweet-detail-page .tweet-content {
+            color: var(--x-text-primary) !important;
+          }
+          
+          /* 详情页评论区域背景 */
+          #detail-comments-container {
+            background-color: var(--x-bg-primary) !important;
+          }
+          
+          /* 详情页评论内容 */
+          #detail-comments-container .comment-content,
+          #detail-comments-container .tweet-user-name,
+          #x-tweet-detail-page .comment-user-name {
+            color: var(--x-text-primary) !important;
+          }
+          
+          /* 详情页时间和其他次要文本 */
+          #tweet-detail-container .tweet-time,
+          #tweet-detail-container .tweet-user-handle,
+          #detail-comments-container .tweet-user-handle,
+          #detail-comments-container .comment-time,
+          #x-tweet-detail-page .tweet-time,
+          #x-tweet-detail-page .tweet-user-handle {
+            color: var(--x-text-secondary) !important;
+          }
+          
+          /* 详情页评论输入区域 */
+          .detail-comment-input-area {
+            background-color: var(--x-bg-primary) !important;
+            border-top: 1px solid var(--x-border-color) !important;
+          }
+          
+          .detail-comment-input-area textarea {
+            background-color: var(--x-input-bg) !important;
+            color: var(--x-text-primary) !important;
+            border-color: var(--x-border-color) !important;
+          }
+          
+          /* 详情页按钮颜色 */
+          #reroll-replies-btn svg,
+          .refresh-btn svg,
+          #x-tweet-detail-page .refresh-btn svg {
+            fill: var(--x-text-primary) !important;
+          }
+          
+          /* 详情页所有span元素 */
+          #x-tweet-detail-page span,
+          #tweet-detail-container span {
+            color: inherit;
           }
 
           /* 确保所有可滚动容器都有正确的高度设置 */
@@ -164,9 +1546,10 @@
           /* 推文项目 */
           #x-social-screen .tweet-item {
             padding: 15px;
-            border-bottom: 1px solid #2f3336;
+            border-bottom: 1px solid var(--x-border-color);
             display: flex;
             gap: 12px;
+            background-color: var(--x-bg-primary);
           }
 
           /* 用户头像 */
@@ -193,23 +1576,23 @@
 
           #x-social-screen .tweet-user-name {
             font-weight: 700;
-            color: #fff;
+            color: var(--x-text-primary);
             font-size: 15px;
           }
 
           #x-social-screen .tweet-verified {
             width: 18px;
             height: 18px;
-            fill: #1d9bf0;
+            fill: var(--x-accent);
           }
 
           #x-social-screen .tweet-user-handle {
-            color: #71767b;
+            color: var(--x-text-secondary);
             font-size: 15px;
           }
 
           #x-social-screen .tweet-time {
-            color: #71767b;
+            color: var(--x-text-secondary);
             font-size: 15px;
           }
 
@@ -228,7 +1611,7 @@
 
           /* 推文内容 */
           #x-social-screen .tweet-content {
-            color: #fff;
+            color: var(--x-text-primary);
             font-size: 15px;
             line-height: 1.3;
             margin-bottom: 12px;
@@ -380,10 +1763,11 @@
           /* 评论样式 */
           #x-social-screen .comment-item {
             padding: 15px;
-            border-bottom: 1px solid #2f3336;
+            border-bottom: 1px solid var(--x-border-color);
             display: flex;
             gap: 12px;
             position: relative;
+            background-color: var(--x-bg-primary);
           }
 
           /* 主评论后有回复时的连接线 */
@@ -411,7 +1795,7 @@
           }
 
           #x-social-screen .comment-content {
-            color: #fff;
+            color: var(--x-text-primary);
             font-size: 15px;
             line-height: 1.3;
             margin-bottom: 8px;
@@ -772,7 +2156,7 @@
     container.id = 'x-social-screen';
     container.className = 'screen';
     container.style.cssText =
-      'background-color: #000; color: #fff; display: flex; flex-direction: column; height: 100vh; overflow: hidden;';
+      'background-color: var(--x-bg-primary); color: var(--x-text-primary); display: flex; flex-direction: column; height: 100vh; overflow: hidden;';
 
     // 这里使用字符串模板或DOM操作创建完整的HTML结构
     container.innerHTML = `
@@ -835,7 +2219,7 @@
           <!-- "为你推荐"标签 -->
           <div class="x-tab active" onclick="switchHomeTab('for-you')"
             style="flex: 1; text-align: center; padding: 15px 0; font-weight: 600; cursor: pointer; position: relative;">
-            为你推荐
+            <span data-i18n="homeForYou">为你推荐</span>
             <div class="tab-indicator"
               style="position: absolute; bottom: 0; left: 10%; width: 80%; height: 2px; background-color: #1d9bf0; border-radius: 2px;">
             </div>
@@ -844,7 +2228,7 @@
           <!-- "正在关注"标签 -->
           <div class="x-tab" onclick="switchHomeTab('following')"
             style="flex: 1; text-align: center; padding: 15px 0; font-weight: 600; cursor: pointer; position: relative; color: #71767b;">
-            正在关注
+            <span data-i18n="homeFollowing">正在关注</span>
             <div class="tab-indicator"
               style="position: absolute; bottom: 0; left: 10%; width: 80%; height: 2px; background-color: #1d9bf0; border-radius: 2px; display: none;">
             </div>
@@ -918,7 +2302,7 @@
                     style="display: block; color: #fff; font-size: 15px; font-weight: 600; margin-bottom: 12px;">X头像</label>
                   <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 12px;">
                     <img id="character-x-avatar" src="" alt="X头像"
-                      style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid #333;">
+                      style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid #333; object-fit: cover; overflow: hidden; box-sizing: border-box;">
                     <div style="flex: 1;">
                       <div style="color: #71767b; font-size: 13px; margin-bottom: 8px;">头像链接</div>
                       <input type="url" id="character-x-avatar-url" placeholder="https://example.com/avatar.jpg"
@@ -1497,16 +2881,24 @@
       <!-- 通知页面 -->
       <div id="x-notifications-page" class="x-page"
         style="flex: 1; display: none; flex-direction: column; overflow: hidden; min-height: 0;">
-        <div style="flex: 1; display: flex; justify-content: center; align-items: center;">
-          <div style="font-size: 24px; color: #888;">通知</div>
+        <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 32px; text-align: center;">
+          <svg viewBox="0 0 24 24" style="width: 56px; height: 56px; fill: #536471; margin-bottom: 16px;">
+            <g><path d="M19.993 9.042C19.48 5.017 16.054 2 11.996 2s-7.49 3.021-7.999 7.051L2.866 18H7.1c.463 2.282 2.481 4 4.9 4s4.437-1.718 4.9-4h4.236l-1.143-8.958zM12 20c-1.306 0-2.417-.835-2.829-2h5.658c-.412 1.165-1.523 2-2.829 2zm-6.866-4l.847-6.698C6.364 6.272 8.941 4 11.996 4s5.627 2.268 6.013 5.295L18.864 16H5.134z"></path></g>
+          </svg>
+          <div style="font-size: 28px; font-weight: 700; color: #fff; margin-bottom: 8px;" data-i18n="notificationsEmpty">暂无通知</div>
+          <div style="font-size: 14px; color: #71767b; max-width: 320px;" data-i18n="notificationsEmptyDesc">当有人点赞、评论或关注你时，你会在这里看到通知</div>
         </div>
       </div>
 
       <!-- 私信页面 -->
       <div id="x-messages-page" class="x-page"
         style="flex: 1; display: none; flex-direction: column; overflow: hidden; min-height: 0;">
-        <div style="flex: 1; display: flex; justify-content: center; align-items: center;">
-          <div style="font-size: 24px; color: #888;">私信</div>
+        <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 32px; text-align: center;">
+          <svg viewBox="0 0 24 24" style="width: 56px; height: 56px; fill: #536471; margin-bottom: 16px;">
+            <g><path d="M1.998 5.5c0-1.381 1.119-2.5 2.5-2.5h15c1.381 0 2.5 1.119 2.5 2.5v13c0 1.381-1.119 2.5-2.5 2.5h-15c-1.381 0-2.5-1.119-2.5-2.5v-13zm2.5-.5c-.276 0-.5.224-.5.5v2.764l8 3.638 8-3.636V5.5c0-.276-.224-.5-.5-.5h-15zm15.5 5.463l-8 3.636-8-3.638V18.5c0 .276.224.5.5.5h15c.276 0 .5-.224.5-.5v-8.037z"></path></g>
+          </svg>
+          <div style="font-size: 28px; font-weight: 700; color: #fff; margin-bottom: 8px;" data-i18n="messagesEmpty">暂无私信</div>
+          <div style="font-size: 14px; color: #71767b; max-width: 320px;" data-i18n="messagesEmptyDesc">发送私信与朋友保持联系</div>
         </div>
       </div>
 
@@ -1524,7 +2916,7 @@
               </g>
             </svg>
           </div>
-          <span style="font-size: 20px; font-weight: 700;">发帖</span>
+          <span style="font-size: 20px; font-weight: 700;" data-i18n="commentsTitle">发帖</span>
         </div>
 
         <!-- 评论列表容器 -->
@@ -1541,7 +2933,7 @@
 
             <!-- 输入框容器 -->
             <div style="flex: 1;">
-              <textarea id="comment-input" placeholder="发布你的回复"
+              <textarea id="comment-input" placeholder="发布你的回复" data-i18n="commentsReplyPlaceholder"
                 style="width: 100%; min-height: 20px; max-height: 120px; background: transparent; border: none; color: #fff; font-size: 20px; resize: none; outline: none; font-family: inherit; line-height: 1.3;"
                 onkeydown="handleCommentInput(event)" oninput="autoResize(this)"></textarea>
 
@@ -1575,7 +2967,7 @@
                 <!-- 右侧发送按钮 -->
                 <button id="reply-btn" onclick="submitComment()"
                   style="background-color: #1d9bf0; color: #fff; border: none; border-radius: 20px; padding: 8px 20px; font-size: 15px; font-weight: 700; cursor: pointer; opacity: 0.5;"
-                  disabled>
+                  disabled data-i18n="commentsReply">
                   回复
                 </button>
               </div>
@@ -1604,7 +2996,8 @@
 
         <!-- 设置页面顶部栏 -->
         <div class="settings-header"
-          style="display: flex; align-items: center; padding: 10px 15px; border-bottom: 1px solid #333; background-color: #000;">
+          style="display: flex; align-items: center; justify-content: space-between; padding: 10px 15px; border-bottom: 1px solid #333; background-color: #000;">
+          <div style="display: flex; align-items: center;">
           <div class="settings-back-btn" onclick="switchXPage('home')" style="cursor: pointer; margin-right: 15px;">
             <svg viewBox="0 0 24 24" aria-hidden="true" style="width: 20px; height: 20px; fill: #fff;">
               <g>
@@ -1613,6 +3006,33 @@
             </svg>
           </div>
           <span style="font-size: 20px; font-weight: 700; color: #fff;">设置</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <!-- 语言切换按钮 -->
+            <div id="language-toggle-btn" onclick="toggleXLanguage()" 
+              style="cursor: pointer; padding: 8px 12px; border-radius: 20px; transition: background-color 0.2s; display: flex; align-items: center; justify-content: center; gap: 4px; background-color: rgba(255,255,255,0.05);"
+              onmouseover="this.style.backgroundColor='rgba(255,255,255,0.15)'"
+              onmouseout="this.style.backgroundColor='rgba(255,255,255,0.05)'"
+              title="切换语言">
+              <span id="language-text" style="font-size: 13px; font-weight: 600; color: var(--x-text-primary);">中文</span>
+            </div>
+            
+            <!-- 主题切换按钮 -->
+            <div id="theme-toggle-btn" onclick="toggleXTheme()" 
+              style="cursor: pointer; padding: 8px; border-radius: 50%; transition: background-color 0.2s; display: flex; align-items: center; justify-content: center;"
+              onmouseover="this.style.backgroundColor='rgba(255,255,255,0.1)'"
+              onmouseout="this.style.backgroundColor='transparent'"
+              title="切换主题">
+              <!-- 月亮图标（夜间模式） -->
+              <svg id="theme-icon-dark" viewBox="0 0 24 24" style="width: 20px; height: 20px; fill: #fff; display: block;">
+                <g><path d="M20.742 13.045a8.088 8.088 0 0 1-2.077.271c-2.135 0-4.14-.83-5.646-2.336a8.025 8.025 0 0 1-2.064-7.723A1 1 0 0 0 9.73 2.034a10.014 10.014 0 0 0-4.489 2.582c-3.898 3.898-3.898 10.243 0 14.143a9.937 9.937 0 0 0 7.072 2.93 9.93 9.93 0 0 0 7.07-2.929 10.007 10.007 0 0 0 2.583-4.491 1.001 1.001 0 0 0-1.224-1.224zm-2.772 4.301a7.947 7.947 0 0 1-5.656 2.343 7.953 7.953 0 0 1-5.658-2.344c-3.118-3.119-3.118-8.195 0-11.314a7.923 7.923 0 0 1 2.06-1.483 10.027 10.027 0 0 0 2.89 7.848 9.972 9.972 0 0 0 7.848 2.891 8.036 8.036 0 0 1-1.484 2.059z"></path></g>
+              </svg>
+              <!-- 太阳图标（日间模式） -->
+              <svg id="theme-icon-light" viewBox="0 0 24 24" style="width: 20px; height: 20px; fill: #000; display: none;">
+                <g><path d="M12 2.5a1 1 0 0 1 1 1V5a1 1 0 1 1-2 0V3.5a1 1 0 0 1 1-1zm0 15a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9zm0 2a6.5 6.5 0 1 1 0-13 6.5 6.5 0 0 1 0 13zM12 18a1 1 0 0 1 1 1v1.5a1 1 0 1 1-2 0V19a1 1 0 0 1 1-1zm9.5-6a1 1 0 0 1-1 1H19a1 1 0 1 1 0-2h1.5a1 1 0 0 1 1 1zM5 12a1 1 0 0 1-1 1H2.5a1 1 0 1 1 0-2H4a1 1 0 0 1 1 1zm12.864-6.864a1 1 0 0 1 0 1.414l-1.06 1.06a1 1 0 1 1-1.415-1.414l1.061-1.06a1 1 0 0 1 1.414 0zm-11.728 0a1 1 0 0 1 1.414 0l1.061 1.06A1 1 0 1 1 7.197 7.61l-1.06-1.06a1 1 0 0 1 0-1.415zM18.925 17.804a1 1 0 0 1 0 1.414l-1.061 1.061a1 1 0 1 1-1.414-1.414l1.06-1.061a1 1 0 0 1 1.415 0zm-13.85 0a1 1 0 0 1 1.414 0l1.061 1.061a1 1 0 0 1-1.414 1.414l-1.061-1.06a1 1 0 0 1 0-1.415z"></path></g>
+              </svg>
+            </div>
+          </div>
         </div>
 
         <!-- 设置内容区域 -->
@@ -1621,20 +3041,20 @@
 
           <!-- 提示词设置 -->
           <div class="settings-section" style="margin-bottom: 30px;">
-            <label style="display: block; color: #fff; font-size: 17px; font-weight: 600; margin-bottom: 10px;">
+            <label style="display: block; color: #fff; font-size: 17px; font-weight: 600; margin-bottom: 10px;" data-i18n="settingsPrompt">
               提示词
             </label>
-            <textarea id="x-system-prompt" placeholder="输入系统提示词..."
+            <textarea id="x-system-prompt" placeholder="输入系统提示词..." data-i18n="settingsPromptPlaceholder"
               style="width: 100%; min-height: 120px; background-color: #1a1a1a; border: 1px solid #333; border-radius: 8px; color: #fff; padding: 12px; font-size: 15px; resize: vertical; outline: none; font-family: inherit; line-height: 1.4;"
               onfocus="this.style.borderColor='#1d9bf0'" onblur="this.style.borderColor='#333'"></textarea>
           </div>
 
           <!-- 世界观设定 -->
           <div class="settings-section" style="margin-bottom: 30px;">
-            <label style="display: block; color: #fff; font-size: 17px; font-weight: 600; margin-bottom: 10px;">
+            <label style="display: block; color: #fff; font-size: 17px; font-weight: 600; margin-bottom: 10px;" data-i18n="settingsWorldView">
               世界观设定
             </label>
-            <textarea id="x-world-setting" placeholder="描述角色所在的世界观、背景设定..."
+            <textarea id="x-world-setting" placeholder="描述角色所在的世界观、背景设定..." data-i18n="settingsWorldViewPlaceholder"
               style="width: 100%; min-height: 100px; background-color: #1a1a1a; border: 1px solid #333; border-radius: 8px; color: #fff; padding: 12px; font-size: 15px; resize: vertical; outline: none; font-family: inherit; line-height: 1.4;"
               onfocus="this.style.borderColor='#1d9bf0'" onblur="this.style.borderColor='#333'"></textarea>
           </div>
@@ -1642,7 +3062,7 @@
           <!-- 角色绑定设置 -->
           <div class="settings-section" style="margin-bottom: 40px;">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
-              <label style="color: #fff; font-size: 17px; font-weight: 600;">
+              <label style="color: #fff; font-size: 17px; font-weight: 600;" data-i18n="settingsCharacterBinding">
                 绑定角色
               </label>
               <div class="x-toggle" onclick="toggleCharacterBinding()" style="cursor: pointer;">
@@ -1654,14 +3074,14 @@
                 </div>
               </div>
             </div>
-            <p style="color: #71767b; font-size: 14px; margin: 0 0 15px 0; line-height: 1.4;">
+            <p style="color: #71767b; font-size: 14px; margin: 0 0 15px 0; line-height: 1.4;" data-i18n="settingsCharacterBindingDesc">
               开启后，绑定的角色可以在X上发布推文
             </p>
 
             <!-- 角色选择区域 -->
             <div id="character-binding-area" style="display: none;">
               <div style="background-color: #1a1a1a; border: 1px solid #333; border-radius: 12px; padding: 16px;">
-                <div style="color: #fff; font-size: 15px; font-weight: 600; margin-bottom: 12px;">选择要绑定的角色</div>
+                <div style="color: #fff; font-size: 15px; font-weight: 600; margin-bottom: 12px;" data-i18n="settingsSelectCharacter">选择要绑定的角色</div>
                 <div id="characters-list" style="max-height: 300px; overflow-y: auto;">
                   <!-- 角色列表将通过JavaScript动态生成 -->
                 </div>
@@ -1672,7 +3092,7 @@
           <!-- 角色关系册设置 -->
           <div class="settings-section" style="margin-bottom: 40px;">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
-              <label style="color: #fff; font-size: 17px; font-weight: 600;">
+              <label style="color: #fff; font-size: 17px; font-weight: 600;" data-i18n="settingsRelationship">
                 角色关系册
               </label>
               <div class="x-toggle" onclick="toggleCharacterRelationship()" style="cursor: pointer;">
@@ -1684,7 +3104,7 @@
                 </div>
               </div>
             </div>
-            <p style="color: #71767b; font-size: 14px; margin: 0 0 15px 0; line-height: 1.4;">
+            <p style="color: #71767b; font-size: 14px; margin: 0 0 15px 0; line-height: 1.4;" data-i18n="settingsRelationshipDesc">
               开启后，可以为已绑定的角色建立关系网络，设置角色之间的双向关系
             </p>
 
@@ -1692,7 +3112,7 @@
             <div id="relationship-binding-area" style="display: none;">
               <div style="background-color: #1a1a1a; border: 1px solid #333; border-radius: 12px; padding: 16px;">
                 <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-                  <div style="color: #fff; font-size: 15px; font-weight: 600;">角色关系图</div>
+                  <div style="color: #fff; font-size: 15px; font-weight: 600;" data-i18n="settingsRelationshipGraph">角色关系图</div>
                   <button onclick="openCharacterRelationshipGraph()" style="
                     background-color: #1d9bf0;
                     color: #fff;
@@ -1703,7 +3123,7 @@
                     font-weight: 600;
                     cursor: pointer;
                     transition: all 0.2s;
-                  " onmouseover="this.style.backgroundColor='#1a8cd8'" onmouseout="this.style.backgroundColor='#1d9bf0'">
+                  " onmouseover="this.style.backgroundColor='#1a8cd8'" onmouseout="this.style.backgroundColor='#1d9bf0'" data-i18n="settingsEditGraph">
                     编辑关系图
                   </button>
                 </div>
@@ -1726,8 +3146,8 @@
                     font-size: 14px;
                     text-align: center;
                   ">
-                    暂无关系数据<br>
-                    <span style="font-size: 12px;">点击上方按钮开始创建角色关系</span>
+                    <span data-i18n="relationshipNoData">暂无关系数据</span><br>
+                    <span style="font-size: 12px;" data-i18n="relationshipNoDataHint">点击上方按钮开始创建角色关系</span>
                   </div>
                 </div>
 
@@ -1742,11 +3162,11 @@
                   <div style="color: #1d9bf0; font-size: 13px; display: flex; justify-content: space-around;">
                     <div style="text-align: center;">
                       <div style="font-weight: 700; font-size: 18px;" id="relationship-character-count">0</div>
-                      <div style="opacity: 0.8;">角色数</div>
+                      <div style="opacity: 0.8;" data-i18n="relationshipCharacterCount">角色数</div>
                     </div>
                     <div style="text-align: center;">
                       <div style="font-weight: 700; font-size: 18px;" id="relationship-link-count">0</div>
-                      <div style="opacity: 0.8;">关系数</div>
+                      <div style="opacity: 0.8;" data-i18n="relationshipLinkCount">关系数</div>
                     </div>
                   </div>
                 </div>
@@ -1757,7 +3177,7 @@
           <!-- NPC绑定设置 -->
           <div class="settings-section" style="margin-bottom: 40px;">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
-              <label style="color: #fff; font-size: 17px; font-weight: 600;">
+              <label style="color: #fff; font-size: 17px; font-weight: 600;" data-i18n="settingsNPCBinding">
                 绑定NPC
               </label>
               <div class="x-toggle" onclick="toggleNPCBinding()" style="cursor: pointer;">
@@ -1769,7 +3189,7 @@
                 </div>
               </div>
             </div>
-            <p style="color: #71767b; font-size: 14px; margin: 0 0 15px 0; line-height: 1.4;">
+            <p style="color: #71767b; font-size: 14px; margin: 0 0 15px 0; line-height: 1.4;" data-i18n="settingsNPCBindingDesc">
               开启后，可以创建和管理自定义NPC，设置其人设、发帖习惯和绑定用户
             </p>
 
@@ -1777,7 +3197,7 @@
             <div id="npc-binding-area" style="display: none;">
               <div style="background-color: #1a1a1a; border: 1px solid #333; border-radius: 12px; padding: 16px;">
                 <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-                  <div style="color: #fff; font-size: 15px; font-weight: 600;">NPC列表</div>
+                  <div style="color: #fff; font-size: 15px; font-weight: 600;" data-i18n="settingsNPCList">NPC列表</div>
                   <button onclick="openCreateNPCModal()" style="
                     background-color: #1d9bf0;
                     color: #fff;
@@ -1788,7 +3208,7 @@
                     font-weight: 600;
                     cursor: pointer;
                     transition: all 0.2s;
-                  " onmouseover="this.style.backgroundColor='#1a8cd8'" onmouseout="this.style.backgroundColor='#1d9bf0'">
+                  " onmouseover="this.style.backgroundColor='#1a8cd8'" onmouseout="this.style.backgroundColor='#1d9bf0'" data-i18n="settingsCreateNPC">
                     + 创建NPC
                   </button>
                 </div>
@@ -1804,14 +3224,14 @@
             <!-- 保存按钮 -->
             <button onclick="saveXSettings()"
               style="width: 100%; background-color: #1d9bf0; color: #fff; border: none; border-radius: 25px; padding: 12px 24px; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.2s;"
-              onmouseover="this.style.backgroundColor='#1a8cd8'" onmouseout="this.style.backgroundColor='#1d9bf0'">
+              onmouseover="this.style.backgroundColor='#1a8cd8'" onmouseout="this.style.backgroundColor='#1d9bf0'" data-i18n="settingsSave">
               保存设置
             </button>
 
             <!-- 保存预设按钮 -->
             <button onclick="saveXPreset()"
               style="width: 100%; background-color: #1d9bf0; color: #fff; border: none; border-radius: 25px; padding: 12px 24px; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.2s;"
-              onmouseover="this.style.backgroundColor='#1a8cd8'" onmouseout="this.style.backgroundColor='#1d9bf0'">
+              onmouseover="this.style.backgroundColor='#1a8cd8'" onmouseout="this.style.backgroundColor='#1d9bf0'" data-i18n="settingsSavePreset">
               保存为预设
             </button>
 
@@ -1819,12 +3239,12 @@
             <div style="display: flex; gap: 12px;">
               <button onclick="importXData()"
                 style="flex: 1; background-color: #1d9bf0; color: #fff; border: none; border-radius: 25px; padding: 12px 20px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s;"
-                onmouseover="this.style.backgroundColor='#1a8cd8'" onmouseout="this.style.backgroundColor='#1d9bf0'">
+                onmouseover="this.style.backgroundColor='#1a8cd8'" onmouseout="this.style.backgroundColor='#1d9bf0'" data-i18n="settingsImport">
                 导入数据
               </button>
               <button onclick="exportXData()"
                 style="flex: 1; background-color: #1d9bf0; color: #fff; border: none; border-radius: 25px; padding: 12px 20px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s;"
-                onmouseover="this.style.backgroundColor='#1a8cd8'" onmouseout="this.style.backgroundColor='#1d9bf0'">
+                onmouseover="this.style.backgroundColor='#1a8cd8'" onmouseout="this.style.backgroundColor='#1d9bf0'" data-i18n="settingsExport">
                 导出数据
               </button>
             </div>
@@ -1832,7 +3252,7 @@
 
           <!-- 预设管理区域 -->
           <div class="preset-management" style="margin-top: 40px; padding-top: 30px; border-top: 1px solid #333;">
-            <h3 style="color: #fff; font-size: 18px; font-weight: 700; margin-bottom: 15px;">预设管理</h3>
+            <h3 style="color: #fff; font-size: 18px; font-weight: 700; margin-bottom: 15px;" data-i18n="settingsPresetManagement">预设管理</h3>
             <div id="x-presets-list" style="display: flex; flex-direction: column;">
               <!-- 预设列表将通过JavaScript动态生成 -->
             </div>
@@ -1856,11 +3276,19 @@
                 </g>
               </svg>
             </div>
-            <span style="font-size: 20px; font-weight: 700; color: #fff;">帖子</span>
+            <span style="font-size: 20px; font-weight: 700; color: #fff;" data-i18n="tweetDetailTitle">帖子</span>
           </div>
 
-          <!-- 重回按钮 -->
-          <div id="reroll-replies-btn" onclick="rerollAIReplies()" style="
+          <!-- 重回/推进按钮 -->
+          <div id="reroll-replies-btn" 
+               onclick="rerollAIReplies()" 
+               onmousedown="handleTweetRerollButtonMouseDown()"
+               onmouseup="handleTweetRerollButtonMouseUp()"
+               onmouseleave="handleTweetRerollButtonMouseUp()"
+               ontouchstart="handleTweetRerollButtonMouseDown()"
+               ontouchend="handleTweetRerollButtonMouseUp()"
+               ontouchcancel="handleTweetRerollButtonMouseUp()"
+               style="
              display: flex;
              align-items: center;
              justify-content: center;
@@ -1871,8 +3299,12 @@
              border-radius: 50%;
              cursor: pointer;
              transition: all 0.2s;
-           " onmouseover="this.style.backgroundColor='rgba(255,255,255,0.1)'"
-            onmouseout="this.style.backgroundColor='transparent'">
+                 user-select: none;
+                 -webkit-user-select: none;
+               " 
+               onmouseover="this.style.backgroundColor='rgba(255,255,255,0.1)'"
+               onmouseout="this.style.backgroundColor='transparent'"
+               title="重新生成回复">
             <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; fill: #fff;">
               <g>
                 <path
@@ -1906,7 +3338,7 @@
 
                 <!-- 输入框容器 -->
                 <div style="flex: 1;">
-                  <textarea id="detail-comment-input" placeholder="发布你的回复"
+                  <textarea id="detail-comment-input" placeholder="发布你的回复" data-i18n="tweetDetailReplyPlaceholder"
                     style="width: 100%; min-height: 18px; max-height: 100px; background: transparent; border: none; color: #fff; font-size: 15px; resize: none; outline: none; font-family: inherit; line-height: 1.3;"
                     onkeydown="handleDetailCommentInput(event)" oninput="autoResizeDetail(this)"></textarea>
 
@@ -1940,7 +3372,7 @@
                     <!-- 右侧发送按钮 -->
                     <button id="detail-reply-btn" onclick="submitDetailComment()"
                       style="background-color: #1d9bf0; color: #fff; border: none; border-radius: 18px; padding: 6px 16px; font-size: 14px; font-weight: 700; cursor: pointer; opacity: 0.5;"
-                      disabled>
+                      disabled data-i18n="tweetDetailReply">
                       回复
                     </button>
                   </div>
@@ -1965,11 +3397,11 @@
       </div>
 
       <!-- 用户主页 -->
-      <div id="x-profile-page" class="x-page" style="flex: 1; display: none; flex-direction: column; overflow-y: auto;">
+      <div id="x-profile-page" class="x-page" style="flex: 1; display: none; flex-direction: column; overflow-y: auto; padding: 0; margin: 0;">
 
         <!-- 主页顶部栏 -->
         <div class="profile-header"
-          style="display: flex; align-items: center; padding: 10px 15px; background-color: rgba(0,0,0,0.8); backdrop-filter: blur(12px); position: relative; z-index: 5;">
+          style="display: flex; align-items: center; padding: 10px 15px; background-color: rgba(0,0,0,0.8); backdrop-filter: blur(12px); position: relative; z-index: 5; margin: 0;">
           <div class="profile-back-btn" onclick="switchXPage('home')" style="cursor: pointer; margin-right: 15px;">
             <svg viewBox="0 0 24 24" aria-hidden="true" style="width: 20px; height: 20px; fill: #fff;">
               <g>
@@ -2038,7 +3470,7 @@
                       </path>
                     </g>
                   </svg>
-                  账号管理
+                  <span data-i18n="profileAccountManager">账号管理</span>
                 </div>
               </div>
             </div>
@@ -2046,9 +3478,9 @@
         </div>
 
         <!-- 封面图区域 -->
-        <div class="cover-section" style="position: relative; height: 140px; background-color: #333;">
+        <div class="cover-section" style="position: relative; height: 140px; background-color: #333; margin: 0; padding: 0; margin-top: -1px;">
           <img id="x-profile-cover-image" src="https://i.postimg.cc/qRzMB6nQ/default-cover.jpg"
-            style="width: 100%; height: 100%; object-fit: cover; display: block;" alt="封面图">
+            style="width: 100%; height: 100%; object-fit: cover; display: block; margin: 0; padding: 0; vertical-align: top;" alt="封面图">
         </div>
 
         <!-- 用户信息区域 -->
@@ -2056,7 +3488,7 @@
           <!-- 用户头像 -->
           <div style="position: relative; margin-bottom: 8px;">
             <img id="x-profile-main-avatar" src="https://i.postimg.cc/pXxk1JXk/IMG-6442.jpg"
-              style="width: 88px; height: 88px; border-radius: 50%; border: 5px solid #000; position: absolute; top: -44px; left: 0;"
+              style="width: 88px; height: 88px; border-radius: 50%; border: 5px solid #000; position: absolute; top: -44px; left: 0; object-fit: cover; overflow: hidden; box-sizing: border-box;"
               alt="用户头像">
           </div>
 
@@ -2065,7 +3497,7 @@
             <button onclick="editProfile()"
               style="background-color: transparent; color: #fff; border: 1px solid #536471; border-radius: 20px; padding: 6px 16px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s;"
               onmouseover="this.style.backgroundColor='rgba(255,255,255,0.1)'"
-              onmouseout="this.style.backgroundColor='transparent'">
+              onmouseout="this.style.backgroundColor='transparent'" data-i18n="profileEditProfile">
               编辑个人资料
             </button>
           </div>
@@ -2109,12 +3541,12 @@
             <div style="cursor: pointer;" onmouseover="this.querySelector('span').style.textDecoration='underline'"
               onmouseout="this.querySelector('span').style.textDecoration='none'">
               <span id="x-profile-following-count" style="color: #fff; font-weight: 700; font-size: 14px;">156</span>
-              <span style="color: #71767b; margin-left: 2px; font-size: 14px; font-weight: 400;">正在关注</span>
+              <span style="color: #71767b; margin-left: 2px; font-size: 14px; font-weight: 400;" data-i18n="profileFollowing">正在关注</span>
             </div>
             <div style="cursor: pointer;" onmouseover="this.querySelector('span').style.textDecoration='underline'"
               onmouseout="this.querySelector('span').style.textDecoration='none'">
               <span id="x-profile-followers-count" style="color: #fff; font-weight: 700; font-size: 14px;">89</span>
-              <span style="color: #71767b; margin-left: 2px; font-size: 14px; font-weight: 400;">关注者</span>
+              <span style="color: #71767b; margin-left: 2px; font-size: 14px; font-weight: 400;" data-i18n="profileFollowers">关注者</span>
             </div>
           </div>
         </div>
@@ -2123,35 +3555,35 @@
         <div class="profile-tabs" style="display: flex; border-bottom: 1px solid #2f3336;">
           <div class="profile-tab active" onclick="switchProfileTab('posts')"
             style="flex: 1; text-align: center; padding: 14px 0; font-weight: 600; font-size: 15px; cursor: pointer; position: relative; color: #fff;">
-            帖子
+            <span data-i18n="profilePosts">帖子</span>
             <div class="tab-indicator"
               style="position: absolute; bottom: 0; left: 25%; width: 50%; height: 3px; background-color: #1d9bf0; border-radius: 2px;">
             </div>
           </div>
           <div class="profile-tab" onclick="switchProfileTab('replies')"
             style="flex: 1; text-align: center; padding: 14px 0; font-weight: 500; font-size: 15px; cursor: pointer; position: relative; color: #71767b;">
-            回复
+            <span data-i18n="profileReplies">回复</span>
             <div class="tab-indicator"
               style="position: absolute; bottom: 0; left: 25%; width: 50%; height: 3px; background-color: #1d9bf0; border-radius: 2px; display: none;">
             </div>
           </div>
           <div class="profile-tab" onclick="switchProfileTab('highlights')"
             style="flex: 1; text-align: center; padding: 14px 0; font-weight: 500; font-size: 15px; cursor: pointer; position: relative; color: #71767b;">
-            亮点
+            <span data-i18n="profileHighlights">亮点</span>
             <div class="tab-indicator"
               style="position: absolute; bottom: 0; left: 25%; width: 50%; height: 3px; background-color: #1d9bf0; border-radius: 2px; display: none;">
             </div>
           </div>
           <div class="profile-tab" onclick="switchProfileTab('articles')"
             style="flex: 1; text-align: center; padding: 14px 0; font-weight: 500; font-size: 15px; cursor: pointer; position: relative; color: #71767b;">
-            文章
+            <span data-i18n="profileArticles">文章</span>
             <div class="tab-indicator"
               style="position: absolute; bottom: 0; left: 25%; width: 50%; height: 3px; background-color: #1d9bf0; border-radius: 2px; display: none;">
             </div>
           </div>
           <div class="profile-tab" onclick="switchProfileTab('media')"
             style="flex: 1; text-align: center; padding: 14px 0; font-weight: 500; font-size: 15px; cursor: pointer; position: relative; color: #71767b;">
-            媒体
+            <span data-i18n="profileMedia">媒体</span>
             <div class="tab-indicator"
               style="position: absolute; bottom: 0; left: 25%; width: 50%; height: 3px; background-color: #1d9bf0; border-radius: 2px; display: none;">
             </div>
@@ -2170,29 +3602,29 @@
           <!-- 其他标签内容 -->
           <div id="profile-replies-content" class="profile-tab-content" style="display: none;">
             <div style="padding: 60px 32px; text-align: center;">
-              <div style="color: #71767b; font-size: 31px; font-weight: 800; margin-bottom: 8px;">还没有回复</div>
-              <div style="color: #71767b; font-size: 15px;">当你回复一条推文时，它会显示在这里。</div>
+              <div style="color: #71767b; font-size: 31px; font-weight: 800; margin-bottom: 8px;" data-i18n="profileNoReplies">还没有回复</div>
+              <div style="color: #71767b; font-size: 15px;" data-i18n="profileNoRepliesDesc">当你回复一条推文时，它会显示在这里。</div>
             </div>
           </div>
 
           <div id="profile-highlights-content" class="profile-tab-content" style="display: none;">
             <div style="padding: 60px 32px; text-align: center;">
-              <div style="color: #71767b; font-size: 31px; font-weight: 800; margin-bottom: 8px;">还没有亮点</div>
-              <div style="color: #71767b; font-size: 15px;">点赞最多的推文会显示在这里。</div>
+              <div style="color: #71767b; font-size: 31px; font-weight: 800; margin-bottom: 8px;" data-i18n="profileNoHighlights">还没有亮点</div>
+              <div style="color: #71767b; font-size: 15px;" data-i18n="profileNoHighlightsDesc">点赞最多的推文会显示在这里。</div>
             </div>
           </div>
 
           <div id="profile-articles-content" class="profile-tab-content" style="display: none;">
             <div style="padding: 60px 32px; text-align: center;">
-              <div style="color: #71767b; font-size: 31px; font-weight: 800; margin-bottom: 8px;">还没有文章</div>
-              <div style="color: #71767b; font-size: 15px;">发布的文章会显示在这里。</div>
+              <div style="color: #71767b; font-size: 31px; font-weight: 800; margin-bottom: 8px;" data-i18n="profileNoArticles">还没有文章</div>
+              <div style="color: #71767b; font-size: 15px;" data-i18n="profileNoArticlesDesc">发布的文章会显示在这里。</div>
             </div>
           </div>
 
           <div id="profile-media-content" class="profile-tab-content" style="display: none;">
             <div style="padding: 60px 32px; text-align: center;">
-              <div style="color: #71767b; font-size: 31px; font-weight: 800; margin-bottom: 8px;">还没有媒体</div>
-              <div style="color: #71767b; font-size: 15px;">包含照片和视频的推文会显示在这里。</div>
+              <div style="color: #71767b; font-size: 31px; font-weight: 800; margin-bottom: 8px;" data-i18n="profileNoMedia">还没有媒体</div>
+              <div style="color: #71767b; font-size: 15px;" data-i18n="profileNoMediaDesc">包含照片和视频的推文会显示在这里。</div>
             </div>
           </div>
         </div>
@@ -2349,7 +3781,7 @@
           ">
             <div style="position: relative; width: 134px;">
               <img id="edit-main-avatar" src="https://i.postimg.cc/pXxk1JXk/IMG-6442.jpg"
-                style="width: 134px; height: 134px; border-radius: 50%; border: 4px solid #000;" alt="用户头像">
+                style="width: 134px; height: 134px; border-radius: 50%; border: 4px solid #000; object-fit: cover; overflow: hidden; box-sizing: border-box;" alt="用户头像">
 
               <!-- 头像编辑按钮 -->
               <div class="avatar-edit-btn" onclick="editAvatarImage()" style="
@@ -3378,7 +4810,7 @@
         background-color: #000;
         margin: 20px auto;
         border-radius: 16px;
-        max-width: 900px;
+        max-width: min(900px, calc(100vw - 20px));
         width: calc(100% - 40px);
         max-height: calc(100vh - 40px);
         position: relative;
@@ -3473,7 +4905,7 @@
 
         <!-- 关系图画布区域 -->
         <div style="
-          height: 500px;
+          height: min(500px, 60vh);
           background-color: #000;
           position: relative;
           overflow: hidden;
@@ -3576,7 +5008,7 @@
         background-color: #000;
         margin: 60px auto;
         border-radius: 16px;
-        max-width: 500px;
+        max-width: min(500px, calc(100vw - 20px));
         width: calc(100% - 40px);
         border: 1px solid #333;
       " onclick="event.stopPropagation()">
@@ -4158,16 +5590,16 @@
           <div style="display: flex; gap: 20px; margin-bottom: 16px; padding-left: 8px;">
             <div style="cursor: pointer;" onmouseover="this.querySelector('span').style.textDecoration='underline'" onmouseout="this.querySelector('span').style.textDecoration='none'">
               <span id="account-following-count" style="color: #fff; font-weight: 700; font-size: 14px;">0</span>
-              <span style="color: #71767b; margin-left: 4px; font-size: 14px;">正在关注</span>
+              <span style="color: #71767b; margin-left: 4px; font-size: 14px;" data-i18n="accountFollowingLabel">正在关注</span>
             </div>
             <div style="cursor: pointer;" onmouseover="this.querySelector('span').style.textDecoration='underline'" onmouseout="this.querySelector('span').style.textDecoration='none'">
               <span id="account-followers-count" style="color: #fff; font-weight: 700; font-size: 14px;">0</span>
-              <span style="color: #71767b; margin-left: 4px; font-size: 14px;">关注者</span>
+              <span style="color: #71767b; margin-left: 4px; font-size: 14px;" data-i18n="accountFollowersLabel">关注者</span>
             </div>
           </div>
 
           <!-- 关注提示 -->
-          <div id="account-follows-you" style="display: none; color: #71767b; font-size: 13px; margin-bottom: 16px; padding-left: 8px;">
+          <div id="account-follows-you" style="display: none; color: #71767b; font-size: 13px; margin-bottom: 16px; padding-left: 8px;" data-i18n="accountFollowsYou">
             关注你
           </div>
         </div>
@@ -4175,13 +5607,13 @@
         <!-- 标签栏 -->
         <div style="display: flex; border-bottom: 1px solid #2f3336;">
           <div class="account-tab active" onclick="switchAccountTab('posts')" style="flex: 1; text-align: center; padding: 16px 0; font-size: 15px; font-weight: 700; color: #fff; cursor: pointer; position: relative; border-bottom: 4px solid #1d9bf0;">
-            帖子
+            <span data-i18n="accountPostsTab">帖子</span>
           </div>
           <div class="account-tab" onclick="switchAccountTab('replies')" style="flex: 1; text-align: center; padding: 16px 0; font-size: 15px; font-weight: 500; color: #71767b; cursor: pointer; position: relative; border-bottom: 4px solid transparent;">
-            回复
+            <span data-i18n="accountRepliesTab">回复</span>
           </div>
           <div class="account-tab" onclick="switchAccountTab('likes')" style="flex: 1; text-align: center; padding: 16px 0; font-size: 15px; font-weight: 500; color: #71767b; cursor: pointer; position: relative; border-bottom: 4px solid transparent;">
-            喜欢
+            <span data-i18n="accountLikesTab">喜欢</span>
           </div>
         </div>
 
@@ -5467,6 +6899,7 @@ ${userXProfileInfo.bio ? `- 个人简介：${userXProfileInfo.bio}` : ''}
     if (pageType === 'settings') {
       setTimeout(async () => {
         await initializeXSettings();
+        await loadLanguagePreference(); // 加载语言偏好
         console.log('✅ 已加载当前账号的X设置');
       }, 100);
     }
@@ -9580,6 +11013,17 @@ ${npc.homepage || '暂无主页内容设置'}
 - X句柄：${accountData.handle}
 - X头像：${accountData.avatar}
 - 认证状态：${accountData.verified ? '是' : '否'}
+${
+  accountData.verified
+    ? `- 认证类型：${
+        accountData.verificationType === 'couple'
+          ? '情侣认证（心形图标）'
+          : accountData.verificationType === 'verified'
+          ? '普通认证（蓝色勾标）'
+          : '普通认证（蓝色勾标）'
+      }`
+    : ''
+}
 ${accountData.bio ? `- X简介：${accountData.bio}` : ''}
 ${accountData.publicIdentity ? `- 公众身份：${accountData.publicIdentity}` : ''}
 ${accountData.personality ? `- 人设描述：${accountData.personality}` : ''}
@@ -9709,73 +11153,6 @@ ${accountData.followersCount ? `- 关注者：${accountData.followersCount}` : '
         }
       }
 
-      // 4.5. 智能检测账户资料中的关键词，动态添加相关用户/角色信息
-      if (accountData.accountType !== 'character') {
-        // 收集账户所有文本信息用于关键词检测
-        const accountTexts = [
-          accountData.bio || '',
-          accountData.publicIdentity || '',
-          accountData.personality || '',
-          accountData.postingHabits || '',
-          accountData.homepage || '',
-        ].join(' ');
-
-        // 检测是否提及用户
-        const mentionsUser =
-          accountTexts.includes(userXProfileInfo.name) ||
-          accountTexts.includes(userXProfileInfo.handle) ||
-          accountTexts.includes(userXProfileInfo.handle.replace('@', ''));
-
-        // 检测是否提及角色
-        const mainDB = getDB();
-        const allChats = await mainDB.chats.toArray();
-        const allXProfiles = await xDb.xCharacterProfiles.toArray();
-        const mentionedCharacters = [];
-
-        for (const xProfile of allXProfiles) {
-          if (
-            accountTexts.includes(xProfile.xName) ||
-            accountTexts.includes(xProfile.xHandle) ||
-            accountTexts.includes(xProfile.xHandle.replace('@', ''))
-          ) {
-            const character = allChats.find(c => c.id === xProfile.characterId);
-            if (character) {
-              mentionedCharacters.push({ character, xProfile });
-            }
-          }
-        }
-
-        // 如果检测到提及用户或角色，添加相关信息
-        if (mentionsUser || mentionedCharacters.length > 0) {
-          systemPrompt += `
-
-【相关身份信息】（该账户资料中提及，仅供讨论参考，不可假扮）：
-`;
-
-          if (mentionsUser) {
-            systemPrompt += `
-- 用户：${userXProfileInfo.name} (${userXProfileInfo.handle}) - 公众身份：${
-              userXProfileInfo.publicIdentity || '未设置'
-            }`;
-          }
-
-          if (mentionedCharacters.length > 0) {
-            for (const { character, xProfile } of mentionedCharacters) {
-              systemPrompt += `
-- 角色：${character.name} (${xProfile.xName} / ${xProfile.xHandle}) - ${character.settings.aiPersona || '无特定人设'}`;
-            }
-          }
-
-          systemPrompt += `
-
-⚠️ 该账户可评论上述身份，但不可假扮其发布内容。
-`;
-
-          const relationInfo = systemPrompt.substring(systemPrompt.lastIndexOf('【相关身份信息】'));
-          tokenCount = TokenUtils.logTokenUsage('账户主页生成器', '相关身份信息', relationInfo, tokenCount);
-        }
-      }
-
       // 4.6. 如果是推进模式，添加现有内容作为上下文
       if (isProgressMode && (existingTweets.length > 0 || existingReplies.length > 0)) {
         systemPrompt += `
@@ -9817,50 +11194,217 @@ ${index + 1}. 回复了：${reply.type === 'tweet' ? '推文' : '评论'} - "${r
         tokenCount = TokenUtils.logTokenUsage('账户主页生成器', '已有内容上下文', existingContentSection, tokenCount);
       }
 
-      // 5. 用户资料约束（仅在需要时使用）
-      // 只在角色账户或检测到用户/角色关键词时才提供用户信息
-      const needsUserInfo =
-        accountData.accountType === 'character' ||
-        (accountData.accountType !== 'character' &&
-          ((accountData.bio || '').includes(userXProfileInfo.name) ||
-            (accountData.bio || '').includes(userXProfileInfo.handle) ||
-            (accountData.publicIdentity || '').includes(userXProfileInfo.name)));
+      // 5. 身份约束与禁令（统一结构，分情况处理）
+      const userConstraintsStart = systemPrompt.length;
 
-      if (needsUserInfo) {
-        const userConstraintsStart = systemPrompt.length;
+      // 5.1 首先明确当前正在生成的账户身份
+      systemPrompt += `
 
-        // 精简版用户约束（仅用于账户生成场景）
-        const verificationDesc =
-          {
-            verified: '蓝色勾标认证',
-            couple: '情侣认证',
-            married: '已婚认证',
-            vip: 'VIP认证',
-          }[userXProfileInfo.verificationType] || '无认证';
-
-        systemPrompt += `
-
-🚫 【用户身份禁令】
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-**绝对禁止生成用户本人的内容**
-
-用户标识（仅供参考，禁止假扮）：
-${userXProfileInfo.name} (${userXProfileInfo.handle}) - ${verificationDesc}
-${userXProfileInfo.publicIdentity ? `公众身份：${userXProfileInfo.publicIdentity}` : ''}
-${
-  userXProfileInfo.verificationType === 'couple' && userXProfileInfo.coupleCharacterName
-    ? `情侣关系：与${userXProfileInfo.coupleCharacterName}为公开情侣`
-    : ''
-}
-
-✅ 可生成：${accountData.accountType === 'character' ? '目标角色账户、其他角色、虚构用户' : '虚构用户、其他角色'}
-❌ 禁止生成：用户本人的推文/评论/回复
+🎯 当前生成账户
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+正在生成：${accountData.name} (${accountData.handle}) 的账户主页
+账户类型：${
+        accountData.accountType === 'character'
+          ? '角色账户'
+          : accountData.accountType === 'npc'
+          ? 'NPC账户'
+          : '未知账户'
+      }
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 `;
 
-        const userConstraints = systemPrompt.substring(userConstraintsStart);
-        tokenCount = TokenUtils.logTokenUsage('账户主页生成器', '用户身份禁令', userConstraints, tokenCount);
+      // 5.2 根据账户类型和身份识别情况，提供相关身份信息
+      if (accountData.accountType === 'character' && accountData.characterId) {
+        // 角色账户：检查是否知道用户身份
+        const knowsUserIdentity = userXProfileInfo.knownIdentityCharacters.includes(accountData.characterId);
+
+        if (knowsUserIdentity) {
+          // 情况A：角色知道用户 → 提供用户X资料 + 角色专属用户人设
+          const verificationDesc =
+            {
+              verified: '蓝色勾标认证',
+              couple: '情侣认证',
+              married: '已婚认证',
+              vip: 'VIP认证',
+            }[userXProfileInfo.verificationType] || '无认证';
+
+          const hasUserPersona = accountData.xProfileData?.userPersona && accountData.xProfileData.userPersona.trim();
+
+          systemPrompt += `
+
+【用户身份信息】该角色认识用户
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+用户X平台资料（仅供参考，严禁假扮）：
+- 用户名：${userXProfileInfo.name}
+- 用户句柄：${userXProfileInfo.handle}
+- 认证状态：${verificationDesc}
+${userXProfileInfo.publicIdentity ? `- 公众身份：${userXProfileInfo.publicIdentity}` : ''}
+${userXProfileInfo.bio ? `- 个人简介：${userXProfileInfo.bio}` : ''}
+
+该角色了解的用户信息：
+${
+  hasUserPersona
+    ? accountData.xProfileData.userPersona
+    : '⚠️ 未设置用户人设 - 该角色只知道用户的基本X平台信息（上述资料），不了解用户的私人信息、性格特点或两者之间的具体关系。'
+}
+
+🚫 【关键约束】
+${
+  hasUserPersona
+    ? `- 该角色可以在推文中提及或艾特用户 ${userXProfileInfo.handle}
+- 但评论区不能出现用户 ${userXProfileInfo.name} (${userXProfileInfo.handle}) 的发言
+- 所有评论必须是虚构的普通用户，不得使用用户的名称或句柄`
+    : `- 该角色可以在推文中提及用户 ${userXProfileInfo.handle}（基于基本认识）
+- 但不要捏造或推断两者的具体关系（如情侣、伴侣、家人等）
+- 评论区绝对禁止出现用户 ${userXProfileInfo.name} (${userXProfileInfo.handle}) 的发言
+- 所有评论必须是虚构的普通用户，不得使用用户的名称或句柄
+- ⚠️ 重要：未设置用户人设意味着不能假设两者有特殊关系`
+}
+- ${accountData.name} 和 ${userXProfileInfo.name} 是两个完全独立的不同个体
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
+        } else {
+          // 情况B：角色不知道用户 → 只提供用户X平台公开资料
+          systemPrompt += `
+
+【用户身份信息】该角色不认识用户
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+用户X平台公开资料（仅供参考，禁止假扮）：
+- 用户名：${userXProfileInfo.name}
+- 用户句柄：${userXProfileInfo.handle}
+${userXProfileInfo.publicIdentity ? `- 公众身份：${userXProfileInfo.publicIdentity}` : ''}
+
+身份关系：
+- ${accountData.name} 不知道用户的真实身份
+- ${accountData.name} 和 ${userXProfileInfo.name} 是完全独立的不同个体
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
+        }
+      } else {
+        // 非角色账户（NPC/未知）：检测是否提及用户或角色
+        const accountTexts = [
+          accountData.bio || '',
+          accountData.publicIdentity || '',
+          accountData.personality || '',
+          accountData.postingHabits || '',
+          accountData.homepage || '',
+        ].join(' ');
+
+        const mentionsUser =
+          accountTexts.includes(userXProfileInfo.name) ||
+          accountTexts.includes(userXProfileInfo.handle) ||
+          accountTexts.includes(userXProfileInfo.handle.replace('@', ''));
+
+        // 检测是否提及角色
+        const mainDB = getDB();
+        const allChats = await mainDB.chats.toArray();
+        const allXProfiles = await xDb.xCharacterProfiles.toArray();
+        const mentionedCharacters = [];
+
+        for (const xProfile of allXProfiles) {
+          if (
+            accountTexts.includes(xProfile.xName) ||
+            accountTexts.includes(xProfile.xHandle) ||
+            accountTexts.includes(xProfile.xHandle.replace('@', ''))
+          ) {
+            const character = allChats.find(c => c.id === xProfile.characterId);
+            if (character) {
+              mentionedCharacters.push({ character, xProfile });
+            }
+          }
+        }
+
+        if (mentionsUser || mentionedCharacters.length > 0) {
+          // 情况C：账户资料提及用户/角色 → 提供X平台公开资料
+          systemPrompt += `
+
+【提及的身份信息】该账户资料提及以下身份
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
+
+          if (mentionsUser) {
+            const verificationDesc =
+              {
+                verified: '蓝色勾标认证',
+                couple: '情侣认证',
+                married: '已婚认证',
+                vip: 'VIP认证',
+              }[userXProfileInfo.verificationType] || '无认证';
+
+            systemPrompt += `
+用户X平台公开资料（仅供参考，禁止假扮）：
+- 用户名：${userXProfileInfo.name}
+- 用户句柄：${userXProfileInfo.handle}
+- 认证状态：${verificationDesc}
+${userXProfileInfo.publicIdentity ? `- 公众身份：${userXProfileInfo.publicIdentity}` : ''}
+${userXProfileInfo.bio ? `- 个人简介：${userXProfileInfo.bio}` : ''}
+`;
+          }
+
+          if (mentionedCharacters.length > 0) {
+            systemPrompt += `
+提及的角色X平台资料（仅供参考，禁止假扮）：
+`;
+            for (const { character, xProfile } of mentionedCharacters) {
+              systemPrompt += `
+- ${character.name} - X身份：${xProfile.xName} (${xProfile.xHandle})
+  ${xProfile.publicIdentity ? `公众身份：${xProfile.publicIdentity}` : ''}
+  ${xProfile.xBio ? `简介：${xProfile.xBio}` : ''}
+`;
+            }
+          }
+
+          systemPrompt += `
+互动说明：
+- ${accountData.name} 可以讨论或评论上述身份
+- 但 ${accountData.name} 不是上述任何身份，是独立的个体
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
+        } else {
+          // 情况D：完全无关的陌生账户 → 只提供最基本的用户身份
+          systemPrompt += `
+
+【用户身份信息】无关联
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+用户基本标识（仅供参考，禁止假扮）：
+- 用户名：${userXProfileInfo.name}
+- 用户句柄：${userXProfileInfo.handle}
+
+身份关系：
+- ${accountData.name} 与用户无任何关联
+- ${accountData.name} 和 ${userXProfileInfo.name} 是完全独立的不同个体
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
+        }
       }
+
+      // 5.3 统一的核心禁令（所有情况共用）
+      systemPrompt += `
+
+🚫🚫🚫 核心禁令（最高优先级）🚫🚫🚫
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+【绝对禁止】假扮用户发布任何内容！
+
+身份识别：
+当前账户：${accountData.name} (${accountData.handle})
+用户账户：${userXProfileInfo.name} (${userXProfileInfo.handle})
+⚠️ 这是两个完全不同的独立个体！
+
+生成规则：
+✅ 可以生成：${accountData.name} (${accountData.handle}) 发布的推文/评论/回复
+✅ 可以生成：虚构的普通X平台用户（自创用户名和句柄）
+❌ 绝对禁止：以 ${userXProfileInfo.name} (${userXProfileInfo.handle}) 的身份发布任何内容
+❌ 绝对禁止：在 user.name 或 user.handle 字段中使用用户的名称或句柄
+
+⚠️ 重要提醒：
+所有推文的 user 字段必须是 ${accountData.name} (${accountData.handle})
+所有评论的 user 字段必须是虚构用户（不得是 ${userXProfileInfo.name} 或 ${userXProfileInfo.handle}）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
+
+      const userConstraints = systemPrompt.substring(userConstraintsStart);
+      tokenCount = TokenUtils.logTokenUsage('账户主页生成器', '身份约束与核心禁令', userConstraints, tokenCount);
 
       // 6. JSON返回格式
       if (isProgressMode) {
@@ -9882,7 +11426,11 @@ ${
 
 accountInfo对象结构：
 - name, handle, avatar, verified (已提供的必须完全一致)
-- verificationType: "verified" | "couple" (当账户有情侣关系时使用"couple"，显示心形认证图标)
+- verificationType: ${
+          accountData.verified
+            ? `"${accountData.verificationType || 'verified'}" (必须使用此值，不可修改)`
+            : '"none" (不可修改)'
+        }
 - cover, bio (可补充)
 - customTag1/2: {icon, text, color} (可选)
 - followingCount, followersCount (可补充)`;
@@ -9949,10 +11497,13 @@ accountReplies数组（2-4条，账户的回复记录）：
 10. accountReplies中的accountReply.user必须使用目标账户的信息
 11. 除了角色和npc以外所有账号都使用统一头像：https://i.postimg.cc/4xmx7V4R/mmexport1759081128356.jpg
 12. 默认背景图：https://i.postimg.cc/tT8Rfsf1/mmexport1759603246385.jpg
-13. ${
-        needsUserInfo
-          ? `🚫 禁止在user字段使用：${userXProfileInfo.name} 或 ${userXProfileInfo.handle}（这是用户，不可假扮）`
-          : '所有user字段必须是虚构账户，不得使用任何真实用户信息'
+13. 🚫 **禁止假扮用户**：绝对不可在user字段使用 ${userXProfileInfo.name} 或 ${
+        userXProfileInfo.handle
+      }，这是用户身份，不可假扮
+14. ${
+        accountData.accountType === 'character'
+          ? `🚫 **严禁自创角色关系**：除非明确提供的关系信息，不要让目标角色(${accountData.name})在推文/评论中声称与其他角色有特殊关系（如情侣、家人等）。所有评论者必须是虚构用户，不要使用其他已知角色的身份。`
+          : '评论者应为虚构的普通用户，保持身份的独立性'
       }`;
 
       const formatSection = systemPrompt.substring(systemPrompt.lastIndexOf('【JSON返回格式】'));
@@ -10056,6 +11607,74 @@ accountReplies数组（2-4条，账户的回复记录）：
         if (!profileData.accountInfo || !profileData.tweets) {
           throw new Error('AI返回的数据格式不正确');
         }
+
+        // 强制使用正确的 verificationType，防止 AI 错误生成
+        if (profileData.accountInfo) {
+          const correctVerificationType = accountData.verificationType || 'verified';
+          profileData.accountInfo.verificationType = correctVerificationType;
+          console.log(`🔒 [账户主页生成] 强制设置账户认证类型: ${correctVerificationType}`);
+        }
+      }
+
+      // 强制修正所有推文和回复中的 verificationType
+      const correctVerificationType = accountData.verificationType || 'verified';
+      const accountHandle = accountData.handle;
+      let fixedCount = 0;
+
+      // 修正推文中的认证类型
+      if (profileData.tweets && profileData.tweets.length > 0) {
+        profileData.tweets.forEach(tweet => {
+          if (tweet.user && tweet.user.handle === accountHandle) {
+            if (tweet.user.verificationType !== correctVerificationType) {
+              tweet.user.verificationType = correctVerificationType;
+              fixedCount++;
+            }
+          }
+
+          // 修正推文评论中的认证类型
+          if (tweet.comments && tweet.comments.length > 0) {
+            tweet.comments.forEach(comment => {
+              if (comment.user && comment.user.handle === accountHandle) {
+                if (comment.user.verificationType !== correctVerificationType) {
+                  comment.user.verificationType = correctVerificationType;
+                  fixedCount++;
+                }
+              }
+
+              // 修正楼中楼回复中的认证类型
+              if (comment.replies && comment.replies.length > 0) {
+                comment.replies.forEach(reply => {
+                  if (reply.user && reply.user.handle === accountHandle) {
+                    if (reply.user.verificationType !== correctVerificationType) {
+                      reply.user.verificationType = correctVerificationType;
+                      fixedCount++;
+                    }
+                  }
+                });
+              }
+            });
+          }
+        });
+      }
+
+      // 修正回复记录中的认证类型
+      if (profileData.accountReplies && profileData.accountReplies.length > 0) {
+        profileData.accountReplies.forEach(replyRecord => {
+          if (
+            replyRecord.accountReply &&
+            replyRecord.accountReply.user &&
+            replyRecord.accountReply.user.handle === accountHandle
+          ) {
+            if (replyRecord.accountReply.user.verificationType !== correctVerificationType) {
+              replyRecord.accountReply.user.verificationType = correctVerificationType;
+              fixedCount++;
+            }
+          }
+        });
+      }
+
+      if (fixedCount > 0) {
+        console.log(`🔒 [账户主页生成] 共修正了 ${fixedCount} 处认证类型错误`);
       }
 
       // 为推文和评论分配唯一ID和时间戳
@@ -10139,7 +11758,9 @@ accountReplies数组（2-4条，账户的回复记录）：
     // 设置导航栏标题和推文数
     document.getElementById('account-profile-nav-name').textContent = accountInfo.name || accountData.name;
     const tweetCount = (accountData.tweets && accountData.tweets.length) || 0;
-    document.getElementById('account-profile-nav-count').textContent = `${DataUtils.formatNumber(tweetCount)} 个帖子`;
+    document.getElementById('account-profile-nav-count').textContent = `${DataUtils.formatNumber(
+      tweetCount,
+    )} ${getI18nText('accountPostsCount')}`;
 
     // 设置背景图
     const coverImage = document.getElementById('account-cover-image');
@@ -10222,6 +11843,14 @@ accountReplies数组（2-4条，账户的回复记录）：
       accountInfo.followingCount || accountData.followingCount || '0';
     document.getElementById('account-followers-count').textContent =
       accountInfo.followersCount || accountData.followersCount || '0';
+
+    // 初始化关注按钮文本
+    const followBtn = document.getElementById('account-follow-btn');
+    if (followBtn && followBtn.textContent.includes('关注')) {
+      followBtn.textContent = getI18nText('accountFollow');
+    } else if (followBtn && followBtn.textContent.includes('Following')) {
+      followBtn.textContent = getI18nText('accountFollow');
+    }
 
     // 渲染推文
     const tweetsContainer = document.getElementById('account-tweets-container');
@@ -10327,9 +11956,11 @@ accountReplies数组（2-4条，账户的回复记录）：
                 <span style="color: #71767b; font-size: 15px; margin: 0 4px;">·</span>
                 <span style="color: #71767b; font-size: 15px;">${accountReply.time}</span>
               </div>
-              <div style="color: #71767b; font-size: 15px; margin-bottom: 4px;">回复 <span style="color: #1d9bf0;">${
-                originalUser.handle.startsWith('@') ? originalUser.handle : '@' + originalUser.handle
-              }</span></div>
+              <div style="color: #71767b; font-size: 15px; margin-bottom: 4px;">${getI18nText(
+                'accountReplyTo',
+              )} <span style="color: #1d9bf0;">${
+        originalUser.handle.startsWith('@') ? originalUser.handle : '@' + originalUser.handle
+      }</span></div>
               <div style="color: #fff; font-size: 15px; line-height: 20px; margin-bottom: 12px; word-wrap: break-word;">${processContent(
                 accountReply.content,
               )}</div>
@@ -10456,11 +12087,11 @@ accountReplies数组（2-4条，账户的回复记录）：
                     <span style="color: #71767b; font-size: 15px; margin: 0 4px;">·</span>
                     <span style="color: #71767b; font-size: 15px;">${accountReply.time}</span>
                   </div>
-                  <div style="color: #71767b; font-size: 15px; margin-bottom: 4px;">回复 <span style="color: #1d9bf0;">${
-                    originalCommentUser.handle.startsWith('@')
-                      ? originalCommentUser.handle
-                      : '@' + originalCommentUser.handle
-                  }</span></div>
+                  <div style="color: #71767b; font-size: 15px; margin-bottom: 4px;">${getI18nText(
+                    'accountReplyTo',
+                  )} <span style="color: #1d9bf0;">${
+        originalCommentUser.handle.startsWith('@') ? originalCommentUser.handle : '@' + originalCommentUser.handle
+      }</span></div>
                   <div style="color: #fff; font-size: 15px; line-height: 20px; margin-bottom: 12px; word-wrap: break-word;">${processContent(
                     accountReply.content,
                   )}</div>
@@ -10525,7 +12156,7 @@ accountReplies数组（2-4条，账户的回复记录）：
               <path d="M20.743 14.815l-0.933-12.065h5.191c0.414 0 0.75-0.336 0.75-0.75s-0.336-0.75-0.75-0.75v0h-18c-0.414 0-0.75 0.336-0.75 0.75s0.336 0.75 0.75 0.75v0h5.432l-1.275 12.103c-3.213 0.959-5.574 3.738-5.904 7.113l-0.003 0.034c0 0.414 0.336 0.75 0.75 0.75h9.25v7.25c0 0.414 0.336 0.75 0.75 0.75s0.75-0.336 0.75-0.75v0-7.25h9.25c0.414-0 0.75-0.336 0.75-0.75v0c0-3.017-2.35-5.787-6.007-7.185zM12.104 16.081c0.096-0.035 0.179-0.085 0.249-0.148l-0.001 0.001 0.005-0.003c0.126-0.117 0.211-0.275 0.233-0.453l0-0.004 0.011-0.022 1.337-12.701h4.367l0.979 12.681c0.033 0.35 0.303 0.627 0.647 0.67l0.004 0c2.542 0.682 4.512 2.623 5.222 5.096l0.013 0.052h-18.341c0.729-2.54 2.714-4.49 5.222-5.157l0.052-0.012z"></path>
             </svg>
           </div>
-          <span style="color: #71767b; font-size: 13px; font-weight: 700;">已置顶</span>
+          <span style="color: #71767b; font-size: 13px; font-weight: 700;">${getI18nText('accountPinned')}</span>
         </div>
       `
           : ''
@@ -10636,9 +12267,12 @@ accountReplies数组（2-4条，账户的回复记录）：
     const followBtn = document.getElementById('account-follow-btn');
     const notifyBtn = document.getElementById('account-notify-btn');
 
-    if (followBtn.textContent === '关注') {
+    const followText = getI18nText('accountFollow');
+    const followingText = getI18nText('accountFollowing');
+
+    if (followBtn.textContent === followText) {
       // 关注账户
-      followBtn.textContent = '正在关注';
+      followBtn.textContent = followingText;
       followBtn.style.backgroundColor = '#000';
       followBtn.style.color = '#fff';
       followBtn.style.border = '1px solid #536471';
@@ -10646,7 +12280,7 @@ accountReplies数组（2-4条，账户的回复记录）：
       showXToast('已关注该账户', 'success');
     } else {
       // 取消关注
-      followBtn.textContent = '关注';
+      followBtn.textContent = followText;
       followBtn.style.backgroundColor = '#fff';
       followBtn.style.color = '#000';
       followBtn.style.border = 'none';
@@ -10695,8 +12329,10 @@ accountReplies数组（2-4条，账户的回复记录）：
       } else {
         tweetsContainer.innerHTML = `
           <div style="padding: 60px 32px; text-align: center;">
-            <div style="color: #71767b; font-size: 31px; font-weight: 800; margin-bottom: 8px;">还没有帖子</div>
-            <div style="color: #71767b; font-size: 15px;">该账户的帖子会显示在这里。</div>
+            <div style="color: #71767b; font-size: 31px; font-weight: 800; margin-bottom: 8px;">${getI18nText(
+              'accountNoPosts',
+            )}</div>
+            <div style="color: #71767b; font-size: 15px;">${getI18nText('accountNoPostsDesc')}</div>
           </div>
         `;
       }
@@ -10714,8 +12350,10 @@ accountReplies数组（2-4条，账户的回复记录）：
       } else {
         tweetsContainer.innerHTML = `
           <div style="padding: 60px 32px; text-align: center;">
-            <div style="color: #71767b; font-size: 31px; font-weight: 800; margin-bottom: 8px;">还没有回复</div>
-            <div style="color: #71767b; font-size: 15px;">该账户的回复会显示在这里。</div>
+            <div style="color: #71767b; font-size: 31px; font-weight: 800; margin-bottom: 8px;">${getI18nText(
+              'accountNoReplies',
+            )}</div>
+            <div style="color: #71767b; font-size: 15px;">${getI18nText('accountNoRepliesDesc')}</div>
           </div>
         `;
       }
@@ -10723,8 +12361,10 @@ accountReplies数组（2-4条，账户的回复记录）：
       // 渲染喜欢（暂时显示占位符）
       tweetsContainer.innerHTML = `
         <div style="padding: 60px 32px; text-align: center;">
-          <div style="color: #71767b; font-size: 31px; font-weight: 800; margin-bottom: 8px;">还没有喜欢</div>
-          <div style="color: #71767b; font-size: 15px;">该账户喜欢的内容会显示在这里。</div>
+          <div style="color: #71767b; font-size: 31px; font-weight: 800; margin-bottom: 8px;">${getI18nText(
+            'accountNoLikes',
+          )}</div>
+          <div style="color: #71767b; font-size: 15px;">${getI18nText('accountNoLikesDesc')}</div>
         </div>
       `;
     }
@@ -10943,6 +12583,561 @@ accountReplies数组（2-4条，账户的回复记录）：
     }
   }
   // ▲▲▲ 【主要！！！】第七个情景：账户主页生成器 ▲▲▲
+
+  // ============================================
+  // 语言切换功能
+  // ============================================
+
+  // 语言配置对象
+  const languageConfig = {
+    zh: {
+      // 底部导航栏
+      navHome: '主页',
+      navSearch: '搜索',
+      navNotifications: '通知',
+      navMessages: '消息',
+
+      // 主页
+      homeTitle: '主页',
+      homeForYou: '为你推荐',
+      homeFollowing: '正在关注',
+      homeCompose: '有什么新鲜事?',
+      homeNoTweets: '暂无推文',
+      homeNoTweetsDesc: '开始关注一些人，或刷新查看推荐内容',
+
+      // 搜索页面
+      searchTitle: '搜索',
+      searchPlaceholder: '搜索',
+      searchTrending: '热门话题',
+      searchNoResults: '无搜索结果',
+      searchRefresh: '刷新热搜',
+
+      // 通知页面
+      notificationsTitle: '通知',
+      notificationsEmpty: '暂无通知',
+      notificationsEmptyDesc: '当有人点赞、评论或关注你时，你会在这里看到通知',
+
+      // 私信页面
+      messagesTitle: '私信',
+      messagesEmpty: '暂无私信',
+      messagesEmptyDesc: '发送私信与朋友保持联系',
+
+      // 用户资料页面
+      profileTitle: '个人资料',
+      profileEditProfile: '编辑个人资料',
+      profileFollowing: '正在关注',
+      profileFollowers: '关注者',
+      profilePosts: '帖子',
+      profilePostsCount: '帖子',
+      profileReplies: '回复',
+      profileHighlights: '亮点',
+      profileArticles: '文章',
+      profileMedia: '媒体',
+      profileNoReplies: '还没有回复',
+      profileNoRepliesDesc: '当你回复一条推文时，它会显示在这里。',
+      profileNoHighlights: '还没有亮点',
+      profileNoHighlightsDesc: '点赞最多的推文会显示在这里。',
+      profileNoArticles: '还没有文章',
+      profileNoArticlesDesc: '发布的文章会显示在这里。',
+      profileNoMedia: '还没有媒体',
+      profileNoMediaDesc: '包含照片和视频的推文会显示在这里。',
+      profileAccountManager: '账号管理',
+
+      // 推文详情页
+      tweetDetailTitle: '帖子',
+      tweetDetailReply: '回复',
+      tweetDetailReplyPlaceholder: '发布你的回复',
+      tweetDetailRerollTooltip: '重新生成回复',
+      tweetDetailRetweets: '转推',
+      tweetDetailLikes: '喜欢',
+      tweetDetailBookmarks: '书签',
+      tweetDetailViews: '查看',
+
+      // 评论页面
+      commentsTitle: '发帖',
+      commentsReply: '回复',
+      commentsReplyPlaceholder: '发布你的回复',
+
+      // 账户主页
+      accountPostsCount: '个帖子',
+      accountFollow: '关注',
+      accountFollowing: '正在关注',
+      accountFollowingLabel: '正在关注',
+      accountFollowersLabel: '关注者',
+      accountFollowsYou: '关注你',
+      accountPostsTab: '帖子',
+      accountRepliesTab: '回复',
+      accountLikesTab: '喜欢',
+      accountPinned: '已置顶',
+      accountNoPosts: '还没有帖子',
+      accountNoPostsDesc: '该账户的帖子会显示在这里。',
+      accountNoReplies: '还没有回复',
+      accountNoRepliesDesc: '该账户的回复会显示在这里。',
+      accountNoLikes: '还没有喜欢',
+      accountNoLikesDesc: '该账户喜欢的内容会显示在这里。',
+      accountReplyTo: '回复',
+
+      // 设置页面
+      settingsTitle: '设置',
+      settingsPrompt: '提示词',
+      settingsPromptPlaceholder: '输入系统提示词...',
+      settingsWorldView: '世界观设定',
+      settingsWorldViewPlaceholder: '描述角色所在的世界观、背景设定...',
+      settingsCharacterBinding: '绑定角色',
+      settingsCharacterBindingDesc: '开启后，绑定的角色可以在X上发布推文',
+      settingsSelectCharacter: '选择要绑定的角色',
+      settingsRelationship: '角色关系册',
+      settingsRelationshipDesc: '开启后，可以为已绑定的角色建立关系网络，设置角色之间的双向关系',
+      settingsRelationshipGraph: '角色关系图',
+      settingsEditGraph: '编辑关系图',
+      settingsNPCBinding: '绑定NPC',
+      settingsNPCBindingDesc: '开启后，可以创建和管理自定义NPC，设置其人设、发帖习惯和绑定用户',
+      settingsNPCList: 'NPC列表',
+      settingsCreateNPC: '+ 创建NPC',
+      settingsSave: '保存设置',
+      settingsSavePreset: '保存为预设',
+      settingsImport: '导入数据',
+      settingsExport: '导出数据',
+      settingsPresetManagement: '预设管理',
+
+      // 关系图相关
+      relationshipNoData: '暂无关系数据',
+      relationshipNoDataHint: '点击上方按钮开始创建角色关系',
+      relationshipCharacterCount: '角色数',
+      relationshipLinkCount: '关系数',
+      relationshipAddCharacter: '+ 添加角色',
+      relationshipSave: '保存关系图',
+      relationshipClose: '关闭',
+      relationshipEmptyState: '暂无角色',
+      relationshipEmptyStateHint: '点击上方按钮添加角色',
+
+      // Toast 提示
+      toastThemeLight: '已切换到日间模式',
+      toastThemeDark: '已切换到夜间模式',
+      toastLanguageChinese: '已切换到中文',
+      toastLanguageEnglish: '已切换到英文',
+
+      // 通用按钮
+      btnSave: '保存',
+      btnCancel: '取消',
+      btnEdit: '编辑',
+      btnDelete: '删除',
+      btnConfirm: '确认',
+    },
+    en: {
+      // 底部导航栏
+      navHome: 'Home',
+      navSearch: 'Explore',
+      navNotifications: 'Notifications',
+      navMessages: 'Messages',
+
+      // 主页
+      homeTitle: 'Home',
+      homeForYou: 'For you',
+      homeFollowing: 'Following',
+      homeCompose: "What's happening?",
+      homeNoTweets: 'No posts yet',
+      homeNoTweetsDesc: 'Follow people or refresh to see recommended content',
+
+      // 搜索页面
+      searchTitle: 'Explore',
+      searchPlaceholder: 'Search',
+      searchTrending: "What's happening",
+      searchNoResults: 'No results found',
+      searchRefresh: 'Refresh trends',
+
+      // 通知页面
+      notificationsTitle: 'Notifications',
+      notificationsEmpty: 'No notifications yet',
+      notificationsEmptyDesc: "When someone likes, comments, or follows you, you'll see it here",
+
+      // 私信页面
+      messagesTitle: 'Messages',
+      messagesEmpty: 'No messages yet',
+      messagesEmptyDesc: 'Send a message to stay in touch with friends',
+
+      // 用户资料页面
+      profileTitle: 'Profile',
+      profileEditProfile: 'Edit profile',
+      profileFollowing: 'Following',
+      profileFollowers: 'Followers',
+      profilePosts: 'Posts',
+      profilePostsCount: 'posts',
+      profileReplies: 'Replies',
+      profileHighlights: 'Highlights',
+      profileArticles: 'Articles',
+      profileMedia: 'Media',
+      profileNoReplies: 'No replies yet',
+      profileNoRepliesDesc: 'When you reply to a post, it will show up here.',
+      profileNoHighlights: 'No highlights yet',
+      profileNoHighlightsDesc: 'Your most liked posts will show up here.',
+      profileNoArticles: 'No articles yet',
+      profileNoArticlesDesc: 'Published articles will show up here.',
+      profileNoMedia: 'No media yet',
+      profileNoMediaDesc: 'Posts with photos and videos will show up here.',
+      profileAccountManager: 'Account Manager',
+
+      // 推文详情页
+      tweetDetailTitle: 'Post',
+      tweetDetailReply: 'Reply',
+      tweetDetailReplyPlaceholder: 'Post your reply',
+      tweetDetailRerollTooltip: 'Regenerate replies',
+      tweetDetailRetweets: 'Reposts',
+      tweetDetailLikes: 'Likes',
+      tweetDetailBookmarks: 'Bookmarks',
+      tweetDetailViews: 'Views',
+
+      // 评论页面
+      commentsTitle: 'Post',
+      commentsReply: 'Reply',
+      commentsReplyPlaceholder: 'Post your reply',
+
+      // 账户主页
+      accountPostsCount: 'posts',
+      accountFollow: 'Follow',
+      accountFollowing: 'Following',
+      accountFollowingLabel: 'Following',
+      accountFollowersLabel: 'Followers',
+      accountFollowsYou: 'Follows you',
+      accountPostsTab: 'Posts',
+      accountRepliesTab: 'Replies',
+      accountLikesTab: 'Likes',
+      accountPinned: 'Pinned',
+      accountNoPosts: 'No posts yet',
+      accountNoPostsDesc: 'Posts from this account will show up here.',
+      accountNoReplies: 'No replies yet',
+      accountNoRepliesDesc: 'Replies from this account will show up here.',
+      accountNoLikes: 'No likes yet',
+      accountNoLikesDesc: 'Liked posts will show up here.',
+      accountReplyTo: 'Replying to',
+
+      // 设置页面
+      settingsTitle: 'Settings',
+      settingsPrompt: 'System Prompt',
+      settingsPromptPlaceholder: 'Enter system prompt...',
+      settingsWorldView: 'World Setting',
+      settingsWorldViewPlaceholder: 'Describe the world setting and background...',
+      settingsCharacterBinding: 'Character Binding',
+      settingsCharacterBindingDesc: 'When enabled, bound characters can post on X',
+      settingsSelectCharacter: 'Select Character to Bind',
+      settingsRelationship: 'Character Relations',
+      settingsRelationshipDesc: 'When enabled, create relationship networks for bound characters',
+      settingsRelationshipGraph: 'Relationship Graph',
+      settingsEditGraph: 'Edit Graph',
+      settingsNPCBinding: 'NPC Binding',
+      settingsNPCBindingDesc: 'When enabled, create and manage custom NPCs',
+      settingsNPCList: 'NPC List',
+      settingsCreateNPC: '+ Create NPC',
+      settingsSave: 'Save Settings',
+      settingsSavePreset: 'Save as Preset',
+      settingsImport: 'Import Data',
+      settingsExport: 'Export Data',
+      settingsPresetManagement: 'Preset Management',
+
+      // 关系图相关
+      relationshipNoData: 'No relationship data',
+      relationshipNoDataHint: 'Click button above to create character relationships',
+      relationshipCharacterCount: 'Characters',
+      relationshipLinkCount: 'Relations',
+      relationshipAddCharacter: '+ Add Character',
+      relationshipSave: 'Save Graph',
+      relationshipClose: 'Close',
+      relationshipEmptyState: 'No characters',
+      relationshipEmptyStateHint: 'Click button above to add characters',
+
+      // Toast 提示
+      toastThemeLight: 'Switched to Light Mode',
+      toastThemeDark: 'Switched to Dark Mode',
+      toastLanguageChinese: 'Switched to Chinese',
+      toastLanguageEnglish: 'Switched to English',
+
+      // 通用按钮
+      btnSave: 'Save',
+      btnCancel: 'Cancel',
+      btnEdit: 'Edit',
+      btnDelete: 'Delete',
+      btnConfirm: 'Confirm',
+    },
+  };
+
+  // 当前语言
+  let currentLanguage = 'zh';
+
+  // 切换语言
+  async function toggleXLanguage() {
+    try {
+      // 切换语言
+      currentLanguage = currentLanguage === 'zh' ? 'en' : 'zh';
+
+      // 应用语言
+      applyLanguage(currentLanguage);
+
+      // 保存语言偏好到数据库
+      const xDb = getXDB();
+      const settingsId = `xLanguage_${currentAccountId || 'main'}`;
+      await xDb.xSettings.put({
+        id: settingsId,
+        language: currentLanguage,
+        updatedAt: new Date().toISOString(),
+      });
+
+      console.log(`🌐 语言已切换为: ${currentLanguage === 'zh' ? '中文' : 'English'}`);
+      showXToast(
+        currentLanguage === 'zh' ? languageConfig.zh.toastLanguageChinese : languageConfig.en.toastLanguageEnglish,
+        'success',
+      );
+    } catch (error) {
+      console.error('语言切换失败:', error);
+      showXToast('Language switch failed', 'error');
+    }
+  }
+
+  // 获取当前语言的翻译文本
+  function getI18nText(key) {
+    const config = languageConfig[currentLanguage] || languageConfig['zh'];
+    return config[key] || key;
+  }
+
+  // 应用语言到界面
+  function applyLanguage(lang) {
+    const config = languageConfig[lang];
+    if (!config) return;
+
+    console.log(`🌐 正在应用语言: ${lang}`);
+
+    // 更新语言按钮文本
+    const languageText = document.getElementById('language-text');
+    if (languageText) {
+      languageText.textContent = lang === 'zh' ? '中文' : 'EN';
+    }
+
+    // 更新所有带 data-i18n 属性的元素
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if (config[key]) {
+        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+          el.placeholder = config[key];
+        } else {
+          // 对于其他元素，更新文本内容
+          el.textContent = config[key];
+        }
+      }
+    });
+
+    // 更新用户主页顶部的帖子计数（需要动态生成）
+    const profileHeaderCount = document.getElementById('x-profile-header-count');
+    if (profileHeaderCount && profileHeaderCount.textContent) {
+      const count = profileHeaderCount.textContent.match(/\d+/);
+      if (count) {
+        profileHeaderCount.textContent = `${count[0]} ${config.profilePostsCount}`;
+      }
+    }
+
+    // 更新推文详情页的动态内容
+    updateTweetDetailLanguage(config);
+
+    // 更新账户主页的动态内容
+    updateAccountProfileLanguage(config);
+
+    // 保存当前语言
+    console.log(`✅ 语言已应用: ${lang === 'zh' ? '中文' : 'English'}`);
+  }
+
+  // 更新账户主页的语言
+  function updateAccountProfileLanguage(config) {
+    // 更新帖子计数
+    const accountNavCount = document.getElementById('account-profile-nav-count');
+    if (accountNavCount && accountNavCount.textContent) {
+      const count = accountNavCount.textContent.match(/\d+/);
+      if (count) {
+        accountNavCount.textContent = `${count[0]} ${config.accountPostsCount}`;
+      }
+    }
+
+    // 更新关注按钮文本
+    const followBtn = document.getElementById('account-follow-btn');
+    if (followBtn) {
+      if (followBtn.textContent.includes('Following') || followBtn.textContent.includes('正在关注')) {
+        followBtn.textContent = config.accountFollowing;
+      } else if (followBtn.textContent.includes('Follow') || followBtn.textContent.includes('关注')) {
+        followBtn.textContent = config.accountFollow;
+      }
+    }
+  }
+
+  // 更新推文详情页的语言
+  function updateTweetDetailLanguage(config) {
+    // 更新互动数据标签
+    const statsDiv = document.getElementById('tweet-detail-stats');
+    if (statsDiv) {
+      const spans = statsDiv.querySelectorAll('span[style*="color: #71767b"]');
+      if (spans.length >= 3) {
+        spans[0].textContent = config.tweetDetailRetweets;
+        spans[1].textContent = config.tweetDetailLikes;
+        spans[2].textContent = config.tweetDetailBookmarks;
+      }
+    }
+
+    // 更新查看次数标签
+    const viewsLabel = document.getElementById('tweet-detail-views-label');
+    if (viewsLabel) {
+      viewsLabel.textContent = config.tweetDetailViews;
+    }
+  }
+
+  // 加载保存的语言偏好
+  async function loadLanguagePreference() {
+    try {
+      const xDb = getXDB();
+      const settingsId = `xLanguage_${currentAccountId || 'main'}`;
+      const savedSettings = await xDb.xSettings.get(settingsId);
+
+      if (savedSettings && savedSettings.language) {
+        currentLanguage = savedSettings.language;
+        applyLanguage(currentLanguage);
+      }
+    } catch (error) {
+      console.error('加载语言偏好失败:', error);
+    }
+  }
+
+  // ============================================
+  // 主题切换功能
+  // ============================================
+
+  // 切换日间/夜间主题
+  async function toggleXTheme() {
+    try {
+      const xSocialScreen = document.getElementById('x-social-screen');
+      if (!xSocialScreen) return;
+
+      const isLightMode = xSocialScreen.classList.contains('x-theme-light');
+      const newTheme = isLightMode ? 'dark' : 'light';
+
+      // 切换主题类
+      if (newTheme === 'light') {
+        xSocialScreen.classList.add('x-theme-light');
+      } else {
+        xSocialScreen.classList.remove('x-theme-light');
+      }
+
+      // 更新图标显示
+      const darkIcon = document.getElementById('theme-icon-dark');
+      const lightIcon = document.getElementById('theme-icon-light');
+
+      if (newTheme === 'light') {
+        darkIcon.style.display = 'none';
+        lightIcon.style.display = 'block';
+      } else {
+        darkIcon.style.display = 'block';
+        lightIcon.style.display = 'none';
+      }
+
+      // 保存主题偏好到数据库
+      const xDb = getXDB();
+      const settingsId = `xTheme_${currentAccountId || 'main'}`;
+      await xDb.xSettings.put({
+        id: settingsId,
+        theme: newTheme,
+        updatedAt: new Date().toISOString(),
+      });
+
+      // 应用主题到所有动态元素
+      applyThemeToElements(newTheme);
+
+      // 重新渲染关系图画布（如果当前打开）
+      const relationshipModal = document.getElementById('character-relationship-graph-modal');
+      if (relationshipModal && relationshipModal.style.display !== 'none') {
+        renderRelationshipGraph();
+      }
+
+      // 重新渲染关系预览画布（如果关系册已开启）
+      const relationshipArea = document.getElementById('relationship-binding-area');
+      if (relationshipArea && relationshipArea.style.display !== 'none') {
+        setTimeout(() => {
+          updateRelationshipPreview();
+        }, 100);
+      }
+
+      console.log(`🎨 主题已切换为: ${newTheme === 'light' ? '日间模式' : '夜间模式'}`);
+      const config = languageConfig[currentLanguage] || languageConfig.zh;
+      showXToast(newTheme === 'light' ? config.toastThemeLight : config.toastThemeDark, 'success');
+    } catch (error) {
+      console.error('主题切换失败:', error);
+      showXToast('主题切换失败', 'error');
+    }
+  }
+
+  // 应用主题到动态元素
+  function applyThemeToElements(theme) {
+    const xSocialScreen = document.getElementById('x-social-screen');
+    if (!xSocialScreen) return;
+
+    const isLight = theme === 'light';
+
+    // 更新所有需要动态更新的元素
+    const elementsToUpdate = {
+      // 背景色
+      '.x-top-bar, .x-bottom-nav, .settings-header, .tweet-detail-header, .compose-header, .modal-header, .account-header':
+        {
+          backgroundColor: isLight ? '#fff' : '#000',
+          borderBottomColor: isLight ? '#eff3f4' : '#2f3336',
+        },
+      // 文本色
+      '.tweet-user-name, .tweet-content, .comment-content': {
+        color: isLight ? '#0f1419' : '#fff',
+      },
+      // 次要文本色
+      '.tweet-user-handle, .tweet-time, .comment-time': {
+        color: isLight ? '#536471' : '#71767b',
+      },
+      // 边框色
+      '.tweet-item, .comment-item, .settings-section': {
+        borderBottomColor: isLight ? '#eff3f4' : '#2f3336',
+      },
+      // 输入框背景
+      'textarea, input[type="text"]': {
+        backgroundColor: isLight ? '#f7f9f9' : '#1a1a1a',
+        borderColor: isLight ? '#eff3f4' : '#333',
+        color: isLight ? '#0f1419' : '#fff',
+      },
+    };
+
+    // 应用样式（这些样式会在下次页面渲染时生效，当前页面的内联样式会覆盖）
+    // 主要是为新生成的元素设置正确的主题
+  }
+
+  // 加载保存的主题偏好
+  async function loadXThemePreference() {
+    try {
+      const xDb = getXDB();
+      const settingsId = `xTheme_${currentAccountId || 'main'}`;
+      const themeSettings = await xDb.xSettings.get(settingsId);
+
+      if (themeSettings && themeSettings.theme) {
+        const xSocialScreen = document.getElementById('x-social-screen');
+        if (!xSocialScreen) return;
+
+        if (themeSettings.theme === 'light') {
+          xSocialScreen.classList.add('x-theme-light');
+
+          // 更新图标显示
+          const darkIcon = document.getElementById('theme-icon-dark');
+          const lightIcon = document.getElementById('theme-icon-light');
+          if (darkIcon && lightIcon) {
+            darkIcon.style.display = 'none';
+            lightIcon.style.display = 'block';
+          }
+
+          applyThemeToElements('light');
+        }
+
+        console.log(`🎨 已加载主题偏好: ${themeSettings.theme === 'light' ? '日间模式' : '夜间模式'}`);
+      }
+    } catch (error) {
+      console.error('加载主题偏好失败:', error);
+    }
+  }
 
   // ============================================
   // 账户提问箱功能
@@ -13065,6 +15260,12 @@ ${existingQuestionsContext}
       const ctx = canvas.getContext('2d');
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+      // 读取当前主题的颜色
+      const computedStyle = getComputedStyle(document.documentElement);
+      const accentColor = computedStyle.getPropertyValue('--x-accent').trim() || '#1d9bf0';
+      const bgColor = computedStyle.getPropertyValue('--x-bg-primary').trim() || '#000';
+      const textColor = computedStyle.getPropertyValue('--x-text-primary').trim() || '#fff';
+
       // 缩放比例
       const scale = 0.5;
       const centerX = canvas.width / 2;
@@ -13079,7 +15280,7 @@ ${existingQuestionsContext}
       });
 
       // 绘制连线
-      ctx.strokeStyle = '#1d9bf0';
+      ctx.strokeStyle = accentColor;
       ctx.lineWidth = 1.5;
       links.forEach(link => {
         const charA = chars.find(c => c.id === link.charA);
@@ -13097,14 +15298,14 @@ ${existingQuestionsContext}
       chars.forEach(char => {
         ctx.beginPath();
         ctx.arc(char.previewX, char.previewY, 15, 0, Math.PI * 2);
-        ctx.fillStyle = '#1d9bf0';
+        ctx.fillStyle = accentColor;
         ctx.fill();
-        ctx.strokeStyle = '#000';
+        ctx.strokeStyle = bgColor;
         ctx.lineWidth = 2;
         ctx.stroke();
 
         // 绘制首字母
-        ctx.fillStyle = '#fff';
+        ctx.fillStyle = textColor;
         ctx.font = 'bold 10px sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -13114,6 +15315,19 @@ ${existingQuestionsContext}
       placeholder.style.display = 'block';
       stats.style.display = 'none';
     }
+  }
+
+  // 窗口大小改变时重新渲染（用于处理设备旋转等情况）
+  let resizeTimeout;
+  function handleRelationshipCanvasResize() {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+      const modal = document.getElementById('character-relationship-graph-modal');
+      if (modal && modal.style.display !== 'none') {
+        initRelationshipCanvas();
+        renderRelationshipGraph();
+      }
+    }, 300);
   }
 
   // 打开关系图编辑器
@@ -13126,9 +15340,15 @@ ${existingQuestionsContext}
       document.body.style.overflow = 'hidden';
 
       // 初始化画布
-      initRelationshipCanvas();
-      renderRelationshipGraph();
-      renderRelationshipList();
+      setTimeout(() => {
+        initRelationshipCanvas();
+        renderRelationshipGraph();
+        renderRelationshipList();
+      }, 100);
+
+      // 监听窗口大小改变
+      window.addEventListener('resize', handleRelationshipCanvasResize);
+      window.addEventListener('orientationchange', handleRelationshipCanvasResize);
     }
   }
 
@@ -13140,6 +15360,10 @@ ${existingQuestionsContext}
     if (modal) {
       modal.style.display = 'none';
       document.body.style.overflow = 'auto';
+
+      // 移除窗口大小改变的事件监听器
+      window.removeEventListener('resize', handleRelationshipCanvasResize);
+      window.removeEventListener('orientationchange', handleRelationshipCanvasResize);
     }
   }
 
@@ -13159,11 +15383,16 @@ ${existingQuestionsContext}
     canvas.width = container.clientWidth;
     canvas.height = container.clientHeight;
 
-    // 绑定事件
+    // 绑定鼠标事件
     canvas.onmousedown = handleCanvasMouseDown;
     canvas.onmousemove = handleCanvasMouseMove;
     canvas.onmouseup = handleCanvasMouseUp;
     canvas.onclick = handleCanvasClick;
+
+    // 绑定触摸事件（移动端支持）
+    canvas.addEventListener('touchstart', handleCanvasTouchStart, { passive: false });
+    canvas.addEventListener('touchmove', handleCanvasTouchMove, { passive: false });
+    canvas.addEventListener('touchend', handleCanvasTouchEnd, { passive: false });
   }
 
   // 缓存加载的头像图片
@@ -13179,6 +15408,17 @@ ${existingQuestionsContext}
     const ctx = canvas.getContext('2d');
     const chars = characterRelationshipData.characters || [];
     const links = characterRelationshipData.links || [];
+
+    // 读取当前主题的颜色
+    const computedStyle = getComputedStyle(document.documentElement);
+    const accentColor = computedStyle.getPropertyValue('--x-accent').trim() || '#1d9bf0';
+    const bgPrimary = computedStyle.getPropertyValue('--x-bg-primary').trim() || '#000';
+    const bgSecondary = computedStyle.getPropertyValue('--x-bg-secondary').trim() || '#1a1a1a';
+    const textPrimary = computedStyle.getPropertyValue('--x-text-primary').trim() || '#fff';
+
+    // 判断是否为暗色主题（用于设置半透明背景）
+    const isDark = bgPrimary.includes('#000') || bgPrimary.includes('0, 0, 0');
+    const textBgColor = isDark ? 'rgba(0, 0, 0, 0.7)' : 'rgba(255, 255, 255, 0.85)';
 
     // 更新统计
     document.getElementById('graph-character-count').textContent = `${chars.length} 角色`;
@@ -13214,7 +15454,7 @@ ${existingQuestionsContext}
         ctx.beginPath();
         ctx.moveTo(charA.x, charA.y);
         ctx.lineTo(charB.x, charB.y);
-        ctx.strokeStyle = '#1d9bf0';
+        ctx.strokeStyle = accentColor;
         ctx.lineWidth = 2;
         ctx.stroke();
 
@@ -13222,26 +15462,38 @@ ${existingQuestionsContext}
         const midX = (charA.x + charB.x) / 2;
         const midY = (charA.y + charB.y) / 2;
 
-        // 绘制文本背景
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-        ctx.fillRect(midX - 40, midY - 20, 80, 35);
+        // 动态计算文本框大小
+        const isMobile = window.innerWidth < 768;
+        const textBoxWidth = isMobile ? 70 : 80;
+        const textBoxHeight = isMobile ? 30 : 35;
+        const fontSize = isMobile ? '10px' : '11px';
 
-        ctx.fillStyle = '#1d9bf0';
-        ctx.font = '11px sans-serif';
+        // 绘制文本背景
+        ctx.fillStyle = textBgColor;
+        ctx.fillRect(midX - textBoxWidth / 2, midY - textBoxHeight / 2, textBoxWidth, textBoxHeight);
+
+        ctx.fillStyle = accentColor;
+        ctx.font = fontSize + ' sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText(link.relationAtoB || '关系', midX, midY - 5);
-        ctx.fillText(link.relationBtoA || '关系', midX, midY + 10);
+        const lineSpacing = isMobile ? 12 : 15;
+        ctx.fillText(link.relationAtoB || '关系', midX, midY - lineSpacing / 2);
+        ctx.fillText(link.relationBtoA || '关系', midX, midY + lineSpacing / 2);
       }
     });
+
+    // 动态计算头像大小（移动端缩小）
+    const isMobile = window.innerWidth < 768;
+    const avatarRadius = isMobile ? 25 : 35;
+    const avatarInnerRadius = avatarRadius - 2;
 
     // 绘制角色头像和名称
     chars.forEach(char => {
       // 绘制圆形背景
       ctx.beginPath();
-      ctx.arc(char.x, char.y, 35, 0, Math.PI * 2);
-      ctx.fillStyle = '#1d9bf0';
+      ctx.arc(char.x, char.y, avatarRadius, 0, Math.PI * 2);
+      ctx.fillStyle = accentColor;
       ctx.fill();
-      ctx.strokeStyle = '#000';
+      ctx.strokeStyle = bgPrimary;
       ctx.lineWidth = 2;
       ctx.stroke();
 
@@ -13252,10 +15504,16 @@ ${existingQuestionsContext}
           const img = avatarImageCache[char.avatar];
           ctx.save();
           ctx.beginPath();
-          ctx.arc(char.x, char.y, 33, 0, Math.PI * 2);
+          ctx.arc(char.x, char.y, avatarInnerRadius, 0, Math.PI * 2);
           ctx.closePath();
           ctx.clip();
-          ctx.drawImage(img, char.x - 33, char.y - 33, 66, 66);
+          ctx.drawImage(
+            img,
+            char.x - avatarInnerRadius,
+            char.y - avatarInnerRadius,
+            avatarInnerRadius * 2,
+            avatarInnerRadius * 2,
+          );
           ctx.restore();
         } else {
           // 加载图片
@@ -13267,7 +15525,7 @@ ${existingQuestionsContext}
           };
           img.onerror = () => {
             // 加载失败，显示默认文本
-            ctx.fillStyle = '#fff';
+            ctx.fillStyle = textPrimary;
             ctx.font = 'bold 14px sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
@@ -13276,7 +15534,7 @@ ${existingQuestionsContext}
           img.src = char.avatar;
 
           // 在图片加载前显示首字母
-          ctx.fillStyle = '#fff';
+          ctx.fillStyle = textPrimary;
           ctx.font = 'bold 14px sans-serif';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
@@ -13284,7 +15542,7 @@ ${existingQuestionsContext}
         }
       } else {
         // 没有头像，显示首字母
-        ctx.fillStyle = '#fff';
+        ctx.fillStyle = textPrimary;
         ctx.font = 'bold 14px sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -13292,11 +15550,14 @@ ${existingQuestionsContext}
       }
 
       // 绘制名称
-      ctx.fillStyle = '#fff';
-      ctx.font = 'bold 12px sans-serif';
+      ctx.fillStyle = textPrimary;
+      ctx.font = isMobile ? 'bold 11px sans-serif' : 'bold 12px sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'top';
-      ctx.fillText(char.name, char.x, char.y + 45);
+      ctx.fillText(char.name, char.x, char.y + avatarRadius + 10);
+
+      // 保存头像半径到角色数据，用于点击检测
+      char.radius = avatarRadius;
     });
   }
 
@@ -13313,12 +15574,44 @@ ${existingQuestionsContext}
     for (const char of chars) {
       const dx = x - char.x;
       const dy = y - char.y;
-      if (Math.sqrt(dx * dx + dy * dy) < 35) {
+      const radius = char.radius || 35;
+      if (Math.sqrt(dx * dx + dy * dy) < radius) {
         isDragging = true;
         draggedCharId = char.id;
         dragOffsetX = dx;
         dragOffsetY = dy;
         canvas.style.cursor = 'grabbing';
+        return;
+      }
+    }
+  }
+
+  // 触摸开始处理（移动端）
+  function handleCanvasTouchStart(event) {
+    event.preventDefault();
+    const canvas = event.target;
+    const rect = canvas.getBoundingClientRect();
+    const touch = event.touches[0];
+    const x = touch.clientX - rect.left;
+    const y = touch.clientY - rect.top;
+
+    // 记录触摸开始信息
+    touchStartTime = Date.now();
+    touchStartX = x;
+    touchStartY = y;
+
+    const chars = characterRelationshipData.characters || [];
+
+    // 检查是否触摸了角色
+    for (const char of chars) {
+      const dx = x - char.x;
+      const dy = y - char.y;
+      const radius = char.radius || 35;
+      if (Math.sqrt(dx * dx + dy * dy) < radius) {
+        isDragging = true;
+        draggedCharId = char.id;
+        dragOffsetX = dx;
+        dragOffsetY = dy;
         return;
       }
     }
@@ -13346,10 +15639,33 @@ ${existingQuestionsContext}
       const hoveredChar = chars.find(char => {
         const dx = x - char.x;
         const dy = y - char.y;
-        return Math.sqrt(dx * dx + dy * dy) < 35;
+        const radius = char.radius || 35;
+        return Math.sqrt(dx * dx + dy * dy) < radius;
       });
 
       canvas.style.cursor = hoveredChar ? 'grab' : 'default';
+    }
+  }
+
+  // 触摸移动处理（移动端）
+  function handleCanvasTouchMove(event) {
+    event.preventDefault();
+    const canvas = event.target;
+    const rect = canvas.getBoundingClientRect();
+    const touch = event.touches[0];
+    const x = touch.clientX - rect.left;
+    const y = touch.clientY - rect.top;
+
+    const chars = characterRelationshipData.characters || [];
+
+    if (isDragging && draggedCharId) {
+      // 拖拽角色
+      const char = chars.find(c => c.id === draggedCharId);
+      if (char) {
+        char.x = x - dragOffsetX;
+        char.y = y - dragOffsetY;
+        renderRelationshipGraph();
+      }
     }
   }
 
@@ -13359,6 +15675,49 @@ ${existingQuestionsContext}
       isDragging = false;
       draggedCharId = null;
       event.target.style.cursor = 'default';
+    }
+  }
+
+  // 触摸结束处理（移动端）
+  let touchStartTime = 0;
+  let touchStartX = 0;
+  let touchStartY = 0;
+
+  function handleCanvasTouchEnd(event) {
+    event.preventDefault();
+
+    const wasDragging = isDragging;
+
+    if (isDragging) {
+      isDragging = false;
+      draggedCharId = null;
+    }
+
+    // 如果没有拖拽，检测是否是点击连线
+    if (!wasDragging && event.changedTouches && event.changedTouches.length > 0) {
+      const canvas = event.target;
+      const rect = canvas.getBoundingClientRect();
+      const touch = event.changedTouches[0];
+      const x = touch.clientX - rect.left;
+      const y = touch.clientY - rect.top;
+
+      const chars = characterRelationshipData.characters || [];
+      const links = characterRelationshipData.links || [];
+
+      // 检查是否点击了连线
+      for (const link of links) {
+        const charA = chars.find(c => c.id === link.charA);
+        const charB = chars.find(c => c.id === link.charB);
+
+        if (charA && charB) {
+          const dist = distanceToLine(x, y, charA.x, charA.y, charB.x, charB.y);
+          // 移动端增大点击区域
+          if (dist < 20) {
+            openEditRelationshipDetailModal(link);
+            return;
+          }
+        }
+      }
     }
   }
 
@@ -15223,6 +17582,8 @@ ${existingQuestionsContext}
 
   // 加载已绑定X资料的角色列表
   async function loadIdentityCharactersList() {
+    console.log(`🔄 [加载角色身份识别列表] 开始加载`);
+
     try {
       const db = getDB(); // 修正：chats表在全局数据库中
       const xDb = getXDB(); // X专用数据库用于其他数据
@@ -15232,7 +17593,10 @@ ${existingQuestionsContext}
       const xSettings = await xDb.xSettings.get(settingsId);
       const boundCharacters = xSettings?.boundCharacters || [];
 
+      console.log(`🔄 [加载角色身份识别列表] 绑定角色数: ${boundCharacters.length}`);
+
       if (boundCharacters.length === 0) {
+        console.log(`⚠️ [加载角色身份识别列表] 无绑定角色`);
         renderIdentityCharactersList([]);
         return;
       }
@@ -15241,11 +17605,21 @@ ${existingQuestionsContext}
       const allChats = await db.chats.toArray();
       const characters = allChats.filter(chat => !chat.isGroup && boundCharacters.includes(chat.id));
 
+      console.log(`🔄 [加载角色身份识别列表] 过滤后角色数: ${characters.length}`);
+
       // 筛选出已绑定X资料的角色
       const charactersWithXProfile = [];
       for (const character of characters) {
         const xProfile = await xDb.xCharacterProfiles.get(character.id);
         if (xProfile) {
+          const personaLength = (xProfile.userPersona || '').length;
+          console.log(`🔄 [加载角色身份识别列表] 角色 ${character.name} (${character.id})`);
+          console.log(`   - X名称: ${xProfile.xName}`);
+          console.log(`   - 用户人设长度: ${personaLength} 字符`);
+          console.log(
+            `   - 人设预览: "${(xProfile.userPersona || '').substring(0, 50)}${personaLength > 50 ? '...' : ''}"`,
+          );
+
           charactersWithXProfile.push({
             id: character.id,
             name: character.name,
@@ -15255,9 +17629,11 @@ ${existingQuestionsContext}
         }
       }
 
+      console.log(`✅ [加载角色身份识别列表] 最终角色数: ${charactersWithXProfile.length}`);
       renderIdentityCharactersList(charactersWithXProfile);
     } catch (error) {
-      console.error('加载角色身份识别列表失败:', error);
+      console.error('❌ [加载角色身份识别列表] 加载失败:', error);
+      console.error('❌ [加载角色身份识别列表] 错误详情:', error.message, error.stack);
       renderIdentityCharactersList([]);
     }
   }
@@ -15411,6 +17787,8 @@ ${existingQuestionsContext}
 
   // 打开用户人设编辑器 - 全局函数
   window.openUserPersonaEditor = async function (characterId) {
+    console.log(`📖 [打开用户人设编辑器] 角色ID: ${characterId}`);
+
     try {
       const mainDB = getDB(); // 用于访问 chats 表
       const xDB = getXDB(); // 用于访问 xCharacterProfiles 表
@@ -15418,24 +17796,39 @@ ${existingQuestionsContext}
       const chat = await mainDB.chats.get(characterId);
       const xProfile = await xDB.xCharacterProfiles.get(characterId);
 
+      console.log(`📖 [打开用户人设编辑器] 角色数据:`, chat ? '存在' : '不存在');
+      console.log(`📖 [打开用户人设编辑器] X资料数据:`, xProfile ? '存在' : '不存在');
+
       if (!chat || !xProfile) {
+        console.error(`❌ [打开用户人设编辑器] 无法获取角色信息`);
         showXToast('无法获取角色信息', 'error');
         return;
       }
 
       // 获取现有的用户人设（如果有的话）
       const existingPersona = xProfile.userPersona || '';
+      console.log(`📖 [打开用户人设编辑器] 现有人设长度: ${existingPersona.length} 字符`);
+      console.log(
+        `📖 [打开用户人设编辑器] 人设内容预览: "${existingPersona.substring(0, 100)}${
+          existingPersona.length > 100 ? '...' : ''
+        }"`,
+      );
 
       // 显示编辑弹窗
       window.showUserPersonaModal(characterId, chat.name, xProfile.xName, existingPersona);
     } catch (error) {
-      console.error('打开用户人设编辑器失败:', error);
-      showXToast('打开编辑器失败', 'error');
+      console.error('❌ [打开用户人设编辑器] 失败:', error);
+      console.error('❌ [打开用户人设编辑器] 错误详情:', error.message, error.stack);
+      showXToast('打开编辑器失败: ' + error.message, 'error');
     }
   };
 
   // 显示用户人设编辑弹窗 - 全局函数
   window.showUserPersonaModal = function (characterId, characterName, xName, existingPersona) {
+    console.log(`🖼️ [显示用户人设弹窗] 角色: ${xName} (${characterName})`);
+    console.log(`🖼️ [显示用户人设弹窗] 角色ID: ${characterId}`);
+    console.log(`🖼️ [显示用户人设弹窗] 传入的人设长度: ${existingPersona.length} 字符`);
+
     const modal = document.createElement('div');
     modal.id = 'user-persona-modal';
     modal.style.cssText = `
@@ -15611,9 +18004,18 @@ ${existingQuestionsContext}
 
   // 关闭用户人设编辑弹窗 - 全局函数
   window.closeUserPersonaModal = function () {
+    console.log(`🚪 [关闭用户人设弹窗] 关闭编辑弹窗`);
+
     const modal = document.getElementById('user-persona-modal');
     if (modal) {
+      // 记录关闭时的数据状态
+      const textarea = document.getElementById('user-persona-input');
+      if (textarea) {
+        console.log(`🚪 [关闭用户人设弹窗] 弹窗中当前内容长度: ${textarea.value.length} 字符`);
+      }
+
       modal.remove();
+      console.log(`✅ [关闭用户人设弹窗] 弹窗已移除`);
     }
   };
 
@@ -15622,30 +18024,55 @@ ${existingQuestionsContext}
     const textarea = document.getElementById('user-persona-input');
     const persona = textarea.value.trim();
 
+    console.log(`💾 [保存用户人设] 开始保存角色 ${characterId} 的用户人设`);
+    console.log(`💾 [保存用户人设] 人设内容长度: ${persona.length} 字符`);
+
     try {
       const db = getXDB();
 
       // 获取现有的角色X资料
       let xProfile = await db.xCharacterProfiles.get(characterId);
+      console.log(`💾 [保存用户人设] 获取到的角色资料:`, xProfile ? '存在' : '不存在');
 
       if (xProfile) {
+        // 保存前记录旧值
+        const oldPersona = xProfile.userPersona || '';
+        console.log(`💾 [保存用户人设] 旧人设长度: ${oldPersona.length} 字符`);
+        console.log(`💾 [保存用户人设] 新人设长度: ${persona.length} 字符`);
+
         // 更新用户人设
         xProfile.userPersona = persona;
+
+        // 确保数据被正确保存
         await db.xCharacterProfiles.put(xProfile);
 
-        console.log(
-          `已保存角色 ${characterId} 的用户人设:`,
-          persona.substring(0, 100) + (persona.length > 100 ? '...' : ''),
-        );
+        // 验证保存结果 - 重新读取确认
+        const verifyProfile = await db.xCharacterProfiles.get(characterId);
+        const savedPersona = verifyProfile?.userPersona || '';
+        console.log(`✅ [保存用户人设] 验证保存结果 - 实际保存长度: ${savedPersona.length} 字符`);
+
+        if (savedPersona === persona) {
+          console.log(`✅ [保存用户人设] 数据验证成功，保存一致`);
+        } else {
+          console.warn(`⚠️ [保存用户人设] 数据验证失败！保存的内容与预期不一致`);
+          console.warn(`⚠️ [保存用户人设] 预期: "${persona.substring(0, 50)}..."`);
+          console.warn(`⚠️ [保存用户人设] 实际: "${savedPersona.substring(0, 50)}..."`);
+        }
 
         showXToast(persona ? '用户人设已保存' : '用户人设已清空', 'success');
         window.closeUserPersonaModal();
+
+        // 重新加载角色列表以更新UI显示
+        console.log(`🔄 [保存用户人设] 重新加载角色身份识别列表`);
+        await loadIdentityCharactersList();
       } else {
+        console.error(`❌ [保存用户人设] 无法找到角色资料，角色ID: ${characterId}`);
         showXToast('无法找到角色资料', 'error');
       }
     } catch (error) {
-      console.error('保存用户人设失败:', error);
-      showXToast('保存失败', 'error');
+      console.error('❌ [保存用户人设] 保存失败:', error);
+      console.error('❌ [保存用户人设] 错误详情:', error.message, error.stack);
+      showXToast('保存失败: ' + error.message, 'error');
     }
   };
 
@@ -16537,7 +18964,9 @@ ${existingQuestionsContext}
                     <span id="tweet-detail-views" style="color: #fff; font-weight: 700; font-size: 15px;">${formatNumber(
                       tweet.stats.views,
                     )}</span>
-                    <span style="color: #71767b; font-size: 15px;">查看</span>
+                    <span id="tweet-detail-views-label" style="color: #71767b; font-size: 15px;">${getI18nText(
+                      'tweetDetailViews',
+                    )}</span>
                   </div>
                   ${
                     tweet.location
@@ -16561,19 +18990,19 @@ ${existingQuestionsContext}
                     <span style="color: #fff; font-weight: 700; font-size: 15px;">${formatNumber(
                       tweet.stats.retweets,
                     )}</span>
-                    <span style="color: #71767b; font-size: 15px;">转推</span>
+                    <span style="color: #71767b; font-size: 15px;">${getI18nText('tweetDetailRetweets')}</span>
                   </div>
                   <div style="display: flex; align-items: center; gap: 4px;">
                     <span style="color: #fff; font-weight: 700; font-size: 15px;">${formatNumber(
                       tweet.stats.likes,
                     )}</span>
-                    <span style="color: #71767b; font-size: 15px;">喜欢</span>
+                    <span style="color: #71767b; font-size: 15px;">${getI18nText('tweetDetailLikes')}</span>
                   </div>
                   <div style="display: flex; align-items: center; gap: 4px;">
                     <span style="color: #fff; font-weight: 700; font-size: 15px;">${formatNumber(
                       tweet.stats.comments,
                     )}</span>
-                    <span style="color: #71767b; font-size: 15px;">书签</span>
+                    <span style="color: #71767b; font-size: 15px;">${getI18nText('tweetDetailBookmarks')}</span>
                   </div>
                 </div>
 
@@ -17059,7 +19488,11 @@ ${existingQuestionsContext}
   }
 
   // ▼▼▼ 【主要！！！】第二个情景：发帖生成器▼▼▼
-  async function generateAIResponseForTweet(tweetData, isReroll = false) {
+  // 推进模式状态（发帖生成器专用）
+  let isTweetProgressMode = false;
+  let tweetProgressLongPressTimer = null;
+
+  async function generateAIResponseForTweet(tweetData, isReroll = false, isProgressMode = false) {
     try {
       // 从数据库读取API配置
       const db = getDB(); // 用于访问API配置
@@ -17122,8 +19555,46 @@ ${existingQuestionsContext}
       });
       tokenCount = TokenUtils.logTokenUsage('发帖生成器', '基础系统提示词', systemPrompt, tokenCount);
 
-      // 2. 角色定义（帖子回复生成专用）
-      systemPrompt += `
+      // 2. 核心任务说明（根据模式不同调整）
+      if (isProgressMode) {
+        // 计算时间流逝
+        const tweetTimestamp = tweetData.timestamp || Date.now();
+        const now = Date.now();
+        const minutesPassed = Math.floor((now - tweetTimestamp) / (1000 * 60));
+        const hoursPassed = Math.floor(minutesPassed / 60);
+        const daysPassed = Math.floor(hoursPassed / 24);
+
+        let timePassedDesc;
+        if (daysPassed > 0) {
+          timePassedDesc = `${daysPassed}天${hoursPassed % 24}小时`;
+        } else if (hoursPassed > 0) {
+          timePassedDesc = `${hoursPassed}小时${minutesPassed % 60}分钟`;
+        } else {
+          timePassedDesc = `${minutesPassed}分钟`;
+        }
+
+        systemPrompt += `
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 核心任务：推进帖子互动 🎯
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+你是X社交平台的互动生成器。用户的帖子已发布一段时间，你的任务是：
+✅ 生成**新的**评论和互动（在已有评论基础上继续）
+✅ 更新互动数据（点赞、转发、浏览量应该增加）
+❌ 绝对不能生成用户本人发表的任何内容
+
+**时间信息**：
+- 帖子发布已过去：${timePassedDesc}
+- 已有评论数量：${tweetData.comments?.length || 0} 条
+
+**重要要求**：
+- 新评论应该反映时间流逝（如"刚看到这条"、"终于找到这个帖子了"等）
+- 互动数据（点赞、转发、浏览量）应该比现有数据更高
+- 新评论不要与已有评论重复
+- 可以生成对已有评论的回复（楼中楼）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
+      } else {
+        systemPrompt += `
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🚫 核心任务说明 🚫
@@ -17134,6 +19605,7 @@ ${existingQuestionsContext}
 
 **明确：用户已经发布了推文，你只负责生成别人的回应！**
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
+      }
 
       const coreTaskSection = systemPrompt.substring(systemPrompt.lastIndexOf('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'));
       tokenCount = TokenUtils.logTokenUsage('发帖生成器', '核心任务说明', coreTaskSection, tokenCount);
@@ -17159,10 +19631,39 @@ ${existingQuestionsContext}
       const userConstraints = systemPrompt.substring(userConstraintsStart);
       tokenCount = TokenUtils.logTokenUsage('发帖生成器', '用户资料约束', userConstraints, tokenCount);
 
+      // 4.5. 如果是推进模式，添加现有评论上下文
+      if (isProgressMode && tweetData.comments && tweetData.comments.length > 0) {
+        const existingCommentsStart = systemPrompt.length;
+        systemPrompt += `
+
+【已有评论上下文】：
+以下是该帖子现有的评论，新生成的评论应该避免重复：
+
+`;
+        tweetData.comments.slice(0, 10).forEach((comment, index) => {
+          systemPrompt += `${index + 1}. ${comment.user.name} (${comment.user.handle}): "${comment.content}"\n`;
+          if (comment.replies && comment.replies.length > 0) {
+            comment.replies.forEach(reply => {
+              systemPrompt += `   └─ ${reply.user.name}: "${reply.content}"\n`;
+            });
+          }
+        });
+
+        systemPrompt += `
+**注意**：
+- 生成的新评论不要与上述评论内容重复
+- 可以生成对上述评论的回复（楼中楼）
+- 新评论应该带来新的观点或角度
+`;
+
+        const existingComments = systemPrompt.substring(existingCommentsStart);
+        tokenCount = TokenUtils.logTokenUsage('发帖生成器', '已有评论上下文', existingComments, tokenCount);
+      }
+
       systemPrompt += `
 
 【生成要求】：
-- 生成1-15条评论，内容多样化（简短/深度/表情符号），支持楼中楼回复，全年龄适宜
+- 生成${isProgressMode ? '3-10' : '1-15'}条评论，内容多样化（简短/深度/表情符号），支持楼中楼回复，全年龄适宜
 - 引用转发处理：如帖子含引用内容，评论可涉及用户观点和被引用原内容
 - 公众身份影响：知名度越高，讨论热度和互动数据越多
 
@@ -17377,13 +19878,22 @@ ${tweetData.link ? `链接：${tweetData.link.title || tweetData.link.url}` : ''
         comment.id = `ai_${timestamp}_${index}`;
 
         // 将timeOffset转换为实际时间戳
-        if (comment.timeOffset !== undefined) {
-          // timeOffset是负数，表示推文发布后多少分钟
-          comment.timestamp = tweetTimestamp + Math.abs(comment.timeOffset) * 60 * 1000;
-          delete comment.timeOffset; // 删除临时字段
-        } else if (!comment.timestamp) {
-          // 如果没有timeOffset，随机生成一个时间戳
-          comment.timestamp = tweetTimestamp + (5 + Math.random() * 30) * 60 * 1000;
+        if (isProgressMode) {
+          // 推进模式：新评论应该是最近发布的，使用当前时间附近
+          // 忽略AI生成的timeOffset，因为它是相对于推文发布时间的
+          const minutesAgo = Math.floor(Math.random() * 60); // 0-60分钟前
+          comment.timestamp = timestamp - minutesAgo * 60 * 1000;
+          delete comment.timeOffset;
+        } else {
+          // 正常模式：基于推文发布时间计算
+          if (comment.timeOffset !== undefined) {
+            // timeOffset是负数，表示推文发布后多少分钟
+            comment.timestamp = tweetTimestamp + Math.abs(comment.timeOffset) * 60 * 1000;
+            delete comment.timeOffset; // 删除临时字段
+          } else if (!comment.timestamp) {
+            // 如果没有timeOffset，随机生成一个时间戳
+            comment.timestamp = tweetTimestamp + (5 + Math.random() * 30) * 60 * 1000;
+          }
         }
 
         // 为回复分配ID和时间戳
@@ -17391,20 +19901,26 @@ ${tweetData.link ? `链接：${tweetData.link.title || tweetData.link.url}` : ''
           comment.replies.forEach((reply, replyIndex) => {
             reply.id = `ai_${timestamp}_${index}_${replyIndex}`;
 
-            // 回复的时间应该在评论之后
-            if (reply.timeOffset !== undefined) {
-              reply.timestamp = tweetTimestamp + Math.abs(reply.timeOffset) * 60 * 1000;
-              delete reply.timeOffset;
-            } else if (!reply.timestamp) {
-              // 回复时间晚于评论
+            if (isProgressMode) {
+              // 推进模式：回复时间应该在评论之后几分钟
               reply.timestamp = comment.timestamp + (1 + Math.random() * 10) * 60 * 1000;
+              delete reply.timeOffset;
+            } else {
+              // 正常模式：基于推文发布时间计算
+              if (reply.timeOffset !== undefined) {
+                reply.timestamp = tweetTimestamp + Math.abs(reply.timeOffset) * 60 * 1000;
+                delete reply.timeOffset;
+              } else if (!reply.timestamp) {
+                // 回复时间晚于评论
+                reply.timestamp = comment.timestamp + (1 + Math.random() * 10) * 60 * 1000;
+              }
             }
           });
         }
       });
 
       // 更新推文详情页面的数据
-      await updateTweetDetailWithAI(tweetData.id, interactionData, isReroll);
+      await updateTweetDetailWithAI(tweetData.id, interactionData, isReroll, isProgressMode);
 
       // 如果当前显示的是这条推文的详情页，重新加载完整数据并显示
       const detailPage = document.getElementById('x-tweet-detail-page');
@@ -17428,15 +19944,73 @@ ${tweetData.link ? `链接：${tweetData.link.title || tweetData.link.url}` : ''
         }
       }
 
-      showXToast('你的帖子有人回复了哦', 'success');
+      showXToast(isProgressMode ? '帖子互动已推进' : '你的帖子有人回复了哦', 'success');
     } catch (error) {
       console.error('生成AI回复失败:', error);
       showXToast(`回复生成失败: ${error.message}`, 'error');
     }
   }
 
-  // 重新生成AI回复
+  // 切换推进模式（发帖生成器专用）
+  window.toggleTweetProgressMode = function () {
+    isTweetProgressMode = !isTweetProgressMode;
+    updateTweetRerollButtonUI();
+
+    if (isTweetProgressMode) {
+      showXToast('已切换到推进模式 - 将追加新评论', 'success');
+    } else {
+      showXToast('已切换到重新生成模式 - 将覆盖现有评论', 'info');
+    }
+  };
+
+  // 更新重回按钮UI（发帖生成器专用）
+  function updateTweetRerollButtonUI() {
+    const rerollBtn = document.getElementById('reroll-replies-btn');
+    if (!rerollBtn) return;
+
+    if (isTweetProgressMode) {
+      // 推进模式 - 心电图图标
+      rerollBtn.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 12h4l3 8l4 -16l3 8h4" />
+        </svg>
+      `;
+      rerollBtn.setAttribute('title', '推进帖子互动（追加新评论）');
+    } else {
+      // 重新生成模式 - 星形图标
+      rerollBtn.innerHTML = `
+        <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; fill: #fff;">
+          <g>
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+          </g>
+        </svg>
+      `;
+      rerollBtn.setAttribute('title', '重新生成回复');
+    }
+  }
+
+  // 长按事件处理（发帖生成器专用）
+  window.handleTweetRerollButtonMouseDown = function () {
+    tweetProgressLongPressTimer = setTimeout(() => {
+      toggleTweetProgressMode();
+    }, 800);
+  };
+
+  window.handleTweetRerollButtonMouseUp = function () {
+    if (tweetProgressLongPressTimer) {
+      clearTimeout(tweetProgressLongPressTimer);
+      tweetProgressLongPressTimer = null;
+    }
+  };
+
+  // 重新生成AI回复或推进评论
   async function rerollAIReplies() {
+    // 清除长按定时器
+    if (tweetProgressLongPressTimer) {
+      clearTimeout(tweetProgressLongPressTimer);
+      tweetProgressLongPressTimer = null;
+    }
+
     try {
       // 获取当前推文ID
       const currentTweetId = getCurrentTweetId();
@@ -17465,29 +20039,22 @@ ${tweetData.link ? `链接：${tweetData.link.title || tweetData.link.url}` : ''
                `;
       rerollBtn.style.pointerEvents = 'none';
 
-      // 显示重回提示
-      showXToast('正在重新生成回复...', 'info');
+      // 根据模式显示不同提示
+      showXToast(isTweetProgressMode ? '正在推进帖子互动...' : '正在重新生成回复...', 'info');
 
-      // 重新生成AI回复
-      await generateAIResponseForTweet(currentTweet, true);
+      // 调用AI生成（传递推进模式参数）
+      await generateAIResponseForTweet(currentTweet, !isTweetProgressMode, isTweetProgressMode);
 
       // 恢复按钮状态
       rerollBtn.innerHTML = originalHTML;
       rerollBtn.style.pointerEvents = 'auto';
     } catch (error) {
-      console.error('重新生成AI回复失败:', error);
-      showXToast('重新生成失败，请检查网络连接', 'error');
+      console.error('AI回复操作失败:', error);
+      showXToast(isTweetProgressMode ? '推进失败，请检查网络连接' : '重新生成失败，请检查网络连接', 'error');
 
       // 恢复按钮状态
       const rerollBtn = document.getElementById('reroll-replies-btn');
-      const originalHTML = `
-                             <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; fill: #fff;">
-              <g>
-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-              </g>
-            </svg>
-               `;
-      rerollBtn.innerHTML = originalHTML;
+      updateTweetRerollButtonUI();
       rerollBtn.style.pointerEvents = 'auto';
     }
   }
@@ -18089,7 +20656,7 @@ ${tweetData.link ? `链接：${tweetData.link.title || tweetData.link.url}` : ''
   }
 
   // 更新推文详情页面的AI数据
-  async function updateTweetDetailWithAI(tweetId, interactionData, isReroll = false) {
+  async function updateTweetDetailWithAI(tweetId, interactionData, isReroll = false, isProgressMode = false) {
     // 使用ID精确更新元素
 
     // 更新互动数据显示区域
@@ -18100,36 +20667,41 @@ ${tweetData.link ? `链接：${tweetData.link.title || tweetData.link.url}` : ''
                    <span style="color: #fff; font-weight: 700; font-size: 15px;">${formatNumber(
                      interactionData.stats.retweets,
                    )}</span>
-                   <span style="color: #71767b; font-size: 15px;">转推</span>
+                   <span style="color: #71767b; font-size: 15px;">${getI18nText('tweetDetailRetweets')}</span>
                  </div>
                  <div style="display: flex; align-items: center; gap: 4px;">
                    <span style="color: #fff; font-weight: 700; font-size: 15px;">${formatNumber(
                      interactionData.stats.likes,
                    )}</span>
-                   <span style="color: #71767b; font-size: 15px;">喜欢</span>
+                   <span style="color: #71767b; font-size: 15px;">${getI18nText('tweetDetailLikes')}</span>
                  </div>
                  <div style="display: flex; align-items: center; gap: 4px;">
                    <span style="color: #fff; font-weight: 700; font-size: 15px;">${formatNumber(
                      interactionData.stats.comments,
                    )}</span>
-                   <span style="color: #71767b; font-size: 15px;">书签</span>
+                   <span style="color: #71767b; font-size: 15px;">${getI18nText('tweetDetailBookmarks')}</span>
                  </div>
                `;
     }
 
     // 更新查看数据
     const viewElement = document.getElementById('tweet-detail-views');
+    const viewLabelElement = document.getElementById('tweet-detail-views-label');
     if (viewElement) {
-      viewElement.textContent = `${formatNumber(interactionData.stats.views)} 查看`;
+      viewElement.textContent = formatNumber(interactionData.stats.views);
+    }
+    if (viewLabelElement) {
+      viewLabelElement.textContent = getI18nText('tweetDetailViews');
     }
 
     // 添加AI生成的评论
     const commentsContainer = document.getElementById('detail-comments-container');
 
-    // 如果是重回，清除现有评论
-    if (isReroll && commentsContainer) {
+    // 如果是重回，清除现有评论；如果是推进，保留现有评论
+    if (isReroll && !isProgressMode && commentsContainer) {
       commentsContainer.innerHTML = '';
     }
+
     if (commentsContainer && interactionData.comments.length > 0) {
       interactionData.comments.forEach(comment => {
         // 创建评论组容器
@@ -18159,11 +20731,11 @@ ${tweetData.link ? `链接：${tweetData.link.title || tweetData.link.url}` : ''
     }
 
     // 更新存储的推文数据
-    await updateStoredTweetData(tweetId, interactionData);
+    await updateStoredTweetData(tweetId, interactionData, isProgressMode);
   }
 
   // 更新存储的推文数据（包含AI生成的互动数据和评论）
-  async function updateStoredTweetData(tweetId, interactionData) {
+  async function updateStoredTweetData(tweetId, interactionData, isProgressMode = false) {
     try {
       const db = getXDB();
 
@@ -18179,14 +20751,31 @@ ${tweetData.link ? `链接：${tweetData.link.title || tweetData.link.url}` : ''
       // 查找并更新对应的推文
       const tweetIndex = userTweets.tweets.findIndex(tweet => tweet.id === tweetId);
       if (tweetIndex !== -1) {
-        // 更新互动数据
-        userTweets.tweets[tweetIndex].stats = {
-          ...userTweets.tweets[tweetIndex].stats,
-          ...interactionData.stats,
-        };
+        if (isProgressMode) {
+          // 推进模式：累加互动数据，追加评论
+          const currentStats = userTweets.tweets[tweetIndex].stats;
+          userTweets.tweets[tweetIndex].stats = {
+            comments: Math.max(currentStats.comments, interactionData.stats.comments),
+            retweets: Math.max(currentStats.retweets, interactionData.stats.retweets),
+            likes: Math.max(currentStats.likes, interactionData.stats.likes),
+            views: Math.max(currentStats.views, interactionData.stats.views),
+          };
 
-        // 更新评论数据
-        userTweets.tweets[tweetIndex].comments = interactionData.comments || [];
+          // 追加新评论（保留旧评论）
+          const existingComments = userTweets.tweets[tweetIndex].comments || [];
+          userTweets.tweets[tweetIndex].comments = [...existingComments, ...(interactionData.comments || [])];
+
+          console.log(`📈 [推进模式] 新增 ${interactionData.comments?.length || 0} 条评论`);
+        } else {
+          // 重新生成模式：覆盖互动数据和评论
+          userTweets.tweets[tweetIndex].stats = {
+            ...userTweets.tweets[tweetIndex].stats,
+            ...interactionData.stats,
+          };
+
+          // 更新评论数据
+          userTweets.tweets[tweetIndex].comments = interactionData.comments || [];
+        }
 
         // 保存更新后的数据
         await db.xUserTweets.put(userTweets);
@@ -18206,7 +20795,13 @@ ${tweetData.link ? `链接：${tweetData.link.title || tweetData.link.url}` : ''
           }
         }
 
-        console.log('✅ 推文AI反应已保存到数据库:', tweetId, '账户:', accountTweetsId);
+        console.log(
+          '✅ 推文AI反应已保存到数据库:',
+          tweetId,
+          '账户:',
+          accountTweetsId,
+          isProgressMode ? '(推进模式)' : '',
+        );
 
         // 刷新个人页面显示
         refreshUserProfileTweets();
@@ -19337,6 +21932,9 @@ ${tweetAuthorCharacter.relationships
       // 8. 更新UI显示（确保用户资料正确显示）
       loadUserProfileToUI();
 
+      // 9. 加载主题偏好
+      await loadXThemePreference();
+
       console.log('✅ X Social App 初始化完成');
     } catch (error) {
       console.error('❌ X Social App 初始化失败:', error);
@@ -20326,6 +22924,7 @@ ${
   window.deleteXPreset = deleteXPreset;
   window.exportXData = exportXData;
   window.importXData = importXData;
+  window.toggleXTheme = toggleXTheme;
   window.showTweetDetail = showTweetDetail;
   window.handleDetailCommentInput = handleDetailCommentInput;
   window.autoResizeDetail = autoResizeDetail;
@@ -20420,6 +23019,12 @@ ${
   window.handleRefreshButtonMouseDown = handleRefreshButtonMouseDown;
   window.handleRefreshButtonMouseUp = handleRefreshButtonMouseUp;
   window.goBackFromTweetDetail = goBackFromTweetDetail;
+
+  // 主题切换相关函数
+  window.toggleXTheme = toggleXTheme;
+
+  // 语言切换相关函数
+  window.toggleXLanguage = toggleXLanguage;
 
   console.log('✅ 全局接口已暴露');
 
