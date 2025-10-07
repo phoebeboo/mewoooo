@@ -3312,8 +3312,8 @@
           </div>
 
           <!-- 用户名和认证 -->
-          <div style="margin-top: 30px; margin-bottom: 4px; padding-left: 8px;">
-            <div style="display: flex; align-items: center; gap: 2px; margin-bottom: 0;">
+          <div style="margin-top: 8px; margin-bottom: 0px; padding-left: 8px;">
+            <div style="display: flex; align-items: center; gap: 2px; margin-bottom: 4px;">
               <span id="x-profile-user-name" style="font-size: 20px; font-weight: 700; color: #fff;">我</span>
               <svg id="x-profile-verified-badge" viewBox="0 0 24 24"
                 style="width: 20px; height: 20px; fill: #1d9bf0; display: none;">
@@ -3324,17 +3324,17 @@
                 </g>
               </svg>
             </div>
-            <div id="x-profile-user-handle" style="font-size: 15px; color: #71767b; margin-bottom: 10px;">@me</div>
+            <div id="x-profile-user-handle" style="font-size: 15px; color: #71767b; margin-bottom: 8px;">@me</div>
           </div>
 
           <!-- 个人简介 -->
-          <div id="x-profile-bio" style="font-size: 15px; color: #fff; line-height: 1.3; margin-bottom: 10px; padding-left: 8px;">
+          <div id="x-profile-bio" style="font-size: 15px; color: #fff; line-height: 1.3; margin-bottom: 8px; padding-left: 8px;">
             欢迎来到我的X主页！
           </div>
 
           <!-- 自定义标签 -->
           <div class="profile-tags"
-            style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; padding-left: 8px;">
+            style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px; flex-wrap: wrap; padding-left: 8px;">
             <div style="display: flex; align-items: center; gap: 4px;">
               <span id="x-profile-tag1-icon" style="font-size: 14px;">✨</span>
               <span id="x-profile-tag1" style="color: #71767b; font-size: 14px;">科技爱好者</span>
@@ -3346,7 +3346,7 @@
           </div>
 
           <!-- 关注数据 -->
-          <div style="display: flex; gap: 16px; margin-bottom: 12px; padding-left: 8px;">
+          <div style="display: flex; gap: 16px; margin-bottom: 8px; padding-left: 8px;">
             <div style="cursor: pointer;" onmouseover="this.querySelector('span').style.textDecoration='underline'"
               onmouseout="this.querySelector('span').style.textDecoration='none'">
               <span id="x-profile-following-count" style="color: #fff; font-weight: 700; font-size: 14px;">156</span>
@@ -5377,7 +5377,7 @@
           </div>
 
           <!-- 账户名称和认证 -->
-          <div style="margin-bottom: 2px; margin-top: 30px; padding-left: 8px;">
+          <div style="margin-bottom: 4px; margin-top: 8px; padding-left: 8px;">
             <div style="display: flex; align-items: center; gap: 4px;">
               <span id="account-display-name" style="color: var(--x-text-primary); font-size: 20px; font-weight: 800; line-height: 1.2;"></span>
               <div id="account-verified-badge" style="display: none;"></div>
@@ -5385,12 +5385,12 @@
           </div>
 
           <!-- 账户句柄 -->
-          <div style="margin-bottom: 12px; padding-left: 8px;">
+          <div style="margin-bottom: 8px; padding-left: 8px;">
             <span id="account-handle-text" style="color: var(--x-text-secondary); font-size: 15px;"></span>
           </div>
 
           <!-- 简介 -->
-          <div id="account-bio-text" style="color: var(--x-text-primary); font-size: 15px; line-height: 20px; margin-bottom: 12px; padding-left: 8px; display: none;"></div>
+          <div id="account-bio-text" style="color: var(--x-text-primary); font-size: 15px; line-height: 20px; margin-bottom: 8px; padding-left: 8px; display: none;"></div>
 
           <!-- 自定义标签 -->
           <div id="account-tags-container" style="display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; padding-left: 8px;"></div>
@@ -8749,7 +8749,9 @@ ${xProfile.showRealName && xProfile.realName ? `- 真实姓名：${xProfile.real
                       ? '<svg class="tweet-verified" viewBox="0 0 24 24"><g><path d="M22.25 12c0-1.43-.88-2.67-2.19-3.34.46-1.39.2-2.9-.81-3.91s-2.52-1.27-3.91-.81c-.66-1.31-1.91-2.19-3.34-2.19s-2.67.88-3.33 2.19c-1.4-.46-2.91-.2-3.92.81s-1.26 2.52-.8 3.91c-1.31.67-2.2 1.91-2.2 3.34s.89 2.67 2.2 3.34c-.46 1.39-.21 2.9.8 3.91s2.52 1.27 3.91.81c.67 1.31 1.91 2.19 3.34 2.19s2.68-.88 3.34-2.19c1.39.46 2.9.2 3.91-.81s1.27-2.52.81-3.91c1.31-.67 2.19-1.91 2.19-3.34zm-11.71 4.2L6.8 12.46l1.41-1.42 2.26 2.26 4.8-5.23 1.47 1.36-6.2 6.77z"></path></g></svg>'
                       : ''
                   }
-                  <span class="tweet-user-handle">${comment.user.handle}</span>
+                  <span class="tweet-user-handle">${
+                    comment.user.handle.startsWith('@') ? comment.user.handle : '@' + comment.user.handle
+                  }</span>
                   <span class="tweet-time">·${
                     comment.timestamp ? formatCommentTime(comment.timestamp) : comment.time || '刚刚'
                   }</span>
@@ -16810,6 +16812,14 @@ ${existingQuestionsContext}
         loadUserProfileTweets();
       }
 
+      // 重新加载提问箱数据（按账户隔离）- 无论是否在提问箱页面都要加载
+      await loadAskboxDataFromDB();
+
+      // 如果当前正在提问箱页面，立即更新UI
+      if (document.getElementById('x-askbox-page').style.display !== 'none') {
+        await loadAskboxData();
+      }
+
       // 更新发帖弹窗的用户信息
       const composeAvatar = document.getElementById('compose-user-avatar');
       if (composeAvatar) {
@@ -16850,6 +16860,18 @@ ${existingQuestionsContext}
       };
       await db.xAccountList.put(newAccount);
 
+      // 为新账户创建空的提问箱数据
+      const askboxId = `askbox_${newAccountId}`;
+      await db.xAskbox.put({
+        id: askboxId,
+        avatar: 'https://i.postimg.cc/4xmx7V4R/mmexport1759081128356.jpg',
+        nickname: '= =',
+        prompt: '请向我匿名提问!waiting...',
+        background: 'https://i.postimg.cc/7LqVqxt4/mmexport1759588659314.jpg',
+        answeredQuestions: [], // 新账户必须从空列表开始
+      });
+      console.log('✅ 已为新账户创建空提问箱:', newAccountId);
+
       // 自动切换到新账户
       await switchAccount(newAccountId);
     } catch (error) {
@@ -16878,6 +16900,10 @@ ${existingQuestionsContext}
       // 从账户列表中删除
       await db.xAccountList.delete(accountId);
 
+      // 删除账户的提问箱数据
+      const askboxId = `askbox_${accountId}`;
+      await db.xAskbox.delete(askboxId);
+
       showXToast('账户已删除', 'success');
 
       // 重新显示账户管理弹窗
@@ -16890,6 +16916,38 @@ ${existingQuestionsContext}
       showXToast('删除账户失败', 'error');
     }
   }
+
+  // 清空当前账户的提问箱数据（调试用）
+  window.clearCurrentAskboxData = async function () {
+    try {
+      const xDb = getXDB();
+      const accountId = currentAccountId || 'main';
+      const askboxId = `askbox_${accountId}`;
+
+      await xDb.xAskbox.put({
+        id: askboxId,
+        avatar: 'https://i.postimg.cc/4xmx7V4R/mmexport1759081128356.jpg',
+        nickname: '= =',
+        prompt: '请向我匿名提问!waiting...',
+        background: 'https://i.postimg.cc/7LqVqxt4/mmexport1759588659314.jpg',
+        answeredQuestions: [],
+      });
+
+      // 重新加载数据
+      await loadAskboxDataFromDB();
+
+      // 如果在提问箱页面，刷新UI
+      if (document.getElementById('x-askbox-page').style.display !== 'none') {
+        renderAnsweredQuestions();
+      }
+
+      console.log('✅ 已清空账户提问箱数据:', accountId);
+      showXToast('提问箱数据已清空', 'success');
+    } catch (error) {
+      console.error('❌ 清空提问箱数据失败:', error);
+      showXToast('清空失败: ' + error.message, 'error');
+    }
+  };
 
   // 初始化用户主页
   async function initializeUserProfile() {
@@ -18769,12 +18827,14 @@ ${existingQuestionsContext}
                           : ''
                       }
                     </div>
-                    <div style="color: #71767b; font-size: 15px;">${tweet.user.handle}</div>
+                    <div style="color: #71767b; font-size: 15px;">${
+                      tweet.user.handle.startsWith('@') ? tweet.user.handle : '@' + tweet.user.handle
+                    }</div>
                   </div>
                 </div>
 
                 <!-- 推文内容 -->
-                <div style="color: #fff; font-size: 20px; line-height: 1.3; margin-bottom: 16px; word-wrap: break-word;">
+                <div style="color: #fff; font-size: 16px; line-height: 1.3; margin-bottom: 16px; word-wrap: break-word;">
                   ${processContent(tweet.content)}
                 </div>
 
@@ -21944,14 +22004,33 @@ ${tweetAuthorCharacter.relationships
       const savedData = await xDb.xAskbox.get(askboxId);
 
       if (savedData) {
-        // 从数据库加载
-        Object.assign(askboxData, savedData);
-        console.log('✅ 提问箱数据已从数据库加载:', accountId);
+        // 从数据库加载 - 完全替换askboxData对象，避免旧数据残留
+        askboxData.id = savedData.id;
+        askboxData.avatar = savedData.avatar;
+        askboxData.nickname = savedData.nickname;
+        askboxData.prompt = savedData.prompt;
+        askboxData.background = savedData.background;
+        askboxData.answeredQuestions = savedData.answeredQuestions || [];
+        console.log('✅ 提问箱数据已从数据库加载:', accountId, '提问数:', askboxData.answeredQuestions.length);
       } else {
-        // 使用默认数据并保存到数据库
+        // 使用默认数据并保存到数据库（为新账户创建空的提问箱）
         askboxData.id = askboxId;
-        await xDb.xAskbox.put(askboxData);
-        console.log('✅ 已创建默认提问箱数据:', accountId);
+        askboxData.avatar = 'https://i.postimg.cc/4xmx7V4R/mmexport1759081128356.jpg';
+        askboxData.nickname = '= =';
+        askboxData.prompt = '请向我匿名提问!waiting...';
+        askboxData.background = 'https://i.postimg.cc/7LqVqxt4/mmexport1759588659314.jpg';
+        askboxData.answeredQuestions = []; // 新账户从空列表开始
+
+        // 保存到数据库
+        await xDb.xAskbox.put({
+          id: askboxId,
+          avatar: askboxData.avatar,
+          nickname: askboxData.nickname,
+          prompt: askboxData.prompt,
+          background: askboxData.background,
+          answeredQuestions: [],
+        });
+        console.log('✅ 已为新账户创建默认提问箱数据:', accountId, '提问数: 0');
       }
     } catch (error) {
       console.error('❌ 加载提问箱数据失败:', error);
