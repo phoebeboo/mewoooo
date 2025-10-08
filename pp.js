@@ -15770,26 +15770,67 @@ ${existingQuestionsContext}
 
       const savedData = await db.xCharacterRelationships.get(dataId);
 
+      // 获取当前绑定的所有角色
+      const boundChars = xSettingsData.boundCharacters || [];
+      const mainDB = getDB();
+      const allChats = await mainDB.chats.toArray();
+
+      const currentBoundCharacters = allChats
+        .filter(chat => !chat.isGroup && boundChars.includes(chat.id))
+        .map(chat => ({
+          id: chat.id,
+          name: chat.name,
+          avatar: chat.settings?.aiAvatar || 'https://i.postimg.cc/4xmx7V4R/mmexport1759081128356.jpg',
+        }));
+
       if (savedData && savedData.data) {
+        // 已有保存数据：合并角色列表，保留关系连线
         characterRelationshipData = savedData.data;
+
+        // 同步角色列表：添加新绑定的角色，移除已解绑的角色
+        const existingCharIds = new Set(characterRelationshipData.characters.map(c => c.id));
+        const currentCharIds = new Set(currentBoundCharacters.map(c => c.id));
+
+        // 添加新角色（保留位置信息）
+        currentBoundCharacters.forEach(char => {
+          if (!existingCharIds.has(char.id)) {
+            characterRelationshipData.characters.push(char);
+            console.log('➕ 新增角色到关系册:', char.name);
+          }
+        });
+
+        // 移除已解绑的角色，并删除相关的连线
+        characterRelationshipData.characters = characterRelationshipData.characters.filter(char => {
+          const isStillBound = currentCharIds.has(char.id);
+          if (!isStillBound) {
+            console.log('➖ 从关系册移除角色:', char.name);
+            // 删除与该角色相关的所有连线
+            characterRelationshipData.links = characterRelationshipData.links.filter(
+              link => link.charA !== char.id && link.charB !== char.id,
+            );
+          }
+          return isStillBound;
+        });
+
+        // 更新现有角色的名称和头像（可能被修改过）
+        characterRelationshipData.characters.forEach(char => {
+          const updatedChar = currentBoundCharacters.find(c => c.id === char.id);
+          if (updatedChar) {
+            char.name = updatedChar.name;
+            char.avatar = updatedChar.avatar;
+          }
+        });
       } else {
-        // 初始化为已绑定角色
-        const boundChars = xSettingsData.boundCharacters || [];
-        const mainDB = getDB();
-        const allChats = await mainDB.chats.toArray();
-
-        characterRelationshipData.characters = allChats
-          .filter(chat => !chat.isGroup && boundChars.includes(chat.id))
-          .map(chat => ({
-            id: chat.id,
-            name: chat.name,
-            avatar: chat.settings?.aiAvatar || 'https://i.postimg.cc/4xmx7V4R/mmexport1759081128356.jpg',
-          }));
-
+        // 无保存数据：初始化
+        characterRelationshipData.characters = currentBoundCharacters;
         characterRelationshipData.links = [];
       }
 
-      console.log('✅ 已加载角色关系数据:', characterRelationshipData);
+      console.log('✅ 已加载角色关系数据:', {
+        角色数: characterRelationshipData.characters.length,
+        关系数: characterRelationshipData.links.length,
+        角色列表: characterRelationshipData.characters.map(c => c.name),
+      });
     } catch (error) {
       console.error('❌ 加载关系数据失败:', error);
     }
@@ -15888,6 +15929,18 @@ ${existingQuestionsContext}
     }, 300);
   }
 
+  // ESC 键处理函数
+  function handleRelationshipGraphKeyPress(event) {
+    if (event.key === 'Escape' && isSelectingCharsForLink) {
+      // 取消选择模式
+      isSelectingCharsForLink = false;
+      selectedCharForLink = null;
+      renderRelationshipGraph();
+      showXToast('已取消选择', 'info');
+      console.log('📍 已退出角色选择模式');
+    }
+  }
+
   // 打开关系图编辑器
   async function openCharacterRelationshipGraph() {
     await loadRelationshipData();
@@ -15907,6 +15960,9 @@ ${existingQuestionsContext}
       // 监听窗口大小改变
       window.addEventListener('resize', handleRelationshipCanvasResize);
       window.addEventListener('orientationchange', handleRelationshipCanvasResize);
+
+      // 监听键盘事件（用于 ESC 取消选择）
+      window.addEventListener('keydown', handleRelationshipGraphKeyPress);
     }
   }
 
@@ -15919,9 +15975,14 @@ ${existingQuestionsContext}
       modal.style.display = 'none';
       document.body.style.overflow = 'auto';
 
-      // 移除窗口大小改变的事件监听器
+      // 重置选择状态
+      isSelectingCharsForLink = false;
+      selectedCharForLink = null;
+
+      // 移除事件监听器
       window.removeEventListener('resize', handleRelationshipCanvasResize);
       window.removeEventListener('orientationchange', handleRelationshipCanvasResize);
+      window.removeEventListener('keydown', handleRelationshipGraphKeyPress);
     }
   }
 
@@ -15930,6 +15991,10 @@ ${existingQuestionsContext}
   let draggedCharId = null;
   let dragOffsetX = 0;
   let dragOffsetY = 0;
+
+  // 角色选择状态（用于创建连线）
+  let isSelectingCharsForLink = false;
+  let selectedCharForLink = null;
 
   // 初始化关系图画布
   function initRelationshipCanvas() {
@@ -15990,6 +16055,20 @@ ${existingQuestionsContext}
     emptyState.style.display = 'none';
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    // 绘制选择模式提示
+    if (isSelectingCharsForLink) {
+      const tipText = selectedCharForLink ? '请点击第二个角色' : '请点击第一个角色';
+      ctx.fillStyle = accentColor;
+      ctx.font = 'bold 16px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(tipText, canvas.width / 2, 30);
+
+      // 绘制取消按钮提示
+      ctx.fillStyle = textPrimary;
+      ctx.font = '12px sans-serif';
+      ctx.fillText('(按 ESC 键取消)', canvas.width / 2, 50);
+    }
+
     // 初始化位置（圆形布局）- 只在没有位置时设置
     const centerX = canvas.width / 2;
     const centerY = canvas.height / 2;
@@ -16046,10 +16125,22 @@ ${existingQuestionsContext}
 
     // 绘制角色头像和名称
     chars.forEach(char => {
+      // 检查是否为选中的角色
+      const isSelected = isSelectingCharsForLink && selectedCharForLink === char.id;
+
+      // 绘制选中高亮圈（外圈）
+      if (isSelected) {
+        ctx.beginPath();
+        ctx.arc(char.x, char.y, avatarRadius + 5, 0, Math.PI * 2);
+        ctx.strokeStyle = accentColor;
+        ctx.lineWidth = 3;
+        ctx.stroke();
+      }
+
       // 绘制圆形背景
       ctx.beginPath();
       ctx.arc(char.x, char.y, avatarRadius, 0, Math.PI * 2);
-      ctx.fillStyle = accentColor;
+      ctx.fillStyle = isSelected ? '#FFA500' : accentColor; // 选中时使用橙色
       ctx.fill();
       ctx.strokeStyle = bgPrimary;
       ctx.lineWidth = 2;
@@ -16160,13 +16251,13 @@ ${existingQuestionsContext}
 
     const chars = characterRelationshipData.characters || [];
 
-    // 检查是否触摸了角色
+    // 检查是否触摸了角色（但不立即设置为拖拽状态）
     for (const char of chars) {
       const dx = x - char.x;
       const dy = y - char.y;
       const radius = char.radius || 35;
       if (Math.sqrt(dx * dx + dy * dy) < radius) {
-        isDragging = true;
+        // 记录可能被拖拽的角色，但不立即设置为拖拽状态
         draggedCharId = char.id;
         dragOffsetX = dx;
         dragOffsetY = dy;
@@ -16216,6 +16307,19 @@ ${existingQuestionsContext}
 
     const chars = characterRelationshipData.characters || [];
 
+    // 如果已记录了拖拽目标但还未进入拖拽状态，检查移动距离
+    if (draggedCharId && !isDragging) {
+      const dx = x - touchStartX;
+      const dy = y - touchStartY;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+
+      // 移动距离超过10px才认为是拖拽
+      if (distance > 10) {
+        isDragging = true;
+        console.log('📍 开始拖拽角色');
+      }
+    }
+
     if (isDragging && draggedCharId) {
       // 拖拽角色
       const char = chars.find(c => c.id === draggedCharId);
@@ -16246,12 +16350,16 @@ ${existingQuestionsContext}
 
     const wasDragging = isDragging;
 
+    // 重置拖拽状态
     if (isDragging) {
       isDragging = false;
       draggedCharId = null;
+    } else if (draggedCharId) {
+      // 即使没有进入拖拽状态，也要清除记录的角色ID
+      draggedCharId = null;
     }
 
-    // 如果没有拖拽，检测是否是点击连线
+    // 如果没有拖拽，检测是否是点击
     if (!wasDragging && event.changedTouches && event.changedTouches.length > 0) {
       const canvas = event.target;
       const rect = canvas.getBoundingClientRect();
@@ -16261,6 +16369,21 @@ ${existingQuestionsContext}
 
       const chars = characterRelationshipData.characters || [];
       const links = characterRelationshipData.links || [];
+
+      // 优先处理选择模式
+      if (isSelectingCharsForLink) {
+        // 检查是否触摸了角色
+        for (const char of chars) {
+          const dx = x - char.x;
+          const dy = y - char.y;
+          const radius = char.radius || 35;
+          if (Math.sqrt(dx * dx + dy * dy) < radius) {
+            handleCharacterSelection(char);
+            return;
+          }
+        }
+        return; // 选择模式下不处理其他点击
+      }
 
       // 检查是否点击了连线
       for (const link of links) {
@@ -16292,6 +16415,21 @@ ${existingQuestionsContext}
     const chars = characterRelationshipData.characters || [];
     const links = characterRelationshipData.links || [];
 
+    // 优先处理选择模式
+    if (isSelectingCharsForLink) {
+      // 检查是否点击了角色
+      for (const char of chars) {
+        const dx = x - char.x;
+        const dy = y - char.y;
+        const radius = char.radius || 35;
+        if (Math.sqrt(dx * dx + dy * dy) < radius) {
+          handleCharacterSelection(char);
+          return;
+        }
+      }
+      return; // 选择模式下不处理其他点击
+    }
+
     // 检查是否点击了连线
     for (const link of links) {
       const charA = chars.find(c => c.id === link.charA);
@@ -16304,6 +16442,69 @@ ${existingQuestionsContext}
           return;
         }
       }
+    }
+  }
+
+  // 处理角色选择（用于创建连线）
+  function handleCharacterSelection(char) {
+    if (!selectedCharForLink) {
+      // 选择第一个角色
+      selectedCharForLink = char.id;
+      console.log('✅ 已选择第一个角色:', char.name);
+      showXToast(`已选择 ${char.name}，请点击第二个角色`, 'info');
+      renderRelationshipGraph(); // 重新渲染以高亮选中的角色
+    } else {
+      // 选择第二个角色
+      if (selectedCharForLink === char.id) {
+        showXToast('请选择不同的角色', 'error');
+        return;
+      }
+
+      // 检查是否已存在这条关系
+      const existingLink = characterRelationshipData.links.find(
+        link =>
+          (link.charA === selectedCharForLink && link.charB === char.id) ||
+          (link.charA === char.id && link.charB === selectedCharForLink),
+      );
+
+      if (existingLink) {
+        showXToast('这两个角色已存在关系，请直接点击连线编辑', 'error');
+        // 退出选择模式
+        isSelectingCharsForLink = false;
+        selectedCharForLink = null;
+        renderRelationshipGraph();
+        return;
+      }
+
+      console.log('✅ 已选择第二个角色:', char.name);
+
+      // 创建新关系
+      const newLink = {
+        id: 'link_' + Date.now(),
+        charA: selectedCharForLink,
+        charB: char.id,
+        relationAtoB: '',
+        relationBtoA: '',
+        story: '',
+      };
+
+      characterRelationshipData.links.push(newLink);
+
+      // 退出选择模式
+      isSelectingCharsForLink = false;
+      selectedCharForLink = null;
+
+      // 立即渲染
+      renderRelationshipGraph();
+      renderRelationshipList();
+
+      // 更新全局引用
+      window.characterRelationshipData = characterRelationshipData;
+
+      // 延迟打开编辑，确保渲染完成
+      setTimeout(() => {
+        openEditRelationshipDetailModal(newLink);
+      }, 100);
     }
   }
 
@@ -16340,7 +16541,6 @@ ${existingQuestionsContext}
 
   // 添加关系连线
   function addRelationshipLink() {
-    // 简化版：打开选择器让用户选择两个角色
     const chars = characterRelationshipData.characters || [];
 
     if (chars.length < 2) {
@@ -16348,29 +16548,15 @@ ${existingQuestionsContext}
       return;
     }
 
-    // 创建新关系（默认选择前两个角色）
-    const newLink = {
-      id: 'link_' + Date.now(),
-      charA: chars[0].id,
-      charB: chars[1].id,
-      relationAtoB: '',
-      relationBtoA: '',
-      story: '',
-    };
+    // 进入选择模式
+    isSelectingCharsForLink = true;
+    selectedCharForLink = null;
 
-    characterRelationshipData.links.push(newLink);
+    showXToast('请点击选择第一个角色', 'info');
+    console.log('📍 进入角色选择模式');
 
-    // 立即渲染
+    // 重新渲染以显示选择提示
     renderRelationshipGraph();
-    renderRelationshipList();
-
-    // 更新全局引用
-    window.characterRelationshipData = characterRelationshipData;
-
-    // 延迟打开编辑，确保渲染完成
-    setTimeout(() => {
-      openEditRelationshipDetailModal(newLink);
-    }, 100);
   }
 
   // 打开编辑关系详情弹窗
