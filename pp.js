@@ -8803,7 +8803,7 @@ ${
                   tweet.media && tweet.media.length > 0
                     ? `
                   <div class="tweet-media">
-                    <div style="width: 100%; min-height: 150px; max-height: 300px; background-color: var(--x-bg-secondary); border: 1px solid var(--x-border-color); border-radius: 16px; color: var(--x-text-primary); position: relative; overflow: hidden;" id="media-${
+                    <div style="width: 100%; max-height: 200px; background-color: var(--x-bg-secondary); border: 1px solid var(--x-border-color); border-radius: 16px; color: var(--x-text-primary); position: relative; overflow: hidden;" id="media-${
                       tweet.id
                     }">
                       ${
@@ -8816,7 +8816,7 @@ ${
                       `
                           : ''
                       }
-                      <div class="tweet-media-scrollable" style="width: 100%; height: 100%; padding: 16px; overflow-y: auto; box-sizing: border-box; ${
+                      <div class="tweet-media-scrollable" style="width: 100%; max-height: 200px; padding: 16px; overflow-y: auto; box-sizing: border-box; ${
                         tweet.media[0].sensitive ? 'filter: blur(20px);' : ''
                       }" id="content-${tweet.id}">
                         <div style="font-size: 14px; line-height: 1.5; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word; width: 100%; box-sizing: border-box;">${
