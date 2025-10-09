@@ -20746,6 +20746,7 @@ ${existingQuestionsContext}
 - 生成${isProgressMode ? '3-10' : '3-15'}条评论，内容多样化（简短/深度/表情符号），支持楼中楼回复，全年龄适宜
 - 引用转发处理：如帖子含引用内容，评论可涉及用户观点和被引用原内容
 - 公众身份影响：知名度越高，讨论热度和互动数据越多
+- 除了绑定角色外，其他用户头像统一：https://i.postimg.cc/4xmx7V4R/mmexport1759081128356.jpg
 - 图片支持：评论可以包含文字图片（10-20%的评论带图），用于展示图片视频等媒体，图片描述应详细具体
 【情侣角色回复规则】：
 ${
@@ -20828,16 +20829,30 @@ ${tweetData.link ? `链接：${tweetData.link.title || tweetData.link.url}` : ''
       messageContent.push({ type: 'text', text: contentText });
 
       // 如果有上传的图片，添加图片内容
-      if (tweetData.image && tweetData.image.type === 'upload' && tweetData.image.content) {
-        messageContent.push({
-          type: 'image_url',
-          image_url: { url: tweetData.image.content },
-        });
-      } else if (tweetData.image && tweetData.image.type === 'description') {
-        messageContent.push({
-          type: 'text',
-          text: `图片描述：${tweetData.image.content}`,
-        });
+      if (tweetData.image) {
+        if (tweetData.image.type === 'upload' && tweetData.image.content) {
+          // 单图上传
+          messageContent.push({
+            type: 'image_url',
+            image_url: { url: tweetData.image.content },
+          });
+        } else if (tweetData.image.type === 'uploads' && tweetData.image.images && tweetData.image.images.length > 0) {
+          // 多图上传
+          tweetData.image.images.forEach((img, index) => {
+            if (img.content) {
+              messageContent.push({
+                type: 'image_url',
+                image_url: { url: img.content },
+              });
+            }
+          });
+        } else if (tweetData.image.type === 'description') {
+          // 文字描述
+          messageContent.push({
+            type: 'text',
+            text: `图片描述：${tweetData.image.content}`,
+          });
+        }
       }
 
       const messages = [{ role: 'user', content: messageContent }];
@@ -22389,6 +22404,7 @@ ${tweetData.link ? `链接：${tweetData.link.title || tweetData.link.url}` : ''
 - 生成1-5条回复，内容多样化（简短/深度/表情符号）
 - 环境贴合：参考评论区现有讨论，基于主题和氛围生成贴合回复
 - 回复内容必须围绕推文主题和用户评论内容，不要偏离主题
+- 除了绑定角色外，其他用户头像统一：https://i.postimg.cc/4xmx7V4R/mmexport1759081128356.jpg
 
 ${
   boundCharacters.length > 0
