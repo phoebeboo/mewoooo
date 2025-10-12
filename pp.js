@@ -14561,6 +14561,8 @@ ${npc.homepage || '暂无主页内容设置'}
             window.toggleAutoRefreshFeed();
           }
         }, 1000);
+      } else {
+        console.log('ℹ️ [智能刷新] 未检测到开启状态，保持关闭');
       }
     } catch (error) {
       console.error('恢复刷新状态失败:', error);
@@ -19313,8 +19315,7 @@ ${existingQuestionsContext}
       console.log('✅ X设置已加载 (账户:', currentAccountId || 'main', ')');
       console.log('📚 全局世界书:', xSettingsData.worldBooks?.length || 0, '个');
 
-      // 恢复聊天记忆检测状态
-      await restoreChatHistoryDetectionState();
+      // 注意：聊天记忆检测状态将在 initXSocialApp 完成后统一恢复
     } catch (error) {
       console.error('初始化X设置失败:', error);
     }
@@ -29477,6 +29478,19 @@ ${tweetAuthorCharacter.relationships
     try {
       console.log('🚀 初始化 X Social App...');
 
+      // 0. 清理之前的定时器和状态（防止重复初始化导致的问题）
+      if (chatHistoryDetectionTimer) {
+        clearInterval(chatHistoryDetectionTimer);
+        chatHistoryDetectionTimer = null;
+      }
+      if (autoRefreshFeedTimer) {
+        clearInterval(autoRefreshFeedTimer);
+        autoRefreshFeedTimer = null;
+      }
+      // 重置启用状态（将由恢复函数根据保存的设置决定）
+      chatHistoryDetectionEnabled = false;
+      autoRefreshFeedEnabled = false;
+
       // 1. 注入样式
       injectStyles();
 
@@ -29518,6 +29532,11 @@ ${tweetAuthorCharacter.relationships
       // 12. 恢复智能刷新主页状态
       setTimeout(() => {
         restoreAutoRefreshFeedState();
+      }, 120000); // 延迟2分钟启动，确保UI已加载
+
+      // 13. 恢复聊天记忆检测状态
+      setTimeout(() => {
+        restoreChatHistoryDetectionState();
       }, 120000); // 延迟2分钟启动，确保UI已加载
 
       console.log('✅ X Social App 初始化完成');
@@ -33567,14 +33586,17 @@ AI应该根据这些完整的上下文信息来理解用户分享的内容并给
       const settings = await xDb.xSettings.get(settingsId);
 
       if (settings && settings.chatHistoryDetectionEnabled) {
-        // 延迟2分钟后启动，确保UI已加载
+        console.log('🔄 [聊天记忆检测] 检测到已保存的开启状态，正在恢复...');
+        // 延迟1秒后启动，确保UI已加载
         setTimeout(() => {
           const toggle = document.getElementById('chat-history-detection-toggle');
           if (toggle) {
             chatHistoryDetectionEnabled = false; // 先设为false，让toggle函数切换
             window.toggleChatHistoryDetection();
           }
-        }, 120000);
+        }, 1000);
+      } else {
+        console.log('ℹ️ [聊天记忆检测] 未检测到开启状态，保持关闭');
       }
     } catch (error) {
       console.error('恢复检测状态失败:', error);
