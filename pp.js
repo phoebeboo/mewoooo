@@ -1,4 +1,4 @@
-﻿﻿// ==========================================
+﻿// ==========================================
 // X Social App - 独立JS整合文件
 // 版本: 1.0
 // 使用方式:
@@ -2925,7 +2925,9 @@
           <div style="flex: 1; display: flex; align-items: center; gap: 12px; min-width: 0;">
             <img id="message-detail-top-avatar" src="https://i.postimg.cc/4xmx7V4R/mmexport1759081128356.jpg" 
               alt="User" 
-              style="width: 32px; height: 32px; border-radius: 50%;">
+              style="width: 32px; height: 32px; border-radius: 50%; cursor: pointer; transition: opacity 0.2s;"
+              onmouseover="this.style.opacity='0.8'"
+              onmouseout="this.style.opacity='1'">
             <span id="message-detail-top-name" style="
                   font-size: 16px;
                   font-weight: 700;
@@ -8041,20 +8043,19 @@ ${rd.description ? `关系描述：${rd.description}` : ''}
     async getApplicableWorldBooks(scene, options = {}) {
       try {
         const xDB = getXDB();
-        const currentAccount = options.currentAccountId || window.currentAccountId || 'main';
-        const settingsId = `xSettings_${currentAccount}`;
 
-        const xSettings = await xDB.xSettings.get(settingsId);
-        if (!xSettings || !xSettings.worldBooks || xSettings.worldBooks.length === 0) {
-          console.log(`🔍 [世界书] 未找到世界书数据`);
+        // 🔧 从全局设置读取世界书（所有账户共享）
+        const globalSettings = await xDB.xSettings.get('globalWorldBooks');
+        if (!globalSettings || !globalSettings.worldBooks || globalSettings.worldBooks.length === 0) {
+          console.log(`🔍 [世界书] 未找到全局世界书数据`);
           return '';
         }
 
-        console.log(`🔍 [世界书] 当前场景: ${scene}, 总世界书数: ${xSettings.worldBooks.length}`);
+        console.log(`🔍 [世界书] 当前场景: ${scene}, 总世界书数: ${globalSettings.worldBooks.length}`);
         const { boundCharacters = [] } = options;
 
         // 筛选适用的世界书
-        const applicableBooks = xSettings.worldBooks.filter(book => {
+        const applicableBooks = globalSettings.worldBooks.filter(book => {
           // 跳过闲置状态的世界书（没有任何绑定）
           if (book.isIdle || book.targetType === 'none') {
             console.log(`⏸️ [世界书] "${book.name}" - 闲置状态，跳过应用`);
@@ -12362,20 +12363,22 @@ ${
       }
     });
 
-    // 更新DOM中的时间显示
+    // 🔧 更新DOM中所有带有data-timestamp的时间显示（适用于所有页面）
+    document.querySelectorAll('.tweet-time[data-timestamp]').forEach(timeEl => {
+      const timestamp = parseInt(timeEl.dataset.timestamp);
+      if (timestamp && !isNaN(timestamp)) {
+        timeEl.textContent = getRelativeTime(timestamp);
+      }
+    });
+
+    // 🔧 兼容旧的推文时间更新逻辑
     document.querySelectorAll('.tweet-time').forEach(timeEl => {
       const tweetEl = timeEl.closest('.tweet-item');
-      if (tweetEl && tweetEl.dataset.tweetId) {
+      if (tweetEl && tweetEl.dataset.tweetId && !timeEl.dataset.timestamp) {
         const tweetId = tweetEl.dataset.tweetId;
         const tweet = [...forYouTweets, ...followingTweets].find(t => t.id === tweetId);
         if (tweet && tweet.createdAt) {
-          // 只更新文本内容，不改变其他属性
-          const timeText = timeEl.textContent;
-          if (timeText.startsWith('·')) {
-            timeEl.textContent = '·' + getRelativeTime(tweet.createdAt);
-          } else {
-            timeEl.textContent = getRelativeTime(tweet.createdAt);
-          }
+          timeEl.textContent = getRelativeTime(tweet.createdAt);
         }
       }
     });
@@ -12437,10 +12440,25 @@ ${
     const randomViews = Math.floor(Math.random() * 1000) + 50;
 
     commentEl.innerHTML = `
-              <img class="tweet-avatar" src="${comment.user.avatar}" alt="${comment.user.name}">
+              <img class="tweet-avatar" src="${comment.user.avatar}" alt="${comment.user.name}" 
+                onclick="openAccountProfile('${comment.user.name.replace(/'/g, "\\'")}', '${comment.user.handle}', '${
+      comment.user.avatar
+    }', {source: 'tweetDetail', commentContent: '${comment.content
+      .replace(/'/g, "\\'")
+      .substring(0, 100)}'});event.stopPropagation();" 
+                style="cursor: pointer; transition: opacity 0.2s;" 
+                onmouseover="this.style.opacity='0.8'" 
+                onmouseout="this.style.opacity='1'">
               <div class="comment-main">
                 <div class="comment-user-info">
-                  <span class="tweet-user-name">${comment.user.name}</span>
+                  <span class="tweet-user-name" onclick="openAccountProfile('${comment.user.name.replace(
+                    /'/g,
+                    "\\'",
+                  )}', '${comment.user.handle}', '${
+      comment.user.avatar
+    }', {source: 'tweetDetail', commentContent: '${comment.content
+      .replace(/'/g, "\\'")
+      .substring(0, 100)}'});event.stopPropagation();" style="cursor: pointer;">${comment.user.name}</span>
                   ${
                     comment.user.verified
                       ? '<svg class="tweet-verified" viewBox="0 0 24 24"><g><path d="M22.25 12c0-1.43-.88-2.67-2.19-3.34.46-1.39.2-2.9-.81-3.91s-2.52-1.27-3.91-.81c-.66-1.31-1.91-2.19-3.34-2.19s-2.67.88-3.33 2.19c-1.4-.46-2.91-.2-3.92.81s-1.26 2.52-.8 3.91c-1.31.67-2.2 1.91-2.2 3.34s.89 2.67 2.2 3.34c-.46 1.39-.21 2.9.8 3.91s2.52 1.27 3.91.81c.67 1.31 1.91 2.19 3.34 2.19s2.68-.88 3.34-2.19c1.39.46 2.9.2 3.91-.81s1.27-2.52.81-3.91c1.31-.67 2.19-1.91 2.19-3.34zm-11.71 4.2L6.8 12.46l1.41-1.42 2.26 2.26 4.8-5.23 1.47 1.36-6.2 6.77z"></path></g></svg>'
@@ -16362,7 +16380,13 @@ accountLikes数组（3-5条，账户喜欢的推文）：
                   originalUser.handle.startsWith('@') ? originalUser.handle : '@' + originalUser.handle
                 }</span>
                 <span style="color: #71767b; font-size: 15px; margin: 0 4px;">·</span>
-                <span style="color: #71767b; font-size: 15px;">${reply.originalTweet.time}</span>
+                <span class="tweet-time" data-timestamp="${
+                  reply.originalTweet.timestamp || Date.now()
+                }" style="color: #71767b; font-size: 15px;">${
+        reply.originalTweet.timestamp
+          ? getRelativeTime(reply.originalTweet.timestamp)
+          : reply.originalTweet.time || '刚刚'
+      }</span>
               </div>
               <div style="color: #fff; font-size: 15px; line-height: 20px; word-wrap: break-word;">${processContent(
                 reply.originalTweet.content,
@@ -16399,7 +16423,11 @@ accountLikes数组（3-5条，账户喜欢的推文）：
                   accountInfo.handle.startsWith('@') ? accountInfo.handle : '@' + accountInfo.handle
                 }</span>
                 <span style="color: #71767b; font-size: 15px; margin: 0 4px;">·</span>
-                <span style="color: #71767b; font-size: 15px;">${accountReply.time}</span>
+                <span class="tweet-time" data-timestamp="${
+                  accountReply.timestamp || Date.now()
+                }" style="color: #71767b; font-size: 15px;">${
+        accountReply.timestamp ? getRelativeTime(accountReply.timestamp) : accountReply.time || '刚刚'
+      }</span>
               </div>
               <div style="color: #71767b; font-size: 15px; margin-bottom: 4px;">${getI18nText(
                 'accountReplyTo',
@@ -16480,7 +16508,13 @@ accountLikes数组（3-5条，账户喜欢的推文）：
                   originalTweetUser.handle.startsWith('@') ? originalTweetUser.handle : '@' + originalTweetUser.handle
                 }</span>
                 <span style="color: #71767b; font-size: 15px; margin: 0 4px;">·</span>
-                <span style="color: #71767b; font-size: 15px;">${reply.originalTweet.time}</span>
+                <span class="tweet-time" data-timestamp="${
+                  reply.originalTweet.timestamp || Date.now()
+                }" style="color: #71767b; font-size: 15px;">${
+        reply.originalTweet.timestamp
+          ? getRelativeTime(reply.originalTweet.timestamp)
+          : reply.originalTweet.time || '刚刚'
+      }</span>
               </div>
               <div style="color: #fff; font-size: 15px; line-height: 20px; word-wrap: break-word;">${processContent(
                 reply.originalTweet.content,
@@ -16517,7 +16551,13 @@ accountLikes数组（3-5条，账户喜欢的推文）：
                         : '@' + originalCommentUser.handle
                     }</span>
                     <span style="color: #71767b; font-size: 15px; margin: 0 4px;">·</span>
-                    <span style="color: #71767b; font-size: 15px;">${reply.originalComment.time}</span>
+                    <span class="tweet-time" data-timestamp="${
+                      reply.originalComment.timestamp || Date.now()
+                    }" style="color: #71767b; font-size: 15px;">${
+        reply.originalComment.timestamp
+          ? getRelativeTime(reply.originalComment.timestamp)
+          : reply.originalComment.time || '刚刚'
+      }</span>
                   </div>
                   <div style="color: #fff; font-size: 15px; line-height: 20px; word-wrap: break-word;">${processContent(
                     reply.originalComment.content,
@@ -16543,7 +16583,11 @@ accountLikes数组（3-5条，账户喜欢的推文）：
                       accountInfo.handle.startsWith('@') ? accountInfo.handle : '@' + accountInfo.handle
                     }</span>
                     <span style="color: #71767b; font-size: 15px; margin: 0 4px;">·</span>
-                    <span style="color: #71767b; font-size: 15px;">${accountReply.time}</span>
+                    <span class="tweet-time" data-timestamp="${
+                      accountReply.timestamp || Date.now()
+                    }" style="color: #71767b; font-size: 15px;">${
+        accountReply.timestamp ? getRelativeTime(accountReply.timestamp) : accountReply.time || '刚刚'
+      }</span>
                   </div>
                   <div style="color: #71767b; font-size: 15px; margin-bottom: 4px;">${getI18nText(
                     'accountReplyTo',
@@ -16628,7 +16672,11 @@ accountLikes数组（3-5条，账户喜欢的推文）：
               user.handle.startsWith('@') ? user.handle : '@' + user.handle
             }</span>
             <span style="color: var(--x-text-secondary); font-size: 15px; margin: 0 4px;">·</span>
-            <span style="color: var(--x-text-secondary); font-size: 15px;">${tweet.time}</span>
+            <span class="tweet-time" data-timestamp="${
+              tweet.timestamp || Date.now()
+            }" style="color: var(--x-text-secondary); font-size: 15px;">${
+      tweet.timestamp ? getRelativeTime(tweet.timestamp) : tweet.time || '刚刚'
+    }</span>
           </div>
           <div style="color: var(--x-text-primary); font-size: 15px; line-height: 20px; margin-bottom: 12px; word-wrap: break-word;">${processContent(
             tweet.content,
@@ -16733,7 +16781,11 @@ accountLikes数组（3-5条，账户喜欢的推文）：
               user.handle.startsWith('@') ? user.handle : '@' + user.handle
             }</span>
             <span style="color: #71767b; font-size: 15px; margin: 0 4px;">·</span>
-            <span style="color: #71767b; font-size: 15px;">${tweet.time}</span>
+            <span class="tweet-time" data-timestamp="${
+              tweet.timestamp || Date.now()
+            }" style="color: #71767b; font-size: 15px;">${
+      tweet.timestamp ? getRelativeTime(tweet.timestamp) : tweet.time || '刚刚'
+    }</span>
           </div>
           <div style="color: #fff; font-size: 15px; line-height: 20px; margin-bottom: 12px; word-wrap: break-word;">${processContent(
             tweet.content,
@@ -16926,9 +16978,13 @@ accountLikes数组（3-5条，账户喜欢的推文）：
     // 获取账户信息
     const accountInfo = currentViewingAccount.accountInfo || currentViewingAccount;
 
+    // 🔧 使用账户句柄生成固定的 ID，避免每次都生成新 ID
+    const cleanHandle = accountInfo.handle.replace('@', '');
+    const accountId = `msg_account_${cleanHandle}`;
+
     // 构建私信数据（messageData格式）
     const messageData = {
-      id: `msg_account_${Date.now()}`,
+      id: accountId,
       userName: accountInfo.name,
       userHandle: accountInfo.handle,
       userAvatar: accountInfo.avatar,
@@ -19315,7 +19371,7 @@ ${existingQuestionsContext}
       console.log('✅ X设置已加载 (账户:', currentAccountId || 'main', ')');
       console.log('📚 全局世界书:', xSettingsData.worldBooks?.length || 0, '个');
 
-      // 注意：聊天记忆检测状态将在 initXSocialApp 完成后统一恢复
+      // 🔧 注意：已移除智能检测和刷新的自动恢复功能（改为用户手动开启）
     } catch (error) {
       console.error('初始化X设置失败:', error);
     }
@@ -25517,10 +25573,21 @@ ${existingQuestionsContext}
                 <!-- 用户信息 -->
                 <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
                   <img src="${tweet.user.avatar}" alt="${tweet.user.name}" 
-                    style="width: 48px; height: 48px; border-radius: 50%;">
+                    onclick="openAccountProfile('${tweet.user.name.replace(/'/g, "\\'")}', '${tweet.user.handle}', '${
+      tweet.user.avatar
+    }', {source: 'tweetDetail'});event.stopPropagation();"
+                    style="width: 48px; height: 48px; border-radius: 50%; cursor: pointer; transition: opacity 0.2s;"
+                    onmouseover="this.style.opacity='0.8'" 
+                    onmouseout="this.style.opacity='1'">
                   <div>
                     <div style="display: flex; align-items: center; gap: 4px;">
-                      <span style="color: #fff; font-weight: 700; font-size: 17px;">${tweet.user.name}</span>
+                      <span onclick="openAccountProfile('${tweet.user.name.replace(/'/g, "\\'")}', '${
+      tweet.user.handle
+    }', '${
+      tweet.user.avatar
+    }', {source: 'tweetDetail'});event.stopPropagation();" style="color: #fff; font-weight: 700; font-size: 17px; cursor: pointer;">${
+      tweet.user.name
+    }</span>
                       ${
                         tweet.user.verified
                           ? '<svg viewBox="0 0 24 24" style="width: 20px; height: 20px; fill: var(--x-accent);"><g><path d="M22.25 12c0-1.43-.88-2.67-2.19-3.34.46-1.39.2-2.9-.81-3.91s-2.52-1.27-3.91-.81c-.66-1.31-1.91-2.19-3.34-2.19s-2.67.88-3.33 2.19c-1.4-.46-2.91-.2-3.92.81s-1.26 2.52-.8 3.91c-1.31.67-2.2 1.91-2.2 3.34s.89 2.67 2.2 3.34c-.46 1.39-.21 2.9.8 3.91s2.52 1.27 3.91.81c.67 1.31 1.91 2.19 3.34 2.19s2.68-.88 3.34-2.19c1.39.46 2.9.2 3.91-.81s1.27-2.52.81-3.91c1.31-.67 2.19-1.91 2.19-3.34zm-11.71 4.2L6.8 12.46l1.41-1.42 2.26 2.26 4.8-5.23 1.47 1.36-6.2 6.77z"></path></g></svg>'
@@ -25545,7 +25612,9 @@ ${existingQuestionsContext}
                 <!-- 时间和位置信息 -->
                 <div style="display: flex; align-items: center; justify-content: space-between; margin: 12px 0 16px 0;">
                   <div style="display: flex; align-items: center; gap: 16px;">
-                    <span style="color: #71767b; font-size: 15px;">${formatDetailTime(tweet.timestamp)}</span>
+                    <span style="color: #71767b; font-size: 15px;">${formatDetailTime(
+                      tweet.timestamp || tweet.createdAt,
+                    )}</span>
                     <span style="color: #71767b; font-size: 15px;">·</span>
                     <span id="tweet-detail-views" style="color: #fff; font-weight: 700; font-size: 15px;">${formatNumber(
                       tweet.stats.views,
@@ -25779,13 +25848,22 @@ ${existingQuestionsContext}
     return `
               <div style="margin-bottom: 16px; border: 1px solid var(--x-border-color); border-radius: 16px; padding: 16px; background-color: var(--x-bg-hover); transition: background-color 0.2s;">
                 <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-                  <img src="${quoted.user.avatar}" style="width: 24px; height: 24px; border-radius: 50%;" alt="${
-      quoted.user.name
-    }">
+                  <img src="${quoted.user.avatar}" 
+                    onclick="openAccountProfile('${quoted.user.name.replace(/'/g, "\\'")}', '${quoted.user.handle}', '${
+      quoted.user.avatar
+    }', {source: 'quotedTweet'});event.stopPropagation();"
+                    style="width: 24px; height: 24px; border-radius: 50%; cursor: pointer; transition: opacity 0.2s;" 
+                    onmouseover="this.style.opacity='0.8'" 
+                    onmouseout="this.style.opacity='1'"
+                    alt="${quoted.user.name}">
                   <div style="display: flex; align-items: center; gap: 4px;">
-                    <span style="color: var(--x-text-primary); font-size: 15px; font-weight: 700;">${
-                      quoted.user.name
-                    }</span>
+                    <span onclick="openAccountProfile('${quoted.user.name.replace(/'/g, "\\'")}', '${
+      quoted.user.handle
+    }', '${
+      quoted.user.avatar
+    }', {source: 'quotedTweet'});event.stopPropagation();" style="color: var(--x-text-primary); font-size: 15px; font-weight: 700; cursor: pointer;">${
+      quoted.user.name
+    }</span>
                     ${
                       quoted.user.verified
                         ? '<svg viewBox="0 0 24 24" style="width: 18px; height: 18px; fill: var(--x-accent);"><g><path d="M22.25 12c0-1.43-.88-2.67-2.19-3.34.46-1.39.2-2.9-.81-3.91s-2.52-1.27-3.91-.81c-.66-1.31-1.91-2.19-3.34-2.19s-2.67.88-3.33 2.19c-1.4-.46-2.91-.2-3.92.81s-1.26 2.52-.8 3.91c-1.31.67-2.2 1.91-2.2 3.34s.89 2.67 2.2 3.34c-.46 1.39-.21 2.9.8 3.91s2.52 1.27 3.91.81c.67 1.31 1.91 2.19 3.34 2.19s2.68-.88 3.34-2.19c1.39.46 2.9.2 3.91-.81s1.27-2.52.81-3.91c1.31-.67 2.19-1.91 2.19-3.34zm-11.71 4.2L6.8 12.46l1.41-1.42 2.26 2.26 4.8-5.23 1.47 1.36-6.2 6.77z"></path></g></svg>'
@@ -27887,7 +27965,9 @@ ${tweetData.link ? `链接：${tweetData.link.title || tweetData.link.url}` : ''
                       : ''
                   }
                   <span class="tweet-user-handle">${tweet.user.handle}</span>
-                  <span class="tweet-time">·${formatTimeForProfile(tweet.timestamp)}</span>
+                  <span class="tweet-time" data-timestamp="${tweet.timestamp || Date.now()}">·${
+      tweet.timestamp ? getRelativeTime(tweet.timestamp) : '刚刚'
+    }</span>
                   ${
                     tweet.location
                       ? `
@@ -29529,17 +29609,18 @@ ${tweetAuthorCharacter.relationships
         }
       }, 120000); // 延迟2分钟启动，确保所有数据已加载
 
-      // 12. 恢复智能刷新主页状态
-      setTimeout(() => {
-        restoreAutoRefreshFeedState();
-      }, 120000); // 延迟2分钟启动，确保UI已加载
+      // 12. 🔧 已移除智能刷新主页状态的自动恢复功能（改为用户手动开启）
+      // setTimeout(() => {
+      //   restoreAutoRefreshFeedState();
+      // }, 120000);
 
-      // 13. 恢复聊天记忆检测状态
-      setTimeout(() => {
-        restoreChatHistoryDetectionState();
-      }, 120000); // 延迟2分钟启动，确保UI已加载
+      // 13. 🔧 已移除聊天记忆检测状态的自动恢复功能（改为用户手动开启）
+      // setTimeout(() => {
+      //   restoreChatHistoryDetectionState();
+      // }, 120000);
 
       console.log('✅ X Social App 初始化完成');
+      console.log('💡 [提示] 智能刷新和智能检测需要手动开启');
     } catch (error) {
       console.error('❌ X Social App 初始化失败:', error);
       showXToast('应用初始化失败: ' + error.message, 'error');
@@ -31095,13 +31176,16 @@ ${tweetData.link ? `- 链接：${tweetData.link.title || tweetData.link.url}` : 
       `;
     }
 
+    // 🔧 动态计算时间显示（优先使用timestamp，否则使用静态time）
+    const displayTime = mention.timestamp ? getRelativeTime(mention.timestamp) : mention.time;
+
     contentArea.innerHTML = `
       ${avatarsHtml}
       <div style="color: var(--x-text-primary); font-size: 15px; font-weight: 600; margin-bottom: 4px;">
         ${notificationText}
       </div>
       <div style="color: var(--x-text-secondary); font-size: 14px;">
-        ${mention.time}
+        ${displayTime}
       </div>
       ${tweetContentHtml}
     `;
@@ -31930,13 +32014,16 @@ ${tweetData.link ? `- 链接：${tweetData.link.title || tweetData.link.url}` : 
       `;
     }
 
+    // 🔧 动态计算时间显示（优先使用timestamp，否则使用静态time）
+    const displayTime = mention.timestamp ? getRelativeTime(mention.timestamp) : mention.time;
+
     contentArea.innerHTML = `
       ${avatarsHtml}
       <div style="color: var(--x-text-primary); font-size: 15px; font-weight: 600; margin-bottom: 4px;">
         ${notificationText}
       </div>
       <div style="color: var(--x-text-secondary); font-size: 14px;">
-        ${mention.time}
+        ${displayTime}
       </div>
       ${tweetContentHtml}
     `;
@@ -34343,6 +34430,9 @@ ${index + 1}. "${tweet.content}"
       tweetData.user = messageData.user;
       tweetData.timestamp = timestamp;
 
+      // 🔧 删除AI生成的静态time字段，改用timestamp动态计算
+      delete tweetData.time;
+
       // 为评论分配ID和时间戳
       if (tweetData.comments && tweetData.comments.length > 0) {
         tweetData.comments.forEach((comment, cIndex) => {
@@ -34353,6 +34443,8 @@ ${index + 1}. "${tweet.content}"
           if (!comment.timestamp) {
             comment.timestamp = timestamp + (5 + Math.random() * 30) * 60 * 1000; // 5-35分钟后
           }
+          // 🔧 删除AI生成的静态time字段，改用timestamp动态计算
+          delete comment.time;
         });
       }
 
@@ -35365,6 +35457,25 @@ ${index + 1}. "${tweet.content}"
     const topName = document.getElementById('message-detail-top-name');
     if (topAvatar) topAvatar.src = profileData.avatar;
     if (topName) topName.textContent = profileData.name;
+
+    // 🆕 为非绑定角色的小头像添加点击事件（添加到私信列表）
+    if (topAvatar) {
+      // 判断是否是绑定角色
+      const isCharacter =
+        messageData.id.startsWith('msg_') && messageData.id !== 'msg_001' && !messageData.id.startsWith('msg_account_');
+
+      if (!isCharacter) {
+        // 非绑定角色：账户或陌生人，可以点击添加到私信列表
+        topAvatar.onclick = () => {
+          openMessageContactSettings(messageData, profileData);
+        };
+        topAvatar.style.cursor = 'pointer';
+      } else {
+        // 绑定角色：移除点击事件
+        topAvatar.onclick = null;
+        topAvatar.style.cursor = 'default';
+      }
+    }
 
     // 更新中间详细信息区域
     const detailAvatar = document.getElementById('message-detail-avatar');
@@ -37790,6 +37901,296 @@ ${index + 1}. "${tweet.content}"
   // ============================================
   // 陌生人私信设置功能
   // ============================================
+
+  // 打开消息联系人设置弹窗（通用版本，适配账户/陌生人）
+  async function openMessageContactSettings(messageData, profileData) {
+    // 检查是否已添加到联系人
+    const isInContactList = sampleMessagesData.some(msg => msg.id === messageData.id);
+
+    // 检查是否启用了自动发信息
+    let autoMessageEnabled = false;
+    let autoMessageInterval = 60; // 默认60秒
+    let customAvatar = messageData.user.avatar;
+
+    try {
+      const xDb = getXDB();
+      const settingsId = `strangerSettings_${currentAccountId || 'main'}_${messageData.id}`;
+      const settings = await xDb.xAccountProfiles.get(settingsId);
+      if (settings) {
+        autoMessageEnabled = settings.autoMessageEnabled || false;
+        autoMessageInterval = settings.autoMessageInterval || 60;
+        customAvatar = settings.customAvatar || messageData.user.avatar;
+      }
+    } catch (error) {
+      console.error('读取设置失败:', error);
+    }
+
+    // 创建设置弹窗
+    const modal = document.createElement('div');
+    modal.id = 'stranger-message-settings-modal';
+    modal.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 25;
+      backdrop-filter: blur(4px);
+    `;
+
+    modal.innerHTML = `
+      <div style="
+        background-color: var(--x-bg-primary);
+        border-radius: 16px;
+        width: 90%;
+        max-width: 500px;
+        max-height: 80vh;
+        overflow: hidden;
+        border: 1px solid var(--x-border-color);
+        display: flex;
+        flex-direction: column;
+      " onclick="event.stopPropagation()">
+        
+        <!-- 标题栏 -->
+        <div style="
+          padding: 16px 20px;
+          border-bottom: 1px solid var(--x-border-color);
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        ">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <img src="${messageData.user.avatar}" style="width: 40px; height: 40px; border-radius: 50%;">
+            <div>
+              <div style="font-size: 18px; font-weight: 700; color: var(--x-text-primary);">${
+                messageData.user.name
+              }</div>
+              <div style="font-size: 14px; color: var(--x-text-secondary);">${messageData.user.handle}</div>
+            </div>
+          </div>
+          <div onclick="closeStrangerMessageSettings()" style="
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: background-color 0.2s;
+          " onmouseover="this.style.backgroundColor='var(--x-bg-hover)'"
+             onmouseout="this.style.backgroundColor='transparent'">
+            <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; fill: var(--x-text-primary);">
+              <g><path d="M10.59 12L4.54 5.96l1.42-1.42L12 10.59l6.04-6.05 1.42 1.42L13.41 12l6.05 6.04-1.42 1.42L12 13.41l-6.04 6.05-1.42-1.42L10.59 12z"></path></g>
+            </svg>
+          </div>
+        </div>
+
+        <!-- 设置内容 -->
+        <div style="
+          flex: 1;
+          overflow-y: auto;
+          padding: 20px;
+        ">
+          
+          <!-- 添加到联系人 -->
+          <div style="margin-bottom: 24px;">
+            <div style="
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              margin-bottom: 8px;
+            ">
+              <div>
+                <div style="font-size: 16px; font-weight: 600; color: var(--x-text-primary); margin-bottom: 4px;">
+                  添加到联系人
+                </div>
+                <div style="font-size: 13px; color: var(--x-text-secondary);">
+                  添加后可在私信列表中快速找到
+                </div>
+              </div>
+              <div class="x-toggle" id="contact-toggle" onclick="toggleStrangerContact('${
+                messageData.id
+              }')" style="cursor: pointer;">
+                <div class="toggle-switch" style="
+                  width: 50px;
+                  height: 30px;
+                  background-color: ${isInContactList ? 'var(--x-accent)' : '#333'};
+                  border-radius: 15px;
+                  position: relative;
+                  transition: all 0.3s ease;
+                ">
+                  <div class="toggle-circle" style="
+                    width: 26px;
+                    height: 26px;
+                    background-color: #fff;
+                    border-radius: 50%;
+                    position: absolute;
+                    top: 2px;
+                    left: ${isInContactList ? '22px' : '2px'};
+                    transition: all 0.3s ease;
+                  "></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 更换头像 -->
+          <div style="margin-bottom: 24px;">
+            <div style="font-size: 16px; font-weight: 600; color: var(--x-text-primary); margin-bottom: 12px;">
+              更换头像
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+              <img id="stranger-avatar-preview" src="${customAvatar}" style="
+                width: 64px;
+                height: 64px;
+                border-radius: 50%;
+                object-fit: cover;
+              ">
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <input 
+                type="text" 
+                id="stranger-avatar-url-input" 
+                placeholder="输入图片链接地址"
+                value="${customAvatar}"
+                style="
+                  flex: 1;
+                  background-color: var(--x-bg-secondary);
+                  border: 1px solid var(--x-border-color);
+                  border-radius: 20px;
+                  padding: 10px 16px;
+                  font-size: 14px;
+                  color: var(--x-text-primary);
+                  outline: none;
+                "
+                onfocus="this.style.borderColor='var(--x-accent)'"
+                onblur="this.style.borderColor='var(--x-border-color)'"
+              >
+              <button onclick="updateStrangerAvatar('${messageData.id}')" style="
+                background-color: var(--x-accent);
+                color: #fff;
+                border: none;
+                border-radius: 20px;
+                padding: 10px 20px;
+                font-size: 14px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: opacity 0.2s;
+                white-space: nowrap;
+              " onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+                更新
+              </button>
+            </div>
+          </div>
+
+          <!-- 自动发信息 -->
+          <div style="margin-bottom: 24px;">
+            <div style="
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              margin-bottom: 8px;
+            ">
+              <div>
+                <div style="font-size: 16px; font-weight: 600; color: var(--x-text-primary); margin-bottom: 4px;">
+                  自动发信息
+                </div>
+                <div style="font-size: 13px; color: var(--x-text-secondary);">
+                  ${isInContactList ? '启用后该账户会自动发送私信' : '需先添加到联系人后才能启用'}
+                </div>
+              </div>
+              <div class="x-toggle" id="auto-message-toggle" onclick="${
+                isInContactList
+                  ? `toggleStrangerAutoMessage('${messageData.id}')`
+                  : "showXToast('请先添加到联系人', 'warning')"
+              }" style="cursor: ${isInContactList ? 'pointer' : 'not-allowed'}; opacity: ${
+      isInContactList ? '1' : '0.5'
+    };">
+                <div class="toggle-switch" style="
+                  width: 50px;
+                  height: 30px;
+                  background-color: ${autoMessageEnabled ? 'var(--x-accent)' : '#333'};
+                  border-radius: 15px;
+                  position: relative;
+                  transition: all 0.3s ease;
+                ">
+                  <div class="toggle-circle" style="
+                    width: 26px;
+                    height: 26px;
+                    background-color: #fff;
+                    border-radius: 50%;
+                    position: absolute;
+                    top: 2px;
+                    left: ${autoMessageEnabled ? '22px' : '2px'};
+                    transition: all 0.3s ease;
+                  "></div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 时间间隔设置 -->
+            ${
+              isInContactList
+                ? `
+            <div style="margin-top: 12px;">
+              <div style="font-size: 14px; color: var(--x-text-secondary); margin-bottom: 8px;">
+                发送间隔（秒）
+              </div>
+              <input 
+                type="number" 
+                id="stranger-interval-input" 
+                min="10" 
+                max="3600" 
+                value="${autoMessageInterval}"
+                style="
+                  width: 100%;
+                  background-color: var(--x-bg-secondary);
+                  border: 1px solid var(--x-border-color);
+                  border-radius: 8px;
+                  padding: 10px 12px;
+                  font-size: 14px;
+                  color: var(--x-text-primary);
+                  outline: none;
+                "
+                onfocus="this.style.borderColor='var(--x-accent)'"
+                onblur="this.style.borderColor='var(--x-border-color)'"
+                onchange="updateStrangerInterval('${messageData.id}', this.value)"
+              >
+              <div style="font-size: 12px; color: var(--x-text-secondary); margin-top: 4px;">
+                建议：60-300秒之间
+              </div>
+            </div>
+            `
+                : ''
+            }
+          </div>
+
+        </div>
+
+      </div>
+    `;
+
+    // 添加到DOM
+    const xSocialScreen = document.getElementById('x-social-screen');
+    if (xSocialScreen) {
+      xSocialScreen.appendChild(modal);
+    } else {
+      document.body.appendChild(modal);
+    }
+
+    // 点击背景关闭
+    modal.onclick = e => {
+      if (e.target === modal) {
+        closeStrangerMessageSettings();
+      }
+    };
+
+    // 保存当前设置数据到全局，供其他函数使用
+    window.currentStrangerSettings = {
+      messageData: messageData,
+      conversationData: profileData,
+    };
+  }
 
   // 打开陌生人私信设置弹窗
   async function openStrangerMessageSettings(messageData, conversationData) {
