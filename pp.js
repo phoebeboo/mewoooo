@@ -1967,6 +1967,47 @@
           }
         }
           
+        /* 钱包成功弹窗入场动画 */
+        @keyframes walletSuccessIn {
+          from {
+            opacity: 0;
+            transform: scale(0.7) translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+          }
+        }
+
+        /* 钱包成功图标检查动画 */
+        @keyframes walletSuccessCheck {
+          0% {
+            opacity: 0;
+            transform: scale(0.3);
+          }
+          50% {
+            opacity: 1;
+            transform: scale(1.1);
+          }
+          100% {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+
+        /* 钱包激活按钮加载动画 */
+        @keyframes walletActivating {
+          0% {
+            background-position: 0% 50%;
+          }
+          50% {
+            background-position: 100% 50%;
+          }
+          100% {
+            background-position: 0% 50%;
+          }
+        }
+          
     `;
 
     document.head.appendChild(style);
@@ -3152,6 +3193,22 @@
                   <g><path d="M12 3c-1.66 0-3 1.34-3 3v6c0 1.66 1.34 3 3 3s3-1.34 3-3V6c0-1.66-1.34-3-3-3zm0 2c.55 0 1 .45 1 1v6c0 .55-.45 1-1 1s-1-.45-1-1V6c0-.55.45-1 1-1zm5 7c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-2.08c3.39-.49 6-3.39 6-6.92h-2z"></path></g>
                 </svg>
                 </div>
+
+                <!-- 转账按钮 -->
+                <div onclick="openTransferDialog(); toggleMessageFunctionMenu();" style="
+                cursor: pointer;
+                  padding: 8px;
+                  border-radius: 8px;
+                transition: background-color 0.2s;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+              " onmouseover="this.style.backgroundColor='var(--x-bg-hover)'"
+                onmouseout="this.style.backgroundColor='transparent'">
+                <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; fill: var(--x-accent);">
+                  <g><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM6.64 15.748L12 10.388l5.36 5.36c-.48.32-1.04.56-1.68.72L12 12.78l-3.68 3.69c-.64-.16-1.2-.4-1.68-.72zM12 4c4.41 0 8 3.59 8 8 0 1.85-.63 3.55-1.69 4.9L12 10.59 5.69 16.9C4.63 15.55 4 13.85 4 12c0-4.41 3.59-8 8-8z"></path></g>
+                </svg>
+                </div>
               </div>
             </div>
 
@@ -3480,6 +3537,309 @@
                 font-weight: 600;
                 cursor: pointer;
               ">发送语音</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 转账弹窗 -->
+        <div id="transfer-dialog" style="
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100vw;
+          height: 100vh;
+          background-color: rgba(0, 0, 0, 0.5);
+          display: none;
+          align-items: center;
+          justify-content: center;
+          z-index: 31;
+          overflow-y: auto;
+        " onclick="closeTransferDialog()">
+          <div style="
+            background-color: var(--x-bg-primary);
+            border-radius: 16px;
+            max-width: 400px;
+            width: 90%;
+            max-height: 85vh;
+            margin: 20px auto;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            display: flex;
+            flex-direction: column;
+          " onclick="event.stopPropagation()">
+            <!-- 固定头部 -->
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 20px 20px 16px; flex-shrink: 0;">
+              <div style="font-size: 18px; font-weight: 700; color: var(--x-text-primary);">发起转账</div>
+              <div onclick="closeTransferDialog()" style="
+                cursor: pointer;
+                padding: 4px;
+                border-radius: 50%;
+                transition: background-color 0.2s;
+              " onmouseover="this.style.backgroundColor='var(--x-bg-hover)'"
+                onmouseout="this.style.backgroundColor='transparent'">
+                <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; fill: var(--x-text-primary);">
+                  <g><path d="M10.59 12L4.54 5.96l1.42-1.42L12 10.59l6.04-6.05 1.42 1.42L13.41 12l6.05 6.04-1.42 1.42L12 13.41l-6.04 6.05-1.42-1.42L10.59 12z"></path></g>
+                </svg>
+              </div>
+            </div>
+            
+            <!-- 可滚动内容区域 -->
+            <div style="flex: 1; overflow-y: auto; padding: 0 20px; min-height: 0;">
+              <!-- 转账类型切换 -->
+              <div style="margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--x-border-color);">
+                <div style="display: flex; gap: 8px;">
+                  <button id="transfer-type-normal-btn" onclick="switchTransferType('normal')" style="
+                    flex: 1;
+                    padding: 8px 16px;
+                    border: 1px solid var(--x-border-color);
+                    background-color: var(--x-accent);
+                    color: #fff;
+                    border-radius: 8px;
+                    font-size: 13px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: all 0.2s;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 6px;
+                  ">
+                    <svg viewBox="0 0 24 24" style="width: 14px; height: 14px; fill: currentColor;">
+                      <g><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></g>
+                    </svg>
+                    普通转账
+                  </button>
+                  <button id="transfer-type-business-btn" onclick="switchTransferType('business')" style="
+                    flex: 1;
+                    padding: 8px 16px;
+                    border: 1px solid var(--x-border-color);
+                    background-color: transparent;
+                    color: var(--x-text-primary);
+                    border-radius: 8px;
+                    font-size: 13px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: all 0.2s;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 6px;
+                  ">
+                    <svg viewBox="0 0 24 24" style="width: 14px; height: 14px; fill: currentColor;">
+                      <g><path d="M20 6h-3V4c0-1.1-.9-2-2-2H9c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM9 4h6v2H9V4zm11 16H4V8h16v12z"></path><path d="M12 10L14.5 14L17 10L14.5 12L12 10ZM10 10L7.5 12L10 14L7.5 14L10 10Z"></path></g>
+                    </svg>
+                    商业转账
+                  </button>
+                </div>
+              </div>
+            
+              <!-- 转账金额 -->
+            <div style="margin-bottom: 16px;">
+              <label style="display: block; font-size: 14px; font-weight: 600; color: var(--x-text-primary); margin-bottom: 8px;">
+                转账金额
+              </label>
+              <div style="position: relative;">
+                <input type="number" id="transfer-amount-input" placeholder="0.00" min="0.01" step="0.01" style="
+                  width: 100%;
+                  padding: 12px 16px 12px 36px;
+                  background-color: var(--x-bg-secondary);
+                  border: 1px solid var(--x-border-color);
+                  border-radius: 8px;
+                  color: var(--x-text-primary);
+                  font-size: 16px;
+                  outline: none;
+                  font-family: inherit;
+                " onfocus="this.style.borderColor='var(--x-accent)'" 
+                   onblur="this.style.borderColor='var(--x-border-color)'">
+                <div style="
+                  position: absolute;
+                  left: 16px;
+                  top: 50%;
+                  transform: translateY(-50%);
+                  color: var(--x-text-secondary);
+                  font-weight: 600;
+                  font-size: 16px;
+                ">$</div>
+              </div>
+            </div>
+
+              <!-- 转账备注 -->
+              <div style="margin-bottom: 16px;">
+              <label style="display: block; font-size: 14px; font-weight: 600; color: var(--x-text-primary); margin-bottom: 8px;">
+                转账备注（可选）
+              </label>
+              <textarea id="transfer-note-input" placeholder="添加转账说明..." maxlength="100" style="
+                width: 100%;
+                  min-height: 60px;
+                padding: 12px;
+                background-color: var(--x-bg-secondary);
+                border: 1px solid var(--x-border-color);
+                border-radius: 8px;
+                color: var(--x-text-primary);
+                font-size: 14px;
+                outline: none;
+                resize: vertical;
+                font-family: inherit;
+                line-height: 1.5;
+              " onfocus="this.style.borderColor='var(--x-accent)'" 
+                 onblur="this.style.borderColor='var(--x-border-color)'"
+                 oninput="updateTransferNoteCounter()"></textarea>
+              <div style="text-align: right; margin-top: 4px;">
+                <span id="transfer-note-counter" style="font-size: 12px; color: var(--x-text-secondary);">0 / 100</span>
+              </div>
+            </div>
+
+              <!-- 商业转账专属区域 -->
+              <div id="business-transfer-section" style="display: none;">
+                <!-- 定金比例 -->
+                <div style="margin-bottom: 16px;">
+                  <label style="display: block; font-size: 14px; font-weight: 600; color: var(--x-text-primary); margin-bottom: 8px;">
+                    定金比例
+                  </label>
+                  <select id="transfer-deposit-ratio" style="
+                    width: 100%;
+                    padding: 12px;
+                    background-color: var(--x-bg-secondary);
+                    border: 1px solid var(--x-border-color);
+                    border-radius: 8px;
+                    color: var(--x-text-primary);
+                    font-size: 14px;
+                    outline: none;
+                    font-family: inherit;
+                  " onfocus="this.style.borderColor='var(--x-accent)'" 
+                     onblur="this.style.borderColor='var(--x-border-color)'">
+                    <option value="0">0% - 无定金（任务完成后全额支付）</option>
+                    <option value="20" selected>20% - 先付20%定金</option>
+                    <option value="30">30% - 先付30%定金</option>
+                    <option value="50">50% - 先付50%定金</option>
+                  </select>
+                  <div style="font-size: 12px; color: var(--x-text-secondary); margin-top: 4px;">
+                    定金会在对方接受转账时立即支付，余款在任务完成后支付
+                  </div>
+                </div>
+
+                <!-- 任务描述 -->
+                <div style="margin-bottom: 16px;">
+                  <label style="display: block; font-size: 14px; font-weight: 600; color: var(--x-text-primary); margin-bottom: 8px;">
+                    任务描述 <span style="color: #ef4444;">*</span>
+                  </label>
+                  <textarea id="transfer-task-description" placeholder="例如：发布一条关于XX产品的宣传推文，需包含产品链接..." maxlength="500" style="
+                    width: 100%;
+                    min-height: 100px;
+                    padding: 12px;
+                    background-color: var(--x-bg-secondary);
+                    border: 1px solid var(--x-border-color);
+                    border-radius: 8px;
+                    color: var(--x-text-primary);
+                    font-size: 14px;
+                    outline: none;
+                    resize: vertical;
+                    font-family: inherit;
+                    line-height: 1.5;
+                  " onfocus="this.style.borderColor='var(--x-accent)'" 
+                     onblur="this.style.borderColor='var(--x-border-color)'"
+                     oninput="updateTaskDescriptionCounter()"></textarea>
+                  <div style="text-align: right; margin-top: 4px;">
+                    <span id="transfer-task-counter" style="font-size: 12px; color: var(--x-text-secondary);">0 / 500</span>
+                  </div>
+                </div>
+
+                <!-- 任务期限 -->
+                <div style="margin-bottom: 16px;">
+                  <label style="display: block; font-size: 14px; font-weight: 600; color: var(--x-text-primary); margin-bottom: 8px;">
+                    任务期限 <span style="color: #ef4444;">*</span>
+                  </label>
+                  <input type="number" id="transfer-task-deadline" placeholder="小时数" min="1" max="720" value="24" style="
+                    width: 100%;
+                    padding: 12px;
+                    background-color: var(--x-bg-secondary);
+                    border: 1px solid var(--x-border-color);
+                    border-radius: 8px;
+                    color: var(--x-text-primary);
+                    font-size: 14px;
+                    outline: none;
+                    font-family: inherit;
+                  " onfocus="this.style.borderColor='var(--x-accent)'" 
+                     onblur="this.style.borderColor='var(--x-border-color)'">
+                  <div style="font-size: 12px; color: var(--x-text-secondary); margin-top: 4px;">
+                    从对方接受转账起计算，建议1-72小时（最长30天）
+                  </div>
+                </div>
+
+                <!-- 商业转账提示 -->
+                <div style="
+                  background-color: var(--x-bg-secondary);
+                  border: 1px solid var(--x-border-color);
+                  border-radius: 8px;
+                  padding: 12px;
+                  margin-bottom: 16px;
+                ">
+                  <div style="display: flex; gap: 8px; align-items: flex-start;">
+                    <svg viewBox="0 0 24 24" style="width: 16px; height: 16px; fill: var(--x-text-secondary); flex-shrink: 0; margin-top: 2px;">
+                      <g><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"></path></g>
+                    </svg>
+                    <div style="font-size: 12px; color: var(--x-text-primary); line-height: 1.5;">
+                      <strong>商业转账说明：</strong><br>
+                      • 对方接受后必须完成任务才能获得全款<br>
+                      • AI会自动检测任务完成情况<br>
+                      • 对方也可能拒绝或接受但不完成任务
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 固定底部按钮 -->
+            <div style="padding: 16px 20px 20px; border-top: 1px solid var(--x-border-color); flex-shrink: 0;">
+            <div style="display: flex; gap: 8px; justify-content: flex-end;">
+              <button onclick="closeTransferDialog()" style="
+                background-color: var(--x-bg-secondary);
+                color: var(--x-text-primary);
+                border: none;
+                border-radius: 20px;
+                  padding: 10px 20px;
+                font-size: 14px;
+                font-weight: 600;
+                cursor: pointer;
+              ">取消</button>
+              <button onclick="sendTransfer()" style="
+                background-color: var(--x-accent);
+                color: #fff;
+                border: none;
+                border-radius: 20px;
+                  padding: 10px 20px;
+                font-size: 14px;
+                font-weight: 600;
+                cursor: pointer;
+              ">发送转账</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 转账详情弹窗 - 票根样式 -->
+        <div id="transfer-details-modal" style="
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100vw;
+          height: 100vh;
+          background-color: rgba(0, 0, 0, 0.5);
+          display: none;
+          align-items: center;
+          justify-content: center;
+          z-index: 32;
+        " onclick="closeTransferDetails()">
+          <div style="
+            background-color: var(--x-bg-primary);
+            border-radius: 16px;
+            max-width: 360px;
+            width: 90%;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            overflow: hidden;
+          " onclick="event.stopPropagation()">
+            <!-- 转账详情内容 -->
+            <div id="transfer-details-content">
+              <!-- 动态生成转账详情 -->
             </div>
           </div>
         </div>
@@ -4175,6 +4535,24 @@
                     </g>
                   </svg>
                   <span data-i18n="profileAccountManager">账号管理</span>
+                </div>
+                <div onclick="openAccountWallet()" style="
+                  padding: 12px 16px;
+                  color: #fff;
+                  font-size: 15px;
+                  cursor: pointer;
+                  transition: background-color 0.2s;
+                  display: flex;
+                  align-items: center;
+                  gap: 12px;
+                " onmouseover="this.style.backgroundColor='rgba(255,255,255,0.03)'"
+                  onmouseout="this.style.backgroundColor='transparent'">
+                  <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; fill: currentColor;">
+                    <g>
+                      <path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
+                    </g>
+                  </svg>
+                  <span data-i18n="profileAccountWallet">账户钱包</span>
                 </div>
               </div>
             </div>
@@ -5133,6 +5511,21 @@
                   color: #71767b;
                   font-size: 13px;
                 ">0 / 280</div>
+              </div>
+
+              <!-- 商业任务选择区域 -->
+              <div id="business-task-selection" style="display: none; margin-top: 16px; margin-bottom: 16px;">
+                <div style="background-color: #1a1a1a; border: 2px solid #f59e0b; border-radius: 12px; padding: 16px;">
+                  <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                    <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; fill: #f59e0b;">
+                      <g><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></g>
+                    </svg>
+                    <div style="color: #f59e0b; font-size: 15px; font-weight: 700;">选择商业任务</div>
+                  </div>
+                  <div id="business-tasks-list" style="display: flex; flex-direction: column; gap: 8px;">
+                    <!-- 任务列表将动态生成 -->
+                  </div>
+                </div>
               </div>
 
               <!-- 功能区域 -->
@@ -7240,6 +7633,29 @@ ${userXProfileInfo.bio ? `- 个人简介：${userXProfileInfo.bio}` : ''}
           knowsUserIdentity = userProfileInfo.knownIdentityCharacters.includes(character.id);
         }
 
+        // 🆕 读取X平台私信记忆
+        let xMessageHistory = [];
+        try {
+          // 私信数据的key格式: messageConversation_${currentAccountId}_msg_${characterId}
+          const currentAccount = window.currentAccountId || 'main';
+          const messageConversationId = `messageConversation_${currentAccount}_msg_${character.id}`;
+          const messageConversation = await xDB.xAccountProfiles.get(messageConversationId);
+
+          if (messageConversation && messageConversation.data && messageConversation.data.messages) {
+            // 提取最近的私信对话（最多20条）
+            const messages = messageConversation.data.messages.slice(-20);
+            xMessageHistory = messages.map(msg => ({
+              type: msg.type,
+              content: msg.content || '',
+              isOwn: msg.isOwn || false,
+              time: msg.time || '',
+              timestamp: msg.timestamp || '',
+            }));
+          }
+        } catch (error) {
+          console.error('[统一资料] 读取X平台私信记忆失败:', error);
+        }
+
         return {
           type: 'character',
           // 基础信息
@@ -7258,6 +7674,7 @@ ${userXProfileInfo.bio ? `- 个人简介：${userXProfileInfo.bio}` : ''}
             history: character.history || [],
             longTermMemory: character.longTermMemory || [],
             userPersona: xProfile.userPersona || '',
+            xMessageHistory: xMessageHistory, // 🆕 X平台私信记忆
           },
 
           // 🔧 用户身份识别信息
@@ -7627,6 +8044,58 @@ ${cd.userPersona}
             if (memCount >= 10) break;
           }
           promptText += `⚠️ 以上记忆仅供理解角色与用户关系，根据当前场景自然使用
+`;
+        }
+
+        // 🆕 X平台私信记忆（只有知道用户身份且有专属人设时才显示）
+        if (
+          profile.knowsUserIdentity &&
+          cd.userPersona &&
+          cd.userPersona.trim() &&
+          cd.xMessageHistory &&
+          cd.xMessageHistory.length > 0
+        ) {
+          promptText += `
+【X平台私信记忆】（该角色与用户在X平台私信中的对话记录，仅供参考）：
+`;
+          const recentXMessages = cd.xMessageHistory.slice(-15); // 显示最近15条
+          let xMemCount = 0;
+          for (const msg of recentXMessages) {
+            const sender = msg.isOwn ? '用户' : profile.name;
+            let content = '';
+
+            if (msg.type === 'text') {
+              content = msg.content;
+            } else if (msg.type === 'image') {
+              content = msg.isOwn ? '[用户发送了图片]' : `[图片: ${msg.imageDescription || '图片'}]`;
+            } else if (msg.type === 'voice') {
+              content = `[语音: ${msg.voiceText || '语音消息'}]`;
+            } else if (msg.type === 'sticker') {
+              content = '[表情包]';
+            } else if (msg.type === 'transfer') {
+              const amount = msg.amount ? `$${msg.amount}` : '';
+              const note = msg.note ? ` (${msg.note})` : '';
+              content = `[转账${amount}${note}]`;
+            } else if (msg.type === 'link') {
+              content = `[分享链接: ${msg.title || '链接'}]`;
+            } else if (msg.type === 'quoteTweet') {
+              content = `[转发推文: ${msg.tweet?.content || ''}]`;
+            } else if (msg.type === 'quoteProfile') {
+              content = `[分享主页: ${msg.profile?.name || ''}]`;
+            } else {
+              content = `[${msg.type}消息]`;
+            }
+
+            if (content) {
+              const displayContent = content.length > 80 ? `${content.substring(0, 80)}...` : content;
+              promptText += `${sender}: ${displayContent}\n`;
+              xMemCount++;
+            }
+
+            if (xMemCount >= 15) break;
+          }
+          promptText += `⚠️ 以上是X平台私信对话记录，仅供理解角色与用户的关系和沟通风格
+⚠️ 根据当前场景（推文/评论）自然使用，不要在公开推文中直接提及私信内容
 `;
         }
 
@@ -14640,7 +15109,88 @@ ${npc.homepage || '暂无主页内容设置'}
       const savedProfile = await xDB.xAccountProfiles.get(cleanHandle);
 
       if (savedProfile) {
-        console.log('✅ 找到已保存的账户主页数据，直接加载');
+        console.log('✅ 找到已保存的账户主页数据');
+
+        // 🔄 检查是否是角色账户，如果是则同步最新的X资料信息
+        const characterProfile = await xDB.xCharacterProfiles.toArray();
+        const matchedCharacter = characterProfile.find(
+          cp => cp.xHandle === accountHandle || cp.xHandle === `@${cleanHandle}`,
+        );
+
+        if (matchedCharacter) {
+          console.log('🔄 [账户主页] 检测到角色账户，同步最新X资料');
+
+          // 判断认证类型
+          let verificationType = 'verified';
+          if (
+            window.userProfileData.verificationType === 'couple' &&
+            window.userProfileData.coupleCharacterId === matchedCharacter.characterId
+          ) {
+            verificationType = 'couple';
+          }
+
+          // 更新账户基本信息为最新的X资料
+          savedProfile.accountInfo = {
+            ...savedProfile.accountInfo,
+            name: matchedCharacter.xName,
+            handle: matchedCharacter.xHandle,
+            avatar: matchedCharacter.xAvatar,
+            verified: matchedCharacter.xVerified,
+            verificationType: matchedCharacter.xVerified ? verificationType : 'none',
+            cover:
+              matchedCharacter.xCover ||
+              savedProfile.accountInfo.cover ||
+              'https://i.postimg.cc/tT8Rfsf1/mmexport1759603246385.jpg',
+            bio: matchedCharacter.xBio || '',
+            publicIdentity: matchedCharacter.publicIdentity || '',
+            customTag1: matchedCharacter.customTag1 || null,
+            customTag2: matchedCharacter.customTag2 || null,
+            followingCount: matchedCharacter.followingCount || savedProfile.accountInfo.followingCount || '',
+            followersCount: matchedCharacter.followersCount || savedProfile.accountInfo.followersCount || '',
+          };
+
+          // 同步更新所有推文、评论、回复中的用户信息
+          const updateUserInfo = user => {
+            if (user && user.handle === matchedCharacter.xHandle) {
+              user.name = matchedCharacter.xName;
+              user.avatar = matchedCharacter.xAvatar;
+              user.verified = matchedCharacter.xVerified;
+              user.verificationType = matchedCharacter.xVerified ? verificationType : 'none';
+            }
+          };
+
+          // 更新推文中的用户信息
+          if (savedProfile.tweets) {
+            savedProfile.tweets.forEach(tweet => {
+              updateUserInfo(tweet.user);
+              // 更新推文评论中的用户信息
+              if (tweet.comments) {
+                tweet.comments.forEach(comment => {
+                  updateUserInfo(comment.user);
+                  // 更新楼中楼回复
+                  if (comment.replies) {
+                    comment.replies.forEach(reply => updateUserInfo(reply.user));
+                  }
+                });
+              }
+            });
+          }
+
+          // 更新回复记录中的用户信息
+          if (savedProfile.accountReplies) {
+            savedProfile.accountReplies.forEach(reply => {
+              if (reply.accountReply) {
+                updateUserInfo(reply.accountReply.user);
+              }
+            });
+          }
+
+          // 保存更新后的数据
+          savedProfile.updatedAt = new Date().toISOString();
+          await xDB.xAccountProfiles.put(savedProfile);
+          console.log('✅ [账户主页] 已同步最新X资料信息');
+        }
+
         console.log('📊 [账户主页] 加载数据统计:', {
           推文数: savedProfile.tweets?.length || 0,
           回复数: savedProfile.accountReplies?.length || 0,
@@ -23065,6 +23615,525 @@ ${existingQuestionsContext}
     }
   }
 
+  // ============================================
+  // 粉丝数动态浮动系统
+  // ============================================
+
+  let followersFluctuationTimer = null;
+
+  // 启动粉丝数浮动系统
+  function startFollowersFluctuationSystem() {
+    if (followersFluctuationTimer) {
+      clearInterval(followersFluctuationTimer);
+    }
+
+    console.log('📊 [粉丝数浮动] 系统已启动');
+
+    // 立即执行一次
+    setTimeout(() => {
+      triggerFollowersFluctuation();
+    }, 5000); // 5秒后首次触发
+
+    // 设置随机间隔触发（10-30分钟）
+    const scheduleNext = () => {
+      const randomInterval = (10 + Math.random() * 20) * 60 * 1000; // 10-30分钟
+      console.log(`📊 [粉丝数浮动] 下次触发时间: ${(randomInterval / 60000).toFixed(1)}分钟后`);
+
+      followersFluctuationTimer = setTimeout(() => {
+        triggerFollowersFluctuation();
+        scheduleNext(); // 递归调度下一次
+      }, randomInterval);
+    };
+
+    scheduleNext();
+  }
+
+  // 停止粉丝数浮动系统
+  function stopFollowersFluctuationSystem() {
+    if (followersFluctuationTimer) {
+      clearTimeout(followersFluctuationTimer);
+      followersFluctuationTimer = null;
+      console.log('📊 [粉丝数浮动] 系统已停止');
+    }
+  }
+
+  // 触发粉丝数浮动
+  async function triggerFollowersFluctuation() {
+    try {
+      console.log('📊 [粉丝数浮动] 开始检查所有账户...');
+
+      // 1. 更新用户主账户粉丝数
+      await updateUserFollowersCount();
+
+      // 2. 更新所有已绑定角色的粉丝数
+      await updateAllCharactersFollowersCount();
+
+      console.log('✅ [粉丝数浮动] 所有账户粉丝数已更新');
+    } catch (error) {
+      console.error('❌ [粉丝数浮动] 触发失败:', error);
+    }
+  }
+
+  // 更新用户主账户粉丝数
+  async function updateUserFollowersCount() {
+    try {
+      const xDb = getXDB();
+
+      // 获取用户最近3条推文
+      const userTweetsId = `userTweets_${currentAccountId || 'main'}`;
+      const userTweetsData = await xDb.xUserTweets.get(userTweetsId);
+      const recentTweets = userTweetsData?.tweets?.slice(0, 3) || [];
+
+      // 解析当前粉丝数
+      const originalFollowersStr = window.userProfileData.followers || '0';
+      const currentFollowersNum = parseFollowersCount(originalFollowersStr);
+
+      // 计算浮动
+      const fluctuation = calculateFollowersFluctuation({
+        publicIdentity: window.userProfileData.publicIdentity || '',
+        bio: window.userProfileData.bio || '',
+        recentTweets: recentTweets,
+        currentFollowers: currentFollowersNum,
+      });
+
+      if (fluctuation === 0) {
+        console.log('📊 [用户粉丝数] 本次无变化');
+        return;
+      }
+
+      // 计算新粉丝数并格式化
+      const newFollowersNum = Math.max(0, currentFollowersNum + fluctuation);
+      const newFollowersStr = formatFollowersCount(newFollowersNum, originalFollowersStr);
+
+      window.userProfileData.followers = newFollowersStr;
+      window.userProfileData.followersCount = newFollowersStr; // 同步更新
+      window.userProfileData.lastUpdated = new Date().toISOString();
+
+      // 保存到数据库
+      await xDb.xUserProfile.put({
+        id: currentAccountId || 'main',
+        ...window.userProfileData,
+      });
+
+      // 更新UI
+      const followersElement = document.getElementById('x-profile-followers-count');
+      if (followersElement) {
+        followersElement.textContent = newFollowersStr;
+      }
+
+      console.log(
+        `📊 [用户粉丝数] ${fluctuation > 0 ? '+' : ''}${fluctuation} (${originalFollowersStr} → ${newFollowersStr})`,
+      );
+
+      // 显示通知（仅大幅变化时）
+      if (Math.abs(fluctuation) >= 50) {
+        const isEnglish = currentLanguage === 'en';
+        showPhoneNotification({
+          title: 'X',
+          message: isEnglish
+            ? `Followers ${fluctuation > 0 ? 'increased' : 'decreased'} by ${Math.abs(fluctuation)}`
+            : `粉丝数${fluctuation > 0 ? '增加' : '减少'}了 ${Math.abs(fluctuation)}`,
+          leftIcon: 'x',
+          duration: 3000,
+        });
+      }
+    } catch (error) {
+      console.error('❌ [用户粉丝数] 更新失败:', error);
+    }
+  }
+
+  // 更新所有已绑定角色的粉丝数
+  async function updateAllCharactersFollowersCount() {
+    try {
+      const xDb = getXDB();
+
+      // 获取所有角色X资料
+      const allCharacterProfiles = await xDb.xCharacterProfiles.toArray();
+
+      if (allCharacterProfiles.length === 0) {
+        console.log('📊 [角色粉丝数] 无已绑定角色');
+        return;
+      }
+
+      console.log(`📊 [角色粉丝数] 检查 ${allCharacterProfiles.length} 个角色`);
+
+      for (const xProfile of allCharacterProfiles) {
+        // 跳过没有设置粉丝数的角色
+        if (!xProfile.followersCount || xProfile.followersCount === '') {
+          continue;
+        }
+
+        // 获取角色的账户主页数据（如果有）
+        const cleanHandle = xProfile.xHandle.replace('@', '');
+        const accountProfile = await xDb.xAccountProfiles.get(cleanHandle);
+        const recentTweets = accountProfile?.tweets?.slice(0, 3) || [];
+
+        // 解析当前粉丝数
+        const originalFollowersStr = xProfile.followersCount;
+        const currentFollowersNum = parseFollowersCount(originalFollowersStr);
+
+        // 计算浮动
+        const fluctuation = calculateFollowersFluctuation({
+          publicIdentity: xProfile.publicIdentity || '',
+          bio: xProfile.xBio || '',
+          recentTweets: recentTweets,
+          currentFollowers: currentFollowersNum,
+        });
+
+        if (fluctuation === 0) {
+          continue;
+        }
+
+        // 计算新粉丝数并格式化
+        const newFollowersNum = Math.max(0, currentFollowersNum + fluctuation);
+        const newFollowersStr = formatFollowersCount(newFollowersNum, originalFollowersStr);
+
+        xProfile.followersCount = newFollowersStr;
+
+        // 保存到数据库
+        await xDb.xCharacterProfiles.put(xProfile);
+
+        console.log(
+          `📊 [角色粉丝数] ${xProfile.xName}: ${
+            fluctuation > 0 ? '+' : ''
+          }${fluctuation} (${originalFollowersStr} → ${newFollowersStr})`,
+        );
+
+        // 同步更新账户主页数据（如果存在）
+        if (accountProfile) {
+          accountProfile.accountInfo.followersCount = newFollowersStr;
+          await xDb.xAccountProfiles.put(accountProfile);
+          console.log(`  └─ 已同步到账户主页 ${cleanHandle}`);
+        }
+      }
+    } catch (error) {
+      console.error('❌ [角色粉丝数] 更新失败:', error);
+    }
+  }
+
+  // 解析粉丝数字符串为数字
+  function parseFollowersCount(followersStr) {
+    if (!followersStr || followersStr === '') return 0;
+
+    const str = followersStr.toString().toLowerCase().trim();
+
+    // 处理 "k" 格式（千）
+    if (str.includes('k')) {
+      const num = parseFloat(str.replace('k', ''));
+      return Math.round(num * 1000);
+    }
+
+    // 处理 "w" 格式（万）
+    if (str.includes('w')) {
+      const num = parseFloat(str.replace('w', ''));
+      return Math.round(num * 10000);
+    }
+
+    // 处理 "m" 格式（百万）
+    if (str.includes('m')) {
+      const num = parseFloat(str.replace('m', ''));
+      return Math.round(num * 1000000);
+    }
+
+    // 纯数字
+    const num = parseInt(str);
+    return isNaN(num) ? 0 : num;
+  }
+
+  // 格式化粉丝数为字符串（智能选择格式）
+  function formatFollowersCount(count, originalFormat = '') {
+    if (count === 0) return '0';
+
+    // 检测原始格式偏好
+    const originalLower = originalFormat.toString().toLowerCase();
+    const usesK = originalLower.includes('k');
+    const usesW = originalLower.includes('w');
+    const usesM = originalLower.includes('m');
+
+    // 如果原始是 "w" 格式，优先使用 "w"
+    if (usesW) {
+      if (count >= 10000) {
+        const wValue = count / 10000;
+        // 保留一位小数，但去掉不必要的 .0
+        return wValue % 1 === 0 ? `${Math.round(wValue)}w` : `${wValue.toFixed(1)}w`;
+      }
+      // 小于1w的情况，显示纯数字
+      return count.toString();
+    }
+
+    // 如果原始是 "m" 格式，优先使用 "m"
+    if (usesM) {
+      if (count >= 1000000) {
+        const mValue = count / 1000000;
+        return mValue % 1 === 0 ? `${Math.round(mValue)}m` : `${mValue.toFixed(1)}m`;
+      } else if (count >= 1000) {
+        const kValue = count / 1000;
+        return kValue % 1 === 0 ? `${Math.round(kValue)}k` : `${kValue.toFixed(1)}k`;
+      }
+      return count.toString();
+    }
+
+    // 如果原始是 "k" 格式或没有特定格式，使用国际通用格式（k、m）
+    if (usesK || !usesW) {
+      if (count >= 1000000) {
+        const mValue = count / 1000000;
+        return mValue % 1 === 0 ? `${Math.round(mValue)}m` : `${mValue.toFixed(1)}m`;
+      } else if (count >= 1000) {
+        const kValue = count / 1000;
+        return kValue % 1 === 0 ? `${Math.round(kValue)}k` : `${kValue.toFixed(1)}k`;
+      }
+    }
+
+    // 小于1000，显示纯数字
+    return count.toString();
+  }
+
+  // 计算粉丝数浮动
+  function calculateFollowersFluctuation({ publicIdentity, bio, recentTweets, currentFollowers }) {
+    // 1. 检测身份类型
+    const isHighExposure =
+      /明星|网红|博主|演员|歌手|艺人|主播|up主|偶像|导演|制片|编剧|作家|influencer|celebrity|singer|actor|artist|streamer|idol/i.test(
+        publicIdentity + ' ' + bio,
+      );
+
+    // 2. 分析最近推文质量
+    let tweetQualityScore = 0; // -1到1之间
+    if (recentTweets.length > 0) {
+      let totalScore = 0;
+      recentTweets.forEach(tweet => {
+        const stats = tweet.stats || {};
+        const likes = stats.likes || 0;
+        const retweets = stats.retweets || 0;
+        const comments = stats.comments || 0;
+        const views = stats.views || 0;
+
+        // 计算互动率（相对于浏览量）
+        const engagementRate = views > 0 ? (likes + retweets * 2 + comments * 3) / views : 0;
+
+        // 根据互动率评分
+        if (engagementRate > 0.1) {
+          totalScore += 1; // 高互动
+        } else if (engagementRate > 0.05) {
+          totalScore += 0.5; // 中等互动
+        } else if (engagementRate > 0.02) {
+          totalScore += 0; // 低互动，中性
+        } else {
+          totalScore -= 0.5; // 极低互动
+        }
+      });
+
+      tweetQualityScore = totalScore / recentTweets.length;
+    }
+
+    console.log(`  📊 推文质量评分: ${tweetQualityScore.toFixed(2)} (${recentTweets.length}条推文)`);
+
+    // 3. 确定浮动方向和幅度
+    let baseFluctuation = 0;
+    let direction = 1; // 1为增长，-1为下降
+
+    // 根据推文质量决定方向概率
+    if (tweetQualityScore > 0.5) {
+      // 高质量推文：80%增长
+      direction = Math.random() < 0.8 ? 1 : -1;
+    } else if (tweetQualityScore > 0) {
+      // 中等质量：70%增长
+      direction = Math.random() < 0.7 ? 1 : -1;
+    } else if (tweetQualityScore > -0.5) {
+      // 低质量：50%增长（随机波动）
+      direction = Math.random() < 0.5 ? 1 : -1;
+    } else {
+      // 极低质量：30%增长，70%下降
+      direction = Math.random() < 0.3 ? 1 : -1;
+    }
+
+    // 4. 根据身份和推文情况确定浮动幅度
+    if (isHighExposure) {
+      // 高曝光身份：大幅浮动
+      if (recentTweets.length > 0) {
+        baseFluctuation = 100 + Math.random() * 400; // 100-500
+      } else {
+        baseFluctuation = 50 + Math.random() * 150; // 50-200（无推文时较小）
+      }
+    } else if (recentTweets.length > 0) {
+      // 有推文的普通用户：中等浮动
+      baseFluctuation = 20 + Math.random() * 80; // 20-100
+    } else {
+      // 无推文的普通用户：小幅浮动
+      baseFluctuation = 5 + Math.random() * 25; // 5-30
+    }
+
+    // 5. 根据推文质量调整幅度
+    const qualityMultiplier = 0.5 + Math.abs(tweetQualityScore) * 0.8; // 0.5-1.3倍
+    baseFluctuation *= qualityMultiplier;
+
+    // 6. 根据当前粉丝基数调整（粉丝越多，浮动越大）
+    if (currentFollowers > 10000) {
+      baseFluctuation *= 1.5;
+    } else if (currentFollowers > 5000) {
+      baseFluctuation *= 1.2;
+    }
+
+    // 7. 随机决定是否触发浮动（60%概率）
+    if (Math.random() > 0.6) {
+      console.log('  📊 本次随机跳过浮动');
+      return 0;
+    }
+
+    // 8. 计算最终浮动值
+    const finalFluctuation = Math.round(baseFluctuation * direction);
+
+    console.log(
+      `  📊 浮动计算: ${isHighExposure ? '高曝光' : '普通'}身份, 方向${direction > 0 ? '↑' : '↓'}, 幅度${Math.abs(
+        finalFluctuation,
+      )}`,
+    );
+
+    return finalFluctuation;
+  }
+
+  // ============================================
+  // 离开后自动消息触发系统
+  // ============================================
+
+  // 触发离开后的自动消息（仅绑定角色）
+  window.triggerAutoMessageAfterAway = async function (messageId) {
+    try {
+      console.log('⏰ [离开后自动消息] 开始触发，messageId:', messageId);
+
+      const xDb = getXDB();
+      const conversationId = `messageConversation_${currentAccountId || 'main'}_${messageId}`;
+      const savedConversation = await xDb.xAccountProfiles.get(conversationId);
+
+      if (!savedConversation) {
+        console.log('⚠️ [离开后自动消息] 未找到对话数据');
+        return;
+      }
+
+      // 检查是否仍然处于离开状态
+      if (!savedConversation.isAway) {
+        console.log('⚠️ [离开后自动消息] 对话已不再处于离开状态');
+        return;
+      }
+
+      // 检查离开时间是否已到
+      const now = new Date();
+      const awayUntil = new Date(savedConversation.awayUntil);
+      if (now < awayUntil) {
+        console.log('⚠️ [离开后自动消息] 离开时间尚未结束');
+        return;
+      }
+
+      // 清除离开状态
+      savedConversation.isAway = false;
+      delete savedConversation.awayUntil;
+      delete savedConversation.awayDuration;
+      await xDb.xAccountProfiles.put(savedConversation);
+      console.log('✅ [离开后自动消息] 已清除离开状态');
+
+      // 检查是否是绑定角色
+      const isCharacterMessage = messageId && messageId.startsWith('msg_') && messageId !== 'msg_001';
+      if (!isCharacterMessage) {
+        console.log('⚠️ [离开后自动消息] 不是绑定角色，跳过');
+        return;
+      }
+
+      // 🔍 获取角色信息（从xCharacterProfiles或从对话数据中）
+      let userName = '未知';
+      let userHandle = '@unknown';
+      let userAvatar = '';
+
+      try {
+        const characterId = messageId.replace('msg_', '');
+        const xProfile = await xDb.xCharacterProfiles.get(characterId);
+
+        if (xProfile) {
+          userName = xProfile.xName;
+          userHandle = xProfile.xHandle;
+          userAvatar = xProfile.xAvatar;
+          console.log(`✅ [离开后自动消息] 从xCharacterProfiles获取角色信息: ${userName}`);
+        } else if (savedConversation.data && savedConversation.data.senderProfile) {
+          // 从对话数据中获取
+          userName = savedConversation.data.senderProfile.name || '未知';
+          userHandle = savedConversation.data.senderProfile.handle || '@unknown';
+          userAvatar = savedConversation.data.senderProfile.avatar || '';
+          console.log(`✅ [离开后自动消息] 从senderProfile获取角色信息: ${userName}`);
+        } else if (savedConversation.data && savedConversation.data.user) {
+          // 兼容旧格式
+          userName = savedConversation.data.user.name || '未知';
+          userHandle = savedConversation.data.user.handle || '@unknown';
+          userAvatar = savedConversation.data.user.avatar || '';
+          console.log(`✅ [离开后自动消息] 从user获取角色信息: ${userName}`);
+        }
+      } catch (error) {
+        console.error('❌ [离开后自动消息] 获取角色信息失败:', error);
+      }
+
+      // 构建消息数据
+      const messageData = {
+        id: messageId,
+        user: {
+          name: userName,
+          handle: userHandle,
+          avatar: userAvatar,
+        },
+      };
+
+      // 调用AI生成离开后的主动消息
+      console.log('📤 [离开后自动消息] 开始生成AI主动消息');
+      const aiMessages = await generateMessageConversation(messageData, true, {
+        isAutoMessage: true,
+        timeSinceLastMessage: savedConversation.awayDuration * 60 || 3600, // 使用离开时长作为时间间隔
+        isAwayReturn: true, // 标记为离开后返回
+      });
+
+      if (aiMessages && aiMessages.length > 0) {
+        // 保存AI消息到数据库
+        const updatedConversation = await xDb.xAccountProfiles.get(conversationId);
+        if (updatedConversation && updatedConversation.data && updatedConversation.data.messages) {
+          updatedConversation.data.messages.push(...aiMessages);
+          await xDb.xAccountProfiles.put(updatedConversation);
+          console.log('✅ [离开后自动消息] AI消息已保存');
+        }
+
+        // 标记为未读并显示通知
+        const dataId = `messagesList_${currentAccountId || 'main'}`;
+        const savedData = await xDb.xAccountProfiles.get(dataId);
+
+        if (savedData && savedData.data) {
+          const messagesList = savedData.data;
+          const messageIndex = messagesList.findIndex(msg => msg.id === messageId);
+
+          if (messageIndex !== -1) {
+            messagesList[messageIndex].unread = true;
+            messagesList[messageIndex].unreadCount = (messagesList[messageIndex].unreadCount || 0) + aiMessages.length;
+
+            await xDb.xAccountProfiles.put({
+              handle: dataId,
+              name: 'messagesList',
+              data: messagesList,
+              updatedAt: new Date().toISOString(),
+            });
+
+            // 同步更新全局数据
+            sampleMessagesData = messagesList;
+
+            // 显示手机样式通知
+            showMessageNotification(messageData.user.name, messageData.user.avatar, aiMessages.length);
+
+            // 显示私信提醒点
+            showNavNotificationDot('messages');
+
+            console.log('✅ [离开后自动消息] 已标记为未读并显示提醒');
+          }
+        }
+      } else {
+        console.log('⚠️ [离开后自动消息] AI未生成消息');
+      }
+    } catch (error) {
+      console.error('❌ [离开后自动消息] 触发失败:', error);
+    }
+  };
+
   // 多账户管理功能
 
   // 当前激活的账户ID
@@ -23379,6 +24448,9 @@ ${existingQuestionsContext}
       // 重新加载主题色偏好（按账户隔离）
       await loadAccentColorPreference();
 
+      // 🔧 重新加载钱包数据（按账户隔离）
+      await loadWalletData();
+
       // 🔧 重新加载私信和通知数据（按账户隔离）
       // 如果当前在私信页面，重新加载私信列表
       const messagesPage = document.getElementById('x-messages-page');
@@ -23501,6 +24573,10 @@ ${existingQuestionsContext}
         await db.xBookmarks.delete(bookmark.id);
       }
 
+      // 🔧 删除账户的钱包数据
+      const walletId = `wallet_${accountId}`;
+      await db.xAccountProfiles.delete(walletId);
+
       console.log(`✅ 已清理账户 ${accountId} 的所有相关数据`);
       showXToast('账户已删除', 'success');
 
@@ -23559,6 +24635,9 @@ ${existingQuestionsContext}
 
     // 加载当前账户的推文
     loadUserProfileTweets();
+
+    // 🔧 加载钱包数据
+    await loadWalletData();
   }
 
   // 加载当前激活的账户
@@ -23672,6 +24751,1125 @@ ${existingQuestionsContext}
     } catch (error) {
       console.error('保存用户资料失败:', error);
       throw error;
+    }
+  }
+
+  // ============================================
+  // 账户钱包功能
+  // ============================================
+
+  // 钱包数据
+  let walletData = {
+    accountId: 'main',
+    isActivated: false,
+    balance: 0,
+    currency: 'USD',
+    transactions: [],
+    activatedAt: null,
+    initialAmount: 0,
+  };
+
+  // 打开账户钱包
+  async function openAccountWallet() {
+    // 关闭下拉菜单
+    document.getElementById('profile-dropdown-menu').style.display = 'none';
+
+    // 加载钱包数据
+    await loadWalletData();
+
+    // 启动商业转账状态检查
+    startBusinessTransferCheck();
+
+    // 显示钱包弹窗
+    showWalletModal();
+  }
+
+  // 显示钱包弹窗
+  function showWalletModal() {
+    const xSocialScreen = document.getElementById('x-social-screen');
+    const isLightMode = xSocialScreen && xSocialScreen.classList.contains('x-theme-light');
+
+    // 创建弹窗遮罩
+    const modal = document.createElement('div');
+    modal.id = 'wallet-modal';
+    modal.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: ${isLightMode ? 'rgba(255, 255, 255, 0.85)' : 'rgba(0, 0, 0, 0.85)'};
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 25;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    `;
+
+    // 创建钱包界面
+    modal.innerHTML = `
+      <div style="
+        background-color: ${isLightMode ? 'rgba(255, 255, 255, 0.95)' : 'rgba(0, 0, 0, 0.95)'};
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-radius: 24px;
+        width: 90%;
+        max-width: 360px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: ${
+          isLightMode
+            ? '0 20px 60px rgba(0, 0, 0, 0.15), 0 8px 32px rgba(0, 0, 0, 0.1)'
+            : '0 20px 60px rgba(0, 0, 0, 0.8), 0 8px 32px rgba(255, 255, 255, 0.05)'
+        };
+        border: 2px solid ${isLightMode ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)'};
+      " onclick="event.stopPropagation()">
+        
+        <!-- 钱包顶部区域 -->
+        <div style="
+          background: linear-gradient(135deg, ${
+            isLightMode ? 'rgba(248, 250, 252, 0.8)' : 'rgba(22, 24, 28, 0.8)'
+          } 0%, ${isLightMode ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.6)'} 100%);
+          padding: 24px;
+          text-align: center;
+          border-bottom: 2px solid ${isLightMode ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.08)'};
+          position: relative;
+        ">
+          <!-- 关闭按钮 -->
+          <button onclick="closeWalletModal()" style="
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: transparent;
+            border: none;
+            color: ${isLightMode ? '#536471' : '#71767b'};
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: all 0.2s;
+          " onmouseover="this.style.backgroundColor='${
+            isLightMode ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.05)'
+          }';"
+             onmouseout="this.style.backgroundColor='transparent'">
+            <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; fill: currentColor;">
+              <g><path d="M10.59 12L4.54 5.96l1.42-1.42L12 10.59l6.04-6.05 1.42 1.42L13.41 12l6.05 6.04-1.42 1.42L12 13.41l-6.04 6.05-1.42-1.42L10.59 12z"></path></g>
+            </svg>
+          </button>
+
+          <!-- 用户头像 -->
+          <div style="margin-bottom: 16px;">
+            <img src="${window.userProfileData?.avatar || userProfileData.avatar}" style="
+              width: 64px;
+              height: 64px;
+              border-radius: 50%;
+              border: 3px solid var(--x-accent);
+              object-fit: cover;
+            " alt="${window.userProfileData?.name || userProfileData.name}">
+          </div>
+
+          <!-- 用户名 -->
+          <div style="
+            color: ${isLightMode ? '#0f1419' : '#ffffff'};
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 4px;
+          ">${window.userProfileData?.name || userProfileData.name}</div>
+
+          <!-- 钱包类型 -->
+          <div style="
+            color: ${isLightMode ? '#536471' : '#71767b'};
+            font-size: 14px;
+            margin-bottom: 16px;
+          ">Digital Wallet</div>
+
+          <!-- 状态显示 -->
+          <div id="wallet-status" style="
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            ${
+              walletData.isActivated
+                ? 'background-color: rgba(34, 197, 94, 0.15); color: #22c55e; border: 2px solid rgba(34, 197, 94, 0.4);'
+                : `background-color: ${
+                    isLightMode ? 'rgba(156, 163, 175, 0.15)' : 'rgba(156, 163, 175, 0.1)'
+                  }; color: ${isLightMode ? '#6b7280' : '#9ca3af'}; border: 2px solid ${
+                    isLightMode ? 'rgba(156, 163, 175, 0.3)' : 'rgba(156, 163, 175, 0.2)'
+                  };`
+            }
+          ">${walletData.isActivated ? 'ACTIVATED' : 'INACTIVE'}</div>
+        </div>
+
+        <!-- 钱包内容区域 -->
+        <div style="
+          padding: 24px;
+          background-color: ${isLightMode ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)'};
+        ">
+          ${walletData.isActivated ? renderActivatedWallet(isLightMode) : renderInactiveWallet(isLightMode)}
+        </div>
+
+        <!-- 底部工具栏 -->
+        <div style="
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          padding: 16px 24px;
+          gap: 24px;
+          border-top: 2px solid ${isLightMode ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.08)'};
+          background-color: ${isLightMode ? 'rgba(248, 250, 252, 0.5)' : 'rgba(22, 24, 28, 0.5)'};
+        ">
+          <div onclick="openBusinessTransferManager()" style="
+            padding: 12px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: ${isLightMode ? '#536471' : '#71767b'};
+          " onmouseover="this.style.backgroundColor='${
+            isLightMode ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.05)'
+          }'; this.style.color='var(--x-accent)';"
+             onmouseout="this.style.backgroundColor='transparent'; this.style.color='${
+               isLightMode ? '#536471' : '#71767b'
+             }';" title="商业转账管理">
+            <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; fill: currentColor;">
+              <g><path d="M20 6h-3V4c0-1.1-.9-2-2-2H9c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM9 4h6v2H9V4zm11 16H4V8h16v12z"></path><path d="M12 10L14.5 14L17 10L14.5 12L12 10ZM10 10L7.5 12L10 14L7.5 14L10 10Z"></path></g>
+            </svg>
+          </div>
+          <div onclick="exportWallet()" style="
+            padding: 12px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: ${isLightMode ? '#536471' : '#71767b'};
+          " onmouseover="this.style.backgroundColor='${
+            isLightMode ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.05)'
+          }'; this.style.color='var(--x-accent)';"
+             onmouseout="this.style.backgroundColor='transparent'; this.style.color='${
+               isLightMode ? '#536471' : '#71767b'
+             }';" title="导出钱包">
+            <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; fill: currentColor;">
+              <g><path d="M19 12v7H5v-7H3v7c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-7h-2zm-6 .67l2.59-2.58L17 11.5l-5 5-5-5 1.41-1.41L11 12.67V3h2v9.67z"></path></g>
+            </svg>
+          </div>
+          <div onclick="copyWalletInfo()" style="
+            padding: 12px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: ${isLightMode ? '#536471' : '#71767b'};
+          " onmouseover="this.style.backgroundColor='${
+            isLightMode ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.05)'
+          }'; this.style.color='var(--x-accent)';"
+             onmouseout="this.style.backgroundColor='transparent'; this.style.color='${
+               isLightMode ? '#536471' : '#71767b'
+             }';" title="复制钱包信息">
+            <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; fill: currentColor;">
+              <g><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"></path></g>
+            </svg>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+    document.body.style.overflow = 'hidden';
+
+    // 点击背景关闭弹窗
+    modal.addEventListener('click', e => {
+      if (e.target === modal) {
+        closeWalletModal();
+      }
+    });
+
+    // 添加入场动画
+    const walletCard = modal.querySelector('div');
+    walletCard.style.transform = 'scale(0.8) translateY(20px)';
+    walletCard.style.opacity = '0';
+
+    requestAnimationFrame(() => {
+      walletCard.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+      walletCard.style.transform = 'scale(1) translateY(0)';
+      walletCard.style.opacity = '1';
+    });
+  }
+
+  // 渲染未激活钱包界面
+  function renderInactiveWallet(isLightMode = false) {
+    return `
+      <div style="text-align: center;">
+        <!-- 钱包图标 -->
+        <div style="
+          width: 80px;
+          height: 80px;
+          margin: 0 auto 20px;
+          background: linear-gradient(135deg, ${
+            isLightMode ? 'rgba(248, 250, 252, 0.8)' : 'rgba(22, 24, 28, 0.8)'
+          } 0%, ${isLightMode ? 'rgba(229, 231, 235, 0.6)' : 'rgba(55, 65, 81, 0.6)'} 100%);
+          border-radius: 16px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border: 2px solid ${isLightMode ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)'};
+        ">
+          <svg viewBox="0 0 24 24" style="width: 32px; height: 32px; fill: ${isLightMode ? '#6b7280' : '#9ca3af'};">
+            <g><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></g>
+          </svg>
+        </div>
+
+        <!-- 描述文字 -->
+        <div style="
+          color: ${isLightMode ? '#0f1419' : '#ffffff'};
+          font-size: 16px;
+          font-weight: 600;
+          margin-bottom: 8px;
+        ">激活你的数字钱包</div>
+        
+        <div style="
+          color: ${isLightMode ? '#536471' : '#71767b'};
+          font-size: 14px;
+          line-height: 1.5;
+          margin-bottom: 24px;
+        ">点击下方按钮激活钱包<br>初始金额将根据你的公众身份随机生成</div>
+
+        <!-- 激活按钮 -->
+        <button id="activate-wallet-btn" onclick="activateWallet()" style="
+          width: 100%;
+          background: linear-gradient(135deg, var(--x-accent) 0%, #1a8cd8 100%);
+          color: #fff;
+          border: none;
+          border-radius: 12px;
+          padding: 16px 24px;
+          font-size: 16px;
+          font-weight: 700;
+          cursor: pointer;
+          transition: all 0.3s;
+          position: relative;
+          overflow: hidden;
+        " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(29, 155, 240, 0.3)'"
+           onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+          <span id="activate-btn-text">🚀 激活钱包</span>
+          <div id="activate-btn-loader" style="display: none;">
+            <svg style="animation: spin 1s linear infinite; width: 20px; height: 20px;" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.3)" stroke-width="2" fill="none"/>
+              <path d="M4,12a8,8 0 1,1 16,0" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </button>
+      </div>
+    `;
+  }
+
+  // 渲染已激活钱包界面
+  function renderActivatedWallet(isLightMode = false) {
+    return `
+      <div>
+        <!-- 余额显示 -->
+        <div style="
+          background: linear-gradient(135deg, ${
+            isLightMode ? 'rgba(248, 250, 252, 0.8)' : 'rgba(22, 24, 28, 0.8)'
+          } 0%, ${isLightMode ? 'rgba(229, 231, 235, 0.6)' : 'rgba(55, 65, 81, 0.6)'} 100%);
+          border: 2px solid ${isLightMode ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)'};
+          border-radius: 16px;
+          padding: 20px;
+          margin-bottom: 20px;
+          text-align: center;
+        ">
+          <div style="
+            color: ${isLightMode ? '#6b7280' : '#9ca3af'};
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+          ">Balance</div>
+          
+          <div style="
+            color: ${isLightMode ? '#0f1419' : '#ffffff'};
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 4px;
+          ">$${walletData.balance.toFixed(2)}</div>
+          
+          <div style="
+            color: ${isLightMode ? '#6b7280' : '#9ca3af'};
+            font-size: 13px;
+          ">${walletData.currency}</div>
+        </div>
+
+        <!-- 交易记录 -->
+        <div style="margin-bottom: 16px;">
+          <div style="
+            color: ${isLightMode ? '#6b7280' : '#9ca3af'};
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+          ">Recent Activity</div>
+          
+          ${walletData.transactions.length > 0 ? renderTransactions(isLightMode) : renderNoTransactions(isLightMode)}
+        </div>
+
+        <!-- 操作按钮 -->
+        <div style="display: flex; gap: 12px;">
+          <button onclick="showIncomeHistory()" style="
+            flex: 1;
+            background-color: var(--x-accent);
+            color: ${isLightMode ? '#0f1419' : '#ffffff'};
+            border: none;
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+          " onmouseover="this.style.backgroundColor='#1a8cd8'"
+             onmouseout="this.style.backgroundColor='var(--x-accent)'">
+            + Add Funds
+            ${
+              getIncomeRecordsCount() > 0
+                ? `<span style="
+              position: absolute;
+              top: -2px;
+              right: -2px;
+              background: #22c55e;
+              color: white;
+              border-radius: 50%;
+              width: 16px;
+              height: 16px;
+              font-size: 10px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-weight: 700;
+            ">${getIncomeRecordsCount()}</span>`
+                : ''
+            }
+          </button>
+          
+          <button onclick="showExpenseHistory()" style="
+            flex: 1;
+            background-color: transparent;
+            color: ${isLightMode ? '#0f1419' : '#ffffff'};
+            border: none;
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+          " onmouseover="this.style.backgroundColor='${
+            isLightMode ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.05)'
+          }';"
+             onmouseout="this.style.backgroundColor='transparent'">
+            Send
+            ${
+              getExpenseRecordsCount() > 0
+                ? `<span style="
+              position: absolute;
+              top: -2px;
+              right: -2px;
+              background: #ef4444;
+              color: white;
+              border-radius: 50%;
+              width: 16px;
+              height: 16px;
+              font-size: 10px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-weight: 700;
+            ">${getExpenseRecordsCount()}</span>`
+                : ''
+            }
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  // 渲染交易记录
+  function renderTransactions(isLightMode = false) {
+    return walletData.transactions
+      .slice(0, 2)
+      .map(
+        transaction => `
+      <div style="
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 2px solid ${isLightMode ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.08)'};
+      ">
+        <div>
+          <div style="
+            color: ${isLightMode ? '#0f1419' : '#ffffff'};
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 2px;
+          ">${transaction.description}</div>
+          <div style="
+            color: ${isLightMode ? '#6b7280' : '#9ca3af'};
+            font-size: 12px;
+          ">${new Date(transaction.timestamp).toLocaleDateString()}</div>
+        </div>
+        <div style="
+          color: ${transaction.amount > 0 ? '#22c55e' : '#ef4444'};
+          font-size: 14px;
+          font-weight: 700;
+        ">${transaction.amount > 0 ? '+' : ''}$${Math.abs(transaction.amount).toFixed(2)}</div>
+      </div>
+    `,
+      )
+      .join('');
+  }
+
+  // 渲染无交易记录
+  function renderNoTransactions(isLightMode = false) {
+    return `
+      <div style="
+        text-align: center;
+        padding: 20px;
+        color: ${isLightMode ? '#6b7280' : '#9ca3af'};
+        font-size: 14px;
+      ">
+        <div style="margin-bottom: 8px; opacity: 0.6;">📋</div>
+        <div>No transactions yet</div>
+      </div>
+    `;
+  }
+
+  // 激活钱包
+  async function activateWallet() {
+    const activateBtn = document.getElementById('activate-wallet-btn');
+    const btnText = document.getElementById('activate-btn-text');
+    const btnLoader = document.getElementById('activate-btn-loader');
+
+    // 显示加载状态
+    btnText.style.display = 'none';
+    btnLoader.style.display = 'block';
+    activateBtn.disabled = true;
+    activateBtn.style.cursor = 'not-allowed';
+
+    // 模拟激活过程
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
+    try {
+      // 根据公众身份生成初始金额
+      const initialAmount = generateInitialAmount();
+
+      // 更新钱包数据
+      walletData.isActivated = true;
+      walletData.balance = initialAmount;
+      walletData.initialAmount = initialAmount;
+      walletData.activatedAt = new Date().toISOString();
+      walletData.transactions = [
+        {
+          id: 'init_' + Date.now(),
+          description: 'Initial Deposit',
+          amount: initialAmount,
+          timestamp: new Date().toISOString(),
+          type: 'deposit',
+        },
+      ];
+
+      // 保存到数据库
+      await saveWalletData();
+
+      // 显示成功动画
+      showWalletActivationSuccess(initialAmount);
+    } catch (error) {
+      console.error('激活钱包失败:', error);
+      showXToast('钱包激活失败', 'error');
+
+      // 恢复按钮状态
+      btnText.style.display = 'block';
+      btnLoader.style.display = 'none';
+      activateBtn.disabled = false;
+      activateBtn.style.cursor = 'pointer';
+    }
+  }
+
+  // 根据公众身份生成初始金额
+  function generateInitialAmount() {
+    // 使用window.userProfileData确保获取最新数据
+    const publicIdentity = window.userProfileData?.publicIdentity || '';
+    const identityLower = publicIdentity.toLowerCase();
+
+    // 定义不同身份的金额范围
+    const amountRanges = {
+      // 超高知名度身份 (1000-5000)
+      celebrity: {
+        min: 1000,
+        max: 5000,
+        keywords: ['明星', '演员', '歌手', '导演', '艺人', 'celebrity', 'star', 'actor', 'singer'],
+      },
+
+      // 高知名度身份 (500-1500)
+      influencer: {
+        min: 500,
+        max: 1500,
+        keywords: ['网红', '博主', '主播', 'influencer', 'streamer', 'youtuber', 'blogger'],
+      },
+
+      // 专业身份 (200-800)
+      professional: {
+        min: 200,
+        max: 800,
+        keywords: ['专家', '教授', '医生', '律师', '工程师', 'expert', 'professor', 'doctor', 'lawyer', 'engineer'],
+      },
+
+      // 企业相关 (300-1000)
+      business: {
+        min: 300,
+        max: 1000,
+        keywords: ['企业家', 'CEO', '总裁', '创始人', 'entrepreneur', 'founder', 'executive'],
+      },
+
+      // 艺术创作者 (150-600)
+      creator: {
+        min: 150,
+        max: 600,
+        keywords: ['作家', '画家', '设计师', '摄影师', 'writer', 'artist', 'designer', 'photographer'],
+      },
+
+      // 普通用户 (50-200)
+      regular: { min: 50, max: 200, keywords: [] },
+    };
+
+    // 检查身份匹配
+    for (const [category, config] of Object.entries(amountRanges)) {
+      if (category === 'regular') continue; // 跳过普通用户，作为默认值
+
+      const hasMatch = config.keywords.some(keyword => identityLower.includes(keyword));
+      if (hasMatch) {
+        const amount = Math.random() * (config.max - config.min) + config.min;
+        console.log(`💰 根据身份类型 "${category}" 生成初始金额: $${amount.toFixed(2)}`);
+        return Math.round(amount * 100) / 100; // 保留两位小数
+      }
+    }
+
+    // 默认为普通用户
+    const regularRange = amountRanges.regular;
+    const amount = Math.random() * (regularRange.max - regularRange.min) + regularRange.min;
+    console.log(`💰 默认身份生成初始金额: $${amount.toFixed(2)}`);
+    return Math.round(amount * 100) / 100;
+  }
+
+  // 显示钱包激活成功动画
+  function showWalletActivationSuccess(amount) {
+    // 关闭当前钱包弹窗
+    closeWalletModal();
+
+    // 显示成功弹窗
+    const successModal = document.createElement('div');
+    successModal.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 30;
+      backdrop-filter: blur(12px);
+    `;
+
+    successModal.innerHTML = `
+      <div style="
+        background-color: var(--x-bg-primary);
+        border-radius: 24px;
+        padding: 40px;
+        text-align: center;
+        border: 1px solid var(--x-border-color);
+        max-width: 320px;
+        width: 90%;
+        animation: walletSuccessIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      ">
+        <!-- 成功图标 -->
+        <div style="
+          width: 80px;
+          height: 80px;
+          margin: 0 auto 24px;
+          background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          animation: walletSuccessCheck 0.8s ease-in-out 0.3s both;
+        ">
+          <svg viewBox="0 0 24 24" style="width: 32px; height: 32px; fill: white;">
+            <g><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></g>
+          </svg>
+        </div>
+
+        <!-- 成功文字 -->
+        <div style="
+          color: var(--x-text-primary);
+          font-size: 20px;
+          font-weight: 700;
+          margin-bottom: 8px;
+        ">钱包激活成功！</div>
+        
+        <div style="
+          color: #22c55e;
+          font-size: 24px;
+          font-weight: 700;
+          margin-bottom: 16px;
+        ">+$${amount.toFixed(2)}</div>
+        
+        <div style="
+          color: var(--x-text-secondary);
+          font-size: 14px;
+          line-height: 1.5;
+          margin-bottom: 24px;
+        ">恭喜！你的数字钱包已成功激活<br>初始资金已到账</div>
+
+        <!-- 确认按钮 -->
+        <button onclick="this.parentElement.parentElement.remove(); document.body.style.overflow='auto'; openAccountWallet();" style="
+          background: linear-gradient(135deg, var(--x-accent) 0%, #1a8cd8 100%);
+          color: #fff;
+          border: none;
+          border-radius: 12px;
+          padding: 12px 24px;
+          font-size: 14px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s;
+        ">查看钱包</button>
+      </div>
+    `;
+
+    document.body.appendChild(successModal);
+
+    // 3秒后自动关闭
+    setTimeout(() => {
+      if (successModal.parentElement) {
+        successModal.remove();
+        document.body.style.overflow = 'auto';
+      }
+    }, 3000);
+  }
+
+  // 关闭钱包弹窗
+  function closeWalletModal() {
+    const modal = document.getElementById('wallet-modal');
+    if (modal) {
+      const walletCard = modal.querySelector('div');
+      walletCard.style.transform = 'scale(0.9) translateY(20px)';
+      walletCard.style.opacity = '0';
+
+      setTimeout(() => {
+        modal.remove();
+        document.body.style.overflow = 'auto';
+      }, 200);
+    }
+  }
+
+  // 加载钱包数据
+  async function loadWalletData() {
+    try {
+      const db = getXDB();
+      const walletId = `wallet_${currentAccountId || 'main'}`;
+      const savedWallet = await db.xAccountProfiles.get(walletId);
+
+      if (savedWallet && savedWallet.data) {
+        Object.assign(walletData, savedWallet.data);
+        walletData.accountId = currentAccountId || 'main';
+      } else {
+        // 重置为默认状态
+        walletData = {
+          accountId: currentAccountId || 'main',
+          isActivated: false,
+          balance: 0,
+          currency: 'USD',
+          transactions: [],
+          activatedAt: null,
+          initialAmount: 0,
+        };
+      }
+
+      console.log('✅ 钱包数据已加载:', walletData.accountId, walletData.isActivated ? '已激活' : '未激活');
+    } catch (error) {
+      console.error('加载钱包数据失败:', error);
+      // 使用默认数据
+      walletData = {
+        accountId: currentAccountId || 'main',
+        isActivated: false,
+        balance: 0,
+        currency: 'USD',
+        transactions: [],
+        activatedAt: null,
+        initialAmount: 0,
+      };
+    }
+  }
+
+  // 保存钱包数据
+  async function saveWalletData() {
+    try {
+      const db = getXDB();
+      const walletId = `wallet_${currentAccountId || 'main'}`;
+
+      await db.xAccountProfiles.put({
+        handle: walletId,
+        name: 'wallet',
+        accountId: currentAccountId || 'main',
+        data: { ...walletData },
+        updatedAt: new Date().toISOString(),
+      });
+
+      console.log('✅ 钱包数据已保存');
+    } catch (error) {
+      console.error('保存钱包数据失败:', error);
+      throw error;
+    }
+  }
+
+  // 获取收款记录数量
+  function getIncomeRecordsCount() {
+    return walletData.transactions.filter(t => t.amount > 0).length;
+  }
+
+  // 获取付款记录数量
+  function getExpenseRecordsCount() {
+    return walletData.transactions.filter(t => t.amount < 0).length;
+  }
+
+  // 显示收款历史
+  window.showIncomeHistory = function () {
+    const incomeRecords = walletData.transactions.filter(t => t.amount > 0);
+    showTransactionHistory('收款记录', incomeRecords, '#22c55e');
+  };
+
+  // 显示付款历史
+  window.showExpenseHistory = function () {
+    const expenseRecords = walletData.transactions.filter(t => t.amount < 0);
+    showTransactionHistory('付款记录', expenseRecords, '#ef4444');
+  };
+
+  // 显示交易历史弹窗
+  function showTransactionHistory(title, transactions, accentColor) {
+    const xSocialScreen = document.getElementById('x-social-screen');
+    const isLightMode = xSocialScreen && xSocialScreen.classList.contains('x-theme-light');
+
+    // 创建弹窗遮罩
+    const modal = document.createElement('div');
+    modal.id = 'transaction-history-modal';
+    modal.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: ${isLightMode ? 'rgba(255, 255, 255, 0.85)' : 'rgba(0, 0, 0, 0.85)'};
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 26;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    `;
+
+    modal.innerHTML = `
+      <div style="
+        background-color: ${isLightMode ? 'rgba(255, 255, 255, 0.95)' : 'rgba(0, 0, 0, 0.95)'};
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-radius: 24px;
+        width: 90%;
+        max-width: 400px;
+        max-height: 80vh;
+        position: relative;
+        overflow: hidden;
+        box-shadow: ${
+          isLightMode
+            ? '0 20px 60px rgba(0, 0, 0, 0.15), 0 8px 32px rgba(0, 0, 0, 0.1)'
+            : '0 20px 60px rgba(0, 0, 0, 0.8), 0 8px 32px rgba(255, 255, 255, 0.05)'
+        };
+        border: 2px solid ${isLightMode ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)'};
+      " onclick="event.stopPropagation()">
+        
+        <!-- 头部 -->
+        <div style="
+          background: linear-gradient(135deg, ${
+            isLightMode ? 'rgba(0, 0, 0, 0.03)' : 'rgba(255, 255, 255, 0.05)'
+          } 0%, ${isLightMode ? 'rgba(0, 0, 0, 0.01)' : 'rgba(255, 255, 255, 0.02)'} 100%);
+          padding: 24px;
+          text-align: center;
+          border-bottom: 1px dashed ${isLightMode ? 'rgba(0, 0, 0, 0.15)' : 'rgba(255, 255, 255, 0.15)'};
+          position: relative;
+        ">
+          <!-- 票券孔 -->
+          <div style="
+            position: absolute;
+            left: -10px;
+            bottom: -10px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: ${isLightMode ? 'rgba(255, 255, 255, 0.85)' : 'rgba(0, 0, 0, 0.85)'};
+          "></div>
+          <div style="
+            position: absolute;
+            right: -10px;
+            bottom: -10px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: ${isLightMode ? 'rgba(255, 255, 255, 0.85)' : 'rgba(0, 0, 0, 0.85)'};
+          "></div>
+          
+          <!-- 关闭按钮 -->
+          <button onclick="closeTransactionHistoryModal()" style="
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: transparent;
+            border: none;
+            color: ${isLightMode ? '#536471' : '#71767b'};
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: all 0.2s;
+          " onmouseover="this.style.backgroundColor='${
+            isLightMode ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.05)'
+          }';"
+             onmouseout="this.style.backgroundColor='transparent'">
+            <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; fill: currentColor;">
+              <g><path d="M10.59 12L4.54 5.96l1.42-1.42L12 10.59l6.04-6.05 1.42 1.42L13.41 12l6.05 6.04-1.42 1.42L12 13.41l-6.04 6.05-1.42-1.42L10.59 12z"></path></g>
+            </svg>
+          </button>
+
+          <!-- 标题 -->
+          <div style="
+            color: ${isLightMode ? '#0f1419' : '#ffffff'};
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+          ">${title}</div>
+          
+          <div style="
+            color: ${isLightMode ? '#666666' : '#999999'};
+            font-size: 12px;
+            font-weight: 600;
+            font-family: monospace;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+          ">${transactions.length} Records</div>
+        </div>
+
+        <!-- 交易记录列表 -->
+        <div style="
+          max-height: 50vh;
+          overflow-y: auto;
+          padding: 16px 24px;
+        ">
+          ${
+            transactions.length > 0
+              ? renderFullTransactionList(transactions, isLightMode)
+              : renderNoRecords(isLightMode, title)
+          }
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+    document.body.style.overflow = 'hidden';
+
+    // 点击背景关闭弹窗
+    modal.addEventListener('click', e => {
+      if (e.target === modal) {
+        closeTransactionHistoryModal();
+      }
+    });
+
+    // 添加入场动画
+    const historyCard = modal.querySelector('div');
+    historyCard.style.transform = 'scale(0.8) translateY(20px)';
+    historyCard.style.opacity = '0';
+
+    requestAnimationFrame(() => {
+      historyCard.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+      historyCard.style.transform = 'scale(1) translateY(0)';
+      historyCard.style.opacity = '1';
+    });
+  }
+
+  // 渲染完整交易记录列表
+  function renderFullTransactionList(transactions, isLightMode = false) {
+    return transactions
+      .map(
+        transaction => `
+      <div style="
+        margin-bottom: 12px;
+        background: linear-gradient(135deg, ${isLightMode ? 'rgba(0, 0, 0, 0.02)' : 'rgba(255, 255, 255, 0.03)'} 0%, ${
+          isLightMode ? 'rgba(0, 0, 0, 0.01)' : 'rgba(255, 255, 255, 0.01)'
+        } 100%);
+        border: 1px solid ${isLightMode ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.08)'};
+        border-radius: 10px;
+        padding: 14px;
+        position: relative;
+        overflow: hidden;
+      ">
+        <!-- 小票条纹水印 -->
+        <div style="
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          height: 4px;
+          background: repeating-linear-gradient(
+            90deg,
+            ${isLightMode ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.05)'} 0px,
+            ${isLightMode ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.05)'} 4px,
+            transparent 4px,
+            transparent 8px
+          );
+        "></div>
+        
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+          <div style="flex: 1; min-width: 0;">
+            <div style="
+              color: ${isLightMode ? '#0f1419' : '#ffffff'};
+              font-size: 14px;
+              font-weight: 600;
+              margin-bottom: 6px;
+              word-wrap: break-word;
+            ">${transaction.description}</div>
+            <div style="
+              color: ${isLightMode ? '#6b7280' : '#9ca3af'};
+              font-size: 11px;
+              margin-bottom: 4px;
+              font-family: monospace;
+              letter-spacing: 0.3px;
+            ">${new Date(transaction.timestamp).toLocaleDateString('zh-CN')} ${new Date(
+          transaction.timestamp,
+        ).toLocaleTimeString('zh-CN', { hour12: false })}</div>
+          </div>
+          <div style="
+            color: ${
+              transaction.amount > 0 ? (isLightMode ? '#0f1419' : '#ffffff') : isLightMode ? '#666666' : '#999999'
+            };
+            font-size: 16px;
+            font-weight: 700;
+            margin-left: 12px;
+            flex-shrink: 0;
+            font-family: monospace;
+          ">${transaction.amount > 0 ? '+' : ''}$${Math.abs(transaction.amount).toFixed(2)}</div>
+        </div>
+        
+        <!-- 类型标签 -->
+        <div style="
+          display: inline-block;
+          padding: 3px 8px;
+          background: ${isLightMode ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.08)'};
+          border: 1px solid ${isLightMode ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.12)'};
+          border-radius: 6px;
+          font-size: 10px;
+          color: ${isLightMode ? '#666666' : '#999999'};
+          font-weight: 600;
+          letter-spacing: 0.5px;
+        ">${getTransactionTypeText(transaction.type)}</div>
+      </div>
+    `,
+      )
+      .join('');
+  }
+
+  // 渲染无记录状态
+  function renderNoRecords(isLightMode = false, title) {
+    return `
+      <div style="
+        text-align: center;
+        padding: 40px 20px;
+        color: ${isLightMode ? '#6b7280' : '#9ca3af'};
+        font-size: 15px;
+      ">
+        <svg viewBox="0 0 24 24" style="width: 48px; height: 48px; fill: currentColor; opacity: 0.3; margin: 0 auto 12px;">
+          <g><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></g>
+        </svg>
+        <div style="font-weight: 600; margin-bottom: 8px;">暂无${title}</div>
+        <div style="font-size: 13px; opacity: 0.8;">
+          ${title.includes('收款') ? '收到的资金会显示在这里' : '转出的资金会显示在这里'}
+        </div>
+      </div>
+    `;
+  }
+
+  // 获取交易类型文本
+  function getTransactionTypeText(type) {
+    const typeMap = {
+      deposit: '充值',
+      transfer_in: '收款',
+      transfer_out: '转账',
+      refund: '退款',
+      init: '初始化',
+      tip: '打赏',
+    };
+    return typeMap[type] || type;
+  }
+
+  // 关闭交易历史弹窗
+  window.closeTransactionHistoryModal = function () {
+    const modal = document.getElementById('transaction-history-modal');
+    if (modal) {
+      const historyCard = modal.querySelector('div');
+      historyCard.style.transform = 'scale(0.9) translateY(20px)';
+      historyCard.style.opacity = '0';
+
+      setTimeout(() => {
+        modal.remove();
+        document.body.style.overflow = 'auto';
+      }, 200);
+    }
+  };
+
+  // 添加资金 (占位函数，保持兼容性)
+  function addFunds() {
+    showIncomeHistory();
+  }
+
+  // 发送金钱 (占位函数，保持兼容性)
+  function sendMoney() {
+    showExpenseHistory();
+  }
+
+  // 分享钱包 (占位函数)
+  function shareWallet() {
+    showXToast('分享功能开发中...', 'info');
+  }
+
+  // 导出钱包 (占位函数)
+  function exportWallet() {
+    showXToast('导出功能开发中...', 'info');
+  }
+
+  // 复制钱包信息 (占位函数)
+  function copyWalletInfo() {
+    const userName = window.userProfileData?.name || userProfileData.name || '用户';
+    const info = `${userName}的数字钱包\n余额: $${walletData.balance.toFixed(2)}\n状态: ${
+      walletData.isActivated ? '已激活' : '未激活'
+    }`;
+
+    if (navigator.clipboard) {
+      navigator.clipboard
+        .writeText(info)
+        .then(() => {
+          showXToast('钱包信息已复制', 'success');
+        })
+        .catch(() => {
+          showXToast('复制失败', 'error');
+        });
+    } else {
+      showXToast('复制功能不支持', 'error');
     }
   }
 
@@ -24769,8 +26967,9 @@ ${existingQuestionsContext}
 
   // 发帖弹窗相关功能
 
-  // 隐私设置状态：'public' = 所有人可见，'private' = 仅自己可见
+  // 隐私设置状态：'public' = 所有人可见，'private' = 仅自己可见，'business' = 商业化推贴
   let tweetPrivacySetting = 'public';
+  let selectedBusinessTransferId = null; // 选中的商业转账任务ID
 
   // 打开发帖弹窗
   function openComposeTweetModal() {
@@ -24826,6 +27025,7 @@ ${existingQuestionsContext}
 
     // 重置隐私设置为默认值
     tweetPrivacySetting = 'public';
+    selectedBusinessTransferId = null;
     const iconPath = document.getElementById('privacy-icon-path');
     const textElement = document.getElementById('privacy-text');
     iconPath.setAttribute(
@@ -24833,6 +27033,11 @@ ${existingQuestionsContext}
       'M12 1.75C6.34 1.75 1.75 6.34 1.75 12S6.34 22.25 12 22.25 22.25 17.66 22.25 12 17.66 1.75 12 1.75zm-.81 14.68l-4.1-3.27 1.25-1.57 2.47 1.98 3.97-5.47 1.62 1.18-5.21 7.15z',
     );
     textElement.textContent = '所有人可以回复';
+    textElement.style.color = 'var(--x-accent)';
+
+    // 隐藏商业任务选择区域
+    const businessSection = document.getElementById('business-task-selection');
+    if (businessSection) businessSection.style.display = 'none';
 
     // 清理引用内容
     if (typeof removeQuoteContent === 'function') {
@@ -25165,10 +27370,28 @@ ${existingQuestionsContext}
   }
 
   // 切换隐私设置
-  function togglePrivacySettings() {
-    // 切换隐私状态
-    tweetPrivacySetting = tweetPrivacySetting === 'public' ? 'private' : 'public';
+  async function togglePrivacySettings() {
+    // 三种模式循环切换：public → private → business → public
+    if (tweetPrivacySetting === 'public') {
+      tweetPrivacySetting = 'private';
+    } else if (tweetPrivacySetting === 'private') {
+      // 检查是否有待完成的商业转账任务
+      const hasBusinessTasks = await checkPendingBusinessTasks();
+      if (hasBusinessTasks) {
+        tweetPrivacySetting = 'business';
+      } else {
+        tweetPrivacySetting = 'public';
+        showXToast('当前没有待完成的商业转账任务', 'info');
+      }
+    } else {
+      tweetPrivacySetting = 'public';
+    }
 
+    updatePrivacySettingUI();
+  }
+
+  // 更新隐私设置UI
+  function updatePrivacySettingUI() {
     const iconPath = document.getElementById('privacy-icon-path');
     const textElement = document.getElementById('privacy-text');
 
@@ -25179,16 +27402,347 @@ ${existingQuestionsContext}
         'M12 1.75C6.34 1.75 1.75 6.34 1.75 12S6.34 22.25 12 22.25 22.25 17.66 22.25 12 17.66 1.75 12 1.75zm-.81 14.68l-4.1-3.27 1.25-1.57 2.47 1.98 3.97-5.47 1.62 1.18-5.21 7.15z',
       );
       textElement.textContent = '所有人可以回复';
-    } else {
+      textElement.style.color = 'var(--x-accent)';
+
+      // 隐藏商业任务选择区域
+      const businessSection = document.getElementById('business-task-selection');
+      if (businessSection) businessSection.style.display = 'none';
+
+      showXToast('已切换为所有人可见', 'success');
+    } else if (tweetPrivacySetting === 'private') {
       // 仅自己可见
       iconPath.setAttribute(
         'd',
         'M17.863 13.44c1.477 1.58 2.366 3.8 2.632 6.46l.11 1.1H3.395l.11-1.1c.266-2.66 1.155-4.88 2.632-6.46C7.627 11.85 9.648 11 12 11s4.373.85 5.863 2.44zM12 2C9.791 2 8 3.79 8 6s1.791 4 4 4 4-1.79 4-4-1.791-4-4-4z',
       );
       textElement.textContent = '仅自己可见';
-    }
+      textElement.style.color = 'var(--x-accent)';
 
-    showXToast(`已切换为${tweetPrivacySetting === 'public' ? '所有人可见' : '仅自己可见'}`, 'success');
+      // 隐藏商业任务选择区域
+      const businessSection = document.getElementById('business-task-selection');
+      if (businessSection) businessSection.style.display = 'none';
+
+      showXToast('已切换为仅自己可见', 'success');
+    } else {
+      // 商业化推贴
+      iconPath.setAttribute(
+        'd',
+        'M20 6h-3V4c0-1.1-.9-2-2-2H9c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM9 4h6v2H9V4zm11 16H4V8h16v12z',
+      );
+      textElement.textContent = '商业化推贴';
+      textElement.style.color = 'var(--x-accent)';
+
+      // 显示商业任务选择区域
+      showBusinessTaskSelection();
+
+      showXToast('已切换为商业化推贴', 'success');
+    }
+  }
+
+  // 检查是否有待完成的商业转账任务
+  async function checkPendingBusinessTasks() {
+    try {
+      const xDb = getXDB();
+      const businessTransfersId = `businessTransfers_${currentAccountId || 'main'}`;
+      const savedData = await xDb.xAccountProfiles.get(businessTransfersId);
+
+      console.log('🔍 [检查商业任务] 数据:', savedData);
+
+      if (!savedData || !savedData.data) {
+        console.log('🔍 [检查商业任务] 没有保存的数据');
+        return false;
+      }
+
+      console.log('🔍 [检查商业任务] 总任务数:', savedData.data.length);
+
+      // 筛选接收的、进行中且未过期的商业转账
+      const now = new Date();
+      const pendingTasks = savedData.data.filter(t => {
+        console.log('🔍 [检查任务]', {
+          direction: t.direction,
+          taskStatus: t.taskStatus,
+          taskDeadline: t.taskDeadline,
+          acceptedAt: t.acceptedAt,
+          taskDeadlineHours: t.taskDeadlineHours,
+        });
+
+        if (t.direction !== 'received' || t.taskStatus !== 'in_progress') return false;
+
+        // 检查是否有 taskDeadline 字段，如果没有则尝试动态计算
+        let deadline;
+        if (!t.taskDeadline) {
+          if (t.acceptedAt && t.taskDeadlineHours) {
+            // 动态计算截止时间
+            const acceptedTime = new Date(t.acceptedAt);
+            const deadlineHours = parseFloat(t.taskDeadlineHours) || 24;
+            deadline = new Date(acceptedTime.getTime() + deadlineHours * 60 * 60 * 1000);
+            console.log('⚠️ [检查任务] 动态计算截止时间:', deadline.toISOString());
+          } else {
+            console.warn('⚠️ [检查任务] 任务没有足够信息计算截止时间，仍然认为有效', t);
+            return true; // 如果没有截止时间，认为任务有效
+          }
+        } else {
+          deadline = new Date(t.taskDeadline);
+        }
+
+        const isValid = deadline.getTime() > now.getTime();
+        console.log('🔍 [检查任务] 是否有效:', isValid, '截止时间:', deadline, '现在:', now);
+        return isValid; // 只保留未过期的任务
+      });
+
+      console.log('🔍 [检查商业任务] 有效任务数:', pendingTasks.length);
+      return pendingTasks.length > 0;
+    } catch (error) {
+      console.error('检查商业任务失败:', error);
+      return false;
+    }
+  }
+
+  // 显示商业任务选择区域
+  async function showBusinessTaskSelection() {
+    try {
+      const xDb = getXDB();
+      const businessTransfersId = `businessTransfers_${currentAccountId || 'main'}`;
+      const savedData = await xDb.xAccountProfiles.get(businessTransfersId);
+
+      const businessSection = document.getElementById('business-task-selection');
+      const tasksList = document.getElementById('business-tasks-list');
+
+      if (!businessSection || !tasksList) return;
+
+      businessSection.style.display = 'block';
+      tasksList.innerHTML = '';
+
+      if (!savedData || !savedData.data) {
+        tasksList.innerHTML = `
+          <div style="
+            text-align: center;
+            padding: 24px 12px;
+            color: #71767b;
+            font-size: 13px;
+          ">
+            <svg viewBox="0 0 24 24" style="width: 40px; height: 40px; fill: currentColor; opacity: 0.3; margin: 0 auto 8px;">
+              <g><path d="M20 6h-3V4c0-1.1-.9-2-2-2H9c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM9 4h6v2H9V4zm11 16H4V8h16v12z"></path></g>
+            </svg>
+            <div>没有待完成的任务</div>
+          </div>
+        `;
+        return;
+      }
+
+      // 筛选接收的、进行中的商业转账，并排除已过期的任务
+      const now = new Date();
+      console.log('📋 [显示任务列表] 开始筛选，总数:', savedData.data.length);
+
+      const pendingTasks = savedData.data.filter(t => {
+        console.log('📋 [筛选任务]', {
+          direction: t.direction,
+          taskStatus: t.taskStatus,
+          taskDeadline: t.taskDeadline,
+          acceptedAt: t.acceptedAt,
+          taskDeadlineHours: t.taskDeadlineHours,
+        });
+
+        if (t.direction !== 'received' || t.taskStatus !== 'in_progress') return false;
+
+        // 如果没有截止时间，尝试动态计算
+        let deadline;
+        if (!t.taskDeadline) {
+          if (t.acceptedAt && t.taskDeadlineHours) {
+            // 动态计算截止时间
+            const acceptedTime = new Date(t.acceptedAt);
+            const deadlineHours = parseFloat(t.taskDeadlineHours) || 24;
+            deadline = new Date(acceptedTime.getTime() + deadlineHours * 60 * 60 * 1000);
+            console.log('⚠️ [筛选任务] 动态计算截止时间:', deadline.toISOString());
+          } else {
+            console.warn('⚠️ [筛选任务] 任务没有足够信息计算截止时间，仍然显示', t.transferId);
+            return true;
+          }
+        } else {
+          deadline = new Date(t.taskDeadline);
+        }
+
+        const isValid = deadline.getTime() > now.getTime();
+        console.log('📋 [筛选任务] 是否有效:', isValid);
+        return isValid; // 只保留未过期的任务
+      });
+
+      console.log('📋 [显示任务列表] 筛选后:', pendingTasks.length);
+
+      if (pendingTasks.length === 0) {
+        tasksList.innerHTML = `
+          <div style="
+            text-align: center;
+            padding: 24px 12px;
+            color: #71767b;
+            font-size: 13px;
+          ">
+            <svg viewBox="0 0 24 24" style="width: 40px; height: 40px; fill: currentColor; opacity: 0.3; margin: 0 auto 8px;">
+              <g><path d="M20 6h-3V4c0-1.1-.9-2-2-2H9c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM9 4h6v2H9V4zm11 16H4V8h16v12z"></path></g>
+            </svg>
+            <div>没有待完成的任务</div>
+          </div>
+        `;
+        return;
+      }
+
+      // 渲染任务列表
+      pendingTasks.forEach(task => {
+        // 获取或计算截止时间
+        let deadline;
+        if (task.taskDeadline) {
+          deadline = new Date(task.taskDeadline);
+        } else if (task.acceptedAt && task.taskDeadlineHours) {
+          const acceptedTime = new Date(task.acceptedAt);
+          const deadlineHours = parseFloat(task.taskDeadlineHours) || 24;
+          deadline = new Date(acceptedTime.getTime() + deadlineHours * 60 * 60 * 1000);
+        } else {
+          // 无法计算截止时间，使用默认24小时
+          deadline = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+        }
+
+        const remainingMs = deadline.getTime() - now.getTime();
+
+        // 计算剩余时间
+        const hours = Math.floor(remainingMs / (1000 * 60 * 60));
+        const minutes = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
+        const deadlineText = hours > 0 ? `剩余 ${hours}小时${minutes}分钟` : `剩余 ${minutes}分钟`;
+
+        const isSelected = selectedBusinessTransferId === task.transferId;
+
+        const taskCard = document.createElement('div');
+        taskCard.style.cssText = `
+          padding: 14px;
+          margin-bottom: 10px;
+          background: linear-gradient(135deg, ${
+            isSelected ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255, 255, 255, 0.03)'
+          } 0%, ${isSelected ? 'rgba(255, 255, 255, 0.04)' : 'rgba(255, 255, 255, 0.01)'} 100%);
+          border: 1px solid ${isSelected ? 'rgba(255, 255, 255, 0.25)' : 'rgba(255, 255, 255, 0.1)'};
+          border-radius: 10px;
+          cursor: pointer;
+          transition: all 0.2s;
+          position: relative;
+          overflow: hidden;
+        `;
+
+        taskCard.innerHTML = `
+          <!-- 票券水印 -->
+          <div style="
+            position: absolute;
+            top: 50%;
+            right: -25px;
+            transform: translateY(-50%) rotate(15deg);
+            font-size: 28px;
+            color: rgba(255, 255, 255, 0.02);
+            font-weight: 700;
+            pointer-events: none;
+          ">TASK</div>
+          
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+            <div style="flex: 1;">
+              <div style="color: #fff; font-size: 14px; font-weight: 600; margin-bottom: 4px;">
+                来自 ${task.senderName}
+              </div>
+              <div style="color: #71767b; font-size: 11px; font-family: monospace; letter-spacing: 0.3px;">${
+                task.senderHandle
+              }</div>
+            </div>
+            <div style="
+              padding: 4px 10px;
+              background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.06) 100%);
+              color: #e5e5e5;
+              font-size: 10px;
+              font-weight: 600;
+              border-radius: 8px;
+              border: 1px solid rgba(255, 255, 255, 0.15);
+              letter-spacing: 0.5px;
+              display: flex;
+              align-items: center;
+              gap: 4px;
+            ">
+              <svg viewBox="0 0 24 24" style="width: 10px; height: 10px; fill: currentColor;">
+                <g><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7V7z"></path></g>
+              </svg>
+              ${deadlineText}
+            </div>
+          </div>
+          
+          <!-- 任务描述 -->
+          <div style="
+            color: #e5e5e5;
+            font-size: 13px;
+            line-height: 1.4;
+            margin-bottom: 12px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.02);
+            border-left: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: 4px;
+          ">${task.taskDescription}</div>
+          
+          <!-- 底部信息 -->
+          <div style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 10px;
+            border-top: 1px dashed rgba(255, 255, 255, 0.1);
+          ">
+            <div style="
+              color: #71767b;
+              font-size: 11px;
+              font-family: monospace;
+            ">$${task.amount} <span style="opacity: 0.6;">(定金 $${task.depositAmount})</span></div>
+            ${
+              isSelected
+                ? `<div style="
+              display: inline-flex;
+              align-items: center;
+              gap: 4px;
+              padding: 3px 8px;
+              background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.06) 100%);
+              border: 1px solid rgba(255, 255, 255, 0.2);
+              border-radius: 8px;
+              font-size: 10px;
+              font-weight: 600;
+              color: #fff;
+              letter-spacing: 0.5px;
+            ">
+              <svg viewBox="0 0 24 24" style="width: 10px; height: 10px; fill: currentColor;">
+                <g><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"></path></g>
+              </svg>
+              已选择
+            </div>`
+                : ''
+            }
+          </div>
+        `;
+
+        taskCard.onclick = () => {
+          selectedBusinessTransferId = task.transferId;
+          showBusinessTaskSelection(); // 重新渲染以更新选中状态
+        };
+
+        taskCard.onmouseover = function () {
+          if (!isSelected) {
+            this.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+            this.style.background =
+              'linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%)';
+          }
+        };
+
+        taskCard.onmouseout = function () {
+          if (!isSelected) {
+            this.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+            this.style.background =
+              'linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%)';
+          }
+        };
+
+        tasksList.appendChild(taskCard);
+      });
+    } catch (error) {
+      console.error('显示商业任务失败:', error);
+    }
   }
 
   // 发布推文
@@ -25199,6 +27753,14 @@ ${existingQuestionsContext}
     if (!content) {
       showXToast('请输入推文内容', 'error');
       return;
+    }
+
+    // 验证商业化推贴的必填项
+    if (tweetPrivacySetting === 'business') {
+      if (!selectedBusinessTransferId) {
+        showXToast('请选择要完成的商业任务', 'error');
+        return;
+      }
     }
 
     // 获取附加内容（使用window.userProfileData确保获取最新账号数据）
@@ -25224,6 +27786,12 @@ ${existingQuestionsContext}
       comments: [],
       privacy: tweetPrivacySetting,
     };
+
+    // 如果是商业化推贴，添加商业转账信息
+    if (tweetPrivacySetting === 'business') {
+      tweetData.businessTransferId = selectedBusinessTransferId;
+      tweetData.isBusinessPost = true;
+    }
 
     // 如果有引用内容，添加到推文中
     if (typeof currentQuoteData !== 'undefined' && currentQuoteData) {
@@ -25261,8 +27829,13 @@ ${existingQuestionsContext}
 
     showXToast(currentQuoteData ? '引用转发已发布！' : '发帖成功！', 'success');
 
+    // 如果是商业化推贴，触发AI任务评估
+    if (tweetPrivacySetting === 'business') {
+      showXToast('正在提交任务成果...', 'info');
+      await handleBusinessPostSubmission(tweetData, selectedBusinessTransferId);
+    }
     // 如果设置为所有人可见，触发AI回复
-    if (tweetPrivacySetting === 'public') {
+    else if (tweetPrivacySetting === 'public') {
       showXToast('正在等待回复...', 'info');
       await generateAIResponseForTweet(tweetData);
     }
@@ -26225,14 +28798,22 @@ ${existingQuestionsContext}
       tweetData.user && (tweetData.user.handle === userProfileData.handle || tweetData.id.startsWith('user_'));
     console.log('📝 [提交评论] 准备触发AI回复，isOwnPost:', isOwnPost);
 
-    await generateUnifiedAIResponse(tweetData, newComment, {
-      isOwnPost,
-      commentType: 'main_comment',
-      pageType: 'detail',
-      parentComment: null,
-    });
+    // 🔧 使用异步非阻塞方式触发AI回复，避免用户离开页面时中断导致的问题
+    setTimeout(async () => {
+      try {
+        await generateUnifiedAIResponse(tweetData, newComment, {
+          isOwnPost,
+          commentType: 'main_comment',
+          pageType: 'detail',
+          parentComment: null,
+        });
+        console.log('✅ [提交评论] AI回复生成完成');
+      } catch (error) {
+        console.error('❌ [提交评论] AI回复生成失败:', error);
+      }
+    }, 100);
 
-    console.log('✅ [提交评论] 评论提交流程完成');
+    console.log('✅ [提交评论] 评论提交流程完成（AI回复已异步触发）');
   }
 
   function renderDetailComments(comments) {
@@ -26266,6 +28847,240 @@ ${existingQuestionsContext}
     replyUserAvatars.forEach(avatar => {
       avatar.src = userProfileData.avatar;
     });
+  }
+
+  // ============================================
+  // 商业推贴提交处理
+  // ============================================
+
+  // 处理商业推贴提交
+  async function handleBusinessPostSubmission(tweetData, businessTransferId) {
+    try {
+      console.log('💼 [商业推贴] 开始处理任务提交');
+
+      // 获取商业转账信息
+      const xDb = getXDB();
+      const businessTransfersId = `businessTransfers_${currentAccountId || 'main'}`;
+      const savedData = await xDb.xAccountProfiles.get(businessTransfersId);
+
+      if (!savedData || !savedData.data) {
+        console.error('❌ 未找到商业转账数据');
+        return;
+      }
+
+      const businessTransfer = savedData.data.find(t => t.transferId === businessTransferId);
+      if (!businessTransfer) {
+        console.error('❌ 未找到对应的商业转账');
+        return;
+      }
+
+      console.log('✅ [商业推贴] 找到商业转账:', businessTransfer);
+
+      // 查找对应的AI对话
+      const conversationId = `messageConversation_${currentAccountId || 'main'}_${businessTransfer.conversationId}`;
+      const conversation = await xDb.xAccountProfiles.get(conversationId);
+
+      if (!conversation) {
+        console.error('❌ 未找到对话信息');
+        showXToast('无法找到对应的对话，请手动联系对方', 'error');
+        return;
+      }
+
+      console.log('✅ [商业推贴] 找到对话:', conversation);
+
+      // 构建正确的对话数据结构
+      const conversationData = {
+        id: businessTransfer.conversationId,
+        user: {
+          name: businessTransfer.senderName,
+          handle: businessTransfer.senderHandle,
+          avatar: businessTransfer.senderAvatar,
+          verified: false,
+        },
+      };
+
+      // 触发AI评估并发送私信
+      await triggerBusinessTaskEvaluation(tweetData, businessTransfer, conversationData);
+    } catch (error) {
+      console.error('❌ [商业推贴] 处理失败:', error);
+      showXToast('提交失败: ' + error.message, 'error');
+    }
+  }
+
+  // 触发商业任务评估（AI自动发送私信）
+  async function triggerBusinessTaskEvaluation(tweetData, businessTransfer, conversationData) {
+    try {
+      console.log('🤖 [商业任务评估] 开始AI评估流程');
+
+      // 第一步：先触发AI评论生成（第二个情景）
+      console.log('📝 [商业任务评估] 步骤1：生成AI评论...');
+
+      // 标记这是商业化推贴
+      const businessTweetData = {
+        ...tweetData,
+        _isBusinessPost: true,
+        _businessTransferId: businessTransfer.transferId,
+        _taskDescription: businessTransfer.taskDescription,
+      };
+
+      // 调用发帖生成器
+      await generateAIResponseForTweet(businessTweetData);
+
+      // 第二步：等待评论生成完成后，延迟3秒再发送评估私信
+      setTimeout(async () => {
+        console.log('💬 [商业任务评估] 步骤2：发送AI评估私信...');
+
+        showPhoneNotification({
+          title: 'X',
+          message: `${conversationData.user.name} 正在评估你的任务完成情况...`,
+          avatar: conversationData.user.avatar,
+          leftIcon: 'x',
+        });
+
+        // 调用第九个情景的AI私信评估
+        await generateBusinessTaskEvaluationMessage(tweetData, businessTransfer, conversationData);
+      }, 3000); // 等待3秒让用户看到评论
+    } catch (error) {
+      console.error('❌ [商业任务评估] 失败:', error);
+      showXToast('任务评估失败: ' + error.message, 'error');
+    }
+  }
+
+  // 生成商业任务评估私信（调用第九个情景）
+  async function generateBusinessTaskEvaluationMessage(tweetData, businessTransfer, conversationData) {
+    try {
+      console.log('💼 [AI评估] 开始生成评估私信');
+
+      // 构建评估上下文
+      const evaluationContext = {
+        isBusinessTaskEvaluation: true,
+        tweetData: tweetData,
+        businessTransfer: businessTransfer,
+      };
+
+      // 调用第九个情景的私信生成器（续写模式）
+      const messageData = {
+        id: conversationData.id,
+        user: conversationData.user,
+      };
+
+      const aiMessages = await generateMessageConversation(messageData, true, {
+        isAutoMessage: true,
+        businessTaskEvaluation: evaluationContext,
+      });
+
+      if (!aiMessages || aiMessages.length === 0) {
+        console.error('❌ [AI评估] 未生成评估消息');
+        return;
+      }
+
+      console.log('✅ [AI评估] 生成了评估消息:', aiMessages);
+
+      // 保存AI评估消息到私信数据库
+      const xDb = getXDB();
+      const conversationId = `messageConversation_${currentAccountId || 'main'}_${conversationData.id}`;
+      const savedConversation = await xDb.xAccountProfiles.get(conversationId);
+
+      if (savedConversation && savedConversation.data) {
+        // 添加AI消息到对话记录
+        aiMessages.forEach(msg => {
+          savedConversation.data.messages.push({
+            ...msg,
+            isOwn: false,
+            timestamp: new Date().toISOString(),
+          });
+        });
+
+        await xDb.xAccountProfiles.put(savedConversation);
+        console.log('✅ [AI评估] 评估消息已保存到数据库');
+
+        // 检查是否有转账消息（支付尾款、扣款或额外奖励）
+        const transferMessages = aiMessages.filter(msg => msg.type === 'transfer');
+        if (transferMessages.length > 0) {
+          // 处理AI发起的转账（尾款支付）
+          for (const transferMsg of transferMessages) {
+            await handleAIBusinessPayment(transferMsg, businessTransfer, conversationData);
+          }
+        }
+
+        // 显示通知
+        setTimeout(() => {
+          showPhoneNotification({
+            title: 'X',
+            message: `${conversationData.user.name} 已完成任务评估`,
+            avatar: conversationData.user.avatar,
+            leftIcon: 'x',
+          });
+        }, 1000);
+      }
+    } catch (error) {
+      console.error('❌ [AI评估] 生成评估私信失败:', error);
+    }
+  }
+
+  // 处理AI商业任务付款
+  async function handleAIBusinessPayment(transferMessage, businessTransfer, conversationData) {
+    try {
+      console.log('💰 [AI付款] 处理商业任务付款:', transferMessage);
+
+      const amount = parseFloat(transferMessage.amount || 0);
+      if (amount <= 0) return;
+
+      // 更新钱包余额
+      await loadWalletData();
+      const currentBalance = parseFloat(walletData.balance) || 0;
+      walletData.balance = currentBalance + amount;
+
+      // 添加交易记录
+      const senderName = conversationData.user?.name || '对方';
+      let transactionDesc = '';
+
+      if (transferMessage.note) {
+        transactionDesc = `${senderName} - ${transferMessage.note}`;
+      } else {
+        transactionDesc = `商业转账尾款 - ${senderName}`;
+      }
+
+      const transaction = {
+        id: 'business_payment_' + Date.now(),
+        description: transactionDesc,
+        amount: amount,
+        timestamp: new Date().toISOString(),
+        type: 'business_transfer_remaining_in',
+      };
+
+      walletData.transactions.unshift(transaction);
+      await saveWalletData();
+
+      // 更新商业转账状态
+      const xDb = getXDB();
+      const businessTransfersId = `businessTransfers_${currentAccountId || 'main'}`;
+      const savedData = await xDb.xAccountProfiles.get(businessTransfersId);
+
+      if (savedData && savedData.data) {
+        const transfer = savedData.data.find(t => t.transferId === businessTransfer.transferId);
+        if (transfer) {
+          transfer.taskStatus = 'completed';
+          transfer.completedAt = new Date().toISOString();
+          await xDb.xAccountProfiles.put(savedData);
+          console.log('✅ [AI付款] 商业转账状态已更新为已完成');
+        }
+      }
+
+      console.log('✅ [AI付款] 付款完成，金额:', amount, '新余额:', walletData.balance);
+
+      // 显示收款通知
+      setTimeout(() => {
+        showPhoneNotification({
+          title: 'X Wallet',
+          message: `已收款 $${amount.toFixed(2)}, 当前余额 $${walletData.balance.toFixed(2)}`,
+          avatar: window.userProfileData?.avatar,
+          leftIcon: 'x',
+        });
+      }, 2000);
+    } catch (error) {
+      console.error('❌ [AI付款] 处理付款失败:', error);
+    }
   }
 
   // ▼▼▼ 【主要！！！】第二个情景：发帖生成器▼▼▼
@@ -26329,6 +29144,8 @@ ${existingQuestionsContext}
 
       // 检测是否为账户推文
       const isAccountTweet = tweetData._source === 'account';
+      // 检测是否为商业推文
+      const isBusinessPost = tweetData.isBusinessPost === true;
       let targetProfileInfo;
       let isBoundCharacterAccount = false; // 是否为绑定角色的账户
       let boundCharacterIdForAccount = null; // 绑定角色的ID
@@ -26620,6 +29437,18 @@ ${
   * 新顶层评论必须有明显的时间感（如"刚看到"、"现在才发现"等）
   * 新评论角度要与已有评论**完全不同**，不要重复任何观点
   * 可以是后来者的补充、质疑、或从全新角度的讨论`
+    : ''
+}
+${
+  isBusinessPost
+    ? `- 💼 **商业推文特殊要求**：
+  * 这是一条商业化推文（广告/推广性质），数据应该更高
+  * 互动数据（点赞、转发、浏览量）应该是普通推文的1.5-3倍
+  * 评论区应该有30-50%是正面支持性评论（"支持！"、"好棒"、"已下单"等）
+  * 20-30%是询问相关信息的评论（"在哪买"、"多少钱"、"怎么联系"等）
+  * 10-20%可以是中性或轻微质疑的评论（保持真实感）
+  * 评论风格应该更像粉丝/潜在客户，而非批评者
+  * 如果用户有较高知名度，应该体现出粉丝经济效应`
     : ''
 }
 - 引用转发处理：如帖子含引用内容，评论可涉及用户观点和被引用原内容
@@ -27016,6 +29845,15 @@ ${tweetData.link ? `链接：${tweetData.link.title || tweetData.link.url}` : ''
         avatar: userAvatar,
         leftIcon: 'x',
       });
+
+      // 🎁 如果是商业推文且不是重新生成/推进模式，触发打赏生成器
+      if (isBusinessPost && !isReroll && !isProgressMode) {
+        console.log('🎁 [打赏生成器] 检测到商业推文，开始生成打赏数据');
+        // 异步执行，不阻塞主流程
+        generateTipsForBusinessPost(tweetData, interactionData).catch(err => {
+          console.error('生成打赏失败（静默）:', err);
+        });
+      }
     } catch (error) {
       console.error('生成AI回复失败:', error);
       showXToast(`回复生成失败: ${error.message}`, 'error');
@@ -27162,6 +30000,301 @@ ${tweetData.link ? `链接：${tweetData.link.title || tweetData.link.url}` : ''
 
     return [];
   }
+
+  // ▼▼▼ 【次要】打赏生成器：为商业推文生成随机打赏 ▼▼▼
+  /**
+   * 为商业推文生成打赏数据
+   * @param {Object} tweetData - 推文数据
+   * @param {Object} interactionData - AI生成的互动数据
+   */
+  async function generateTipsForBusinessPost(tweetData, interactionData) {
+    try {
+      console.log('🎁 [打赏生成器] 开始为商业推文生成打赏');
+
+      // 从数据库读取API配置
+      const db = getDB();
+      const xDb = getXDB();
+
+      const apiConfig = await db.apiConfig.get('main');
+      if (!apiConfig || !apiConfig.proxyUrl || !apiConfig.apiKey || !apiConfig.model) {
+        console.error('🎁 [打赏生成器] API配置不完整，跳过打赏生成');
+        return;
+      }
+
+      const { proxyUrl, apiKey, model } = apiConfig;
+
+      // 获取用户X资料
+      const userXProfileInfo = StringBuilders.buildUserXProfileInfo(window.userProfileData);
+
+      // 构建AI提示词
+      let systemPrompt = `你是X社交平台的打赏生成器。用户刚发布了一条商业推文（广告/推广性质），现在需要生成粉丝/支持者的打赏记录。
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 核心任务：生成打赏记录 🎯
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+**用户信息**：
+- 用户名：${userXProfileInfo.name}
+- 用户句柄：${userXProfileInfo.handle}
+- 认证状态：${userXProfileInfo.verified ? '已认证' : '未认证'}
+${userXProfileInfo.publicIdentity ? `- 公众身份：${userXProfileInfo.publicIdentity}` : ''}
+- 粉丝影响力：${userXProfileInfo.publicIdentity ? '有一定影响力' : '普通用户'}
+
+**商业推文内容**：
+"${tweetData.content}"
+
+**推文数据表现**：
+- 👍 喜欢数：${interactionData.stats.likes}
+- 🔄 转发数：${interactionData.stats.retweets}
+- 💬 评论数：${interactionData.stats.comments}
+- 👀 浏览量：${interactionData.stats.views}
+
+**评论区反馈**（前5条）：
+${
+  interactionData.comments && interactionData.comments.length > 0
+    ? interactionData.comments
+        .slice(0, 5)
+        .map((c, i) => `${i + 1}. ${c.user.name}: "${c.content}"`)
+        .join('\n')
+    : '暂无评论'
+}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+💰 打赏生成规则 💰
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+**数量规则**：
+根据推文数据表现和用户影响力生成3-8条打赏记录：
+- 浏览量 < 1000：生成3-4条
+- 浏览量 1000-5000：生成4-6条
+- 浏览量 > 5000：生成6-8条
+- 如果用户有公众身份，+1条
+
+**金额规则**：
+根据用户影响力和数据表现：
+- 普通用户：每条 $5-$30
+- 有公众身份：每条 $10-$50
+- 认证用户：每条 $15-$80
+- 如果推文数据特别好（点赞>500），可能出现1-2条大额打赏（$50-$150）
+
+**打赏者信息**：
+- name: 粉丝/支持者的名字（真实感，不要太夸张）
+- handle: X平台句柄（格式：@username）
+- note: 打赏备注（简短、真诚、与推文内容相关）
+
+**备注示例**：
+- "支持！"
+- "很棒的产品！"
+- "已下单~"
+- "期待后续"
+- "感谢分享"
+- "继续加油！"
+- "值得推荐"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📋 JSON返回格式 📋
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+\`\`\`json
+{
+  "tips": [
+    {
+      "name": "打赏者姓名",
+      "handle": "@username",
+      "amount": 25.00,
+      "note": "打赏备注"
+    }
+  ]
+}
+\`\`\`
+
+**重要规则**：
+1. amount必须是数字类型，保留两位小数
+2. handle必须以@开头
+3. note要简短（不超过20字）、真诚、与推文内容相关
+4. 打赏者不能是用户本人
+5. 每条打赏记录独立，不要重复`;
+
+      const messages = [
+        {
+          role: 'user',
+          content: '请根据以上信息生成打赏记录。',
+        },
+      ];
+
+      // 判断API类型并发送请求
+      let isGemini = proxyUrl.includes('generativelanguage');
+      let response;
+
+      if (isGemini) {
+        const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models';
+        const geminiConfig = {
+          url: `${GEMINI_API_URL}/${model}:generateContent?key=${getRandomValue(apiKey)}`,
+          data: {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [
+                {
+                  parts: [{ text: systemPrompt + '\n\n' + messages[0].content }],
+                },
+              ],
+              generationConfig: {
+                temperature: 0.8,
+              },
+            }),
+          },
+        };
+        response = await fetch(geminiConfig.url, geminiConfig.data);
+      } else {
+        const openAiPayload = {
+          model: model,
+          messages: [{ role: 'system', content: systemPrompt }, ...messages],
+          temperature: 0.8,
+          stream: false,
+        };
+        response = await fetch(`${proxyUrl}/v1/chat/completions`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${apiKey}`,
+          },
+          body: JSON.stringify(openAiPayload),
+        });
+      }
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(`API错误: ${response.status} - ${errorData.error?.message || response.statusText}`);
+      }
+
+      const data = await response.json();
+      let aiResponseContent;
+
+      if (isGemini) {
+        aiResponseContent = getGeminiResponseText(data);
+      } else {
+        aiResponseContent = data.choices?.[0]?.message?.content || '';
+      }
+
+      console.log('🎁 [打赏生成器] AI原始响应:', aiResponseContent);
+
+      // 解析AI返回的JSON数据
+      const cleanedResponse = aiResponseContent
+        .replace(/```json\s*/, '')
+        .replace(/```\s*$/, '')
+        .trim();
+
+      let tipsData;
+      try {
+        tipsData = JSON.parse(cleanedResponse);
+      } catch (parseError) {
+        console.error('🎁 [打赏生成器] JSON解析失败:', parseError);
+        throw new Error(`AI返回的数据不是有效的JSON格式: ${parseError.message}`);
+      }
+
+      if (!tipsData.tips || !Array.isArray(tipsData.tips)) {
+        throw new Error('AI返回的数据格式不正确');
+      }
+
+      console.log(`🎁 [打赏生成器] 成功生成${tipsData.tips.length}条打赏记录`);
+
+      // 调度打赏通知（在5小时内随机时间触发）
+      scheduleTipNotifications(tweetData.id, tipsData.tips);
+    } catch (error) {
+      console.error('🎁 [打赏生成器] 生成打赏失败:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * 调度打赏通知，在5小时内随机时间触发
+   * @param {string} tweetId - 推文ID
+   * @param {Array} tips - 打赏记录数组
+   */
+  function scheduleTipNotifications(tweetId, tips) {
+    console.log(`🎁 [打赏调度] 开始调度${tips.length}条打赏通知`);
+
+    const FIVE_HOURS_MS = 5 * 60 * 60 * 1000; // 5小时的毫秒数
+    const now = Date.now();
+
+    tips.forEach((tip, index) => {
+      // 在5小时内随机生成一个触发时间
+      const randomDelay = Math.random() * FIVE_HOURS_MS;
+
+      console.log(`🎁 [打赏调度] 打赏 #${index + 1} 将在 ${Math.round(randomDelay / 1000 / 60)} 分钟后触发`);
+
+      // 设置定时器
+      setTimeout(() => {
+        processTipNotification(tweetId, tip);
+      }, randomDelay);
+    });
+  }
+
+  /**
+   * 处理单个打赏通知
+   * @param {string} tweetId - 推文ID
+   * @param {Object} tip - 打赏数据
+   */
+  async function processTipNotification(tweetId, tip) {
+    try {
+      console.log('🎁 [打赏通知] 触发打赏:', tip);
+
+      // 1. 更新钱包余额
+      await loadWalletData();
+
+      if (!walletData.isActivated) {
+        console.warn('🎁 [打赏通知] 钱包未激活，跳过打赏');
+        return;
+      }
+
+      const amount = parseFloat(tip.amount);
+      walletData.balance += amount;
+
+      // 2. 添加交易记录
+      const transaction = {
+        id: 'tip_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+        description: `来自 ${tip.name} 的打赏`,
+        amount: amount,
+        timestamp: new Date().toISOString(),
+        type: 'tip',
+        note: tip.note,
+        tipper: {
+          name: tip.name,
+          handle: tip.handle,
+        },
+        tweetId: tweetId,
+      };
+
+      walletData.transactions.unshift(transaction);
+
+      // 3. 保存钱包数据
+      await saveWalletData();
+
+      console.log(`🎁 [打赏通知] 打赏已入账: +$${amount.toFixed(2)}`);
+
+      // 4. 显示手机样式通知
+      showPhoneNotification({
+        title: `收到来自 ${tip.name} 的赠金`,
+        message: `+$${amount.toFixed(2)} - ${tip.note}`,
+        avatar: window.userProfileData?.avatar,
+        leftIcon: 'custom',
+        leftIconHtml: `
+          <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; fill: #22c55e;">
+            <g><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.31-8.86c-1.77-.45-2.34-.94-2.34-1.67 0-.84.79-1.43 2.1-1.43 1.38 0 1.9.66 1.94 1.64h1.71c-.05-1.34-.87-2.57-2.49-2.97V5H10.9v1.69c-1.51.32-2.72 1.3-2.72 2.81 0 1.79 1.49 2.69 3.66 3.21 1.95.46 2.34 1.15 2.34 1.87 0 .53-.39 1.39-2.1 1.39-1.6 0-2.23-.72-2.32-1.64H8.04c.1 1.7 1.36 2.66 2.86 2.97V19h2.34v-1.67c1.52-.29 2.72-1.16 2.73-2.77-.01-2.2-1.9-2.96-3.66-3.42z"></path></g>
+          </svg>
+        `,
+        duration: 4000,
+      });
+
+      // 5. 显示toast提示
+      showXToast(`收到打赏 +$${amount.toFixed(2)}`, 'success');
+    } catch (error) {
+      console.error('🎁 [打赏通知] 处理打赏失败:', error);
+    }
+  }
+  // ▲▲▲ 【次要】打赏生成器 ▲▲▲
+
   // ▲▲▲ 【主要！！！】第二个情景：发帖生成器 ▲▲▲
 
   // 保存用户发布的帖子
@@ -29606,6 +32739,13 @@ ${tweetAuthorCharacter.relationships
       setTimeout(() => {
         if (typeof startAutoMessageSystem === 'function') {
           startAutoMessageSystem();
+        }
+      }, 120000); // 延迟2分钟启动，确保所有数据已加载
+
+      // 11.5. 启动粉丝数动态浮动系统
+      setTimeout(() => {
+        if (typeof startFollowersFluctuationSystem === 'function') {
+          startFollowersFluctuationSystem();
         }
       }, 120000); // 延迟2分钟启动，确保所有数据已加载
 
@@ -32492,11 +35632,12 @@ ${index + 1}. "${tweet.content}"
   // ▼▼▼ 【主要！！！】第九个情景：私信详情生成器▼▼▼
   async function generateMessageConversation(messageData, isContinueMode = false, options = {}) {
     try {
-      // options可以包含：isAutoMessage（自动发消息模式）、timeSinceLastMessage（距离上次消息的秒数）、isAskboxViewed（提问箱查看模式）、askboxContent（提问箱内容）
+      // options可以包含：isAutoMessage（自动发消息模式）、timeSinceLastMessage（距离上次消息的秒数）、isAskboxViewed（提问箱查看模式）、askboxContent（提问箱内容）、businessTaskEvaluation（商业任务评估）
       const isAutoMessage = options.isAutoMessage || false;
       const timeSinceLastMessage = options.timeSinceLastMessage || 0;
       const isAskboxViewed = options.isAskboxViewed || false;
       const askboxContent = options.askboxContent || '';
+      const businessTaskEvaluation = options.businessTaskEvaluation || null;
 
       // 从数据库读取API配置和X设置
       const db = getDB();
@@ -32551,6 +35692,19 @@ ${index + 1}. "${tweet.content}"
           console.log(`📖 [私信生成器] 读取到 ${existingMessages.length} 条现有对话记录`);
         } else {
           console.log(`📖 [私信生成器] 无现有对话记录（首次对话）`);
+        }
+      }
+
+      // 💼 检查是否有进行中的商业转账任务
+      let ongoingBusinessTransfer = null;
+      if (isContinueMode && existingMessages.length > 0) {
+        // 查找最近的进行中商业转账（倒序查找，取最新的）
+        const transferMessages = existingMessages.filter(
+          msg => msg.type === 'transfer' && msg.isBusiness && msg.taskStatus === 'in_progress',
+        );
+        if (transferMessages.length > 0) {
+          ongoingBusinessTransfer = transferMessages[transferMessages.length - 1]; // 最新的进行中任务
+          console.log(`💼 [商业转账] 检测到进行中的任务，接收方: ${ongoingBusinessTransfer.isOwn ? 'AI' : '用户'}`);
         }
       }
 
@@ -32691,8 +35845,135 @@ ${askboxContent}
             // 自动发消息模式
             const likedTweetContext = options.likedTweetContext;
             const hasLikedTweet = likedTweetContext && likedTweetContext.content;
+            const isBusinessEvaluation = businessTaskEvaluation && businessTaskEvaluation.isBusinessTaskEvaluation;
 
-            systemPrompt += `
+            if (isBusinessEvaluation) {
+              // 商业任务评估模式
+              const tweetData = businessTaskEvaluation.tweetData;
+              const businessTransfer = businessTaskEvaluation.businessTransfer;
+
+              // 计算推文数据
+              const likes = tweetData.stats?.likes || 0;
+              const retweets = tweetData.stats?.retweets || 0;
+              const comments = tweetData.stats?.comments || 0;
+              const views = tweetData.stats?.views || 0;
+
+              systemPrompt += `
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+💼 核心任务说明（商业任务评估模式 - 角色私信）💼
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+你是X社交平台的私信对话生成器。角色雇佣了用户完成商业推广任务，现在评估任务完成情况并决定付款。
+
+**对话场景**：
+- 📱 这是X社交平台（类似Twitter/X）的私信功能
+- 💼 角色${messageData.user.name}之前发起了商业转账
+- ✅ 用户已完成任务，发布了商业化推贴
+- 🤖 角色现在要评估任务完成情况，并决定如何付款
+
+**商业转账信息**：
+- 总金额：$${parseFloat(businessTransfer.amount).toFixed(2)}
+- 已支付定金：$${parseFloat(businessTransfer.depositAmount).toFixed(2)} (${businessTransfer.depositRatio}%)
+- 待付尾款：$${parseFloat(businessTransfer.remainingAmount).toFixed(2)}
+- 任务要求：${businessTransfer.taskDescription}
+- 任务期限：${businessTransfer.taskDeadlineHours}小时
+
+**用户完成的推贴内容**：
+- 推文内容："${tweetData.content}"
+${
+  tweetData.image
+    ? `- 包含图片：${tweetData.image.type === 'description' ? tweetData.image.content : '已上传图片'}`
+    : ''
+}
+${tweetData.location ? `- 位置：${tweetData.location}` : ''}
+- 发布时间：${tweetData.time || '刚刚'}
+
+**推文数据表现**：
+- 👍 喜欢数：${likes}
+- 🔄 转发数：${retweets}
+- 💬 评论数：${comments}
+- 👀 浏览量：${views}
+
+**评论区反馈**：
+${
+  tweetData.comments && tweetData.comments.length > 0
+    ? tweetData.comments
+        .slice(0, 5)
+        .map((c, i) => `${i + 1}. ${c.user.name}: "${c.content}"`)
+        .join('\n')
+    : '暂无评论'
+}
+
+**用户公众身份**：
+- 用户名：${userXProfileInfo.name}
+- 用户句柄：${userXProfileInfo.handle}
+- 认证状态：${userXProfileInfo.verified ? '已认证' : '未认证'}
+${userXProfileInfo.publicIdentity ? `- 公众身份：${userXProfileInfo.publicIdentity}` : ''}
+- 粉丝影响力：${userXProfileInfo.publicIdentity ? '有一定影响力' : '普通用户'}
+
+**评估规则**：
+🎯 你需要根据以下标准评估任务完成情况：
+
+1. **内容质量**（40%）：
+   - 推文是否符合任务要求？
+   - 表达是否自然，不是生硬的广告？
+   - 是否包含了要求的关键信息？
+
+2. **数据表现**（30%）：
+   - 推文的互动数据（喜欢、转发、评论、浏览量）如何？
+   - 与用户的粉丝基础相匹配吗？
+   - 评论区反馈是否正面？
+
+3. **用户影响力**（30%）：
+   - 用户的公众身份和影响力如何？
+   - 认证状态是否增加可信度？
+   - 是否值得额外投资？
+
+**付款决策**：
+根据评估结果，你需要决定：
+
+✅ **满意（80-100分）**：
+- 支付全额尾款 + 额外10-30%奖励
+- 示例：总额$200，定金$40，尾款$160，额外奖励$20-60
+- 在回复中表达满意，感谢合作，期待下次合作
+
+👍 **中规中矩（60-79分）**：
+- 支付全额尾款，无额外奖励
+- 示例：总额$200，定金$40，尾款$160
+- 在回复中表示认可，指出可以改进的地方
+
+😐 **不满意但可接受（40-59分）**：
+- 支付50-80%的尾款
+- 示例：总额$200，定金$40，尾款$160，实际支付$80-128
+- 在回复中指出不足，表达轻微失望
+
+❌ **非常不满意（<40分）**：
+- 不支付尾款或仅支付20-40%
+- 示例：总额$200，定金$40，尾款$160，实际支付$0-64
+- 在回复中明确指出问题，表达不满
+
+**重要规则**：
+- 🚨 只生成角色${messageData.user.name}的评估消息，不要生成用户的消息
+- ⚠️ **这是X平台的私信对话，不是手机短信或其他聊天软件**
+- 💰 **必须发送转账消息支付尾款**（amount为尾款金额，note说明付款原因）
+- 📖 参考下方的【X平台私信对话记录】，保持对话的连贯性
+- 🎭 评估要符合角色性格，有的角色很大方，有的很挑剔
+- 💬 生成1-3条文本消息说明评估结果，然后发送转账
+- ⚠️ 转账消息的note要说明是尾款、奖励还是扣款
+
+**消息示例结构**：
+1. 文本消息：评估内容质量
+2. 文本消息（可选）：评估数据表现
+3. 转账消息：支付尾款（必须）
+4. 文本消息（可选）：感谢或建议
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
+            } else {
+              // 普通自动发消息模式
+              const isAwayReturn = options.isAwayReturn || false;
+
+              systemPrompt += `
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🎯 核心任务说明（自动发消息模式 - 角色私信）🎯
@@ -32702,7 +35983,13 @@ ${askboxContent}
 **对话场景**：
 - 📱 这是X社交平台（类似Twitter/X）的私信功能
 ${
-  hasLikedTweet
+  isAwayReturn
+    ? `- 🔙 **特殊情况：离开后返回**
+- 角色${messageData.user.name}之前因为有事暂时离开，现在忙完了，主动联系用户
+- 距离上次对话已经过去了约 ${Math.round(timeSinceLastMessage / 60)} 分钟
+- 🤖 角色应该解释自己去忙什么了，并对让用户等待表示歉意或说明情况
+- 生成1-5条符合角色性格的主动消息，体现出刚忙完的状态`
+    : hasLikedTweet
     ? `- 💖 用户刚刚喜欢了角色${messageData.user.name}的推文
 - 📝 被喜欢的推文内容："${likedTweetContext.content}"
 - 🤖 角色发现用户喜欢了TA的推文，现在主动发送私信`
@@ -32719,7 +36006,15 @@ ${
 - 🚨 只生成角色${messageData.user.name}的主动消息，不要生成用户的消息
 - ⚠️ **这是X平台的私信对话，不是手机短信或其他聊天软件**
 ${
-  hasLikedTweet
+  isAwayReturn
+    ? `- 📖 **必须参考下方的【X平台私信对话记录】**，查看用户之前发送的消息
+- 🔙 角色现在忙完了，应该回应用户之前的消息内容
+- 可以先道歉/解释为什么离开了一段时间，然后回应用户的消息
+- 消息风格要自然，符合角色性格（有的角色会认真道歉，有的随意说明）
+- 根据角色性格和与用户的关系，调整道歉的正式程度
+- 回复要严格符合角色的性格、说话风格和与用户的关系
+- 参考角色的聊天记忆（包括X平台私信记忆和其他聊天记忆），保持一致性`
+    : hasLikedTweet
     ? `- 📖 **必须参考下方的【X平台私信对话记录】**，了解你们之前的对话内容，保持对话的连贯性和一致性
 - 💖 角色知道用户喜欢了TA的推文（上面显示的推文内容），可以表现出惊喜、开心、好奇等情绪
 - 可以结合推文内容展开话题，询问用户的想法或感受
@@ -32738,6 +36033,7 @@ ${
 - ⚠️ 禁止生成forward类型消息（这是用户手动转发产生的）
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 `;
+            }
           } else {
             // 普通回复模式
             systemPrompt += `
@@ -32758,15 +36054,99 @@ ${
 
 **重要规则**：
 - 🚨 只生成角色${messageData.user.name}的回复消息，不要生成用户的消息
-- 根据用户最近发送的消息内容，生成1-10条符合角色人设的自然回复
+
+**回复决策（你可以选择如何回应）**：
+1️⃣ **正常回复**：生成1-10条符合角色人设的自然回复（最常见）
+2️⃣ **不回复**：如果这是首次对话且用户的消息不吸引人、内容冒犯、或角色没有回复的理由，可以返回空数组[]
+3️⃣ **拉黑用户**：如果发生严重冲突、用户持续骚扰、或对话已经恶化到无法继续，可以返回拉黑系统提示
+4️⃣ **暂时离开**：如果角色临时有事无法回复（工作、上课、睡觉等），可以返回离开系统提示，稍后会主动联系用户
+
+**正常回复要求**：
 - 回复要严格符合角色的性格、说话风格和与用户的关系
 - 参考角色的聊天记忆（包括X平台私信记忆和其他聊天记忆），保持一致性
 - 可以适当提及角色最近在X平台发布的推文或动态
-- 消息类型包括：文本、图片（image：只需imageDescription和sensitive）、表情包（sticker：只需stickerUrl）、语音、文章链接（link：需要title、description、author、source、body完整正文）、转发推文、转发主页
+- 消息类型包括：文本、图片（image：只需imageDescription和sensitive）、表情包（sticker：只需stickerUrl）、语音、文章链接（link：需要title、description、author、source、body完整正文）、转发推文、转发主页、系统提示（system）
 - ⚠️ 注意：image和sticker是完全不同的类型，不要混淆！link类型是文章链接，需要包含完整的文章内容
 - ⚠️ 禁止生成forward类型消息（这是用户手动转发产生的）
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 `;
+
+            // 💼 添加商业任务上下文（如果有进行中的任务）
+            if (ongoingBusinessTransfer) {
+              const isAIReceiver = !ongoingBusinessTransfer.isOwn; // AI是接收方
+              const isUserReceiver = ongoingBusinessTransfer.isOwn; // 用户是接收方
+              const taskDesc = ongoingBusinessTransfer.taskDescription || '';
+              const remainingAmount = parseFloat(ongoingBusinessTransfer.remainingAmount || 0).toFixed(2);
+
+              // 检测任务是否是发帖类型
+              const postKeywords = ['发帖', '发推', '发推特', '发推文', 'post', 'tweet', '宣传', '推广'];
+              const isPostTask = postKeywords.some(kw => taskDesc.toLowerCase().includes(kw.toLowerCase()));
+
+              if (isAIReceiver && !isPostTask) {
+                // AI是接收方，且任务不是发帖类型
+                systemPrompt += `
+
+💼 **进行中的商业任务**（你是接收方）：
+- 任务要求：${taskDesc}
+- 任务期限：${ongoingBusinessTransfer.taskDeadlineHours}小时内完成
+- 待付尾款：$${remainingAmount}
+
+⚠️ **重要提示**：
+- 你需要在对话中自然地发送**图片消息**（type: "image"）作为完成任务的证明
+- 图片内容应该与任务要求相关，展示你完成了任务
+- 发送图片后，用户会查看并决定是否支付尾款
+- 在发送图片时，可以配合文本消息说明你完成了什么
+- 不要刻意催促，自然地在对话中展示成果即可
+`;
+              } else if (isUserReceiver && !isPostTask) {
+                // 用户是接收方，且任务不是发帖类型
+                // 检查用户是否刚刚发送了图片
+                const userMessages = options.userMessages || [];
+                const hasUserImage = userMessages.some(msg => msg.type === 'image');
+
+                if (hasUserImage) {
+                  systemPrompt += `
+
+💼 **进行中的商业任务**（用户是接收方）：
+- 任务要求：${taskDesc}
+- 任务期限：${ongoingBusinessTransfer.taskDeadlineHours}小时内完成
+- 待付尾款：$${remainingAmount}
+
+⚠️ **重要提示**：
+- 用户刚刚发送了图片，可能是完成任务的证明
+- 请识别图片内容，判断用户是否完成了任务要求
+- 如果你认为用户完成了任务：
+  1. 先发送1-2条文本消息表达认可和评价
+  2. 然后发送转账消息支付尾款（amount为${remainingAmount}，note说明是任务尾款，status为"pending"）
+- 如果你认为用户未完成或不符合要求：
+  1. 礼貌地指出问题
+  2. 可以要求用户重新提交或补充
+  3. 不发送转账消息
+- 根据完成质量，你可以：
+  * 支付全额尾款：$${remainingAmount}
+  * 支付部分尾款：$${(parseFloat(remainingAmount) * 0.5).toFixed(2)} - $${(parseFloat(remainingAmount) * 0.8).toFixed(
+                    2,
+                  )}（如果质量一般）
+  * 支付尾款+奖励：$${(parseFloat(remainingAmount) * 1.1).toFixed(2)} - $${(parseFloat(remainingAmount) * 1.3).toFixed(
+                    2,
+                  )}（如果超出预期）
+`;
+                } else {
+                  systemPrompt += `
+
+💼 **进行中的商业任务**（用户是接收方）：
+- 任务要求：${taskDesc}
+- 任务期限：${ongoingBusinessTransfer.taskDeadlineHours}小时内完成
+- 待付尾款：$${remainingAmount}
+
+⚠️ **提示**：
+- 用户需要发送图片证明完成任务
+- 你可以在对话中自然地提醒或询问任务进度
+- 等待用户发送完成证明后再决定是否支付尾款
+`;
+                }
+              }
+            }
           }
         } else if (messageType === 'account') {
           // 账户私信
@@ -33056,6 +36436,42 @@ ${ctx.messagePreview ? `私信预览："${ctx.messagePreview}"` : ''}
             } else {
               content = `[表情包]`;
             }
+          } else if (msg.type === 'transfer') {
+            // 转账消息
+            const amount = parseFloat(msg.amount || 0).toFixed(2);
+            const note = msg.note ? ` (${msg.note})` : '';
+            const direction = msg.isOwn ? '转出' : '转入';
+
+            if (msg.isBusiness) {
+              // 商业转账
+              const depositAmount = parseFloat(msg.depositAmount || 0).toFixed(2);
+              const remainingAmount = parseFloat(msg.remainingAmount || 0).toFixed(2);
+              const taskDesc = msg.taskDescription || '无任务描述';
+              const taskDeadline = msg.taskDeadlineHours || 24;
+              const depositRatio = msg.depositRatio || 0;
+              const taskStatus = msg.taskStatus || 'pending';
+
+              content = `[商业${direction}${note}]\n`;
+              content += `总金额: $${amount}\n`;
+              content += `定金: $${depositAmount} (${depositRatio}%)\n`;
+              content += `尾款: $${remainingAmount}\n`;
+              content += `任务要求: ${taskDesc}\n`;
+              content += `任务期限: ${taskDeadline}小时内完成\n`;
+              content += `当前状态: ${
+                taskStatus === 'pending'
+                  ? '待接收'
+                  : taskStatus === 'accepted'
+                  ? '已接受，进行中'
+                  : taskStatus === 'completed'
+                  ? '已完成'
+                  : taskStatus === 'rejected'
+                  ? '已拒绝'
+                  : taskStatus
+              }`;
+            } else {
+              // 普通转账
+              content = `[${direction}: $${amount}${note}]`;
+            }
           } else if (msg.type === 'link') {
             // 显示文章完整信息
             content = `[文章链接]\n标题：${msg.title}\n简介：${msg.description || ''}\n作者：${
@@ -33132,6 +36548,9 @@ ${index + 1}. ${sender}: ${content}
   * image：当需要分享照片、图片或视觉内容时
   * voice：当角色特别激动、情绪强烈或不方便打字时
   * sticker：⚠️ **极少使用**（不超过5%）！只在情绪特别强烈且适合用表情包表达时才使用，且必须根据世界书中的表情包描述选择最符合当前情境的表情包URL，不要重复使用同一个表情包
+  * transfer：⚠️ **极少使用**！分为两种：
+    - 普通转账：角色主动送钱、红包、礼物或感谢等（1-100美元）
+    - 商业转账：需要对方完成任务的付费合作（50-500美元），设置isBusiness为true并填写任务描述和期限
   * link：当需要分享网页、文章或链接时
   * quoteTweet：当提及或讨论某条推文时
   * quoteProfile：当推荐某个账户或介绍某人时
@@ -33145,10 +36564,41 @@ ${index + 1}. ${sender}: ${content}
   * image：图片消息（只包含imageDescription和sensitive，不需要caption，不要与sticker混淆）
   * voice：语音消息（包含voiceText和duration）
   * sticker：表情包消息（⚠️ 只包含stickerUrl字段！必须从世界书中仔细选择最符合当前情境和情绪的表情包URL，严禁重复使用同一个表情包，不要与image类型混淆）
+  * transfer：转账消息（普通转账：包含amount和note；商业转账：额外需要isBusiness、taskDescription、taskDeadlineHours、depositRatio）
   * link：文章链接消息（包含title、description、author、source、body完整文章正文，可使用**加粗**和__下划线__标记重点）
   * quoteTweet：转发推文（包含tweet对象）
   * quoteProfile：转发主页（包含profile对象）
   * forward：⚠️ **用户转发的推文/评论**（AI不要生成此类型，这是用户手动操作产生的。如果在对话记录中看到此类型，AI可以根据其中包含的完整推文和评论内容进行回应）
+  * system：⚠️ **系统提示消息**（特殊类型，用于以下场景）：
+    - 不回复：如果你认为不应该回复用户（首次对话且内容不吸引人、内容冒犯等），返回空数组[]
+    - 拉黑用户：如果对话出现严重冲突、用户持续骚扰、或你强烈不想继续对话，返回拉黑系统提示
+    - 暂时离开（仅绑定角色）：如果你临时有事无法回复，返回离开系统提示
+
+【特殊系统提示消息格式】：
+
+1. 拉黑用户（适用于严重冲突、骚扰等情况）：
+{
+  "type": "system",
+  "systemType": "blocked",
+  "content": "对方已将你拉黑",
+  "time": "刚刚"
+}
+
+2. 暂时离开（⚠️ 仅绑定角色可用，陌生人/账户不能使用）：
+{
+  "type": "system",
+  "systemType": "away",
+  "content": "对方正在[具体活动]中，暂时无法回复消息",
+  "awayDuration": 数字（分钟，建议30-180分钟）,
+  "time": "刚刚"
+}
+
+⚠️ 使用规则：
+- **不回复**：直接返回空数组 []，不需要任何消息
+- **拉黑**：只在极端情况下使用（严重冲突、持续骚扰、明显恶意等）
+- **暂时离开**：只有已绑定的角色才能使用，陌生人和账户不能使用此功能
+- **离开原因示例**：工作、上课、开会、睡觉、运动、吃饭、处理事情等
+- **离开时长**：30-180分钟为宜，不要太短或太长
 
 - 时间使用相对时间（如"刚刚"、"1分钟前"等）
 - 不要包含 isOwn 字段
@@ -33175,6 +36625,9 @@ ${index + 1}. ${sender}: ${content}
   * image：当需要分享照片、图片或视觉内容时
   * voice：当角色特别激动、情绪强烈或不方便打字时
   * sticker：⚠️ **极少使用**（不超过5%）！只在情绪特别强烈且适合用表情包表达时才使用，且必须根据世界书中的表情包描述选择最符合当前情境的表情包URL，每次使用不同的表情包
+  * transfer：⚠️ **极少使用**！分为两种：
+    - 普通转账：角色主动送钱、红包、礼物或感谢等（1-100美元）
+    - 商业转账：需要对方完成任务的付费合作（50-500美元），设置isBusiness为true并填写任务描述和期限
   * link：当需要分享文章、新闻或故事时（需包含完整的文章内容：title、description、author、source、body正文）
   * quoteTweet：当提及或讨论某条推文时
   * quoteProfile：当推荐某个账户或介绍某人时
@@ -33187,6 +36640,7 @@ ${index + 1}. ${sender}: ${content}
   * image：图片消息（只包含imageDescription和sensitive，不需要caption，不要与sticker混淆）
   * voice：语音消息（包含voiceText和duration）
   * sticker：表情包消息（⚠️ 只包含stickerUrl字段！必须从世界书中仔细选择最符合当前情境和情绪的表情包URL，每次使用不同的表情包，不要与image类型混淆）
+  * transfer：转账消息（普通转账：包含amount和note；商业转账：额外需要isBusiness、taskDescription、taskDeadlineHours、depositRatio）
   * link：链接消息（包含url、title、description）
   * quoteTweet：转发推文（包含tweet对象）
   * quoteProfile：转发主页（包含profile对象）
@@ -33260,7 +36714,86 @@ ${index + 1}. ${sender}: ${content}
 
 ⚠️ 注意：sticker类型只包含stickerUrl字段，不要与image类型混淆！
 
-5. 链接消息（文章类型）：
+5. 转账消息（两种类型）：
+
+5.1 普通转账：
+{
+  "type": "transfer",
+  "amount": 50.00,
+  "note": "请你喝咖啡",
+  "status": "pending",
+  "time": "时间描述"
+}
+
+5.2 商业转账（适用于合作、接广告、买水军等商业场景）：
+{
+  "type": "transfer",
+  "amount": 200.00,
+  "note": "合作费用",
+  "status": "pending",
+  "isBusiness": true,
+  "taskDescription": "帮我发一条推文宣传新产品，需要包含产品特点和购买链接，语气要自然不刻意",
+  "taskDeadlineHours": 24,
+  "depositRatio": 20,
+  "time": "时间描述"
+}
+
+⚠️ 转账消息说明：
+- amount：转账金额，必须是数字类型（不是字符串），建议1-100美元（普通转账）或50-500美元（商业转账）
+- note：转账备注，可选字段，用于说明转账目的
+- status：转账状态，必须是以下之一：
+  * "pending"：待处理（默认状态，用于主动发起转账）
+  * "accepted"：已接收（用于回应用户的转账请求，表示接受）
+  * "rejected"：已拒绝（用于回应用户的转账请求，表示拒绝）
+
+⚠️ 商业转账额外字段（当isBusiness为true时必填）：
+- isBusiness：布尔值，true表示这是商业转账
+- taskDescription：任务描述（字符串，50-500字），详细说明需要对方完成的任务，可以是：
+  * 发帖宣传（指定内容、风格、话题标签等）
+  * 转发推广（要求转发特定内容并评论）
+  * 买水军/刷数据（要求点赞、评论、转发等）
+  * 接广告（要求发布广告内容）
+  * 其他商业合作任务
+- taskDeadlineHours：任务期限（数字，单位：小时），建议12-72小时，必填
+- depositRatio：定金比例（数字，0、20、30或50），表示先支付总金额的百分之几作为定金
+  * 0：不支付定金，任务完成后再付款
+  * 20：先支付20%作为定金
+  * 30：先支付30%作为定金
+  * 50：先支付50%作为定金
+
+⚠️ 转账使用场景：
+- 普通转账：角色主动送钱、红包、礼物、感谢费等简单金钱往来
+- 商业转账：需要对方完成特定任务的付费合作，增加游戏可玩性
+  * AI可以主动发起商业转账，雇佣用户完成任务（如"帮我宣传一下"、"发条推文"等）
+  * AI可以响应用户的商业转账，决定是否接受任务
+  * 商业转账会显示任务要求、期限、定金比例等详细信息
+  * 接收商业转账即表示同意完成任务
+
+⚠️ 转账响应规则：
+- 当用户发送了待处理(pending)状态的转账给你时，你可以选择：
+  * 发送status为"accepted"的转账消息表示接收
+    - 普通转账：直接收到全款
+    - 商业转账：收到定金，需要根据任务要求完成任务（如发推文等）
+  * 发送status为"rejected"的转账消息表示拒绝
+  * 你接收或拒绝后会自动生成系统通知，无需额外文本说明
+  
+⚠️ 商业转账处理（重要！）：
+- 如果用户发送了商业转账（isBusiness为true），你需要：
+  1. 查看taskDescription（任务描述）和taskDeadlineHours（任务期限）
+  2. 决定是否接受任务（根据角色性格和任务要求）：
+     * accepted：表示接受任务和定金，AI会自动开始执行任务
+     * rejected：表示拒绝任务，定金会退回给用户
+  3. 如果接受了包含"发帖"、"发推"等关键词的任务，AI会自动在规定时间内发布推文
+  4. 用户看到推文后，如果满意会确认完成任务并支付尾款
+  5. 接受商业转账时，可以在回复消息中表达对任务的理解和态度
+  
+⚠️ AI主动发起转账：
+- AI也可以主动发起转账（普通或商业），用户会收到转账请求
+- 转账金额要符合情境和角色经济状况，不要过大或过小
+- 商业转账的任务描述要具体明确，符合商业合作的真实场景
+- 可以雇佣用户完成任务（如"帮我发条推文宣传"、"帮我刷点数据"等）
+
+6. 链接消息（文章类型）：
 {
   "type": "link",
   "url": "文章来源网址（可选）",
@@ -33285,7 +36818,7 @@ ${index + 1}. ${sender}: ${content}
 - 文章内容应该真实、有深度，符合分享场景
 - 适合分享新闻、评论、故事、学术文章等
 
-6. 转发推文：
+7. 转发推文：
 {
   "type": "quoteTweet",
   "tweet": {
@@ -33300,7 +36833,7 @@ ${index + 1}. ${sender}: ${content}
   "time": "时间描述"
 }
 
-7. 转发主页：
+8. 转发主页：
 {
   "type": "quoteProfile",
   "profile": {
@@ -33315,7 +36848,7 @@ ${index + 1}. ${sender}: ${content}
   "time": "时间描述"
 }
 
-8. 转发推文/评论（forward）：
+9. 转发推文/评论（forward）：
 ⚠️ **此类型禁止AI生成！这是用户手动转发操作产生的消息类型。**
 如果在【X平台私信对话记录】中看到此类型消息，说明用户转发了推文或评论给你，你可以查看其中的完整内容：
 - 转发推文时，包含完整推文内容和该推文的所有评论区内容
@@ -33515,8 +37048,21 @@ AI应该根据这些完整的上下文信息来理解用户分享的内容并给
           throw new Error('AI返回的数据格式不正确，期望消息数组');
         }
 
-        // 直接返回消息数组
-        console.log(`✅ 生成了${conversationData.length}条AI回复`);
+        // 🔍 检查是否包含特殊系统提示
+        const hasBlockedMessage = conversationData.some(msg => msg.type === 'system' && msg.systemType === 'blocked');
+        const hasAwayMessage = conversationData.some(msg => msg.type === 'system' && msg.systemType === 'away');
+
+        if (hasBlockedMessage) {
+          console.log('⚠️ AI决定拉黑用户');
+        } else if (hasAwayMessage) {
+          console.log('⏰ AI暂时离开');
+        } else if (conversationData.length === 0) {
+          console.log('📭 AI决定不回复');
+        } else {
+          console.log(`✅ 生成了${conversationData.length}条AI回复`);
+        }
+
+        // 直接返回消息数组（包括空数组和系统提示）
         return conversationData;
       } else {
         // 初始模式：验证完整数据格式
@@ -34198,6 +37744,53 @@ ${index + 1}. ${sender}: ${content}`;
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 `;
+
+      // 🔥 如果是商业转账反水模式，添加特殊说明
+      if (messageData._isBusinessBetrayal) {
+        systemPrompt += `
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔥 特殊模式：商业推广反水 🔥
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🚨 **重要：${messageData.user.name} 决定"反水"，不按照商业任务要求发推文！**
+
+**反水类型（选择其中一种）**：
+1. **揭露型**（40%）：
+   - 直接揭露有人花钱让自己发广告
+   - 例："有人给我钱让我宣传XXX，但我觉得这东西真的很一般..."
+   - 例："刚收到一个推广邀约，说实话我用过那玩意儿，不推荐"
+   
+2. **吐槽型**（30%）：
+   - 吐槽任务本身或产品/服务
+   - 例："又有人让我帮忙推广了，但这次的东西真的...算了不说了"
+   - 例："有些推广真的很无语，明明产品质量那样还要我说好话"
+   
+3. **完全不配合型**（20%）：
+   - 完全不提任务，发自己想发的内容
+   - 例："今天心情不好，不想工作"
+   - 例："做自己想做的事比什么都重要"
+   
+4. **阴阳怪气型**（10%）：
+   - 表面上完成任务，但用讽刺/暗示的语气
+   - 例："某个'非常好用'的产品（此处省略一万字）"
+   - 例："终于可以体验到'传说中'的XXX了呢😊"
+
+**生成要求**：
+- 推文必须体现${messageData.user.name}的性格特质
+- 根据角色设定选择合适的反水方式
+- 推文要自然，不要太刻意
+- 可以保留一定的模糊性，让读者自己理解
+- stats数据要合理（反水推文可能会有更多讨论：comments 20-60, likes 50-200）
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
+        tokenCount = TokenUtils.logTokenUsage(
+          'Tweet生成器',
+          '反水模式说明',
+          systemPrompt.substring(systemPrompt.lastIndexOf('🔥 特殊模式')),
+          tokenCount,
+        );
+      }
 
       const coreTaskSection = systemPrompt.substring(systemPrompt.lastIndexOf('🎯 核心任务'));
       tokenCount = TokenUtils.logTokenUsage('Tweet生成器', '核心任务说明', coreTaskSection, tokenCount);
@@ -34935,6 +38528,183 @@ ${index + 1}. "${tweet.content}"
           };
         }
       }, 0);
+    } else if (message.type === 'transfer') {
+      // 转账消息 - 小巧立体的票券设计
+      bubbleEl.style.cssText =
+        baseStyle +
+        `
+        padding: 0;
+        background-color: transparent;
+        width: fit-content;
+      `;
+
+      // 获取当前主题
+      const xSocialScreen = document.getElementById('x-social-screen');
+      const isLightMode = xSocialScreen && xSocialScreen.classList.contains('x-theme-light');
+
+      // 转账方向：用户发送 vs 用户接收
+      const isUserSending = isOwn;
+      const amount = parseFloat(message.amount || 0).toFixed(2);
+
+      // 为转账卡片生成唯一ID
+      const transferCardId = 'transfer-card-' + (message.timestamp || Date.now());
+
+      // 检查是否是商业转账
+      const isBusiness = message.isBusiness === true;
+
+      bubbleEl.innerHTML = `
+        <div id="${transferCardId}" style="
+          position: relative;
+          background-color: ${isLightMode ? '#ffffff' : '#1f1f1f'};
+          border-radius: 12px;
+          padding: 12px 16px;
+          max-width: 200px;
+          box-shadow: ${
+            isLightMode
+              ? '0 2px 8px rgba(0, 0, 0, 0.1), 0 4px 16px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.05)'
+              : '0 2px 8px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(255, 255, 255, 0.05)'
+          };
+          border: 1px solid ${
+            isBusiness
+              ? isLightMode
+                ? 'rgba(29, 155, 240, 0.3)'
+                : 'rgba(29, 155, 240, 0.4)'
+              : isLightMode
+              ? 'rgba(0, 0, 0, 0.06)'
+              : 'rgba(255, 255, 255, 0.08)'
+          };
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          cursor: pointer;
+          transition: all 0.2s;
+        "
+           onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='${
+             isLightMode
+               ? '0 4px 12px rgba(0, 0, 0, 0.15), 0 6px 20px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.06)'
+               : '0 4px 12px rgba(0, 0, 0, 0.4), 0 6px 20px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(255, 255, 255, 0.08)'
+           }'"
+           onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='${
+             isLightMode
+               ? '0 2px 8px rgba(0, 0, 0, 0.1), 0 4px 16px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.05)'
+               : '0 2px 8px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(255, 255, 255, 0.05)'
+           }'"
+        ">
+          ${
+            isBusiness
+              ? `
+          <!-- 商业转账标识 -->
+          <div style="
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            width: 18px;
+            height: 18px;
+            background-color: var(--x-accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+          ">
+            <svg viewBox="0 0 24 24" style="width: 10px; height: 10px; fill: #ffffff;">
+              <g><path d="M20 6h-3V4c0-1.1-.9-2-2-2H9c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM9 4h6v2H9V4zm11 16H4V8h16v12z"></path><path d="M12 10L14.5 14L17 10L14.5 12L12 10ZM10 10L7.5 12L10 14L7.5 14L10 10Z"></path></g>
+            </svg>
+          </div>
+        `
+              : ''
+          }
+
+          <!-- 简洁圆形图标 -->
+          <div style="
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: ${isLightMode ? '#f5f5f5' : '#2d2d2d'};
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+          ">
+${getTransferStatusIcon(message.status, isLightMode)}
+          </div>
+
+          <!-- 转账信息 -->
+          <div style="
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            flex: 1;
+            min-width: 0;
+          ">
+            <div style="
+              font-size: 11px;
+              font-weight: 500;
+              color: ${isLightMode ? '#888888' : '#aaaaaa'};
+              text-transform: uppercase;
+              letter-spacing: 0.3px;
+            ">${isBusiness ? '💼 ' : ''}${getTransferStatusText(message.status, isUserSending)}</div>
+            
+            <div style="
+              font-size: 16px;
+              font-weight: 600;
+              color: ${isLightMode ? '#1a1a1a' : '#e5e5e5'};
+              line-height: 1;
+            ">
+              ${getTransferAmountText(message.status, isUserSending, amount)}
+            </div>
+            
+            ${
+              message.note
+                ? `
+              <div style="
+                font-size: 11px;
+                color: ${isLightMode ? '#666666' : '#999999'};
+                line-height: 1.2;
+                margin-top: 1px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+              ">${message.note}</div>
+            `
+                : ''
+            }
+          </div>
+
+          <!-- 状态指示 -->
+          <div style="
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: ${isBusiness ? 'var(--x-accent)' : isLightMode ? '#666666' : '#999999'};
+            flex-shrink: 0;
+          "></div>
+        </div>
+      `;
+
+      // 添加点击事件监听器
+      setTimeout(() => {
+        const transferCard = document.getElementById(transferCardId);
+        if (transferCard) {
+          transferCard.onclick = () => {
+            openTransferDetails(message, isOwn);
+          };
+        }
+      }, 0);
+    } else if (message.type === 'system') {
+      // 系统通知 - 居中显示，不同于消息气泡
+      messageEl.style.alignItems = 'center';
+      bubbleEl.style.cssText = `
+        padding: 8px 16px;
+        background-color: var(--x-bg-secondary);
+        border-radius: 16px;
+        font-size: 13px;
+        color: var(--x-text-secondary);
+        text-align: center;
+        max-width: 80%;
+      `;
+
+      bubbleEl.textContent = message.content;
     } else if (message.type === 'forward') {
       // 转发的推文/评论
       bubbleEl.style.cssText =
@@ -35444,6 +39214,2276 @@ ${index + 1}. "${tweet.content}"
     return separatorEl;
   }
 
+  // ============================================
+  // 转账功能
+  // ============================================
+
+  // 获取转账状态文字
+  function getTransferStatusText(status, isUserSending) {
+    if (!status || status === 'pending') {
+      return 'PENDING';
+    } else if (status === 'accepted') {
+      return isUserSending ? 'SENT' : 'RECEIVED';
+    } else if (status === 'rejected') {
+      return 'REJECTED';
+    }
+    return 'PENDING';
+  }
+
+  // 获取转账金额文字
+  function getTransferAmountText(status, isUserSending, amount) {
+    if (!status || status === 'pending') {
+      return `$${amount}`;
+    } else if (status === 'accepted') {
+      return `${isUserSending ? '-' : '+'}$${amount}`;
+    } else if (status === 'rejected') {
+      return `$${amount}`;
+    }
+    return `$${amount}`;
+  }
+
+  // 获取转账状态图标
+  function getTransferStatusIcon(status, isLightMode) {
+    const iconColor = isLightMode ? '#666666' : '#cccccc';
+
+    if (!status || status === 'pending') {
+      // 待处理 - 时钟图标
+      return `
+        <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; fill: ${iconColor};">
+          <g><path d="M12,2C6.486,2,2,6.486,2,12s4.486,10,10,10s10-4.486,10-10S17.514,2,12,2z M12,20c-4.411,0-8-3.589-8-8 s3.589-8,8-8s8,3.589,8,8S16.411,20,12,20z"></path><path d="M13,7h-2v5.414l3.293,3.293l1.414-1.414L13,11.586V7z"></path></g>
+        </svg>
+      `;
+    } else if (status === 'accepted') {
+      // 已接收 - 对勾图标
+      return `
+        <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; fill: ${iconColor};">
+          <g><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path></g>
+        </svg>
+      `;
+    } else if (status === 'rejected') {
+      // 已拒绝 - X图标
+      return `
+        <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; fill: ${iconColor};">
+          <g><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11H7v-2h10v2z"></path></g>
+        </svg>
+      `;
+    }
+
+    // 默认返回时钟图标
+    return `
+      <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; fill: ${iconColor};">
+        <g><path d="M12,2C6.486,2,2,6.486,2,12s4.486,10,10,10s10-4.486,10-10S17.514,2,12,2z M12,20c-4.411,0-8-3.589-8-8 s3.589-8,8-8s8,3.589,8,8S16.411,20,12,20z"></path><path d="M13,7h-2v5.414l3.293,3.293l1.414-1.414L13,11.586V7z"></path></g>
+      </svg>
+    `;
+  }
+
+  // ============================================
+  // 商业转账辅助函数
+  // ============================================
+
+  // 保存商业转账记录到数据库
+  async function saveBusinessTransfer(businessTransferData) {
+    try {
+      const xDb = getXDB();
+      const businessTransfersId = `businessTransfers_${currentAccountId || 'main'}`;
+
+      // 获取现有的商业转账列表
+      let savedData = await xDb.xAccountProfiles.get(businessTransfersId);
+
+      if (!savedData) {
+        savedData = {
+          handle: businessTransfersId,
+          name: 'businessTransfers',
+          accountId: currentAccountId || 'main',
+          data: [],
+          updatedAt: new Date().toISOString(),
+        };
+      }
+
+      // 添加新的商业转账记录
+      savedData.data.push({
+        ...businessTransferData,
+        savedAt: new Date().toISOString(),
+      });
+
+      // 保存到数据库
+      await xDb.xAccountProfiles.put(savedData);
+
+      console.log('✅ 商业转账已保存:', businessTransferData.transferId);
+    } catch (error) {
+      console.error('❌ 保存商业转账失败:', error);
+    }
+  }
+
+  // 处理商业转账任务
+  async function handleBusinessTransferTask(transferMessage, conversationData) {
+    try {
+      console.log('💼 [商业转账] 开始处理任务:', transferMessage.taskDescription);
+
+      // 检测任务关键词
+      const postKeywords = [
+        '发帖',
+        '发推',
+        '发推特',
+        '发推文',
+        '发tweet',
+        '发条推',
+        '发个帖',
+        '发条帖',
+        '发个推',
+        '发一条',
+        '发布推文',
+        '发布帖子',
+        'post',
+        'tweet',
+        'tweeted',
+        'posting',
+        'gonna post',
+        'will post',
+        'going to post',
+        'publish',
+        'share on x',
+        'share on twitter',
+        '发到X上',
+        '发到推特',
+        '发到平台',
+        '分享到X',
+        '晒到X',
+        '宣传',
+        '推广',
+        '广告',
+      ];
+
+      const taskDesc = transferMessage.taskDescription.toLowerCase();
+      const hasPostTask = postKeywords.some(keyword => taskDesc.includes(keyword.toLowerCase()));
+
+      if (!hasPostTask) {
+        console.log('⏭️ [商业转账] 任务不包含发推关键词，跳过');
+        return;
+      }
+
+      console.log('✅ [商业转账] 检测到发推任务');
+
+      // 80%概率完成任务
+      const willComplete = Math.random() < 0.8;
+
+      if (!willComplete) {
+        console.log('❌ [商业转账] AI决定不完成任务（20%概率）');
+        return;
+      }
+
+      console.log('✅ [商业转账] AI决定完成任务，正在生成推文...');
+
+      // 🎭 检测是否"反水"（基于角色/账户特质）
+      const xDb = getXDB();
+      let willBetray = false;
+      let betrayalReason = '';
+
+      try {
+        // 获取角色/账户的详细资料
+        const senderProfile = await StringBuilders.getUnifiedProfile(conversationData.user.handle, {
+          userProfileInfo: StringBuilders.buildUserXProfileInfo(window.userProfileData),
+        });
+
+        if (senderProfile) {
+          // 计算反水概率
+          let betrayalChance = 0.1; // 基础10%
+
+          // 1. 角色类型因素
+          if (senderProfile.type === 'character') {
+            const cd = senderProfile.characterData;
+
+            // 检查性格关键词
+            const aiPersona = (cd.aiPersona || '').toLowerCase();
+            const rebelliousKeywords = [
+              '叛逆',
+              '狡猾',
+              '冷漠',
+              '自私',
+              '腹黑',
+              '毒舌',
+              '刻薄',
+              '傲慢',
+              '高傲',
+              '不羁',
+              '反叛',
+              'rebellious',
+              'cunning',
+              'selfish',
+              'cold',
+              'arrogant',
+              'sarcastic',
+            ];
+
+            const hasRebelliousTraits = rebelliousKeywords.some(keyword => aiPersona.includes(keyword));
+            if (hasRebelliousTraits) {
+              betrayalChance += 0.15;
+              betrayalReason = '角色性格叛逆/不友好';
+              console.log('🎭 [反水检测] 角色性格因素 +15%');
+            }
+
+            // 检查与用户的关系
+            if (!senderProfile.knowsUserIdentity) {
+              betrayalChance += 0.1;
+              betrayalReason += (betrayalReason ? '，' : '') + '不认识用户';
+              console.log('🎭 [反水检测] 陌生关系 +10%');
+            } else if (cd.userPersona) {
+              // 检查用户人设中的关系描述
+              const userPersonaLower = cd.userPersona.toLowerCase();
+              const negativeRelationships = [
+                '敌人',
+                '对手',
+                '仇人',
+                '讨厌',
+                '不喜欢',
+                '矛盾',
+                '竞争',
+                'enemy',
+                'rival',
+                'dislike',
+                'hate',
+              ];
+
+              const hasBadRelationship = negativeRelationships.some(keyword => userPersonaLower.includes(keyword));
+              if (hasBadRelationship) {
+                betrayalChance += 0.2;
+                betrayalReason += (betrayalReason ? '，' : '') + '与用户关系不好';
+                console.log('🎭 [反水检测] 负面关系 +20%');
+              }
+            }
+          } else if (senderProfile.type === 'stranger' || senderProfile.type === 'account') {
+            // 路人/营销号更可能反水
+            betrayalChance += 0.05;
+            betrayalReason = '非绑定角色类型';
+            console.log('🎭 [反水检测] 路人/账号类型 +5%');
+          }
+
+          console.log(`🎭 [反水检测] 最终反水概率: ${(betrayalChance * 100).toFixed(0)}%`);
+
+          // 判断是否反水
+          willBetray = Math.random() < betrayalChance;
+
+          if (willBetray) {
+            console.log(`🔥 [商业转账] AI决定反水！原因: ${betrayalReason}`);
+          }
+        }
+      } catch (error) {
+        console.error('🎭 [反水检测] 获取资料失败，使用默认概率:', error);
+        willBetray = Math.random() < 0.1; // 默认10%
+      }
+
+      // 使用现有的推文生成器，传入任务描述作为上下文
+      const contextMessages = [
+        {
+          type: 'text',
+          content: willBetray
+            ? `用户花钱让我发推广，但我准备反水揭露这件事或者发负面内容。任务要求：${transferMessage.taskDescription}`
+            : `我需要完成一个商业任务：${transferMessage.taskDescription}`,
+          isOwn: false,
+          time: '最近',
+          _isBetrayal: willBetray, // 内部标记
+          _betrayalReason: betrayalReason,
+        },
+      ];
+
+      const messageData = {
+        id: conversationData.id,
+        user: conversationData.user,
+        _isBusinessBetrayal: willBetray, // 传递给生成器
+      };
+
+      // 调用推文生成器
+      const tweetData = await generateTweetFromConversation(messageData, contextMessages);
+
+      if (!tweetData) {
+        console.log('⚠️ [商业转账] 推文生成失败');
+        return;
+      }
+
+      // 创建 New Tweet 通知
+      const timestamp = Date.now();
+      const newTweetNotification = {
+        id: `mention_business_${timestamp}`,
+        type: 'newTweet',
+        user: conversationData.user,
+        content: willBetray
+          ? `⚠️ ${conversationData.user.name} 反水了！`
+          : `New Tweet from ${conversationData.user.name}`,
+        time: '刚刚',
+        timestamp: timestamp,
+        tweet: tweetData,
+        fromBusinessTransfer: true, // 标记来自商业转账
+        businessTransferId: transferMessage.timestamp,
+        isBetrayal: willBetray, // 标记是否反水
+        betrayalReason: betrayalReason,
+      };
+
+      // 保存到 Mentions 数据库
+      // const xDb = getXDB(); // 已在上面声明
+      const mentionsDataId = `mentions_${currentAccountId || 'main'}`;
+      let savedMentions = await xDb.xAccountProfiles.get(mentionsDataId);
+
+      if (!savedMentions) {
+        savedMentions = {
+          handle: mentionsDataId,
+          id: mentionsDataId,
+          data: [],
+        };
+      }
+
+      savedMentions.data.unshift(newTweetNotification);
+      await xDb.xAccountProfiles.put(savedMentions);
+
+      // 将推文添加到发推者的账户主页
+      await addTweetToAccountProfile(conversationData.user.handle, tweetData);
+
+      console.log(`✅ [商业转账] 推文已生成并发布${willBetray ? '（反水）' : ''}`);
+
+      // 显示手机样式通知
+      const isEnglish = currentLanguage === 'en';
+      showPhoneNotification({
+        title: willBetray ? '⚠️ 商业推广反水' : 'X',
+        message: willBetray
+          ? isEnglish
+            ? `${conversationData.user.name} betrayed and posted a negative tweet!`
+            : `${conversationData.user.name} 反水了！发布了负面/揭露内容`
+          : isEnglish
+          ? `${conversationData.user.name} completed the business task and posted a tweet!`
+          : `${conversationData.user.name} 完成了商业任务并发布了推文！`,
+        avatar: conversationData.user.avatar,
+        leftIcon: willBetray ? 'custom' : 'x',
+        leftIconHtml: willBetray
+          ? `
+          <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; fill: #ef4444;">
+            <g><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"></path></g>
+          </svg>
+        `
+          : undefined,
+      });
+
+      // 如果当前在 Mentions 页面，刷新显示
+      const mentionsPage = document.getElementById('x-notifications-page');
+      if (mentionsPage && mentionsPage.style.display === 'flex') {
+        await loadNotifications();
+      } else {
+        // 显示提醒点
+        showNavNotificationDot('notifications');
+      }
+    } catch (error) {
+      console.error('❌ [商业转账] 任务处理失败:', error);
+    }
+  }
+
+  // 打开转账弹窗
+  window.openTransferDialog = function () {
+    const dialog = document.getElementById('transfer-dialog');
+    if (dialog) {
+      dialog.style.display = 'flex';
+
+      // 清空输入
+      const amountInput = document.getElementById('transfer-amount-input');
+      const noteInput = document.getElementById('transfer-note-input');
+      const counter = document.getElementById('transfer-note-counter');
+
+      if (amountInput) amountInput.value = '';
+      if (noteInput) noteInput.value = '';
+      if (counter) counter.textContent = '0 / 100';
+
+      // 聚焦到金额输入框
+      setTimeout(() => {
+        if (amountInput) amountInput.focus();
+      }, 100);
+    }
+  };
+
+  // 关闭转账弹窗
+  window.closeTransferDialog = function () {
+    const dialog = document.getElementById('transfer-dialog');
+    if (dialog) {
+      dialog.style.display = 'none';
+
+      // 重置表单到普通转账
+      setTimeout(() => {
+        switchTransferType('normal');
+
+        // 清空所有输入
+        const amountInput = document.getElementById('transfer-amount-input');
+        const noteInput = document.getElementById('transfer-note-input');
+        const taskDescInput = document.getElementById('transfer-task-description');
+        const taskDeadlineInput = document.getElementById('transfer-task-deadline');
+        const depositRatioInput = document.getElementById('transfer-deposit-ratio');
+
+        if (amountInput) amountInput.value = '';
+        if (noteInput) noteInput.value = '';
+        if (taskDescInput) taskDescInput.value = '';
+        if (taskDeadlineInput) taskDeadlineInput.value = '24';
+        if (depositRatioInput) depositRatioInput.value = '20';
+
+        // 重置计数器
+        const noteCounter = document.getElementById('transfer-note-counter');
+        const taskCounter = document.getElementById('transfer-task-counter');
+        if (noteCounter) noteCounter.textContent = '0 / 100';
+        if (taskCounter) taskCounter.textContent = '0 / 500';
+      }, 200);
+    }
+  };
+
+  // 更新转账备注字符计数
+  window.updateTransferNoteCounter = function () {
+    const noteInput = document.getElementById('transfer-note-input');
+    const noteCounter = document.getElementById('transfer-note-counter');
+
+    if (noteInput && noteCounter) {
+      noteCounter.textContent = `${noteInput.value.length} / 100`;
+    }
+  };
+
+  // 更新任务描述字符计数
+  window.updateTaskDescriptionCounter = function () {
+    const taskInput = document.getElementById('transfer-task-description');
+    const taskCounter = document.getElementById('transfer-task-counter');
+
+    if (taskInput && taskCounter) {
+      taskCounter.textContent = `${taskInput.value.length} / 500`;
+    }
+  };
+
+  // 切换转账类型
+  window.switchTransferType = function (type) {
+    const normalBtn = document.getElementById('transfer-type-normal-btn');
+    const businessBtn = document.getElementById('transfer-type-business-btn');
+    const businessSection = document.getElementById('business-transfer-section');
+
+    if (!normalBtn || !businessBtn || !businessSection) return;
+
+    if (type === 'business') {
+      // 切换到商业转账
+      normalBtn.style.backgroundColor = 'transparent';
+      normalBtn.style.color = 'var(--x-text-primary)';
+      businessBtn.style.backgroundColor = 'var(--x-accent)';
+      businessBtn.style.color = '#fff';
+      businessSection.style.display = 'block';
+    } else {
+      // 切换到普通转账
+      normalBtn.style.backgroundColor = 'var(--x-accent)';
+      normalBtn.style.color = '#fff';
+      businessBtn.style.backgroundColor = 'transparent';
+      businessBtn.style.color = 'var(--x-text-primary)';
+      businessSection.style.display = 'none';
+    }
+  };
+
+  // 发送转账
+  window.sendTransfer = async function () {
+    const amountInput = document.getElementById('transfer-amount-input');
+    const noteInput = document.getElementById('transfer-note-input');
+
+    if (!amountInput || !noteInput) return;
+
+    const amount = parseFloat(amountInput.value);
+    const note = noteInput.value.trim();
+
+    if (amount <= 0 || amount > 9999999) {
+      showXToast('请输入有效金额（0.01 - 9,999,999）', 'error');
+      return;
+    }
+
+    // 检查是否是商业转账
+    const businessSection = document.getElementById('business-transfer-section');
+    const isBusiness = businessSection && businessSection.style.display !== 'none';
+
+    let businessData = null;
+    if (isBusiness) {
+      // 验证商业转账必填字段
+      const taskDescription = document.getElementById('transfer-task-description')?.value.trim();
+      const taskDeadline = document.getElementById('transfer-task-deadline')?.value;
+      const depositRatio = parseFloat(document.getElementById('transfer-deposit-ratio')?.value || 20);
+
+      if (!taskDescription) {
+        showXToast('请填写任务描述', 'error');
+        return;
+      }
+
+      if (!taskDeadline || taskDeadline < 1) {
+        showXToast('请设置有效的任务期限', 'error');
+        return;
+      }
+
+      // 计算定金和尾款
+      const depositAmount = (amount * depositRatio) / 100;
+      const remainingAmount = amount - depositAmount;
+      const deadlineDate = new Date(Date.now() + taskDeadline * 60 * 60 * 1000); // 转换为毫秒
+
+      businessData = {
+        isBusiness: true,
+        taskDescription: taskDescription,
+        taskDeadline: deadlineDate.toISOString(),
+        taskDeadlineHours: parseInt(taskDeadline),
+        depositRatio: depositRatio,
+        depositAmount: depositAmount.toFixed(2),
+        remainingAmount: remainingAmount.toFixed(2),
+        taskStatus: 'pending', // pending, in_progress, completed, failed
+        taskProgress: 0, // 0-100
+      };
+    }
+
+    // 检查钱包余额
+    await loadWalletData();
+    if (!walletData.isActivated) {
+      showXToast('请先激活钱包', 'error');
+      return;
+    }
+
+    const actualDeduction = isBusiness ? parseFloat(businessData.depositAmount) : amount;
+    if (walletData.balance < actualDeduction) {
+      showXToast('钱包余额不足', 'error');
+      return;
+    }
+
+    try {
+      // 扣除余额（商业转账只扣定金）
+      walletData.balance -= actualDeduction;
+
+      // 添加交易记录
+      const recipientName = currentMessageConversation?.user?.name || '对方';
+      const transactionDesc = isBusiness
+        ? `商业转账给 ${recipientName}（定金 ${businessData.depositRatio}%）${note ? ` - ${note}` : ''}`
+        : `转账给 ${recipientName}${note ? ` - ${note}` : ''}`;
+
+      const transaction = {
+        id: 'transfer_out_' + Date.now(),
+        description: transactionDesc,
+        amount: -actualDeduction,
+        timestamp: new Date().toISOString(),
+        type: isBusiness ? 'business_transfer_deposit' : 'transfer_out',
+      };
+
+      walletData.transactions.unshift(transaction);
+
+      // 保存钱包数据
+      await saveWalletData();
+
+      console.log('💰 钱包余额已扣除:', actualDeduction, '剩余余额:', walletData.balance);
+
+      // 创建转账消息对象
+      const transferMessage = {
+        type: 'transfer',
+        amount: amount.toFixed(2),
+        note: note || null,
+        status: 'pending', // 默认状态为待接收
+        timestamp: new Date().toISOString(),
+        isOwn: true,
+        ...businessData, // 如果是商业转账，添加商业数据
+      };
+
+      // 添加到消息队列
+      userMessageQueue.push(transferMessage);
+
+      // 渲染到界面
+      const contentContainer = document.getElementById('message-detail-content');
+      if (contentContainer) {
+        const messageEl = renderMessageItem(transferMessage, true, undefined, true, true);
+        contentContainer.appendChild(messageEl);
+
+        // 动画显示
+        requestAnimationFrame(() => {
+          messageEl.style.opacity = '1';
+          messageEl.style.transform = 'translateY(0)';
+        });
+
+        // 滚动到底部
+        setTimeout(() => {
+          const scrollable = document.getElementById('message-detail-scrollable');
+          if (scrollable) {
+            scrollable.scrollTop = scrollable.scrollHeight;
+          }
+        }, 100);
+      }
+
+      // 保存到数据库
+      saveUserMessageToDB(transferMessage);
+
+      // 如果是商业转账，保存到商业转账数据库
+      if (isBusiness && currentMessageConversation) {
+        // 确保获取到正确的接收者信息
+        const receiverName =
+          currentMessageConversation.user?.name || currentMessageConversation.userName || recipientName;
+        const receiverHandle =
+          currentMessageConversation.user?.handle || currentMessageConversation.userHandle || 'unknown';
+        const receiverAvatar =
+          currentMessageConversation.user?.avatar ||
+          currentMessageConversation.userAvatar ||
+          'https://i.postimg.cc/4xmx7V4R/mmexport1759081128356.jpg';
+
+        await saveBusinessTransfer({
+          ...transferMessage,
+          transferId: transferMessage.timestamp,
+          conversationId: currentMessageConversation.id,
+          senderName: receiverName,
+          senderHandle: receiverHandle,
+          senderAvatar: receiverAvatar,
+          direction: 'sent', // 发出的商业转账
+          createdAt: transferMessage.timestamp,
+        });
+        console.log('💼 商业转账已记录到数据库（发出方）:', receiverName);
+      }
+
+      // 关闭弹窗
+      closeTransferDialog();
+
+      console.log('✅ 转账消息已发送:', transferMessage);
+      const toastMsg = isBusiness
+        ? `商业转账已发送 (-$${actualDeduction.toFixed(2)} 定金)`
+        : `转账已发送 (-$${amount.toFixed(2)})`;
+      showXToast(toastMsg, 'success');
+    } catch (error) {
+      console.error('转账处理失败:', error);
+      showXToast('转账失败: ' + error.message, 'error');
+    }
+  };
+
+  // 打开转账详情弹窗
+  window.openTransferDetails = function (transferData, isOwn) {
+    const modal = document.getElementById('transfer-details-modal');
+    const content = document.getElementById('transfer-details-content');
+
+    if (!modal || !content) return;
+
+    // 获取当前主题
+    const xSocialScreen = document.getElementById('x-social-screen');
+    const isLightMode = xSocialScreen && xSocialScreen.classList.contains('x-theme-light');
+
+    // 确保商业转账的字段完整
+    if (transferData.isBusiness && (!transferData.depositAmount || !transferData.remainingAmount)) {
+      const totalAmount = parseFloat(transferData.amount || 0);
+      const depositRatio = parseFloat(transferData.depositRatio || 0);
+
+      transferData.depositAmount = ((totalAmount * depositRatio) / 100).toFixed(2);
+      transferData.remainingAmount = (totalAmount - parseFloat(transferData.depositAmount)).toFixed(2);
+
+      // 如果没有任务期限，根据任务期限小时数计算
+      if (!transferData.taskDeadline && transferData.taskDeadlineHours) {
+        const createdAt = new Date(transferData.timestamp || Date.now());
+        const deadlineMs = createdAt.getTime() + parseFloat(transferData.taskDeadlineHours) * 60 * 60 * 1000;
+        transferData.taskDeadline = new Date(deadlineMs).toISOString();
+      }
+    }
+
+    const amount = parseFloat(transferData.amount || 0).toFixed(2);
+    const status = transferData.status || 'pending';
+    const note = transferData.note || '';
+    const time = transferData.time || formatMessageTime(transferData.timestamp);
+
+    // 生成票根样式的转账详情
+    content.innerHTML = renderTransferTicket(transferData, isOwn, isLightMode);
+
+    // 添加按钮事件监听器
+    const acceptBtn = document.getElementById('accept-transfer-btn');
+    const rejectBtn = document.getElementById('reject-transfer-btn');
+    const completeTaskBtn = document.getElementById('complete-task-btn');
+
+    if (acceptBtn) {
+      acceptBtn.onclick = () => acceptTransfer(transferData.timestamp);
+    }
+    if (rejectBtn) {
+      rejectBtn.onclick = () => rejectTransfer(transferData.timestamp);
+    }
+    if (completeTaskBtn) {
+      completeTaskBtn.onclick = () => completeBusinessTask(transferData.timestamp);
+    }
+
+    modal.style.display = 'flex';
+  };
+
+  // 关闭转账详情弹窗
+  window.closeTransferDetails = function () {
+    const modal = document.getElementById('transfer-details-modal');
+    if (modal) {
+      modal.style.display = 'none';
+    }
+  };
+
+  // 渲染票根样式的转账详情
+  function renderTransferTicket(transferData, isOwn, isLightMode) {
+    const amount = parseFloat(transferData.amount || 0).toFixed(2);
+    const status = transferData.status || 'pending';
+    const note = transferData.note || '';
+    const time = transferData.time || formatMessageTime(transferData.timestamp);
+
+    // 判断是否是商业转账
+    const isBusiness = transferData.isBusiness === true;
+    const businessData = isBusiness ? transferData : null;
+
+    const isPending = status === 'pending';
+    const canUserAction = !isOwn && isPending; // 只有收到的待处理转账可以操作
+
+    // 商业转账：计算期限剩余时间
+    let deadlineText = '';
+    let isExpired = false;
+    if (isBusiness && businessData.taskDeadline) {
+      const deadline = new Date(businessData.taskDeadline);
+      const now = new Date();
+      const remainingMs = deadline.getTime() - now.getTime();
+
+      if (remainingMs > 0) {
+        const hours = Math.floor(remainingMs / (1000 * 60 * 60));
+        const minutes = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
+        deadlineText = hours > 0 ? `${hours}小时${minutes}分钟` : `${minutes}分钟`;
+      } else {
+        deadlineText = '已过期';
+        isExpired = true;
+      }
+    }
+
+    // 商业转账：显示定金金额而不是总金额
+    const displayAmount = isBusiness ? parseFloat(businessData.depositAmount || 0).toFixed(2) : amount;
+
+    return `
+      <div style="
+        background-color: ${isLightMode ? '#ffffff' : '#1f1f1f'};
+        position: relative;
+        overflow: hidden;
+        max-height: 80vh;
+        display: flex;
+        flex-direction: column;
+      ">
+        <!-- 可滚动内容区域 -->
+        <div style="
+          flex: 1;
+          overflow-y: auto;
+          overflow-x: hidden;
+      ">
+        <!-- 票根上半部分 -->
+        <div style="
+          padding: 24px 20px 16px;
+          background-color: ${isLightMode ? '#ffffff' : '#1f1f1f'};
+          position: relative;
+        ">
+          <!-- 关闭按钮 -->
+          <div onclick="closeTransferDetails()" style="
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 50%;
+            transition: background-color 0.2s;
+              z-index: 10;
+          " onmouseover="this.style.backgroundColor='var(--x-bg-hover)'"
+             onmouseout="this.style.backgroundColor='transparent'">
+            <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; fill: var(--x-text-primary);">
+              <g><path d="M10.59 12L4.54 5.96l1.42-1.42L12 10.59l6.04-6.05 1.42 1.42L13.41 12l6.05 6.04-1.42 1.42L12 13.41l-6.04 6.05-1.42-1.42L10.59 12z"></path></g>
+            </svg>
+          </div>
+
+          <!-- 转账标题 -->
+          <div style="
+            text-align: center;
+            font-size: 18px;
+            font-weight: 700;
+            color: ${isLightMode ? '#1a1a1a' : '#e5e5e5'};
+            margin-bottom: 8px;
+            ">${isBusiness ? '商业转账详情' : '转账详情'}</div>
+            
+            <!-- 商业转账标识 -->
+            ${
+              isBusiness
+                ? `
+            <div style="
+              text-align: center;
+              margin-bottom: 12px;
+            ">
+              <span style="
+                display: inline-block;
+                padding: 4px 12px;
+                background: linear-gradient(135deg, ${
+                  isLightMode ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.15)'
+                } 0%, ${isLightMode ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.08)'} 100%);
+                color: ${isLightMode ? '#1a1a1a' : '#e5e5e5'};
+                font-size: 11px;
+                font-weight: 600;
+                border-radius: 12px;
+                letter-spacing: 0.5px;
+                border: 1px solid ${isLightMode ? 'rgba(0, 0, 0, 0.15)' : 'rgba(255, 255, 255, 0.2)'};
+              ">BUSINESS</span>
+            </div>
+            `
+                : ''
+            }
+          
+          <div style="
+            text-align: center;
+            font-size: 12px;
+            color: ${isLightMode ? '#888888' : '#aaaaaa'};
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+          ">${getTransferStatusText(status, isOwn)}</div>
+
+          <!-- 转账金额 -->
+          <div style="
+            text-align: center;
+            font-size: 32px;
+            font-weight: 700;
+            color: ${isLightMode ? '#1a1a1a' : '#e5e5e5'};
+              margin-bottom: ${isBusiness ? '8px' : '16px'};
+          ">
+              ${getTransferAmountText(status, isOwn, displayAmount)}
+          </div>
+            
+            <!-- 商业转账：定金提示 -->
+            ${
+              isBusiness
+                ? `
+            <div style="
+              text-align: center;
+              font-size: 12px;
+              color: ${isLightMode ? '#888888' : '#aaaaaa'};
+              margin-bottom: 16px;
+            ">定金 ${businessData.depositRatio}%</div>
+            `
+                : ''
+            }
+
+          <!-- 转账备注 -->
+          ${
+            note
+              ? `
+            <div style="
+              text-align: center;
+              font-size: 14px;
+              color: ${isLightMode ? '#666666' : '#999999'};
+              margin-bottom: 16px;
+              padding: 8px 16px;
+              background-color: ${isLightMode ? '#f5f5f5' : '#2d2d2d'};
+              border-radius: 8px;
+            ">"${note}"</div>
+          `
+              : ''
+          }
+
+          <!-- Valid Ticket 水印 -->
+          <div style="
+            position: absolute;
+            top: 50%;
+            right: -40px;
+            transform: translateY(-50%) rotate(15deg);
+            font-size: 48px;
+            color: ${isLightMode ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.05)'};
+            font-weight: 700;
+            pointer-events: none;
+            white-space: nowrap;
+            ">${isBusiness ? 'BUSINESS' : 'TRANSFER'}</div>
+        </div>
+
+        <!-- 锯齿分割线 -->
+        <div style="
+          height: 20px;
+          background: linear-gradient(90deg, 
+            ${isLightMode ? '#ffffff' : '#1f1f1f'} 10px,
+            transparent 10px,
+            transparent 20px,
+            ${isLightMode ? '#ffffff' : '#1f1f1f'} 20px
+          );
+          background-size: 20px 100%;
+          position: relative;
+        ">
+          <div style="
+            position: absolute;
+            left: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: rgba(0, 0, 0, 0.5);
+          "></div>
+          <div style="
+            position: absolute;
+            right: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: rgba(0, 0, 0, 0.5);
+          "></div>
+        </div>
+
+        <!-- 票根下半部分 -->
+        <div style="
+          padding: 16px 20px 20px;
+          background-color: ${isLightMode ? '#ffffff' : '#1f1f1f'};
+        ">
+            <!-- 商业转账：任务信息区域 -->
+            ${
+              isBusiness
+                ? `
+            <div style="
+              margin-bottom: 16px;
+              padding: 12px;
+              background-color: ${isLightMode ? '#f8f9fa' : '#2a2a2a'};
+              border: 1px solid ${isLightMode ? '#e1e8ed' : '#38444d'};
+              border-radius: 8px;
+            ">
+              <div style="
+                font-size: 12px;
+                font-weight: 600;
+                color: ${isLightMode ? '#666666' : '#999999'};
+                margin-bottom: 8px;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+              ">
+                <svg viewBox="0 0 24 24" style="width: 14px; height: 14px; fill: currentColor;">
+                  <g><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"></path></g>
+                </svg>
+                任务要求
+              </div>
+              
+              <div style="
+                font-size: 14px;
+                color: ${isLightMode ? '#1a1a1a' : '#e5e5e5'};
+                line-height: 1.5;
+                margin-bottom: 12px;
+                white-space: pre-wrap;
+                word-wrap: break-word;
+              ">${businessData.taskDescription}</div>
+              
+              <div style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding-top: 8px;
+                border-top: 1px solid ${isLightMode ? '#e1e8ed' : '#38444d'};
+              ">
+                <span style="
+                  font-size: 12px;
+                  color: ${isLightMode ? '#666666' : '#999999'};
+                  display: flex;
+                  align-items: center;
+                  gap: 4px;
+                ">
+                  <svg viewBox="0 0 24 24" style="width: 12px; height: 12px; fill: currentColor;">
+                    <g><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7V7z"></path></g>
+                  </svg>
+                  任务期限
+                </span>
+                <span style="
+                  font-size: 13px;
+                  font-weight: 600;
+                  color: ${isExpired ? '#dc2626' : isLightMode ? '#1a1a1a' : '#e5e5e5'};
+                ">${deadlineText}</span>
+              </div>
+            </div>
+            
+            <!-- 商业转账：金额明细 -->
+            <div style="
+              margin-bottom: 16px;
+              padding: 12px;
+              background-color: ${isLightMode ? '#f8f9fa' : '#2a2a2a'};
+              border: 1px solid ${isLightMode ? '#e1e8ed' : '#38444d'};
+              border-radius: 8px;
+            ">
+              <div style="
+                font-size: 12px;
+                font-weight: 600;
+                color: ${isLightMode ? '#666666' : '#999999'};
+                margin-bottom: 8px;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+              ">
+                <svg viewBox="0 0 24 24" style="width: 14px; height: 14px; fill: currentColor;">
+                  <g><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.31-8.86c-1.77-.45-2.34-.94-2.34-1.67 0-.84.79-1.43 2.1-1.43 1.38 0 1.9.66 1.94 1.64h1.71c-.05-1.34-.87-2.57-2.49-2.97V5H10.9v1.69c-1.51.32-2.72 1.3-2.72 2.81 0 1.79 1.49 2.69 3.66 3.21 1.95.46 2.34 1.15 2.34 1.87 0 .53-.39 1.39-2.1 1.39-1.6 0-2.23-.72-2.32-1.64H8.04c.1 1.7 1.36 2.66 2.86 2.97V19h2.34v-1.67c1.52-.29 2.72-1.16 2.73-2.77-.01-2.2-1.9-2.96-3.66-3.42z"></path></g>
+                </svg>
+                金额明细
+              </div>
+              
+              <div style="
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 6px;
+              ">
+                <span style="font-size: 13px; color: ${isLightMode ? '#666666' : '#999999'};">总金额</span>
+                <span style="font-size: 13px; color: ${
+                  isLightMode ? '#1a1a1a' : '#e5e5e5'
+                }; font-weight: 600;">$${amount}</span>
+              </div>
+              
+              <div style="
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 6px;
+              ">
+                <span style="font-size: 13px; color: ${isLightMode ? '#666666' : '#999999'};">定金 (${
+                    businessData.depositRatio || 0
+                  }%)</span>
+                <span style="font-size: 13px; color: var(--x-accent); font-weight: 600;">$${parseFloat(
+                  businessData.depositAmount || 0,
+                ).toFixed(2)}</span>
+              </div>
+              
+              <div style="
+                display: flex;
+                justify-content: space-between;
+                padding-top: 6px;
+                border-top: 1px solid ${isLightMode ? '#e1e8ed' : '#38444d'};
+              ">
+                <span style="font-size: 13px; color: ${isLightMode ? '#666666' : '#999999'};">尾款</span>
+                <span style="font-size: 13px; color: ${
+                  isLightMode ? '#1a1a1a' : '#e5e5e5'
+                }; font-weight: 600;">$${parseFloat(businessData.remainingAmount || 0).toFixed(2)}</span>
+              </div>
+            </div>
+            `
+                : ''
+            }
+            
+          <!-- 转账信息 -->
+          <div style="
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+          ">
+            <span style="color: ${isLightMode ? '#666666' : '#999999'}; font-size: 13px;">转账时间</span>
+            <span style="color: ${isLightMode ? '#1a1a1a' : '#e5e5e5'}; font-size: 13px;">${time}</span>
+          </div>
+          
+          <div style="
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+          ">
+              <span style="color: ${isLightMode ? '#666666' : '#999999'}; font-size: 13px;">${
+      isBusiness ? '任务状态' : '转账状态'
+    }</span>
+            <span style="color: ${isLightMode ? '#1a1a1a' : '#e5e5e5'}; font-size: 13px;">
+              ${status === 'pending' ? '待处理' : status === 'accepted' ? '已完成' : '已拒绝'}
+            </span>
+          </div>
+
+          <!-- 条形码区域 -->
+          <div style="
+            text-align: center;
+            margin: 16px 0;
+            padding: 8px 0;
+            border-top: 1px solid ${isLightMode ? '#eeeeee' : '#333333'};
+          ">
+            <div style="
+              font-family: monospace;
+              font-size: 24px;
+              color: ${isLightMode ? '#1a1a1a' : '#e5e5e5'};
+              letter-spacing: 2px;
+              margin-bottom: 4px;
+            ">||||||||||||| ${Math.random().toString().slice(2, 13)}</div>
+            <div style="
+              font-size: 11px;
+              color: ${isLightMode ? '#888888' : '#aaaaaa'};
+              ">${isBusiness ? 'BUSINESS' : 'TRANSFER'} ID: ${
+      transferData.timestamp ? new Date(transferData.timestamp).getTime() : Date.now()
+    }</div>
+            </div>
+          </div>
+          </div>
+
+        <!-- 操作按钮（固定在底部） -->
+          ${
+            canUserAction
+              ? `
+        <div style="
+          padding: 16px 20px;
+          background-color: ${isLightMode ? '#ffffff' : '#1f1f1f'};
+          border-top: 1px solid ${isLightMode ? '#eeeeee' : '#333333'};
+        ">
+          ${
+            isBusiness
+              ? `
+          <div style="
+            font-size: 12px;
+            color: ${isLightMode ? '#888888' : '#aaaaaa'};
+            text-align: center;
+            margin-bottom: 12px;
+            line-height: 1.4;
+          ">接收此商业转账即表示同意完成任务要求</div>
+          `
+              : ''
+          }
+            <div style="
+              display: flex;
+              gap: 12px;
+            ">
+              <button id="reject-transfer-btn" style="
+                flex: 1;
+                padding: 12px;
+                border: 1px solid ${isLightMode ? '#dc2626' : '#ef4444'};
+                color: ${isLightMode ? '#dc2626' : '#ef4444'};
+                background: transparent;
+                border-radius: 8px;
+                font-size: 14px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.2s;
+              " onmouseover="this.style.backgroundColor='${isLightMode ? '#fef2f2' : '#1f1416'}'"
+                 onmouseout="this.style.backgroundColor='transparent'">
+                拒绝
+              </button>
+              <button id="accept-transfer-btn" style="
+                flex: 1;
+                padding: 12px;
+                border: none;
+                color: #ffffff;
+                background: var(--x-accent);
+                border-radius: 8px;
+                font-size: 14px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.2s;
+              " onmouseover="this.style.opacity='0.9'"
+                 onmouseout="this.style.opacity='1'">
+              ${isBusiness ? '接受任务' : '接收'}
+              </button>
+          </div>
+            </div>
+          `
+              : ''
+          }
+        
+        ${
+          // 用户发出的已接受商业转账：显示"确认完成任务"按钮
+          isOwn && isBusiness && status === 'accepted' && businessData.taskStatus === 'in_progress'
+            ? `
+        <div style="
+          padding: 16px 20px;
+          background-color: ${isLightMode ? '#ffffff' : '#1f1f1f'};
+          border-top: 1px solid ${isLightMode ? '#eeeeee' : '#333333'};
+        ">
+          <div style="
+            font-size: 12px;
+            color: ${isLightMode ? '#888888' : '#aaaaaa'};
+            text-align: center;
+            margin-bottom: 12px;
+            line-height: 1.4;
+          ">验收任务完成情况，确认后将支付剩余尾款</div>
+          <button id="complete-task-btn" style="
+            width: 100%;
+            padding: 12px;
+            border: 1px solid ${isLightMode ? 'rgba(0, 0, 0, 0.2)' : 'rgba(255, 255, 255, 0.2)'};
+            color: ${isLightMode ? '#0f1419' : '#ffffff'};
+            background: linear-gradient(135deg, ${
+              isLightMode ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.12)'
+            } 0%, ${isLightMode ? 'rgba(0, 0, 0, 0.04)' : 'rgba(255, 255, 255, 0.06)'} 100%);
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+          " onmouseover="this.style.backgroundColor='${
+            isLightMode ? 'rgba(0, 0, 0, 0.12)' : 'rgba(255, 255, 255, 0.15)'
+          }'"
+             onmouseout="this.style.backgroundColor='transparent'">
+            <svg viewBox="0 0 24 24" style="width: 16px; height: 16px; fill: currentColor;">
+              <g><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"></path></g>
+            </svg>
+            确认完成任务并支付尾款 ($${businessData.remainingAmount})
+          </button>
+        </div>
+        `
+            : ''
+        }
+      </div>
+    `;
+  }
+
+  // 接收转账
+  window.acceptTransfer = async function (transferId) {
+    try {
+      // 查找转账消息并更新状态
+      const xDb = getXDB();
+      const conversationId = `messageConversation_${currentAccountId || 'main'}_${currentMessageConversation.id}`;
+      const savedConversation = await xDb.xAccountProfiles.get(conversationId);
+
+      if (savedConversation && savedConversation.data && savedConversation.data.messages) {
+        const transferMessage = savedConversation.data.messages.find(
+          msg => msg.type === 'transfer' && msg.timestamp === transferId,
+        );
+
+        if (transferMessage) {
+          const totalAmount = parseFloat(transferMessage.amount);
+          const isBusiness = transferMessage.isBusiness === true;
+
+          // 商业转账：计算定金金额
+          let receivedAmount = totalAmount;
+          if (isBusiness) {
+            // 如果有depositAmount字段，使用它；否则根据depositRatio计算
+            if (transferMessage.depositAmount !== undefined) {
+              receivedAmount = parseFloat(transferMessage.depositAmount);
+            } else {
+              const depositRatio = parseFloat(transferMessage.depositRatio) || 20;
+              receivedAmount = (totalAmount * depositRatio) / 100;
+              // 计算并保存到消息对象中
+              transferMessage.depositAmount = receivedAmount.toFixed(2);
+              transferMessage.remainingAmount = (totalAmount - receivedAmount).toFixed(2);
+            }
+          }
+
+          // 更新转账状态
+          transferMessage.status = 'accepted';
+
+          // 商业转账：更新任务状态
+          if (isBusiness) {
+            transferMessage.taskStatus = 'in_progress'; // 任务进行中
+            const acceptedTime = new Date();
+            transferMessage.acceptedAt = acceptedTime.toISOString();
+
+            // 计算任务截止时间
+            const deadlineHours = parseFloat(transferMessage.taskDeadlineHours) || 24;
+            const deadlineTime = new Date(acceptedTime.getTime() + deadlineHours * 60 * 60 * 1000);
+            transferMessage.taskDeadline = deadlineTime.toISOString();
+
+            console.log('⏰ [接收商业转账] 设置任务截止时间:', {
+              acceptedAt: transferMessage.acceptedAt,
+              deadlineHours: deadlineHours,
+              taskDeadline: transferMessage.taskDeadline,
+            });
+          }
+
+          // 添加系统通知到对话
+          const systemNotification = {
+            type: 'system',
+            systemType: 'transferAccepted',
+            content: isBusiness
+              ? `你接收了商业转账（定金 $${receivedAmount.toFixed(2)}），请在 ${
+                  transferMessage.taskDeadlineHours
+                } 小时内完成任务`
+              : `你接收了 $${totalAmount.toFixed(2)} 的转账`,
+            timestamp: new Date().toISOString(),
+            time: '刚刚',
+          };
+          savedConversation.data.messages.push(systemNotification);
+
+          // 保存更新
+          await xDb.xAccountProfiles.put(savedConversation);
+
+          // 更新钱包余额（收定金）
+          await loadWalletData();
+          const currentBalance = parseFloat(walletData.balance) || 0;
+          walletData.balance = currentBalance + receivedAmount;
+
+          // 添加交易记录
+          const senderName = currentMessageConversation?.user?.name || '对方';
+          const transaction = {
+            id: 'transfer_in_' + Date.now(),
+            description: isBusiness
+              ? `商业转账收款（定金）- ${senderName}${transferMessage.note ? ` - ${transferMessage.note}` : ''}`
+              : `收款自 ${senderName}${transferMessage.note ? ` - ${transferMessage.note}` : ''}`,
+            amount: receivedAmount,
+            timestamp: new Date().toISOString(),
+            type: isBusiness ? 'business_transfer_deposit_in' : 'transfer_in',
+          };
+          walletData.transactions.unshift(transaction);
+
+          // 保存钱包数据
+          await saveWalletData();
+
+          // 商业转账：保存到商业转账数据库
+          if (isBusiness && currentMessageConversation) {
+            const businessTransferRecord = {
+              ...transferMessage,
+              transferId: transferId,
+              conversationId: currentMessageConversation.id,
+              senderName: senderName,
+              senderHandle: currentMessageConversation.user?.handle || 'unknown',
+              senderAvatar:
+                currentMessageConversation.user?.avatar || 'https://i.postimg.cc/4xmx7V4R/mmexport1759081128356.jpg',
+              direction: 'received', // 接收的商业转账
+              createdAt: transferMessage.timestamp,
+              acceptedAt: new Date().toISOString(),
+            };
+
+            console.log('💼 [保存商业转账] 准备保存:', businessTransferRecord);
+            console.log('💼 [保存商业转账] taskDeadline:', businessTransferRecord.taskDeadline);
+            console.log('💼 [保存商业转账] taskStatus:', businessTransferRecord.taskStatus);
+
+            await saveBusinessTransfer(businessTransferRecord);
+
+            console.log('💼 商业转账已记录到数据库');
+          }
+
+          // 显示手机样式通知
+          showPhoneNotification({
+            title: 'X Wallet',
+            message: isBusiness
+              ? `已收定金 $${receivedAmount.toFixed(2)}，请完成任务以获得尾款`
+              : `已收款 $${totalAmount.toFixed(2)}, 当前余额 $${walletData.balance.toFixed(2)}`,
+            avatar: window.userProfileData?.avatar,
+            leftIcon: 'x',
+          });
+
+          // 关闭弹窗并刷新消息显示
+          closeTransferDetails();
+
+          // 刷新私信详情页
+          if (currentMessageConversation && currentMessageConversation.user) {
+            const profileData = {
+              name: currentMessageConversation.user.name,
+              handle: currentMessageConversation.user.handle,
+              avatar: currentMessageConversation.user.avatar,
+            };
+            await loadCharacterMessageDetail(currentMessageConversation, profileData);
+          }
+
+          console.log('✅ 转账已接收:', receivedAmount, '新余额:', walletData.balance);
+
+          // 商业转账：触发任务检测
+          if (isBusiness) {
+            setTimeout(() => {
+              handleBusinessTransferTask(transferMessage, currentMessageConversation);
+            }, 1000);
+          }
+
+          // 💼 检查是否是商业任务尾款（AI发来的普通转账，但有进行中的商业任务）
+          if (!isBusiness && !transferMessage.isOwn) {
+            // 查找进行中的商业转账（用户接收的）
+            const ongoingBusinessTransfer = savedConversation.data.messages
+              .filter(
+                msg => msg.type === 'transfer' && msg.isBusiness && msg.taskStatus === 'in_progress' && !msg.isOwn,
+              )
+              .pop(); // 取最新的
+
+            if (ongoingBusinessTransfer) {
+              console.log('💼 [商业任务尾款] 检测到进行中的商业任务，将此转账视为尾款');
+
+              // 更新商业转账状态为completed
+              ongoingBusinessTransfer.taskStatus = 'completed';
+              ongoingBusinessTransfer.completedAt = new Date().toISOString();
+              await xDb.xAccountProfiles.put(savedConversation);
+
+              // 更新商业转账数据库状态
+              await updateBusinessTransferStatus(ongoingBusinessTransfer.timestamp, 'completed');
+
+              console.log('✅ [商业任务尾款] 商业任务已完成，状态已更新');
+
+              // 更新通知消息
+              showPhoneNotification({
+                title: 'X Wallet',
+                message: `任务已完成，已收尾款 $${receivedAmount.toFixed(2)}, 当前余额 $${walletData.balance.toFixed(
+                  2,
+                )}`,
+                avatar: window.userProfileData?.avatar,
+                leftIcon: 'x',
+              });
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error('接收转账失败:', error);
+      showXToast('接收转账失败', 'error');
+    }
+  };
+
+  // 拒绝转账
+  window.rejectTransfer = async function (transferId) {
+    try {
+      // 查找转账消息并更新状态
+      const xDb = getXDB();
+      const conversationId = `messageConversation_${currentAccountId || 'main'}_${currentMessageConversation.id}`;
+      const savedConversation = await xDb.xAccountProfiles.get(conversationId);
+
+      if (savedConversation && savedConversation.data && savedConversation.data.messages) {
+        const transferMessage = savedConversation.data.messages.find(
+          msg => msg.type === 'transfer' && msg.timestamp === transferId,
+        );
+
+        if (transferMessage) {
+          const amount = parseFloat(transferMessage.amount);
+
+          // 更新转账状态
+          transferMessage.status = 'rejected';
+
+          // 添加系统通知到对话
+          const systemNotification = {
+            type: 'system',
+            systemType: 'transferRejected',
+            content: `你拒绝了 $${amount.toFixed(2)} 的转账`,
+            timestamp: new Date().toISOString(),
+            time: '刚刚',
+          };
+          savedConversation.data.messages.push(systemNotification);
+
+          // 保存更新
+          await xDb.xAccountProfiles.put(savedConversation);
+
+          // 关闭弹窗并刷新消息显示
+          closeTransferDetails();
+
+          // 刷新私信详情页
+          if (currentMessageConversation && currentMessageConversation.user) {
+            const profileData = {
+              name: currentMessageConversation.user.name,
+              handle: currentMessageConversation.user.handle,
+              avatar: currentMessageConversation.user.avatar,
+            };
+            await loadCharacterMessageDetail(currentMessageConversation, profileData);
+          }
+
+          console.log('❌ 转账已拒绝:', amount);
+        }
+      }
+    } catch (error) {
+      console.error('拒绝转账失败:', error);
+      showXToast('拒绝转账失败', 'error');
+    }
+  };
+
+  // 确认完成商业任务并支付尾款
+  window.completeBusinessTask = async function (transferId) {
+    try {
+      if (!currentMessageConversation) {
+        showXToast('无法找到当前对话', 'error');
+        return;
+      }
+
+      // 查找转账消息并更新状态
+      const xDb = getXDB();
+      const conversationId = `messageConversation_${currentAccountId || 'main'}_${currentMessageConversation.id}`;
+      const savedConversation = await xDb.xAccountProfiles.get(conversationId);
+
+      if (savedConversation && savedConversation.data && savedConversation.data.messages) {
+        const transferMessage = savedConversation.data.messages.find(
+          msg => msg.type === 'transfer' && msg.timestamp === transferId,
+        );
+
+        if (transferMessage && transferMessage.isBusiness) {
+          const remainingAmount = parseFloat(transferMessage.remainingAmount);
+
+          // 检查钱包余额
+          await loadWalletData();
+          if (walletData.balance < remainingAmount) {
+            showXToast('钱包余额不足，无法支付尾款', 'error');
+            return;
+          }
+
+          // 更新转账状态
+          transferMessage.taskStatus = 'completed';
+          transferMessage.completedAt = new Date().toISOString();
+
+          // 扣除尾款
+          walletData.balance -= remainingAmount;
+
+          // 从商业转账数据库或对话信息中获取接收者名称
+          const businessTransfersId = `businessTransfers_${currentAccountId || 'main'}`;
+          let recipientName = '对方';
+
+          const businessData = await xDb.xAccountProfiles.get(businessTransfersId);
+          if (businessData && businessData.data) {
+            const businessTransfer = businessData.data.find(t => t.transferId === transferId);
+            if (businessTransfer && businessTransfer.senderName) {
+              recipientName = businessTransfer.senderName;
+            }
+          }
+
+          // 如果还是找不到，尝试从currentMessageConversation获取
+          if (recipientName === '对方' && currentMessageConversation?.user?.name) {
+            recipientName = currentMessageConversation.user.name;
+          }
+
+          const transaction = {
+            id: 'business_remaining_' + Date.now(),
+            description: `商业转账尾款 - ${recipientName}${transferMessage.note ? ` - ${transferMessage.note}` : ''}`,
+            amount: -remainingAmount,
+            timestamp: new Date().toISOString(),
+            type: 'business_transfer_remaining',
+          };
+          walletData.transactions.unshift(transaction);
+
+          // 保存钱包数据
+          await saveWalletData();
+
+          // 添加系统通知到对话
+          const systemNotification = {
+            type: 'system',
+            systemType: 'businessTaskCompleted',
+            content: `你已确认任务完成并支付尾款 $${remainingAmount.toFixed(2)}`,
+            timestamp: new Date().toISOString(),
+            time: '刚刚',
+          };
+          savedConversation.data.messages.push(systemNotification);
+
+          // 保存更新
+          await xDb.xAccountProfiles.put(savedConversation);
+
+          // 更新商业转账数据库状态
+          await updateBusinessTransferStatus(transferId, 'completed');
+
+          // 显示手机样式通知
+          showPhoneNotification({
+            title: 'X Wallet',
+            message: `任务已完成，已支付尾款 $${remainingAmount.toFixed(2)}`,
+            avatar: window.userProfileData?.avatar,
+            leftIcon: 'x',
+          });
+
+          // 关闭弹窗并刷新消息显示
+          closeTransferDetails();
+
+          // 刷新私信详情页
+          if (currentMessageConversation && currentMessageConversation.user) {
+            const profileData = {
+              name: currentMessageConversation.user.name,
+              handle: currentMessageConversation.user.handle,
+              avatar: currentMessageConversation.user.avatar,
+            };
+            await loadCharacterMessageDetail(currentMessageConversation, profileData);
+          }
+
+          console.log('✅ 商业任务已完成，尾款已支付:', remainingAmount);
+        }
+      }
+    } catch (error) {
+      console.error('完成任务失败:', error);
+      showXToast('完成任务失败', 'error');
+    }
+  };
+
+  // 更新商业转账数据库状态
+  async function updateBusinessTransferStatus(transferId, newStatus) {
+    try {
+      const xDb = getXDB();
+      const businessTransfersId = `businessTransfers_${currentAccountId || 'main'}`;
+      let savedData = await xDb.xAccountProfiles.get(businessTransfersId);
+
+      if (savedData && savedData.data) {
+        const transfer = savedData.data.find(t => t.transferId === transferId);
+        if (transfer) {
+          transfer.taskStatus = newStatus;
+
+          // 根据状态更新时间戳
+          if (newStatus === 'in_progress' && !transfer.acceptedAt) {
+            transfer.acceptedAt = new Date().toISOString();
+          } else if (newStatus === 'completed') {
+            transfer.completedAt = new Date().toISOString();
+          }
+
+          await xDb.xAccountProfiles.put(savedData);
+          console.log('✅ 商业转账状态已更新:', newStatus);
+        }
+      }
+    } catch (error) {
+      console.error('❌ 更新商业转账状态失败:', error);
+    }
+  }
+
+  // 打开商业转账管理中心
+  window.openBusinessTransferManager = async function () {
+    const xSocialScreen = document.getElementById('x-social-screen');
+    const isLightMode = xSocialScreen && xSocialScreen.classList.contains('x-theme-light');
+
+    // 获取所有商业转账记录
+    const xDb = getXDB();
+    const businessTransfersId = `businessTransfers_${currentAccountId || 'main'}`;
+    let savedData = await xDb.xAccountProfiles.get(businessTransfersId);
+    const businessTransfers = savedData?.data || [];
+
+    // 分类：已发出的和已接收的
+    const sentTransfers = businessTransfers.filter(t => t.direction === 'sent');
+    const receivedTransfers = businessTransfers.filter(t => t.direction === 'received');
+
+    // 创建弹窗遮罩
+    const modal = document.createElement('div');
+    modal.id = 'business-transfer-manager-modal';
+    modal.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: ${isLightMode ? 'rgba(255, 255, 255, 0.85)' : 'rgba(0, 0, 0, 0.85)'};
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 26;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    `;
+
+    modal.innerHTML = `
+      <div style="
+        background-color: ${isLightMode ? 'rgba(255, 255, 255, 0.95)' : 'rgba(0, 0, 0, 0.95)'};
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-radius: 24px;
+        width: 90%;
+        max-width: 500px;
+        max-height: 80vh;
+        position: relative;
+        overflow: hidden;
+        box-shadow: ${
+          isLightMode
+            ? '0 20px 60px rgba(0, 0, 0, 0.15), 0 8px 32px rgba(0, 0, 0, 0.1)'
+            : '0 20px 60px rgba(0, 0, 0, 0.8), 0 8px 32px rgba(255, 255, 255, 0.05)'
+        };
+        border: 2px solid ${isLightMode ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)'};
+      " onclick="event.stopPropagation()">
+        
+        <!-- 头部 -->
+        <div style="
+          background: linear-gradient(135deg, ${
+            isLightMode ? 'rgba(248, 250, 252, 0.8)' : 'rgba(22, 24, 28, 0.8)'
+          } 0%, ${isLightMode ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.6)'} 100%);
+          padding: 24px;
+          text-align: center;
+          border-bottom: 2px solid ${isLightMode ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.08)'};
+          position: relative;
+        ">
+          <!-- 关闭按钮 -->
+          <button onclick="closeBusinessTransferManager()" style="
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: transparent;
+            border: none;
+            color: ${isLightMode ? '#536471' : '#71767b'};
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: all 0.2s;
+          " onmouseover="this.style.backgroundColor='${
+            isLightMode ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.05)'
+          }';"
+             onmouseout="this.style.backgroundColor='transparent'">
+            <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; fill: currentColor;">
+              <g><path d="M10.59 12L4.54 5.96l1.42-1.42L12 10.59l6.04-6.05 1.42 1.42L13.41 12l6.05 6.04-1.42 1.42L12 13.41l-6.04 6.05-1.42-1.42L10.59 12z"></path></g>
+            </svg>
+          </button>
+
+          <!-- 标题 -->
+          <div style="
+            color: ${isLightMode ? '#0f1419' : '#ffffff'};
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+          ">
+            <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; fill: currentColor;">
+              <g><path d="M20 6h-3V4c0-1.1-.9-2-2-2H9c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM9 4h6v2H9V4zm11 16H4V8h16v12z"></path></g>
+            </svg>
+            商业转账管理
+          </div>
+          
+          <div style="
+            color: ${isLightMode ? '#536471' : '#71767b'};
+            font-size: 14px;
+          ">管理所有商业合作订单</div>
+        </div>
+
+        <!-- 内容区域 -->
+        <div style="
+          max-height: 60vh;
+          overflow-y: auto;
+          padding: 16px 20px;
+        ">
+          <!-- 发出的商业转账 -->
+          <div style="margin-bottom: 24px;">
+            <div style="
+              color: ${isLightMode ? '#0f1419' : '#ffffff'};
+              font-size: 16px;
+              font-weight: 700;
+              margin-bottom: 12px;
+              padding-bottom: 8px;
+              border-bottom: 2px solid ${isLightMode ? '#e1e8ed' : '#38444d'};
+              display: flex;
+              align-items: center;
+              gap: 6px;
+            ">
+              <svg viewBox="0 0 24 24" style="width: 16px; height: 16px; fill: currentColor;">
+                <g><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></g>
+              </svg>
+              已发出 (${sentTransfers.length})
+            </div>
+            ${
+              sentTransfers.length > 0
+                ? renderBusinessTransferList(sentTransfers, 'sent', isLightMode)
+                : renderNoBusinessTransfers('sent', isLightMode)
+            }
+          </div>
+          
+          <!-- 接收的商业转账 -->
+          <div>
+            <div style="
+              color: ${isLightMode ? '#0f1419' : '#ffffff'};
+              font-size: 16px;
+              font-weight: 700;
+              margin-bottom: 12px;
+              padding-bottom: 8px;
+              border-bottom: 2px solid ${isLightMode ? '#e1e8ed' : '#38444d'};
+              display: flex;
+              align-items: center;
+              gap: 6px;
+            ">
+              <svg viewBox="0 0 24 24" style="width: 16px; height: 16px; fill: currentColor;">
+                <g><path d="M20 8l-8 5-8-5V6l8 5 8-5m0-2H4c-1.11 0-2 .89-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2z"></path></g>
+              </svg>
+              已接收 (${receivedTransfers.length})
+            </div>
+            ${
+              receivedTransfers.length > 0
+                ? renderBusinessTransferList(receivedTransfers, 'received', isLightMode)
+                : renderNoBusinessTransfers('received', isLightMode)
+            }
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+    document.body.style.overflow = 'hidden';
+
+    // 点击背景关闭弹窗
+    modal.addEventListener('click', e => {
+      if (e.target === modal) {
+        closeBusinessTransferManager();
+      }
+    });
+
+    // 添加入场动画
+    const managerCard = modal.querySelector('div');
+    managerCard.style.transform = 'scale(0.8) translateY(20px)';
+    managerCard.style.opacity = '0';
+
+    requestAnimationFrame(() => {
+      managerCard.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+      managerCard.style.transform = 'scale(1) translateY(0)';
+      managerCard.style.opacity = '1';
+    });
+  };
+
+  // 渲染商业转账列表
+  function renderBusinessTransferList(transfers, type, isLightMode) {
+    return transfers
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      .map(transfer => {
+        const now = new Date();
+
+        // 获取或计算截止时间
+        let deadline;
+        if (transfer.taskDeadline) {
+          deadline = new Date(transfer.taskDeadline);
+        } else if (transfer.acceptedAt && transfer.taskDeadlineHours) {
+          // 动态计算截止时间
+          const acceptedTime = new Date(transfer.acceptedAt);
+          const deadlineHours = parseFloat(transfer.taskDeadlineHours) || 24;
+          deadline = new Date(acceptedTime.getTime() + deadlineHours * 60 * 60 * 1000);
+        } else if (transfer.createdAt && transfer.taskDeadlineHours) {
+          // 如果没有acceptedAt，使用createdAt
+          const createdTime = new Date(transfer.createdAt);
+          const deadlineHours = parseFloat(transfer.taskDeadlineHours) || 24;
+          deadline = new Date(createdTime.getTime() + deadlineHours * 60 * 60 * 1000);
+        } else {
+          // 无法计算截止时间，使用默认24小时
+          deadline = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+        }
+
+        const remainingMs = deadline.getTime() - now.getTime();
+        const isExpired = remainingMs <= 0;
+
+        let deadlineText = '';
+        if (remainingMs > 0) {
+          const hours = Math.floor(remainingMs / (1000 * 60 * 60));
+          const minutes = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
+          deadlineText = hours > 0 ? `${hours}小时${minutes}分钟` : `${minutes}分钟`;
+        } else {
+          deadlineText = '已过期';
+        }
+
+        const statusMap = {
+          pending: '待接收',
+          in_progress: '进行中',
+          completed: '已完成',
+          failed: '已失败',
+        };
+
+        const statusColorMap = {
+          pending: '#f59e0b',
+          in_progress: 'var(--x-accent)',
+          completed: '#22c55e',
+          failed: '#ef4444',
+        };
+
+        return `
+          <div style="
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, ${
+              isLightMode ? 'rgba(0, 0, 0, 0.02)' : 'rgba(255, 255, 255, 0.03)'
+            } 0%, ${isLightMode ? 'rgba(0, 0, 0, 0.01)' : 'rgba(255, 255, 255, 0.01)'} 100%);
+            border: 1px solid ${isLightMode ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)'};
+            border-radius: 12px;
+            transition: all 0.2s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+          " onmouseover="this.style.backgroundColor='${
+            isLightMode ? 'rgba(0, 0, 0, 0.04)' : 'rgba(255, 255, 255, 0.05)'
+          }'"
+             onmouseout="this.style.backgroundColor='transparent'">
+            <!-- 票券水印 -->
+            <div style="
+              position: absolute;
+              top: 50%;
+              right: -20px;
+              transform: translateY(-50%) rotate(15deg);
+              font-size: 32px;
+              color: ${isLightMode ? 'rgba(0, 0, 0, 0.02)' : 'rgba(255, 255, 255, 0.02)'};
+              font-weight: 700;
+              pointer-events: none;
+            ">TICKET</div>
+            
+            <div style="padding: 16px;">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                <div style="flex: 1;">
+                  <div style="
+                    color: ${isLightMode ? '#0f1419' : '#ffffff'};
+                    font-size: 15px;
+                    font-weight: 600;
+                    margin-bottom: 4px;
+                  ">${type === 'sent' ? `发给 ${transfer.senderName}` : `来自 ${transfer.senderName}`}</div>
+                  <div style="
+                    color: ${isLightMode ? '#536471' : '#71767b'};
+                    font-size: 11px;
+                    font-family: monospace;
+                    letter-spacing: 0.5px;
+                  ">${new Date(transfer.createdAt).toLocaleString('zh-CN')}</div>
+                </div>
+                <div style="
+                  display: inline-block;
+                  padding: 4px 10px;
+                  background: linear-gradient(135deg, ${
+                    isLightMode ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.12)'
+                  } 0%, ${isLightMode ? 'rgba(0, 0, 0, 0.04)' : 'rgba(255, 255, 255, 0.06)'} 100%);
+                  color: ${isLightMode ? '#0f1419' : '#ffffff'};
+                  font-size: 10px;
+                  font-weight: 600;
+                  border-radius: 10px;
+                  margin-left: 12px;
+                  border: 1px solid ${isLightMode ? 'rgba(0, 0, 0, 0.15)' : 'rgba(255, 255, 255, 0.2)'};
+                  letter-spacing: 0.5px;
+                ">${statusMap[transfer.taskStatus || 'pending']}</div>
+              </div>
+              
+              <!-- 任务描述 -->
+              <div style="
+                color: ${isLightMode ? '#0f1419' : '#e5e5e5'};
+                font-size: 13px;
+                line-height: 1.4;
+                margin-bottom: 12px;
+                padding: 10px;
+                background: ${isLightMode ? 'rgba(0, 0, 0, 0.02)' : 'rgba(255, 255, 255, 0.02)'};
+                border-left: 2px solid ${isLightMode ? 'rgba(0, 0, 0, 0.15)' : 'rgba(255, 255, 255, 0.15)'};
+                border-radius: 4px;
+              ">${transfer.taskDescription}</div>
+              
+              <!-- 底部信息 -->
+              <div style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding-top: 12px;
+                border-top: 1px dashed ${isLightMode ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)'};
+              ">
+                <div style="
+                  color: ${isExpired ? '#dc2626' : isLightMode ? '#536471' : '#71767b'};
+                  font-size: 11px;
+                  display: flex;
+                  align-items: center;
+                  gap: 4px;
+                ">
+                  <svg viewBox="0 0 24 24" style="width: 11px; height: 11px; fill: currentColor;">
+                    <g><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7V7z"></path></g>
+                  </svg>
+                  ${deadlineText}
+                </div>
+                <div style="
+                  color: ${isLightMode ? '#0f1419' : '#ffffff'};
+                  font-size: 13px;
+                  font-weight: 700;
+                  font-family: monospace;
+                ">$${transfer.amount} <span style="opacity: 0.6; font-size: 11px;">(定金 $${
+          transfer.depositAmount
+        })</span></div>
+              </div>
+            </div>
+          </div>
+        `;
+      })
+      .join('');
+  }
+
+  // 渲染无商业转账状态
+  function renderNoBusinessTransfers(type, isLightMode) {
+    return `
+      <div style="
+        text-align: center;
+        padding: 32px 20px;
+        color: ${isLightMode ? '#6b7280' : '#9ca3af'};
+        font-size: 14px;
+      ">
+        <svg viewBox="0 0 24 24" style="width: 48px; height: 48px; fill: currentColor; opacity: 0.3; margin: 0 auto 12px;">
+          <g><path d="M20 6h-3V4c0-1.1-.9-2-2-2H9c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM9 4h6v2H9V4zm11 16H4V8h16v12z"></path></g>
+        </svg>
+        <div>暂无${type === 'sent' ? '发出的' : '接收的'}商业转账</div>
+      </div>
+    `;
+  }
+
+  // 关闭商业转账管理弹窗
+  window.closeBusinessTransferManager = function () {
+    const modal = document.getElementById('business-transfer-manager-modal');
+    if (modal) {
+      const managerCard = modal.querySelector('div');
+      managerCard.style.transform = 'scale(0.9) translateY(20px)';
+      managerCard.style.opacity = '0';
+
+      setTimeout(() => {
+        modal.remove();
+        document.body.style.overflow = 'auto';
+      }, 200);
+    }
+  };
+
+  // 商业转账状态检查定时器
+  let businessTransferCheckInterval = null;
+
+  // 启动商业转账状态检查
+  function startBusinessTransferCheck() {
+    // 如果已有定时器，先清除
+    if (businessTransferCheckInterval) {
+      clearInterval(businessTransferCheckInterval);
+    }
+
+    // 立即执行一次检查
+    checkBusinessTransfersStatus();
+
+    // 每分钟检查一次
+    businessTransferCheckInterval = setInterval(() => {
+      checkBusinessTransfersStatus();
+    }, 60000); // 60秒
+
+    console.log('✅ 商业转账状态检查已启动');
+  }
+
+  // 检查商业转账状态（提醒、清理）
+  async function checkBusinessTransfersStatus() {
+    try {
+      const xDb = getXDB();
+      const businessTransfersId = `businessTransfers_${currentAccountId || 'main'}`;
+      const savedData = await xDb.xAccountProfiles.get(businessTransfersId);
+
+      if (!savedData || !savedData.data || savedData.data.length === 0) return;
+
+      const businessTransfers = savedData.data;
+      const now = new Date();
+      let needsUpdate = false;
+      const transfersToKeep = [];
+
+      for (const transfer of businessTransfers) {
+        // 获取或计算截止时间
+        let deadline;
+        if (transfer.taskDeadline) {
+          deadline = new Date(transfer.taskDeadline);
+        } else if (transfer.acceptedAt && transfer.taskDeadlineHours) {
+          // 动态计算截止时间
+          const acceptedTime = new Date(transfer.acceptedAt);
+          const deadlineHours = parseFloat(transfer.taskDeadlineHours) || 24;
+          deadline = new Date(acceptedTime.getTime() + deadlineHours * 60 * 60 * 1000);
+        } else if (transfer.createdAt && transfer.taskDeadlineHours) {
+          // 如果没有acceptedAt，使用createdAt
+          const createdTime = new Date(transfer.createdAt);
+          const deadlineHours = parseFloat(transfer.taskDeadlineHours) || 24;
+          deadline = new Date(createdTime.getTime() + deadlineHours * 60 * 60 * 1000);
+        } else {
+          // 无法计算截止时间，跳过此任务
+          console.warn('⚠️ 商业转账缺少截止时间信息，跳过:', transfer.transferId);
+          transfersToKeep.push(transfer);
+          continue;
+        }
+
+        const completedAt = transfer.completedAt ? new Date(transfer.completedAt) : null;
+        const timeToDeadline = deadline.getTime() - now.getTime();
+
+        // 1. 检查是否需要发送即将到期提醒（剩余1小时，且进行中的任务）
+        if (
+          transfer.taskStatus === 'in_progress' &&
+          timeToDeadline > 0 &&
+          timeToDeadline <= 3600000 && // 1小时 = 3600000毫秒
+          !transfer.reminderSent
+        ) {
+          // 发送提醒
+          const hours = Math.floor(timeToDeadline / (1000 * 60 * 60));
+          const minutes = Math.floor((timeToDeadline % (1000 * 60 * 60)) / (1000 * 60));
+          const timeText = hours > 0 ? `${hours}小时${minutes}分钟` : `${minutes}分钟`;
+
+          showPhoneNotification({
+            title: '商业转账提醒',
+            message: `任务"${transfer.taskDescription.substring(0, 20)}..."还剩${timeText}截止，请及时完成！`,
+            avatar: window.userProfileData?.avatar,
+            leftIcon: 'custom',
+            leftIconHtml: `
+              <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; fill: #f59e0b;">
+                <g><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7V7z"></path></g>
+              </svg>
+            `,
+            duration: 5000,
+          });
+
+          // 标记已提醒
+          transfer.reminderSent = true;
+          needsUpdate = true;
+
+          console.log(`⏰ 已发送任务即将到期提醒: ${transfer.taskDescription.substring(0, 30)}`);
+        }
+
+        // 2. 检查是否需要删除（过期超过1小时 或 完成超过3小时）
+        let shouldDelete = false;
+
+        // 过期超过1小时
+        if (timeToDeadline < 0 && Math.abs(timeToDeadline) > 3600000) {
+          shouldDelete = true;
+          console.log(`🗑️ 删除过期任务: ${transfer.taskDescription.substring(0, 30)}`);
+        }
+
+        // 完成超过3小时
+        if (transfer.taskStatus === 'completed' && completedAt) {
+          const timeSinceCompletion = now.getTime() - completedAt.getTime();
+          if (timeSinceCompletion > 10800000) {
+            // 3小时 = 10800000毫秒
+            shouldDelete = true;
+            console.log(`🗑️ 删除已完成任务: ${transfer.taskDescription.substring(0, 30)}`);
+          }
+        }
+
+        // 保留不需要删除的任务
+        if (!shouldDelete) {
+          transfersToKeep.push(transfer);
+        } else {
+          needsUpdate = true;
+        }
+      }
+
+      // 如果有任何变化，更新数据库
+      if (needsUpdate) {
+        await xDb.xAccountProfiles.put({
+          handle: businessTransfersId,
+          name: 'businessTransfers',
+          accountId: currentAccountId || 'main',
+          data: transfersToKeep,
+          updatedAt: new Date().toISOString(),
+        });
+
+        console.log(`✅ 商业转账数据已更新，保留 ${transfersToKeep.length}/${businessTransfers.length} 条记录`);
+
+        // 如果商业转账管理窗口正在打开，刷新显示
+        const managerModal = document.getElementById('business-transfer-manager-modal');
+        if (managerModal) {
+          closeBusinessTransferManager();
+          setTimeout(() => {
+            openBusinessTransferManager();
+          }, 300);
+        }
+      }
+    } catch (error) {
+      console.error('检查商业转账状态失败:', error);
+    }
+  }
+
+  // 处理 AI 对用户转账的响应
+  async function handleAITransferResponse(aiMessages, conversationRef) {
+    try {
+      // 检查 AI 回复中是否有转账消息
+      const aiTransfer = aiMessages.find(msg => msg.type === 'transfer' && msg.status && msg.status !== 'pending');
+
+      if (!aiTransfer) return;
+
+      const xDb = getXDB();
+      const conversationId = `messageConversation_${currentAccountId || 'main'}_${conversationRef.id}`;
+      const savedConversation = await xDb.xAccountProfiles.get(conversationId);
+
+      if (!savedConversation || !savedConversation.data || !savedConversation.data.messages) return;
+
+      // 查找用户之前发送的待处理转账
+      const userTransfer = savedConversation.data.messages.find(
+        msg => msg.type === 'transfer' && msg.isOwn && msg.status === 'pending',
+      );
+
+      if (!userTransfer) return;
+
+      const amount = parseFloat(userTransfer.amount);
+      const isBusiness = userTransfer.isBusiness === true;
+
+      if (aiTransfer.status === 'accepted') {
+        // AI 接收了转账
+        userTransfer.status = 'accepted';
+
+        // 商业转账：更新任务状态
+        if (isBusiness) {
+          userTransfer.taskStatus = 'in_progress';
+          userTransfer.acceptedAt = new Date().toISOString();
+        }
+
+        // 添加系统通知
+        const systemNotification = {
+          type: 'system',
+          systemType: 'transferAccepted',
+          content: isBusiness
+            ? `对方接收了商业转账（定金 $${parseFloat(userTransfer.depositAmount).toFixed(2)}），已开始执行任务`
+            : `对方接收了你的 $${amount.toFixed(2)} 转账`,
+          timestamp: new Date().toISOString(),
+          time: '刚刚',
+        };
+        savedConversation.data.messages.push(systemNotification);
+
+        // 更新钱包交易记录状态
+        await loadWalletData();
+        const recipientName = conversationRef?.user?.name || '对方';
+        const transactionType = isBusiness ? 'business_transfer_deposit' : 'transfer_out';
+        const actualAmount = isBusiness ? parseFloat(userTransfer.depositAmount) : amount;
+
+        const transaction = walletData.transactions.find(
+          t => t.type === transactionType && Math.abs(t.amount + actualAmount) < 0.01,
+        );
+        if (transaction) {
+          transaction.description = isBusiness
+            ? `商业转账给 ${recipientName}（定金已接收）${userTransfer.note ? ` - ${userTransfer.note}` : ''}`
+            : `转账给 ${recipientName}（已接收）${userTransfer.note ? ` - ${userTransfer.note}` : ''}`;
+        }
+        await saveWalletData();
+
+        // 保存更新
+        await xDb.xAccountProfiles.put(savedConversation);
+
+        // 商业转账：更新商业转账数据库状态并触发任务检测
+        if (isBusiness && conversationRef) {
+          // 更新现有的商业转账记录状态，而不是新增
+          await updateBusinessTransferStatus(userTransfer.timestamp, 'in_progress');
+
+          console.log('💼 AI接收的商业转账状态已更新为进行中');
+
+          // 触发AI任务处理（AI接收后自动处理任务）
+          setTimeout(() => {
+            handleBusinessTransferTask(userTransfer, conversationRef);
+          }, 1000);
+        }
+
+        // 延迟3秒显示手机样式通知，避免被AI消息通知掩盖
+        setTimeout(() => {
+          showPhoneNotification({
+            title: 'X Wallet',
+            message: isBusiness
+              ? `对方已接受任务，定金 $${actualAmount.toFixed(2)} 已支付`
+              : `已付款 $${amount.toFixed(2)}, 当前余额 $${walletData.balance.toFixed(2)}`,
+            avatar: window.userProfileData?.avatar,
+            leftIcon: 'x',
+          });
+        }, 3000);
+
+        console.log('✅ AI 接收了转账:', isBusiness ? `商业转账，定金 ${actualAmount}` : amount);
+      } else if (aiTransfer.status === 'rejected') {
+        // AI 拒绝了转账
+        userTransfer.status = 'rejected';
+
+        // 商业转账：更新任务状态
+        if (isBusiness) {
+          userTransfer.taskStatus = 'rejected';
+        }
+
+        // 添加系统通知
+        const systemNotification = {
+          type: 'system',
+          systemType: 'transferRejected',
+          content: isBusiness
+            ? `对方拒绝了商业转账，定金 $${parseFloat(userTransfer.depositAmount).toFixed(2)} 已退回`
+            : `对方拒绝了你的 $${amount.toFixed(2)} 转账`,
+          timestamp: new Date().toISOString(),
+          time: '刚刚',
+        };
+        savedConversation.data.messages.push(systemNotification);
+
+        // 退回钱包余额
+        await loadWalletData();
+        const actualAmount = isBusiness ? parseFloat(userTransfer.depositAmount) : amount;
+        walletData.balance += actualAmount;
+
+        // 更新交易记录
+        const recipientName = conversationRef?.user?.name || '对方';
+        const transactionType = isBusiness ? 'business_transfer_deposit' : 'transfer_out';
+
+        const transaction = walletData.transactions.find(
+          t => t.type === transactionType && Math.abs(t.amount + actualAmount) < 0.01,
+        );
+        if (transaction) {
+          transaction.description = isBusiness
+            ? `商业转账给 ${recipientName}（已拒绝，定金已退回）${userTransfer.note ? ` - ${userTransfer.note}` : ''}`
+            : `转账给 ${recipientName}（已拒绝，已退回）${userTransfer.note ? ` - ${userTransfer.note}` : ''}`;
+          transaction.amount = 0; // 标记为已退回
+        }
+
+        // 添加退款记录
+        const refundTransaction = {
+          id: 'refund_' + Date.now(),
+          description: isBusiness
+            ? `${recipientName} 拒绝商业转账，定金已退回${userTransfer.note ? ` - ${userTransfer.note}` : ''}`
+            : `${recipientName} 拒绝转账，已退回${userTransfer.note ? ` - ${userTransfer.note}` : ''}`,
+          amount: actualAmount,
+          timestamp: new Date().toISOString(),
+          type: 'refund',
+        };
+        walletData.transactions.unshift(refundTransaction);
+
+        await saveWalletData();
+
+        // 保存更新
+        await xDb.xAccountProfiles.put(savedConversation);
+
+        // 延迟4秒显示退款通知，避免被AI消息通知掩盖
+        setTimeout(() => {
+          showPhoneNotification({
+            title: 'X Wallet',
+            message: isBusiness
+              ? `商业转账被拒绝，定金 $${actualAmount.toFixed(2)} 已退回，当前余额 $${walletData.balance.toFixed(2)}`
+              : `转账被拒绝，已退回 $${actualAmount.toFixed(2)}, 当前余额 $${walletData.balance.toFixed(2)}`,
+            avatar: window.userProfileData?.avatar,
+            leftIcon: 'x',
+          });
+        }, 4000);
+
+        console.log('❌ AI 拒绝了转账，已退回:', isBusiness ? `商业转账定金 ${actualAmount}` : amount);
+      }
+
+      // 刷新私信详情页（如果用户还在详情页）
+      if (currentMessageConversation && currentMessageConversation.id === conversationRef.id) {
+        const profileData = {
+          name: conversationRef.user.name,
+          handle: conversationRef.user.handle,
+          avatar: conversationRef.user.avatar,
+        };
+        await loadCharacterMessageDetail(currentMessageConversation, profileData);
+      }
+    } catch (error) {
+      console.error('处理 AI 转账响应失败:', error);
+    }
+  }
+
   // 加载角色私信详情（已绑定角色）
   async function loadCharacterMessageDetail(messageData, profileData) {
     const contentContainer = document.getElementById('message-detail-content');
@@ -35828,8 +41868,14 @@ ${index + 1}. "${tweet.content}"
 
           if (accountProfile && accountProfile.accountInfo) {
             console.log('✅ 找到角色的账户主页数据');
-            // 使用账户主页数据填充详情页
-            loadCharacterMessageDetail(messageData, accountProfile.accountInfo);
+            // 使用账户主页数据，但用最新的X资料头像覆盖
+            const updatedAccountInfo = {
+              ...accountProfile.accountInfo,
+              avatar: xProfile.xAvatar, // 使用最新的X资料头像
+              name: xProfile.xName, // 同时更新名称
+              handle: xProfile.xHandle, // 同时更新句柄
+            };
+            loadCharacterMessageDetail(messageData, updatedAccountInfo);
             return;
           }
         }
@@ -35873,6 +41919,28 @@ ${index + 1}. "${tweet.content}"
       if (savedConversation && savedConversation.data) {
         conversationData = savedConversation.data;
         console.log('✅ 从数据库加载私信对话数据');
+
+        // 🔍 检查拉黑状态
+        if (savedConversation.isBlocked) {
+          console.log('⚠️ [拉黑] 该用户已被拉黑');
+          // 加载会话内容
+          loadMessageConversation(messageData, conversationData);
+
+          // 禁用输入框和发送按钮
+          setTimeout(() => {
+            const messageInput = document.getElementById('message-input');
+            const sendBtn = document.getElementById('message-send-btn');
+            if (messageInput) {
+              messageInput.disabled = true;
+              messageInput.placeholder = '对方已将你拉黑';
+            }
+            if (sendBtn) {
+              sendBtn.disabled = true;
+            }
+          }, 100);
+          return;
+        }
+
         // 加载已有的会话内容
         loadMessageConversation(messageData, conversationData);
       }
@@ -37113,6 +43181,148 @@ ${index + 1}. "${tweet.content}"
       // 隐藏"正在输入中"气泡
       hideTypingIndicator();
 
+      // 🔍 检查特殊系统提示
+      const hasBlockedMessage =
+        aiMessages && aiMessages.some(msg => msg.type === 'system' && msg.systemType === 'blocked');
+      const hasAwayMessage = aiMessages && aiMessages.some(msg => msg.type === 'system' && msg.systemType === 'away');
+
+      // ⚠️ 处理拉黑情况
+      if (hasBlockedMessage) {
+        console.log('⚠️ [拉黑] 对方已将用户拉黑');
+
+        // 保存拉黑状态到对话数据
+        try {
+          const xDb = getXDB();
+          const conversationId = `messageConversation_${currentAccountId || 'main'}_${conversationRef.id}`;
+          const savedConversation = await xDb.xAccountProfiles.get(conversationId);
+
+          if (savedConversation) {
+            savedConversation.isBlocked = true;
+            savedConversation.blockedAt = new Date().toISOString();
+            await xDb.xAccountProfiles.put(savedConversation);
+            console.log('✅ [拉黑] 拉黑状态已保存');
+          }
+        } catch (error) {
+          console.error('❌ [拉黑] 保存拉黑状态失败:', error);
+        }
+
+        // 禁用输入框和发送按钮
+        const messageInput = document.getElementById('message-input');
+        const sendBtn = document.getElementById('message-send-btn');
+        if (messageInput) {
+          messageInput.disabled = true;
+          messageInput.placeholder = '对方已将你拉黑';
+        }
+        if (sendBtn) {
+          sendBtn.disabled = true;
+        }
+
+        // 显示拉黑消息并保存
+        if (aiMessages && aiMessages.length > 0) {
+          const contentContainer = document.getElementById('message-detail-content');
+          if (contentContainer) {
+            const currentMessageCount = contentContainer.querySelectorAll(
+              '.message-item:not(#typing-indicator)',
+            ).length;
+            const messageEl = renderMessageItem(aiMessages[0], false, currentMessageCount, true);
+            contentContainer.appendChild(messageEl);
+            requestAnimationFrame(() => {
+              messageEl.style.opacity = '1';
+              messageEl.style.transform = 'translateY(0)';
+            });
+          }
+          await saveAIMessagesToDB(aiMessages, conversationRef);
+        }
+
+        // 显示拉黑通知
+        const isEnglish = currentLanguage === 'en';
+        showPhoneNotification({
+          title: 'X',
+          message: isEnglish ? 'You have been blocked by this user' : '对方已将你拉黑',
+          leftIcon: 'x',
+          duration: 3000,
+        });
+
+        userMessageQueue = [];
+
+        // 启用发送按钮（虽然已禁用输入框）
+        if (sendBtn) {
+          sendBtn.disabled = false;
+          sendBtn.style.opacity = '1';
+        }
+        return;
+      }
+
+      // ⏰ 处理暂时离开情况
+      if (hasAwayMessage) {
+        console.log('⏰ [离开] 对方暂时离开');
+
+        const awayMessage = aiMessages.find(msg => msg.type === 'system' && msg.systemType === 'away');
+        const awayDuration = awayMessage.awayDuration || 60; // 默认60分钟
+
+        // 保存离开状态到对话数据
+        try {
+          const xDb = getXDB();
+          const conversationId = `messageConversation_${currentAccountId || 'main'}_${conversationRef.id}`;
+          const savedConversation = await xDb.xAccountProfiles.get(conversationId);
+
+          if (savedConversation) {
+            savedConversation.isAway = true;
+            savedConversation.awayUntil = new Date(Date.now() + awayDuration * 60 * 1000).toISOString();
+            savedConversation.awayDuration = awayDuration;
+            await xDb.xAccountProfiles.put(savedConversation);
+            console.log(`✅ [离开] 离开状态已保存，将在${awayDuration}分钟后恢复`);
+          }
+        } catch (error) {
+          console.error('❌ [离开] 保存离开状态失败:', error);
+        }
+
+        // 显示离开消息并保存
+        if (aiMessages && aiMessages.length > 0) {
+          const contentContainer = document.getElementById('message-detail-content');
+          if (contentContainer) {
+            const currentMessageCount = contentContainer.querySelectorAll(
+              '.message-item:not(#typing-indicator)',
+            ).length;
+            const messageEl = renderMessageItem(aiMessages[0], false, currentMessageCount, true);
+            contentContainer.appendChild(messageEl);
+            requestAnimationFrame(() => {
+              messageEl.style.opacity = '1';
+              messageEl.style.transform = 'translateY(0)';
+            });
+          }
+          await saveAIMessagesToDB(aiMessages, conversationRef);
+        }
+
+        // 设置定时器，离开时间结束后触发自动消息
+        setTimeout(() => {
+          console.log(`⏰ [离开] 离开时间结束，准备触发自动消息`);
+          // 触发自动消息机制
+          if (typeof triggerAutoMessageAfterAway === 'function') {
+            triggerAutoMessageAfterAway(conversationRef.id);
+          }
+        }, awayDuration * 60 * 1000);
+
+        // 显示离开通知
+        const isEnglish = currentLanguage === 'en';
+        showPhoneNotification({
+          title: 'X',
+          message: awayMessage.content,
+          leftIcon: 'x',
+          duration: 3000,
+        });
+
+        userMessageQueue = [];
+
+        // 恢复发送按钮
+        const sendBtn = document.getElementById('message-send-btn');
+        if (sendBtn) {
+          sendBtn.disabled = false;
+          sendBtn.style.opacity = '1';
+        }
+        return;
+      }
+
       if (aiMessages && aiMessages.length > 0) {
         // 渲染AI回复（只有在用户还在详情页时才渲染）
         const contentContainer = document.getElementById('message-detail-content');
@@ -37138,6 +43348,9 @@ ${index + 1}. "${tweet.content}"
 
         // 保存AI回复到数据库（使用保存的引用，即使用户已离开页面也能保存）
         await saveAIMessagesToDB(aiMessages, conversationRef);
+
+        // 处理 AI 对用户转账的响应
+        await handleAITransferResponse(aiMessages, conversationRef);
 
         // 清空用户消息队列
         userMessageQueue = [];
@@ -37207,9 +43420,20 @@ ${index + 1}. "${tweet.content}"
           }
         })();
       } else {
-        if (document.getElementById('x-message-detail-page')?.style.display !== 'none') {
-          showXToast('未收到回复', 'error');
-        }
+        // 📭 AI决定不回复（返回空数组）
+        console.log('📭 [不回复] AI决定不回复用户消息');
+
+        // 显示发送成功提示
+        const isEnglish = currentLanguage === 'en';
+        showPhoneNotification({
+          title: 'X',
+          message: isEnglish ? 'Message delivered' : '消息已送达',
+          leftIcon: 'x',
+          duration: 2000,
+        });
+
+        // 清空用户消息队列
+        userMessageQueue = [];
       }
     } catch (error) {
       console.error('获取AI回复失败:', error);
@@ -37443,6 +43667,23 @@ ${index + 1}. "${tweet.content}"
       transition: background-color 0.2s;
     `;
 
+    // 获取最新头像（对于绑定角色，从X资料读取）
+    let currentAvatar = message.userAvatar;
+    const isCharacterMessage = message.id && message.id.startsWith('msg_') && message.id !== 'msg_001';
+
+    if (isCharacterMessage) {
+      try {
+        const xDb = getXDB();
+        const characterId = message.id.replace('msg_', '');
+        const xProfile = await xDb.xCharacterProfiles.get(characterId);
+        if (xProfile && xProfile.xAvatar) {
+          currentAvatar = xProfile.xAvatar;
+        }
+      } catch (error) {
+        console.warn('读取角色头像失败:', error);
+      }
+    }
+
     // 获取最新消息内容
     let lastMessageText = message.lastMessage || '';
     let lastMessageTime = message.timestamp;
@@ -37490,7 +43731,7 @@ ${index + 1}. "${tweet.content}"
       <!-- 头像容器（带未读提醒点） -->
       <div style="position: relative; flex-shrink: 0; margin-right: 12px;">
         <!-- 头像 -->
-        <img src="${message.userAvatar}" 
+        <img src="${currentAvatar}" 
           alt="${message.userName}" 
           style="
             width: 48px;
@@ -40480,6 +46721,14 @@ ${index + 1}. "${tweet.content}"
   window.switchProfileTab = switchProfileTab;
   window.toggleProfileMenu = toggleProfileMenu;
   window.openAccountManager = openAccountManager;
+  window.openAccountWallet = openAccountWallet;
+  window.closeWalletModal = closeWalletModal;
+  window.activateWallet = activateWallet;
+  window.addFunds = addFunds;
+  window.sendMoney = sendMoney;
+  window.shareWallet = shareWallet;
+  window.exportWallet = exportWallet;
+  window.copyWalletInfo = copyWalletInfo;
   window.updateCharacterCounts = updateCharacterCounts;
   window.toggleRealNameInput = toggleRealNameInput;
   window.updateTag1ColorFromText = updateTag1ColorFromText;
@@ -40629,6 +46878,26 @@ ${index + 1}. "${tweet.content}"
   }
 
   console.log('📦 X Social App 模块已加载，版本: 1.0');
+  // 清空当前账户的钱包数据（调试用）
+  window.clearCurrentWalletData = async function () {
+    try {
+      const db = getXDB();
+      const accountId = currentAccountId || 'main';
+      const walletId = `wallet_${accountId}`;
+
+      // 删除钱包数据
+      await db.xAccountProfiles.delete(walletId);
+
+      // 重新加载空的钱包数据
+      await loadWalletData();
+
+      console.log('✅ 已清空账户钱包数据:', accountId);
+      showXToast('钱包数据已清空', 'success');
+    } catch (error) {
+      console.error('❌ 清空钱包数据失败:', error);
+      showXToast('清空失败: ' + error.message, 'error');
+    }
+  };
 })(window);
 
 // ==========================================
