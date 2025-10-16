@@ -2443,7 +2443,7 @@
                 <div style="margin-bottom: 20px; border-top: 1px solid #333; padding-top: 20px;">
                   <label style="display: block; color: #fff; font-size: 15px; font-weight: 600; margin-bottom: 8px;">🤖 后台自动活动</label>
                   <div style="color: #71767b; font-size: 13px; margin-bottom: 12px; line-height: 1.4;">
-                    启用后，当与该角色在X平台私信达到设定的无互动时间后，角色将主动在后台发送消息
+                    启用后，当与该角色在X平台私信达到设定的无互动时间后，角色将主动在后台发送消息和推文
                   </div>
 
                   <!-- 启用开关 -->
@@ -3130,7 +3130,7 @@
                 z-index: 100;
               ">
                 <!-- 图片上传 -->
-                <div onclick="triggerMessageImageUpload(); toggleMessageFunctionMenu();" style="
+                <div onclick="openImageTypeSelector(); toggleMessageFunctionMenu();" style="
                   cursor: pointer;
                   padding: 8px;
                   border-radius: 8px;
@@ -3840,6 +3840,175 @@
             <!-- 转账详情内容 -->
             <div id="transfer-details-content">
               <!-- 动态生成转账详情 -->
+            </div>
+          </div>
+        </div>
+
+        <!-- 图片类型选择器 -->
+        <div id="image-type-selector-dialog" style="
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100vw;
+          height: 100vh;
+          background-color: rgba(0, 0, 0, 0.5);
+          display: none;
+          align-items: center;
+          justify-content: center;
+          z-index: 31;
+        " onclick="closeImageTypeSelector()">
+          <div style="
+            background-color: var(--x-bg-primary);
+            border-radius: 16px;
+            max-width: 360px;
+            width: 90%;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+          " onclick="event.stopPropagation()">
+            <div style="font-size: 18px; font-weight: 700; color: var(--x-text-primary); margin-bottom: 16px;">选择图片类型</div>
+            
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+              <!-- 真实图片 -->
+              <div onclick="selectImageType('real')" style="
+                padding: 16px;
+                border: 2px solid var(--x-border-color);
+                border-radius: 12px;
+                cursor: pointer;
+                transition: all 0.2s;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+              " onmouseover="this.style.borderColor='var(--x-accent)'; this.style.backgroundColor='var(--x-bg-hover)'"
+                onmouseout="this.style.borderColor='var(--x-border-color)'; this.style.backgroundColor='transparent'">
+                <svg viewBox="0 0 24 24" style="width: 24px; height: 24px; fill: var(--x-accent); flex-shrink: 0;">
+                  <g><path d="M3 5.5C3 4.119 4.119 3 5.5 3h13C19.881 3 21 4.119 21 5.5v13c0 1.381-1.119 2.5-2.5 2.5h-13C4.119 21 3 19.881 3 18.5v-13zM5.5 5c-.276 0-.5.224-.5.5v9.086l3-3 3 3 5-5 3 3V5.5c0-.276-.224-.5-.5-.5h-13zM19 15.414l-3-3-5 5-3-3-3 3V18.5c0 .276.224.5.5.5h13c.276 0 .5-.224.5-.5v-3.086zM9.75 7C8.784 7 8 7.784 8 8.75s.784 1.75 1.75 1.75 1.75-.784 1.75-1.75S10.716 7 9.75 7z"></path></g>
+                </svg>
+                <div>
+                  <div style="font-size: 15px; font-weight: 600; color: var(--x-text-primary); margin-bottom: 4px;">上传真实图片</div>
+                  <div style="font-size: 13px; color: var(--x-text-secondary);">从设备中选择图片文件</div>
+                </div>
+              </div>
+              
+              <!-- 文字图片 -->
+              <div onclick="selectImageType('text')" style="
+                padding: 16px;
+                border: 2px solid var(--x-border-color);
+                border-radius: 12px;
+                cursor: pointer;
+                transition: all 0.2s;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+              " onmouseover="this.style.borderColor='var(--x-accent)'; this.style.backgroundColor='var(--x-bg-hover)'"
+                onmouseout="this.style.borderColor='var(--x-border-color)'; this.style.backgroundColor='transparent'">
+                <svg viewBox="0 0 24 24" style="width: 24px; height: 24px; fill: var(--x-accent); flex-shrink: 0;">
+                  <g><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path></g>
+                </svg>
+                <div>
+                  <div style="font-size: 15px; font-weight: 600; color: var(--x-text-primary); margin-bottom: 4px;">发送文字图片</div>
+                  <div style="font-size: 13px; color: var(--x-text-secondary);">用文字描述图片内容</div>
+                </div>
+              </div>
+            </div>
+
+            <div style="margin-top: 16px; display: flex; justify-content: flex-end;">
+              <button onclick="closeImageTypeSelector()" style="
+                background-color: var(--x-bg-secondary);
+                color: var(--x-text-primary);
+                border: none;
+                border-radius: 20px;
+                padding: 8px 16px;
+                font-size: 14px;
+                font-weight: 600;
+                cursor: pointer;
+              ">取消</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 文字图片输入对话框 -->
+        <div id="text-image-dialog" style="
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100vw;
+          height: 100vh;
+          background-color: rgba(0, 0, 0, 0.5);
+          display: none;
+          align-items: center;
+          justify-content: center;
+          z-index: 32;
+        " onclick="closeTextImageDialog()">
+          <div style="
+            background-color: var(--x-bg-primary);
+            border-radius: 16px;
+            max-width: 500px;
+            width: 90%;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+          " onclick="event.stopPropagation()">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+              <div style="font-size: 18px; font-weight: 700; color: var(--x-text-primary);">发送文字图片</div>
+              <div onclick="closeTextImageDialog()" style="
+                cursor: pointer;
+                padding: 4px;
+                border-radius: 50%;
+                transition: background-color 0.2s;
+              " onmouseover="this.style.backgroundColor='var(--x-bg-hover)'"
+                onmouseout="this.style.backgroundColor='transparent'">
+                <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; fill: var(--x-text-primary);">
+                  <g><path d="M10.59 12L4.54 5.96l1.42-1.42L12 10.59l6.04-6.05 1.42 1.42L13.41 12l6.05 6.04-1.42 1.42L12 13.41l-6.04 6.05-1.42-1.42L10.59 12z"></path></g>
+                </svg>
+              </div>
+            </div>
+            
+            <div style="font-size: 13px; color: var(--x-text-secondary); margin-bottom: 12px;">
+              用文字描述你想发送的图片内容（例如：一张美丽的日落照片）
+            </div>
+            
+            <div style="margin-bottom: 16px;">
+              <textarea id="text-image-description-input" placeholder="输入图片描述..." maxlength="500" style="
+                width: 100%;
+                min-height: 120px;
+                padding: 12px;
+                background-color: var(--x-bg-secondary);
+                border: 1px solid var(--x-border-color);
+                border-radius: 8px;
+                color: var(--x-text-primary);
+                font-size: 14px;
+                outline: none;
+                resize: vertical;
+                font-family: inherit;
+                line-height: 1.5;
+              " onfocus="this.style.borderColor='var(--x-accent)'" 
+                 onblur="this.style.borderColor='var(--x-border-color)'"
+                 oninput="updateTextImageCounter()"></textarea>
+              <div style="text-align: right; margin-top: 4px;">
+                <span id="text-image-counter" style="font-size: 12px; color: var(--x-text-secondary);">0 / 500</span>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 8px; justify-content: flex-end;">
+              <button onclick="closeTextImageDialog()" style="
+                background-color: var(--x-bg-secondary);
+                color: var(--x-text-primary);
+                border: none;
+                border-radius: 20px;
+                padding: 8px 16px;
+                font-size: 14px;
+                font-weight: 600;
+                cursor: pointer;
+              ">取消</button>
+              <button onclick="sendTextImage()" style="
+                background-color: var(--x-accent);
+                color: #fff;
+                border: none;
+                border-radius: 20px;
+                padding: 8px 16px;
+                font-size: 14px;
+                font-weight: 600;
+                cursor: pointer;
+              ">发送</button>
             </div>
           </div>
         </div>
@@ -6929,10 +7098,10 @@
             width: 100%;
           "
           onblur="saveAccountAskboxPrompt()"
-          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();this.blur();}">请向我匿名提问!waiting...</div>
+          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();this.blur();}">在这里输入你的匿名提问，或点击下方按钮生成随机提问...</div>
         </div>
 
-        <!-- 获取新提问按钮 -->
+        <!-- 获取新提问/提交提问按钮 -->
         <div onclick="getNewAccountQuestion()" style="
           margin: 0 20px 32px 20px;
           background-color: rgba(255,255,255,0.85);
@@ -6945,7 +7114,7 @@
           box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         " onmouseover="this.style.backgroundColor='rgba(255,255,255,0.95)'; this.style.transform='translateY(-1px)'"
           onmouseout="this.style.backgroundColor='rgba(255,255,255,0.85)'; this.style.transform='translateY(0)'">
-          <span style="color: #333; font-size: 15px; font-weight: 600;">获取新的提问</span>
+          <span style="color: #333; font-size: 15px; font-weight: 600;">获取回答 / 生成随机提问</span>
         </div>
 
         <!-- 已回答的提问列表 -->
@@ -7309,8 +7478,8 @@
 
       if (characterHandles.length === 0) return '';
 
-      // 🎯 使用统一资料获取系统批量获取角色资料
-      const profiles = await this.getBatchProfiles(characterHandles);
+      // 🎯 使用统一资料获取系统批量获取角色资料（传递用户信息以正确读取私信等数据）
+      const profiles = await this.getBatchProfiles(characterHandles, { userProfileInfo: userXProfileInfo });
 
       if (profiles.length === 0) return '';
 
@@ -7632,6 +7801,11 @@ ${userXProfileInfo.bio ? `- 个人简介：${userXProfileInfo.bio}` : ''}
         if (userProfileInfo && userProfileInfo.knownIdentityCharacters) {
           knowsUserIdentity = userProfileInfo.knownIdentityCharacters.includes(character.id);
         }
+        console.log(
+          `👤 [身份识别] 角色 ${xProfile.xName} ${knowsUserIdentity ? '✅ 知道' : '❌ 不知道'}用户身份${
+            knowsUserIdentity && xProfile.userPersona ? ' (有专属人设)' : knowsUserIdentity ? ' (无专属人设)' : ''
+          }`,
+        );
 
         // 🆕 读取X平台私信记忆
         let xMessageHistory = [];
@@ -7639,11 +7813,26 @@ ${userXProfileInfo.bio ? `- 个人简介：${userXProfileInfo.bio}` : ''}
           // 私信数据的key格式: messageConversation_${currentAccountId}_msg_${characterId}
           const currentAccount = window.currentAccountId || 'main';
           const messageConversationId = `messageConversation_${currentAccount}_msg_${character.id}`;
-          const messageConversation = await xDB.xAccountProfiles.get(messageConversationId);
+          let messageConversation = await xDB.xAccountProfiles.get(messageConversationId);
+
+          // 🔧 如果未找到，尝试跨账户模糊匹配
+          if (!messageConversation) {
+            const allProfiles = await xDB.xAccountProfiles.toArray();
+            const conversationKeys = allProfiles
+              .filter(p => p.handle && p.handle.startsWith('messageConversation_'))
+              .map(p => p.handle);
+
+            // 尝试查找包含当前角色ID的任何key（适配多账户数据）
+            const matchingKey = conversationKeys.find(key => key.includes(`msg_${character.id}`));
+            if (matchingKey) {
+              messageConversation = await xDB.xAccountProfiles.get(matchingKey);
+              console.log(`ℹ️ [私信数据] 角色 ${xProfile.xName} 使用了其他账户的私信数据 (${matchingKey})`);
+            }
+          }
 
           if (messageConversation && messageConversation.data && messageConversation.data.messages) {
-            // 提取最近的私信对话（最多20条）
-            const messages = messageConversation.data.messages.slice(-20);
+            // 提取最近的私信对话（最多30条）
+            const messages = messageConversation.data.messages.slice(-30);
             xMessageHistory = messages.map(msg => ({
               type: msg.type,
               content: msg.content || '',
@@ -7651,9 +7840,12 @@ ${userXProfileInfo.bio ? `- 个人简介：${userXProfileInfo.bio}` : ''}
               time: msg.time || '',
               timestamp: msg.timestamp || '',
             }));
+            console.log(`✅ [私信数据] 角色 ${xProfile.xName}: ${xMessageHistory.length} 条记忆`);
+          } else {
+            console.log(`ℹ️ [私信数据] 角色 ${xProfile.xName}: 无数据`);
           }
         } catch (error) {
-          console.error('[统一资料] 读取X平台私信记忆失败:', error);
+          console.error(`❌ [私信数据] 角色 ${xProfile.xName} 读取失败:`, error);
         }
 
         return {
@@ -7712,6 +7904,9 @@ ${userXProfileInfo.bio ? `- 个人简介：${userXProfileInfo.bio}` : ''}
 
         const accountInfo = accountProfile.accountInfo || accountProfile;
 
+        // 🆕 读取X平台私信记忆
+        const xMessageHistory = await this._loadXMessageHistory(accountInfo.handle);
+
         return {
           type: 'account',
           // 基础信息
@@ -7747,6 +7942,7 @@ ${userXProfileInfo.bio ? `- 个人简介：${userXProfileInfo.bio}` : ''}
             sourceContext: accountProfile.sourceContext || null,
             followersCount: accountInfo.followersCount || '0',
             followingCount: accountInfo.followingCount || '0',
+            xMessageHistory: xMessageHistory, // 🆕 X平台私信记忆
           },
 
           // 推文数据
@@ -7766,6 +7962,67 @@ ${userXProfileInfo.bio ? `- 个人简介：${userXProfileInfo.bio}` : ''}
       }
     },
 
+    // 🆕 内部辅助方法：通过句柄读取X平台私信记忆
+    async _loadXMessageHistory(handle) {
+      try {
+        const xDB = getXDB();
+        const currentAccount = window.currentAccountId || 'main';
+        const cleanHandle = handle.replace('@', '');
+
+        // 通过私信列表查找对话ID
+        const messagesListId = `messagesList_${currentAccount}`;
+        const messagesListData = await xDB.xAccountProfiles.get(messagesListId);
+
+        if (!messagesListData || !messagesListData.data) {
+          console.log(`ℹ️ [私信数据] ${handle}: 无私信列表`);
+          return [];
+        }
+
+        // 查找对应句柄的对话
+        const conversation = messagesListData.data.find(
+          msg => msg.userHandle && msg.userHandle.replace('@', '').toLowerCase() === cleanHandle.toLowerCase(),
+        );
+
+        if (!conversation) {
+          console.log(`ℹ️ [私信数据] ${handle}: 未找到对话`);
+          return [];
+        }
+
+        // 读取对话详细消息
+        const conversationId = `messageConversation_${currentAccount}_${conversation.id}`;
+        const conversationData = await xDB.xAccountProfiles.get(conversationId);
+
+        if (!conversationData || !conversationData.data || !conversationData.data.messages) {
+          console.log(`ℹ️ [私信数据] ${handle}: 对话数据为空`);
+          return [];
+        }
+
+        // 提取最近20条私信
+        const messages = conversationData.data.messages.slice(-20);
+        const history = messages.map(msg => ({
+          type: msg.type,
+          content: msg.content || '',
+          isOwn: msg.isOwn || false,
+          time: msg.time || '',
+          timestamp: msg.timestamp || '',
+          // 保留其他字段供特殊消息类型使用
+          amount: msg.amount,
+          note: msg.note,
+          imageDescription: msg.imageDescription,
+          voiceText: msg.voiceText,
+          title: msg.title,
+          url: msg.url,
+          tweet: msg.tweet,
+          profile: msg.profile,
+        }));
+        console.log(`✅ [私信数据] ${handle}: ${history.length} 条记忆`);
+        return history;
+      } catch (error) {
+        console.error(`❌ [私信数据] ${handle}: 读取失败`, error);
+        return [];
+      }
+    },
+
     // 内部方法：通过句柄获取绑定NPC资料
     async _getNPCProfileByHandle(cleanHandle) {
       try {
@@ -7778,6 +8035,9 @@ ${userXProfileInfo.bio ? `- 个人简介：${userXProfileInfo.bio}` : ''}
           const npcCleanHandle = npc.handle.replace('@', '');
 
           if (npcCleanHandle.toLowerCase() === cleanHandle.toLowerCase()) {
+            // 🆕 读取X平台私信记忆
+            const xMessageHistory = await this._loadXMessageHistory(npc.handle);
+
             return {
               type: 'npc',
               // 基础信息
@@ -7793,6 +8053,7 @@ ${userXProfileInfo.bio ? `- 个人简介：${userXProfileInfo.bio}` : ''}
                 personality: npc.personality || '',
                 postingHabits: npc.postingHabits || '',
                 homepage: npc.homepage || '',
+                xMessageHistory: xMessageHistory, // 🆕 X平台私信记忆
               },
 
               // 原始对象（保留用于兼容性）
@@ -7840,6 +8101,9 @@ ${userXProfileInfo.bio ? `- 个人简介：${userXProfileInfo.bio}` : ''}
               const ownerCharacter = allChats.find(chat => chat.id === xProfile.characterId);
 
               if (ownerCharacter) {
+                // 🆕 读取X平台私信记忆
+                const xMessageHistory = await this._loadXMessageHistory(relationship.npcHandle);
+
                 return {
                   type: 'relationshipNpc',
                   // 基础信息
@@ -7856,6 +8120,7 @@ ${userXProfileInfo.bio ? `- 个人简介：${userXProfileInfo.bio}` : ''}
                     description: relationship.description || '',
                     ownerCharacterId: ownerCharacter.id,
                     ownerCharacterName: ownerCharacter.name,
+                    xMessageHistory: xMessageHistory, // 🆕 X平台私信记忆
                   },
 
                   // 原始对象（保留用于兼容性）
@@ -7910,6 +8175,9 @@ ${userXProfileInfo.bio ? `- 个人简介：${userXProfileInfo.bio}` : ''}
         }
       }
 
+      // 🆕 读取X平台私信记忆
+      const xMessageHistory = await this._loadXMessageHistory(`@${cleanHandle}`);
+
       return {
         type: 'stranger',
         // 基础信息
@@ -7920,9 +8188,11 @@ ${userXProfileInfo.bio ? `- 个人简介：${userXProfileInfo.bio}` : ''}
         verified: false,
         publicIdentity: '',
 
-        // 空数据
+        // 空数据（但包含私信记忆）
         characterData: null,
-        accountData: null,
+        accountData: {
+          xMessageHistory: xMessageHistory, // 🆕 X平台私信记忆
+        },
         tweets: [],
         relationships: [],
 
@@ -8055,10 +8325,87 @@ ${cd.userPersona}
           cd.xMessageHistory &&
           cd.xMessageHistory.length > 0
         ) {
+          const xMessageSectionStart = promptText.length;
           promptText += `
 【X平台私信记忆】（该角色与用户在X平台私信中的对话记录，仅供参考）：
 `;
-          const recentXMessages = cd.xMessageHistory.slice(-15); // 显示最近15条
+          const recentXMessages = cd.xMessageHistory.slice(-30); // 显示最近30条
+          let xMemCount = 0;
+          for (const msg of recentXMessages) {
+            const sender = msg.isOwn ? '用户' : profile.name;
+            let content = '';
+
+            if (msg.type === 'text') {
+              content = msg.content;
+            } else if (msg.type === 'image') {
+              content = msg.isOwn ? '[用户发送了图片]' : `[图片: ${msg.imageDescription || '图片'}]`;
+            } else if (msg.type === 'voice') {
+              content = `[语音: ${msg.voiceText || '语音消息'}]`;
+            } else if (msg.type === 'sticker') {
+              content = '[表情包]';
+            } else if (msg.type === 'transfer') {
+              const amount = msg.amount ? `$${msg.amount}` : '';
+              const note = msg.note ? ` (${msg.note})` : '';
+              content = `[转账${amount}${note}]`;
+            } else if (msg.type === 'link') {
+              content = `[分享链接: ${msg.title || '链接'}]`;
+            } else if (msg.type === 'quoteTweet') {
+              content = `[转发推文: ${msg.tweet?.content || ''}]`;
+            } else if (msg.type === 'quoteProfile') {
+              content = `[分享主页: ${msg.profile?.name || ''}]`;
+            } else {
+              content = `[${msg.type}消息]`;
+            }
+
+            if (content) {
+              const displayContent = content.length > 80 ? `${content.substring(0, 80)}...` : content;
+              promptText += `${sender}: ${displayContent}\n`;
+              xMemCount++;
+            }
+
+            if (xMemCount >= 30) break;
+          }
+          promptText += `⚠️ 以上是X平台私信对话记录，仅供理解角色与用户的关系和沟通风格
+⚠️ 根据当前场景（推文/评论）自然使用，不要在公开推文中直接提及私信内容
+`;
+          // 统计私信记忆的 token 数量
+          const xMessageSection = promptText.substring(xMessageSectionStart);
+          const xMessageTokens = TokenUtils.estimateTokens(xMessageSection);
+          console.log(`📊 [私信] 角色 ${profile.name}: ${xMemCount}条, ~${xMessageTokens} tokens`);
+        }
+
+        // 长期记忆
+        if (cd.longTermMemory && cd.longTermMemory.length > 0) {
+          promptText += `
+【长期记忆】（仅供AI参考，路人不知道）：
+`;
+          cd.longTermMemory.forEach((mem, idx) => {
+            promptText += `${idx + 1}. ${mem.content}\n`;
+          });
+        }
+      }
+
+      // 账户特有信息
+      if (profile.type === 'account' && profile.accountData) {
+        const ad = profile.accountData;
+        promptText += `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔒 账户资料（仅供AI理解，路人不知道）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+账户类型：${ad.accountType}
+${ad.personality ? `人设描述：${ad.personality}` : ''}
+${ad.postingHabits ? `发帖习惯：${ad.postingHabits}` : ''}
+${ad.followersCount ? `关注者：${ad.followersCount}` : ''}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
+
+        // 🆕 X平台私信记忆（如果有）
+        if (ad.xMessageHistory && ad.xMessageHistory.length > 0) {
+          const xMessageSectionStart = promptText.length;
+          promptText += `
+【X平台私信记忆】（该账户与用户在X平台私信中的对话记录，仅供参考）：
+`;
+          const recentXMessages = ad.xMessageHistory.slice(-15);
           let xMemCount = 0;
           for (const msg of recentXMessages) {
             const sender = msg.isOwn ? '用户' : profile.name;
@@ -8094,31 +8441,14 @@ ${cd.userPersona}
 
             if (xMemCount >= 15) break;
           }
-          promptText += `⚠️ 以上是X平台私信对话记录，仅供理解角色与用户的关系和沟通风格
+          promptText += `⚠️ 以上是X平台私信对话记录，仅供理解该账户与用户的关系和沟通风格
 ⚠️ 根据当前场景（推文/评论）自然使用，不要在公开推文中直接提及私信内容
 `;
+          // 统计私信记忆的 token 数量
+          const xMessageSection = promptText.substring(xMessageSectionStart);
+          const xMessageTokens = TokenUtils.estimateTokens(xMessageSection);
+          console.log(`📊 [私信] 账户 ${profile.name}: ${xMemCount}条, ~${xMessageTokens} tokens`);
         }
-
-        // 长期记忆
-        if (cd.longTermMemory && cd.longTermMemory.length > 0) {
-          promptText += `
-【长期记忆】（仅供AI参考，路人不知道）：
-`;
-          cd.longTermMemory.forEach((mem, idx) => {
-            promptText += `${idx + 1}. ${mem.content}\n`;
-          });
-        }
-      }
-
-      // 账户特有信息
-      if (profile.type === 'account' && profile.accountData) {
-        const ad = profile.accountData;
-        promptText += `
-【账户类型】：${ad.accountType}
-${ad.personality ? `人设描述：${ad.personality}` : ''}
-${ad.postingHabits ? `发帖习惯：${ad.postingHabits}` : ''}
-${ad.followersCount ? `关注者：${ad.followersCount}` : ''}
-`;
       }
 
       // 绑定NPC特有信息
@@ -8135,6 +8465,57 @@ ${nd.homepage ? `主页链接：${nd.homepage}` : ''}
 ⚠️ 该NPC是全局绑定的虚拟角色，按照人设描述进行互动
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 `;
+
+        // 🆕 X平台私信记忆（如果有）
+        if (nd.xMessageHistory && nd.xMessageHistory.length > 0) {
+          const xMessageSectionStart = promptText.length;
+          promptText += `
+【X平台私信记忆】（该NPC与用户在X平台私信中的对话记录，仅供参考）：
+`;
+          const recentXMessages = nd.xMessageHistory.slice(-15);
+          let xMemCount = 0;
+          for (const msg of recentXMessages) {
+            const sender = msg.isOwn ? '用户' : profile.name;
+            let content = '';
+
+            if (msg.type === 'text') {
+              content = msg.content;
+            } else if (msg.type === 'image') {
+              content = msg.isOwn ? '[用户发送了图片]' : `[图片: ${msg.imageDescription || '图片'}]`;
+            } else if (msg.type === 'voice') {
+              content = `[语音: ${msg.voiceText || '语音消息'}]`;
+            } else if (msg.type === 'sticker') {
+              content = '[表情包]';
+            } else if (msg.type === 'transfer') {
+              const amount = msg.amount ? `$${msg.amount}` : '';
+              const note = msg.note ? ` (${msg.note})` : '';
+              content = `[转账${amount}${note}]`;
+            } else if (msg.type === 'link') {
+              content = `[分享链接: ${msg.title || '链接'}]`;
+            } else if (msg.type === 'quoteTweet') {
+              content = `[转发推文: ${msg.tweet?.content || ''}]`;
+            } else if (msg.type === 'quoteProfile') {
+              content = `[分享主页: ${msg.profile?.name || ''}]`;
+            } else {
+              content = `[${msg.type}消息]`;
+            }
+
+            if (content) {
+              const displayContent = content.length > 80 ? `${content.substring(0, 80)}...` : content;
+              promptText += `${sender}: ${displayContent}\n`;
+              xMemCount++;
+            }
+
+            if (xMemCount >= 15) break;
+          }
+          promptText += `⚠️ 以上是X平台私信对话记录，仅供理解该NPC与用户的关系和沟通风格
+⚠️ 根据当前场景（推文/评论）自然使用，不要在公开推文中直接提及私信内容
+`;
+          // 统计私信记忆的 token 数量
+          const xMessageSection = promptText.substring(xMessageSectionStart);
+          const xMessageTokens = TokenUtils.estimateTokens(xMessageSection);
+          console.log(`📊 [私信] NPC ${profile.name}: ${xMemCount}条, ~${xMessageTokens} tokens`);
+        }
       }
 
       // 关系NPC特有信息
@@ -8152,6 +8533,57 @@ ${rd.description ? `关系描述：${rd.description}` : ''}
 ⚠️ 该NPC只与其所属角色有特殊关系，与其他角色/用户按照普通关系互动
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 `;
+
+        // 🆕 X平台私信记忆（如果有）
+        if (rd.xMessageHistory && rd.xMessageHistory.length > 0) {
+          const xMessageSectionStart = promptText.length;
+          promptText += `
+【X平台私信记忆】（该关系NPC与用户在X平台私信中的对话记录，仅供参考）：
+`;
+          const recentXMessages = rd.xMessageHistory.slice(-15);
+          let xMemCount = 0;
+          for (const msg of recentXMessages) {
+            const sender = msg.isOwn ? '用户' : profile.name;
+            let content = '';
+
+            if (msg.type === 'text') {
+              content = msg.content;
+            } else if (msg.type === 'image') {
+              content = msg.isOwn ? '[用户发送了图片]' : `[图片: ${msg.imageDescription || '图片'}]`;
+            } else if (msg.type === 'voice') {
+              content = `[语音: ${msg.voiceText || '语音消息'}]`;
+            } else if (msg.type === 'sticker') {
+              content = '[表情包]';
+            } else if (msg.type === 'transfer') {
+              const amount = msg.amount ? `$${msg.amount}` : '';
+              const note = msg.note ? ` (${msg.note})` : '';
+              content = `[转账${amount}${note}]`;
+            } else if (msg.type === 'link') {
+              content = `[分享链接: ${msg.title || '链接'}]`;
+            } else if (msg.type === 'quoteTweet') {
+              content = `[转发推文: ${msg.tweet?.content || ''}]`;
+            } else if (msg.type === 'quoteProfile') {
+              content = `[分享主页: ${msg.profile?.name || ''}]`;
+            } else {
+              content = `[${msg.type}消息]`;
+            }
+
+            if (content) {
+              const displayContent = content.length > 80 ? `${content.substring(0, 80)}...` : content;
+              promptText += `${sender}: ${displayContent}\n`;
+              xMemCount++;
+            }
+
+            if (xMemCount >= 15) break;
+          }
+          promptText += `⚠️ 以上是X平台私信对话记录，仅供理解该NPC与用户的关系和沟通风格
+⚠️ 根据当前场景（推文/评论）自然使用，不要在公开推文中直接提及私信内容
+`;
+          // 统计私信记忆的 token 数量
+          const xMessageSection = promptText.substring(xMessageSectionStart);
+          const xMessageTokens = TokenUtils.estimateTokens(xMessageSection);
+          console.log(`📊 [私信] 关系NPC ${profile.name}: ${xMemCount}条, ~${xMessageTokens} tokens`);
+        }
       }
 
       // 陌生人特有提示
@@ -8160,6 +8592,61 @@ ${rd.description ? `关系描述：${rd.description}` : ''}
 ⚠️ 该用户是陌生人（未在系统中绑定），回复应该自然真实，符合普通X平台用户的特点
 ⚠️ 如果没有特殊设定，按照一般性格进行回复
 `;
+
+        // 🆕 X平台私信记忆（如果有）
+        if (
+          profile.accountData &&
+          profile.accountData.xMessageHistory &&
+          profile.accountData.xMessageHistory.length > 0
+        ) {
+          const xMessageSectionStart = promptText.length;
+          promptText += `
+【X平台私信记忆】（该陌生人与用户在X平台私信中的对话记录，仅供参考）：
+`;
+          const recentXMessages = profile.accountData.xMessageHistory.slice(-15);
+          let xMemCount = 0;
+          for (const msg of recentXMessages) {
+            const sender = msg.isOwn ? '用户' : profile.name;
+            let content = '';
+
+            if (msg.type === 'text') {
+              content = msg.content;
+            } else if (msg.type === 'image') {
+              content = msg.isOwn ? '[用户发送了图片]' : `[图片: ${msg.imageDescription || '图片'}]`;
+            } else if (msg.type === 'voice') {
+              content = `[语音: ${msg.voiceText || '语音消息'}]`;
+            } else if (msg.type === 'sticker') {
+              content = '[表情包]';
+            } else if (msg.type === 'transfer') {
+              const amount = msg.amount ? `$${msg.amount}` : '';
+              const note = msg.note ? ` (${msg.note})` : '';
+              content = `[转账${amount}${note}]`;
+            } else if (msg.type === 'link') {
+              content = `[分享链接: ${msg.title || '链接'}]`;
+            } else if (msg.type === 'quoteTweet') {
+              content = `[转发推文: ${msg.tweet?.content || ''}]`;
+            } else if (msg.type === 'quoteProfile') {
+              content = `[分享主页: ${msg.profile?.name || ''}]`;
+            } else {
+              content = `[${msg.type}消息]`;
+            }
+
+            if (content) {
+              const displayContent = content.length > 80 ? `${content.substring(0, 80)}...` : content;
+              promptText += `${sender}: ${displayContent}\n`;
+              xMemCount++;
+            }
+
+            if (xMemCount >= 15) break;
+          }
+          promptText += `⚠️ 以上是X平台私信对话记录，仅供理解该陌生人与用户的关系和沟通风格
+⚠️ 根据当前场景（推文/评论）自然使用，不要在公开推文中直接提及私信内容
+`;
+          // 统计私信记忆的 token 数量
+          const xMessageSection = promptText.substring(xMessageSectionStart);
+          const xMessageTokens = TokenUtils.estimateTokens(xMessageSection);
+          console.log(`📊 [私信] 陌生人 ${profile.name}: ${xMemCount}条, ~${xMessageTokens} tokens`);
+        }
       }
 
       // 推文信息
@@ -8186,10 +8673,10 @@ ${rd.description ? `关系描述：${rd.description}` : ''}
     },
 
     // 批量获取多个资料
-    async getBatchProfiles(handles) {
+    async getBatchProfiles(handles, options = {}) {
       if (!Array.isArray(handles) || handles.length === 0) return [];
 
-      const profiles = await Promise.all(handles.map(handle => this.getUnifiedProfile(handle)));
+      const profiles = await Promise.all(handles.map(handle => this.getUnifiedProfile(handle, options)));
 
       return profiles.filter(p => p !== null);
     },
@@ -12878,6 +13365,12 @@ ${
 
   // 动态计算评论时间显示
   function formatCommentTime(commentTimestamp) {
+    // 验证时间戳有效性
+    if (!commentTimestamp || isNaN(commentTimestamp) || commentTimestamp <= 0) {
+      console.warn('⚠️ [时间显示] 无效的时间戳:', commentTimestamp);
+      return '刚刚';
+    }
+
     const now = Date.now();
     const diff = now - commentTimestamp;
 
@@ -12892,6 +13385,13 @@ ${
 
     // 超过7天显示具体日期
     const date = new Date(commentTimestamp);
+
+    // 二次验证日期对象有效性
+    if (isNaN(date.getTime())) {
+      console.warn('⚠️ [时间显示] 无效的日期对象，时间戳:', commentTimestamp);
+      return '刚刚';
+    }
+
     const month = date.getMonth() + 1;
     const day = date.getDate();
     return `${month}月${day}日`;
@@ -18843,12 +19343,6 @@ accountLikes数组（3-5条，账户喜欢的推文）：
       console.error('加载主题色偏好失败:', error);
     }
   }
-
-  // 将函数暴露到全局
-  window.openAccentColorPicker = openAccentColorPicker;
-  window.closeAccentColorPicker = closeAccentColorPicker;
-  window.applyAccentColor = applyAccentColor;
-
   // ============================================
   // 账户提问箱功能
   // ============================================
@@ -18857,10 +19351,13 @@ accountLikes数组（3-5条，账户喜欢的推文）：
   let accountAskboxData = {
     avatar: 'https://i.postimg.cc/4xmx7V4R/mmexport1759081128356.jpg',
     nickname: '⩌⌯⩌',
-    prompt: '请向我匿名提问!waiting...',
+    prompt: '在这里输入你的匿名提问，或点击下方按钮生成随机提问...',
     background: 'https://i.postimg.cc/tJvBC00j/mmexport1759642131681.jpg',
     answeredQuestions: [],
   };
+
+  // 🎯 用户当前输入的提问（临时存储，不保存到数据库）
+  let currentUserQuestion = '';
 
   // 账户提问箱多选删除相关变量
   let isAccountAskboxMultiSelectMode = false;
@@ -18914,12 +19411,10 @@ accountLikes数组（3-5条，账户喜欢的推文）：
         console.log('✅ 账户提问箱数据已从数据库加载:', accountHandle);
       } else {
         // 使用默认数据并保存到数据库
-        // 默认提示词使用用户的提示词
-        const userPrompt = askboxData.prompt;
         accountAskboxData = {
           avatar: 'https://i.postimg.cc/4xmx7V4R/mmexport1759081128356.jpg',
           nickname: '⩌⌯⩌',
-          prompt: userPrompt,
+          prompt: '在这里输入你的匿名提问，或点击下方按钮生成随机提问...',
           background: 'https://i.postimg.cc/tJvBC00j/mmexport1759642131681.jpg',
           answeredQuestions: [],
           id: askboxId,
@@ -18953,6 +19448,9 @@ accountLikes数组（3-5条，账户喜欢的推文）：
     // 从数据库加载
     await loadAccountAskboxDataFromDB();
 
+    // 🎯 清空用户提问（每次进入都重置）
+    currentUserQuestion = '';
+
     // 更新UI
     const avatarEl = document.getElementById('account-askbox-avatar');
     const nicknameEl = document.getElementById('account-askbox-nickname');
@@ -18961,7 +19459,8 @@ accountLikes数组（3-5条，账户喜欢的推文）：
 
     if (avatarEl) avatarEl.src = accountAskboxData.avatar;
     if (nicknameEl) nicknameEl.textContent = accountAskboxData.nickname;
-    if (promptEl) promptEl.textContent = accountAskboxData.prompt;
+    // 🎯 每次进入都恢复默认文字
+    if (promptEl) promptEl.textContent = '在这里输入你的匿名提问，或点击下方按钮生成随机提问...';
     if (backgroundEl) backgroundEl.style.backgroundImage = `url('${accountAskboxData.background}')`;
 
     // 渲染已回答的提问列表
@@ -18995,16 +19494,21 @@ accountLikes数组（3-5条，账户喜欢的推文）：
     }
   };
 
-  // 保存账户提问卡片文字（原处编辑）
+  // 保存账户提问卡片文字（用户提问输入）
   window.saveAccountAskboxPrompt = async function () {
     const promptEl = document.getElementById('account-askbox-prompt');
     if (!promptEl) return;
 
-    const newPrompt = promptEl.textContent.trim();
-    if (newPrompt && newPrompt !== accountAskboxData.prompt) {
-      accountAskboxData.prompt = newPrompt;
-      await saveAccountAskboxDataToDB();
-      console.log('✅ 提示文字已自动保存:', newPrompt);
+    const newText = promptEl.textContent.trim();
+    const defaultPrompt = '在这里输入你的匿名提问，或点击下方按钮生成随机提问...';
+
+    // 🎯 如果不是默认文字，则视为用户输入的提问
+    if (newText && newText !== defaultPrompt) {
+      currentUserQuestion = newText;
+      console.log('📝 [提问箱] 用户输入了提问:', currentUserQuestion);
+    } else {
+      currentUserQuestion = '';
+      console.log('📝 [提问箱] 用户清空了提问');
     }
   };
 
@@ -19030,7 +19534,16 @@ accountLikes数组（3-5条，账户喜欢的推文）：
     }
 
     try {
-      showXToast('正在生成新的提问...', 'info');
+      // 🔍 检查是否有用户提问
+      const isUserQuestion = currentUserQuestion && currentUserQuestion.trim().length > 0;
+
+      if (isUserQuestion) {
+        console.log('🎯 [提问箱] 检测到用户提问，准备生成回答:', currentUserQuestion);
+        showXToast('正在生成回答...', 'info');
+      } else {
+        console.log('🎲 [提问箱] 没有用户提问，生成随机问答');
+        showXToast('正在生成新的提问...', 'info');
+      }
 
       // 从数据库读取API配置和X设置
       const db = getDB();
@@ -19127,6 +19640,12 @@ accountLikes数组（3-5条，账户喜欢的推文）：
         worldSetting,
       });
 
+      // 🎯 根据是否有用户提问，构建不同的提示词
+      let userQuestionContext = '';
+      if (isUserQuestion) {
+        userQuestionContext = `\n【🔴 用户匿名提问（必须回答）】：\n"${currentUserQuestion}"\n`;
+      }
+
       systemPrompt += `
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -19137,32 +19656,40 @@ accountLikes数组（3-5条，账户喜欢的推文）：
 ${accountDetailInfo}
 ${accountTweetsInfo}
 ${coupleCharacterInfo}
-
-【提问者背景信息（参考）】：
-- 用户名：${userXProfileInfo.name}
-- X句柄：${userXProfileInfo.handle}
-- 简介：${userXProfileInfo.bio || '无'}
+${userQuestionContext}
 ${existingQuestionsContext}
 
 【生成要求】：
-1. ${existingQuestionsContext ? '如果有已有提问列表，请基于这些提问重新生成回答' : '生成3-10个适合该账户身份的匿名提问'}
-2. 提问要自然、真实，符合匿名提问箱的风格
-3. 提问内容要与账户的X平台公开信息相关（X姓名、简介、公开身份、最近推文）
+1. ${
+        isUserQuestion
+          ? `必须回答用户的匿名提问"${currentUserQuestion}"，同时额外生成2-5个随机问答`
+          : existingQuestionsContext
+          ? '如果有已有提问列表，请基于这些提问重新生成回答'
+          : '生成3-10个适合该账户身份的匿名提问'
+      }
+2. ${isUserQuestion ? '用户提问是完全匿名的，不要在回答中假设提问者的身份' : '提问要自然、真实，符合匿名提问箱的风格'}
+3. ${isUserQuestion ? '' : '提问内容要与账户的X平台公开信息相关（X姓名、简介、公开身份、最近推文）'}
 4. ${
         accountProfile.type === 'character' || accountProfile.type === 'npc'
           ? '回答必须严格符合角色/NPC的人设和性格特点'
           : '回答要自然、真实'
       }
-5. 提问可以是：
+5. ${
+        isUserQuestion
+          ? '回答用户提问时要自然、真诚，体现账户的性格和口吻'
+          : `提问可以是：
    - 关于最近推文内容的追问或评论
    - 关于生活经验、情感态度的询问
    - 关于兴趣爱好、日常生活的好奇
-   - 轻松幽默或真诚的话题
-6. 提问长度适中（10-50字）
+   - 轻松幽默或真诚的话题`
+      }
+6. ${isUserQuestion ? '' : '提问长度适中（10-50字）'}
 7. 回答要体现该账户的性格和口吻，长度适中（20-100字）
-8. 避免过于私密、冒犯或不适当的问题
+8. ${isUserQuestion ? '' : '避免过于私密、冒犯或不适当的问题'}
 
-【🔒 隐私保护规则 - 匿名提问限制】：
+${
+  !isUserQuestion
+    ? `【🔒 隐私保护规则 - 匿名提问限制】：
 🚨 匿名提问者只能基于该账户的X平台公开信息：
   ✅ 可以基于：X姓名、X句柄、X简介、公开身份、公开的推文内容
   ❌ 禁止提及：真实姓名、真实职业、私密关系、未公开的身份信息
@@ -19173,7 +19700,9 @@ ${existingQuestionsContext}
 - ❌ 错误："张老师今天上课讲了什么内容？"（泄露了真实姓氏和职业）
 - ❌ 错误："同学你这次考试考得怎么样？"（假装是同学关系）
 
-⚠️ 回答也要注意：不要在回答中主动泄露私密信息，除非是角色本人想公开
+⚠️ 回答也要注意：不要在回答中主动泄露私密信息，除非是角色本人想公开`
+    : ''
+}
 
 【返回格式】：
 返回JSON数组，每个对象包含question和answer字段：
@@ -19191,7 +19720,9 @@ ${existingQuestionsContext}
 - question是匿名提问的内容
 - answer是该账户以自己的身份和人设回答的内容
 - ${
-        existingQuestionsContext
+        isUserQuestion
+          ? `请务必包含用户提问"${currentUserQuestion}"的回答，并额外生成2-5组随机问答，将用户问答自然混入其中，不要特殊化`
+          : existingQuestionsContext
           ? `请基于已有的${accountAskboxData.answeredQuestions.length}个提问重新生成回答`
           : '生成3-10组问答'
       }
@@ -19201,7 +19732,9 @@ ${existingQuestionsContext}
       const messages = [
         {
           role: 'user',
-          content: existingQuestionsContext
+          content: isUserQuestion
+            ? `请回答用户的匿名提问"${currentUserQuestion}"，同时生成2-5组随机问答，将用户问答自然混入其中，返回JSON数组格式`
+            : existingQuestionsContext
             ? `请基于已有的${accountAskboxData.answeredQuestions.length}个提问，以该账户的身份重新生成回答，返回JSON数组格式`
             : '请生成3-10组问答，返回JSON数组格式',
         },
@@ -19321,11 +19854,37 @@ ${existingQuestionsContext}
       // 重新渲染提问列表
       renderAccountAnsweredQuestions();
 
-      showXToast(`${existingQuestionsContext ? '已重新生成回答' : `生成了 ${newQuestions.length} 组问答`}`, 'success');
+      // 🎯 如果是用户提问，清空提问并恢复默认文字
+      if (isUserQuestion) {
+        showXToast('已生成回答！', 'success');
+        currentUserQuestion = ''; // 清空提问
+        const promptEl = document.getElementById('account-askbox-prompt');
+        if (promptEl) {
+          promptEl.textContent = '在这里输入你的匿名提问，或点击下方按钮生成随机提问...';
+        }
+        console.log(`✅ [提问箱] 用户提问已回答，问题已混入${newQuestions.length}组问答中`);
+      } else {
+        showXToast(
+          `${existingQuestionsContext ? '已重新生成回答' : `生成了 ${newQuestions.length} 组问答`}`,
+          'success',
+        );
+      }
 
-      // 检查是否是已绑定角色的提问箱，如果是则触发角色主动发消息
+      // 检查是否是已绑定角色的提问箱，如果是则随机触发角色主动发消息
       if (accountProfile.type === 'character' && accountProfile.characterData) {
-        console.log('🔔 检测到角色提问箱，准备触发角色主动发消息');
+        // 🎲 随机概率触发（30%概率）
+        const triggerProbability = 0.3;
+        const shouldTrigger = Math.random() < triggerProbability;
+
+        console.log('🔔 检测到角色提问箱');
+        console.log(`🎲 触发概率: ${(triggerProbability * 100).toFixed(0)}%, 本次${shouldTrigger ? '触发' : '不触发'}`);
+
+        if (!shouldTrigger) {
+          console.log('⏭️ 本次未触发角色主动发消息');
+          return; // 不触发，直接返回
+        }
+
+        console.log('✅ 准备触发角色主动发消息');
         console.log('📋 角色数据:', accountProfile.characterData.originalName, accountProfile.characterData.id);
 
         // 获取角色ID
@@ -19336,6 +19895,11 @@ ${existingQuestionsContext}
           .slice(0, 3)
           .map((qa, index) => `${index + 1}. Q: ${qa.question}\n   A: ${qa.answer}`)
           .join('\n\n');
+
+        // 将函数暴露到全局
+        window.openAccentColorPicker = openAccentColorPicker;
+        window.closeAccentColorPicker = closeAccentColorPicker;
+        window.applyAccentColor = applyAccentColor;
 
         // 延迟1秒后触发（让用户看到提问箱生成成功的提示）
         setTimeout(async () => {
@@ -24767,6 +25331,7 @@ ${existingQuestionsContext}
     transactions: [],
     activatedAt: null,
     initialAmount: 0,
+    creditScore: 100, // 信用值，初始100，影响商业转账的接收和发起
   };
 
   // 打开账户钱包
@@ -25492,6 +26057,7 @@ ${existingQuestionsContext}
           transactions: [],
           activatedAt: null,
           initialAmount: 0,
+          creditScore: 100, // 信用值，初始100
         };
       }
 
@@ -25507,6 +26073,7 @@ ${existingQuestionsContext}
         transactions: [],
         activatedAt: null,
         initialAmount: 0,
+        creditScore: 100, // 信用值，初始100
       };
     }
   }
@@ -25813,6 +26380,7 @@ ${existingQuestionsContext}
       refund: '退款',
       init: '初始化',
       tip: '打赏',
+      penalty: '违约费',
     };
     return typeMap[type] || type;
   }
@@ -27877,26 +28445,6 @@ ${existingQuestionsContext}
     return location ? location : null;
   }
 
-  // 获取链接数据
-  function getLinkData() {
-    const linkSection = document.getElementById('compose-link-section');
-    if (linkSection.style.display === 'none') return null;
-
-    const title = document.getElementById('link-title-input').value.trim();
-    const url = document.getElementById('link-url-input').value.trim();
-    const description = document.getElementById('link-description-input').value.trim();
-
-    if (title || url || description) {
-      return {
-        title: title,
-        url: url,
-        description: description,
-      };
-    }
-
-    return null;
-  }
-
   // 保存功能相关函数
   function saveImageData() {
     showXToast('图片数据已保存', 'success');
@@ -29370,6 +29918,65 @@ ${existingQuestionsContext}
         tokenCount = TokenUtils.logTokenUsage('发帖生成器', '已知身份角色', knownIdentityCharactersInfo, tokenCount);
       }
 
+      // 3.5. 检测推文中的@提及，读取被提及账户的资料
+      let mentionedAccountsInfo = '';
+      const mentionRegex = /@(\w+)/g;
+      const mentions = [...tweetData.content.matchAll(mentionRegex)];
+
+      if (mentions.length > 0) {
+        console.log(`📢 [发帖生成器] 检测到${mentions.length}个@提及`);
+        const mentionHandles = [...new Set(mentions.map(m => m[1]))]; // 去重
+
+        for (const handle of mentionHandles) {
+          try {
+            // 使用统一资料获取系统
+            const mentionedProfile = await StringBuilders.getUnifiedProfile(`@${handle}`, {
+              userProfileInfo: userXProfileInfo,
+            });
+
+            if (mentionedProfile) {
+              const mentionStart = systemPrompt.length;
+              systemPrompt += `
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📢 被@提及的账户资料 📢
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+推文中提到了 ${mentionedProfile.handle}，以下是该账户的详细信息：
+`;
+
+              // 格式化资料
+              systemPrompt += StringBuilders.formatProfileForPrompt(mentionedProfile, {
+                includeType: true,
+                includeTweets: true,
+                includeRelationships: true,
+              });
+
+              systemPrompt += `
+⚠️ 被@提及的影响：
+- 该账户看到自己被@提及后，可能会来评论区互动
+- 出现概率根据以下因素决定：
+  * 与发帖者的关系（认识/陌生）
+  * 推文内容的相关性
+  * 该账户的活跃度和性格
+- 如果该账户来评论，必须严格使用上述资料信息
+- 评论内容要符合被@的情境（如被请教、被吐槽、被感谢等）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
+
+              const mentionSection = systemPrompt.substring(mentionStart);
+              tokenCount = TokenUtils.logTokenUsage(
+                '发帖生成器',
+                `@提及账户 ${mentionedProfile.handle}`,
+                mentionSection,
+                tokenCount,
+              );
+            }
+          } catch (error) {
+            console.error(`❌ [发帖生成器] 读取@${handle}资料失败:`, error);
+          }
+        }
+      }
+
       // 4. 用户资料
       const userConstraintsStart = systemPrompt.length;
       systemPrompt += StringBuilders.buildUniversalConstraints(userXProfileInfo);
@@ -29511,8 +30118,16 @@ ${
       let contentText = `请为这条推文生成社交互动数据：
 
 推文内容："${tweetData.content}"
-${tweetData.location ? `位置：${tweetData.location}` : ''}
-${tweetData.link ? `链接：${tweetData.link.title || tweetData.link.url}` : ''}`;
+${tweetData.location ? `位置：${tweetData.location}` : ''}`;
+
+      // 如果有附带链接，添加完整链接信息
+      if (tweetData.link) {
+        contentText += '\n\n【附带链接】：';
+        if (tweetData.link.title) contentText += `\n标题：${tweetData.link.title}`;
+        if (tweetData.link.url) contentText += `\n地址：${tweetData.link.url}`;
+        if (tweetData.link.description) contentText += `\n描述：${tweetData.link.description}`;
+        if (tweetData.link.thumbnail) contentText += '\n[含链接首图]';
+      }
 
       // 如果有引用内容，添加引用信息
       if (tweetData.quotedTweet) {
@@ -29853,6 +30468,24 @@ ${tweetData.link ? `链接：${tweetData.link.title || tweetData.link.url}` : ''
         generateTipsForBusinessPost(tweetData, interactionData).catch(err => {
           console.error('生成打赏失败（静默）:', err);
         });
+      }
+
+      // 🔓 检测拉黑解除触发（如果推文中@了某人）
+      if (!isReroll && !isProgressMode) {
+        const mentionRegex = /@(\w+)/g;
+        const mentions = [...tweetData.content.matchAll(mentionRegex)];
+
+        if (mentions.length > 0 && userXProfileInfo && userXProfileInfo.handle) {
+          const userHandle = userXProfileInfo.handle;
+
+          // 异步检测每个@提及
+          mentions.forEach(match => {
+            const targetHandle = `@${match[1]}`;
+            checkUnblockTrigger(userHandle, targetHandle, 'mention', tweetData.content).catch(err => {
+              console.error('拉黑解除检测失败（静默）:', err);
+            });
+          });
+        }
       }
     } catch (error) {
       console.error('生成AI回复失败:', error);
@@ -31695,40 +32328,49 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${comment.content}`
         }
       }
 
-      // 查找推文作者是否为绑定角色（如果有绑定角色的话）
-      if (boundCharacters.length > 0) {
-        // 获取绑定角色信息用于查找推文作者
-        const mainDB = getDB(); // 用于访问 chats 表
-        const xDB = getXDB(); // 用于访问 xCharacterProfiles 表
-        const allChats = await mainDB.chats.toArray();
-        const boundCharsData = allChats.filter(chat => !chat.isGroup && boundCharacters.includes(chat.id));
+      // 读取推文作者的完整资料（使用统一资料获取系统）
+      if (tweetData.user && tweetData.user.handle) {
+        try {
+          console.log(`📝 [统一AI回复] 读取推文作者资料: ${tweetData.user.handle}`);
 
-        if (boundCharsData.length > 0) {
-          // 获取X资料用于匹配推文作者
-          const allXProfiles = await xDB.xCharacterProfiles.toArray();
-          const tweetAuthorCharacter = allXProfiles.find(
-            xProfile => xProfile.xName === tweetData.user.name || xProfile.xHandle === tweetData.user.handle,
-          );
+          // 使用统一资料获取系统
+          const tweetAuthorProfile = await StringBuilders.getUnifiedProfile(tweetData.user.handle, {
+            userProfileInfo: userXProfileInfo,
+          });
 
-          if (
-            tweetAuthorCharacter &&
-            tweetAuthorCharacter.relationships &&
-            tweetAuthorCharacter.relationships.length > 0
-          ) {
+          if (tweetAuthorProfile) {
             contextInfo += `
 
-【推文作者的已知关系】
-推文作者：${tweetAuthorCharacter.xName}
-关系网络：
-${tweetAuthorCharacter.relationships
-  .map(
-    rel =>
-      `- ${rel.npcName} (${rel.npcHandle}): ${rel.relationshipType}${rel.description ? ' | ' + rel.description : ''}`,
-  )
-  .join('\n')}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📝 推文作者完整资料 📝
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
 
-注意：如果生成这些NPC的回复，请根据与推文作者的关系特点来调整互动风格。`;
+            // 格式化资料
+            contextInfo += StringBuilders.formatProfileForPrompt(tweetAuthorProfile, {
+              includeType: true,
+              includeTweets: true,
+              includeRelationships: true,
+            });
+
+            contextInfo += `
+⚠️ 推文作者资料使用说明：
+- 如果推文作者是角色/NPC，回复时可能会来评论区互动
+- 推文作者的关系NPC如果看到这条推文，可能会来评论
+- 回复要符合推文作者的身份和背景
+- 如果推文作者与用户有聊天记忆，可以自然体现在互动中
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
+
+            tokenCount = TokenUtils.logTokenUsage(
+              '统一AI回复生成器',
+              '推文作者资料',
+              contextInfo.substring(contextInfo.lastIndexOf('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')),
+              tokenCount,
+            );
           }
+        } catch (error) {
+          console.error(`❌ [统一AI回复] 读取推文作者资料失败:`, error);
         }
       }
 
@@ -31866,7 +32508,13 @@ ${tweetAuthorCharacter.relationships
 
         // 详情页面：先更新数据，再渲染到页面
         // 将AI回复添加到推文数据中
-        const tweetTimestamp = tweetData.timestamp || Date.now();
+        const tweetTimestamp = tweetData.timestamp || tweetData.createdAt || Date.now();
+
+        // 验证推文时间戳有效性
+        if (isNaN(tweetTimestamp) || tweetTimestamp <= 0) {
+          console.warn('⚠️ [AI回复] 推文时间戳无效，使用当前时间');
+          tweetTimestamp = Date.now();
+        }
 
         if (commentType === 'main_comment') {
           // 主评论回复
@@ -31874,11 +32522,17 @@ ${tweetAuthorCharacter.relationships
             comment.id = `ai_unified_${timestamp}_${index}`;
 
             // 转换timeOffset为实际时间戳
-            if (comment.timeOffset !== undefined) {
+            if (comment.timeOffset !== undefined && !isNaN(comment.timeOffset)) {
               comment.timestamp = tweetTimestamp + Math.abs(comment.timeOffset) * 60 * 1000;
               delete comment.timeOffset;
-            } else if (!comment.timestamp) {
+            } else if (!comment.timestamp || isNaN(comment.timestamp)) {
               comment.timestamp = tweetTimestamp + (2 + Math.random() * 20) * 60 * 1000;
+            }
+
+            // 最终验证
+            if (isNaN(comment.timestamp) || comment.timestamp <= 0) {
+              console.warn('⚠️ [AI回复] 评论时间戳无效，使用推文时间');
+              comment.timestamp = tweetTimestamp;
             }
 
             tweetData.comments.push(comment);
@@ -31894,13 +32548,19 @@ ${tweetAuthorCharacter.relationships
               reply.id = `ai_unified_${timestamp}_${index}`;
 
               // 转换timeOffset为实际时间戳
-              if (reply.timeOffset !== undefined) {
+              if (reply.timeOffset !== undefined && !isNaN(reply.timeOffset)) {
                 reply.timestamp = tweetTimestamp + Math.abs(reply.timeOffset) * 60 * 1000;
                 delete reply.timeOffset;
-              } else if (!reply.timestamp) {
+              } else if (!reply.timestamp || isNaN(reply.timestamp)) {
                 // 回复时间应该比父评论晚
-                const parentTimestamp = targetComment.timestamp || tweetTimestamp;
+                const parentTimestamp = targetComment.timestamp || targetComment.createdAt || tweetTimestamp;
                 reply.timestamp = parentTimestamp + (1 + Math.random() * 10) * 60 * 1000;
+              }
+
+              // 最终验证
+              if (isNaN(reply.timestamp) || reply.timestamp <= 0) {
+                console.warn('⚠️ [AI回复] 楼中楼回复时间戳无效，使用推文时间');
+                reply.timestamp = tweetTimestamp;
               }
 
               targetComment.replies.push(reply);
@@ -32135,7 +32795,13 @@ ${tweetAuthorCharacter.relationships
       } else {
         // 主页：更新数据并重新渲染
         console.log('🤖 [AI回复] 主页模式 - 开始处理');
-        const tweetTimestamp = tweetData.timestamp || Date.now();
+        const tweetTimestamp = tweetData.timestamp || tweetData.createdAt || Date.now();
+
+        // 验证推文时间戳有效性
+        if (isNaN(tweetTimestamp) || tweetTimestamp <= 0) {
+          console.warn('⚠️ [AI回复] 主页模式：推文时间戳无效，使用当前时间');
+          tweetTimestamp = Date.now();
+        }
 
         if (commentType === 'main_comment') {
           // 主评论：添加到推文评论列表
@@ -32143,11 +32809,17 @@ ${tweetAuthorCharacter.relationships
             comment.id = `ai_main_unified_${timestamp}_${index}`;
 
             // 转换timeOffset为实际时间戳
-            if (comment.timeOffset !== undefined) {
+            if (comment.timeOffset !== undefined && !isNaN(comment.timeOffset)) {
               comment.timestamp = tweetTimestamp + Math.abs(comment.timeOffset) * 60 * 1000;
               delete comment.timeOffset;
-            } else if (!comment.timestamp) {
+            } else if (!comment.timestamp || isNaN(comment.timestamp)) {
               comment.timestamp = tweetTimestamp + (2 + Math.random() * 20) * 60 * 1000;
+            }
+
+            // 最终验证
+            if (isNaN(comment.timestamp) || comment.timestamp <= 0) {
+              console.warn('⚠️ [AI回复] 主页模式：评论时间戳无效，使用推文时间');
+              comment.timestamp = tweetTimestamp;
             }
 
             tweetData.comments.push(comment);
@@ -32163,12 +32835,18 @@ ${tweetAuthorCharacter.relationships
               reply.id = `ai_main_sub_unified_${timestamp}_${index}`;
 
               // 转换timeOffset为实际时间戳
-              if (reply.timeOffset !== undefined) {
+              if (reply.timeOffset !== undefined && !isNaN(reply.timeOffset)) {
                 reply.timestamp = tweetTimestamp + Math.abs(reply.timeOffset) * 60 * 1000;
                 delete reply.timeOffset;
-              } else if (!reply.timestamp) {
-                const parentTimestamp = mainCommentObj.timestamp || tweetTimestamp;
+              } else if (!reply.timestamp || isNaN(reply.timestamp)) {
+                const parentTimestamp = mainCommentObj.timestamp || mainCommentObj.createdAt || tweetTimestamp;
                 reply.timestamp = parentTimestamp + (1 + Math.random() * 10) * 60 * 1000;
+              }
+
+              // 最终验证
+              if (isNaN(reply.timestamp) || reply.timestamp <= 0) {
+                console.warn('⚠️ [AI回复] 主页模式：楼中楼回复时间戳无效，使用推文时间');
+                reply.timestamp = tweetTimestamp;
               }
 
               if (!mainCommentObj.replies) mainCommentObj.replies = [];
@@ -32246,6 +32924,25 @@ ${tweetAuthorCharacter.relationships
         avatar: userAvatar,
         leftIcon: 'x',
       });
+
+      // 🔓 检测拉黑解除触发（如果用户评论了某人的推文）
+      if (
+        tweetData &&
+        tweetData.user &&
+        tweetData.user.handle &&
+        userComment &&
+        userComment.user &&
+        userComment.user.handle
+      ) {
+        const userHandle = userComment.user.handle; // 用户的句柄
+        const tweetAuthorHandle = tweetData.user.handle; // 推文作者的句柄
+        const commentContent = userComment.content; // 评论内容
+
+        // 异步检测拉黑解除
+        checkUnblockTrigger(userHandle, tweetAuthorHandle, 'comment', commentContent).catch(err => {
+          console.error('拉黑解除检测失败（静默）:', err);
+        });
+      }
     } catch (error) {
       console.error('生成统一AI回复失败:', error);
       showXToast(`回复生成失败: ${error.message}`, 'error');
@@ -35632,12 +36329,14 @@ ${index + 1}. "${tweet.content}"
   // ▼▼▼ 【主要！！！】第九个情景：私信详情生成器▼▼▼
   async function generateMessageConversation(messageData, isContinueMode = false, options = {}) {
     try {
-      // options可以包含：isAutoMessage（自动发消息模式）、timeSinceLastMessage（距离上次消息的秒数）、isAskboxViewed（提问箱查看模式）、askboxContent（提问箱内容）、businessTaskEvaluation（商业任务评估）
+      // options可以包含：isAutoMessage（自动发消息模式）、timeSinceLastMessage（距离上次消息的秒数）、isAskboxViewed（提问箱查看模式）、askboxContent（提问箱内容）、businessTaskEvaluation（商业任务评估）、isUnblockRequest（拉黑解除请求）、unblockContext（拉黑解除上下文）
       const isAutoMessage = options.isAutoMessage || false;
       const timeSinceLastMessage = options.timeSinceLastMessage || 0;
       const isAskboxViewed = options.isAskboxViewed || false;
       const askboxContent = options.askboxContent || '';
       const businessTaskEvaluation = options.businessTaskEvaluation || null;
+      const isUnblockRequest = options.isUnblockRequest || false;
+      const unblockContext = options.unblockContext || null;
 
       // 从数据库读取API配置和X设置
       const db = getDB();
@@ -36034,6 +36733,68 @@ ${
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 `;
             }
+          } else if (isUnblockRequest) {
+            // 拉黑解除请求模式
+            const triggerSource = unblockContext?.triggerSource || 'unknown';
+            const triggerContent = unblockContext?.triggerContent || '';
+
+            systemPrompt += `
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔓 核心任务说明（拉黑解除评估 - 角色私信）🔓
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+你是X社交平台的私信对话生成器。你之前拉黑了用户，但用户通过其他方式联系了你，现在需要评估是否解除拉黑。
+
+**对话场景**：
+- 📱 这是X社交平台（类似Twitter/X）的私信功能
+- ⚠️ **你之前已经拉黑了用户，用户无法直接发送私信**
+- 🔔 但用户通过${triggerSource === 'mention' ? '在推文中@你' : '在评论区评论'}的方式联系了你
+
+**角色信息**：
+- 角色名：${messageData.user.name}
+- 角色句柄：${messageData.user.handle}
+- 这是一个已绑定的角色，有完整的人设、记忆和X平台资料
+
+**用户的触发内容**：
+${triggerSource === 'mention' ? '用户在推文中@了你：' : '用户在评论区提到了你：'}
+"${triggerContent}"
+
+**重要规则**：
+- 🚨 只生成角色${messageData.user.name}的回复消息，不要生成用户的消息
+- 📖 **必须参考下方的【X平台私信对话记录】**，了解之前为什么拉黑用户
+- 🤔 根据用户的触发内容，评估是否值得解除拉黑
+
+**解除拉黑决策**：
+你需要根据以下因素决定是否解除拉黑：
+
+1️⃣ **解除拉黑（推荐）**：
+   - 用户的态度诚恳，有道歉或和解的意图
+   - 用户提到的内容让你觉得可以原谅
+   - 用户表现出改变或理解
+   - 之前的冲突不算特别严重
+   - **返回格式**：[解除拉黑系统提示] + 0-3条文本消息（可以是原谅的话、重新开始的话，或直接不发其他消息）
+
+2️⃣ **继续拉黑**：
+   - 用户的态度依然恶劣或不真诚
+   - 用户的内容让你更生气
+   - 之前的冲突太严重，无法原谅
+   - **返回格式**：返回空数组[]（表示不回应，继续拉黑）
+
+**解除拉黑系统提示格式**：
+{
+  "type": "system",
+  "systemType": "unblocked",
+  "content": "对方已解除拉黑",
+  "time": "刚刚"
+}
+
+⚠️ 如果决定解除拉黑，系统提示后可以跟0-3条文本消息：
+- 0条：直接解除，不说话（高冷风格）
+- 1-2条：简单回应（"算了，原谅你了"、"看在你道歉的份上..."）
+- 2-3条：详细回应（解释为什么原谅、提出要求等）
+
+⚠️ 如果决定继续拉黑，返回空数组[]即可，不需要任何消息
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
           } else {
             // 普通回复模式
             systemPrompt += `
@@ -36235,8 +36996,33 @@ ${messageData.tweetLink ? `- 提及推文：${messageData.tweetLink}` : ''}
       const coreTaskSection = systemPrompt.substring(systemPrompt.lastIndexOf('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'));
       tokenCount = TokenUtils.logTokenUsage('私信详情生成器', '核心任务说明', coreTaskSection, tokenCount);
 
-      // 3. 用户资料
+      // 3. 用户资料（包含信用值）
       const userConstraintsStart = systemPrompt.length;
+
+      // 加载钱包数据以获取信用值
+      await loadWalletData();
+      const userCreditScore = walletData.creditScore || 100;
+
+      // 根据信用值确定信用等级
+      let creditLevel = '';
+      let creditDescription = '';
+      if (userCreditScore >= 90) {
+        creditLevel = '优秀';
+        creditDescription = '信誉极佳，值得信赖的合作伙伴';
+      } else if (userCreditScore >= 70) {
+        creditLevel = '良好';
+        creditDescription = '信誉良好，可以放心合作';
+      } else if (userCreditScore >= 50) {
+        creditLevel = '一般';
+        creditDescription = '信誉一般，需要谨慎考虑';
+      } else if (userCreditScore >= 30) {
+        creditLevel = '较差';
+        creditDescription = '信誉较差，合作风险较高';
+      } else {
+        creditLevel = '极差';
+        creditDescription = '信誉极差，不建议合作';
+      }
+
       systemPrompt += `
 
 【用户X平台资料】：
@@ -36245,6 +37031,30 @@ ${messageData.tweetLink ? `- 提及推文：${messageData.tweetLink}` : ''}
 - 认证状态：${userXProfileInfo.verified ? '已认证' : '未认证'}
 ${userXProfileInfo.publicIdentity ? `- 公众身份：${userXProfileInfo.publicIdentity}` : ''}
 ${userXProfileInfo.bio ? `- 个人简介：${userXProfileInfo.bio}` : ''}
+
+【用户信用等级】：
+- 信用值：${userCreditScore}/100
+- 信用等级：${creditLevel}
+- 信用评价：${creditDescription}
+
+⚠️ **商业转账与信用值规则**：
+- 💰 **发起商业转账**（你雇佣用户）：
+  * 信用值 ≥ 70：正常合作，可以发起任何金额的商业转账
+  * 信用值 50-69：谨慎合作，建议降低金额或提高定金比例
+  * 信用值 30-49：高风险，只在紧急情况下合作，金额不超过50美元
+  * 信用值 < 30：极高风险，强烈不建议合作，基本拒绝商业转账请求
+  
+- 📨 **接受商业转账**（用户雇佣你）：
+  * 信用值 ≥ 70：可以正常接受商业转账
+  * 信用值 50-69：可以接受，但要求更高定金比例（至少30%）
+  * 信用值 30-49：极少接受，只有任务特别简单或定金特别高（50%）时才考虑
+  * 信用值 < 30：基本拒绝，除非有特殊理由（如老朋友、关系很好等）
+
+- 🎯 **信用值影响**：
+  * 高信用值：更容易获得商业合作机会，金额更高
+  * 低信用值：很难获得商业合作，即使有也是小额任务
+  * 你应该根据用户的信用等级调整你的态度和决策
+  * 低信用用户的合作请求要更加谨慎，可以直接拒绝
 `;
 
       // 4. 用户最近推文
@@ -36548,9 +37358,10 @@ ${index + 1}. ${sender}: ${content}
   * image：当需要分享照片、图片或视觉内容时
   * voice：当角色特别激动、情绪强烈或不方便打字时
   * sticker：⚠️ **极少使用**（不超过5%）！只在情绪特别强烈且适合用表情包表达时才使用，且必须根据世界书中的表情包描述选择最符合当前情境的表情包URL，不要重复使用同一个表情包
-  * transfer：⚠️ **极少使用**！分为两种：
-    - 普通转账：角色主动送钱、红包、礼物或感谢等（1-100美元）
-    - 商业转账：需要对方完成任务的付费合作（50-500美元），设置isBusiness为true并填写任务描述和期限
+  * transfer：⚠️ **极少使用，需谨慎！** 分为两种：
+    - 普通转账：角色主动送钱、红包、礼物或感谢等（建议5-30美元，最多不超过50美元）
+    - 商业转账：需要对方完成任务的付费合作（50-300美元），设置isBusiness为true并填写任务描述和期限
+    - 🚫 **陌生人不要轻易转账**：只有关系亲密或有明确理由时才考虑转账
   * link：当需要分享网页、文章或链接时
   * quoteTweet：当提及或讨论某条推文时
   * quoteProfile：当推荐某个账户或介绍某人时
@@ -36572,6 +37383,7 @@ ${index + 1}. ${sender}: ${content}
   * system：⚠️ **系统提示消息**（特殊类型，用于以下场景）：
     - 不回复：如果你认为不应该回复用户（首次对话且内容不吸引人、内容冒犯等），返回空数组[]
     - 拉黑用户：如果对话出现严重冲突、用户持续骚扰、或你强烈不想继续对话，返回拉黑系统提示
+    - 解除拉黑：如果之前拉黑了用户，但用户通过@或评论等方式道歉/和解，你决定原谅，返回解除拉黑系统提示
     - 暂时离开（仅绑定角色）：如果你临时有事无法回复，返回离开系统提示
 
 【特殊系统提示消息格式】：
@@ -36584,7 +37396,15 @@ ${index + 1}. ${sender}: ${content}
   "time": "刚刚"
 }
 
-2. 暂时离开（⚠️ 仅绑定角色可用，陌生人/账户不能使用）：
+2. 解除拉黑（适用于原谅用户，重新开始对话）：
+{
+  "type": "system",
+  "systemType": "unblocked",
+  "content": "对方已解除拉黑",
+  "time": "刚刚"
+}
+
+3. 暂时离开（⚠️ 仅绑定角色可用，陌生人/账户不能使用）：
 {
   "type": "system",
   "systemType": "away",
@@ -36596,6 +37416,7 @@ ${index + 1}. ${sender}: ${content}
 ⚠️ 使用规则：
 - **不回复**：直接返回空数组 []，不需要任何消息
 - **拉黑**：只在极端情况下使用（严重冲突、持续骚扰、明显恶意等）
+- **解除拉黑**：只在用户通过其他渠道（@、评论等）展现诚意后使用，表示原谅用户
 - **暂时离开**：只有已绑定的角色才能使用，陌生人和账户不能使用此功能
 - **离开原因示例**：工作、上课、开会、睡觉、运动、吃饭、处理事情等
 - **离开时长**：30-180分钟为宜，不要太短或太长
@@ -36625,9 +37446,10 @@ ${index + 1}. ${sender}: ${content}
   * image：当需要分享照片、图片或视觉内容时
   * voice：当角色特别激动、情绪强烈或不方便打字时
   * sticker：⚠️ **极少使用**（不超过5%）！只在情绪特别强烈且适合用表情包表达时才使用，且必须根据世界书中的表情包描述选择最符合当前情境的表情包URL，每次使用不同的表情包
-  * transfer：⚠️ **极少使用**！分为两种：
-    - 普通转账：角色主动送钱、红包、礼物或感谢等（1-100美元）
-    - 商业转账：需要对方完成任务的付费合作（50-500美元），设置isBusiness为true并填写任务描述和期限
+  * transfer：⚠️ **极少使用，需谨慎！** 分为两种：
+    - 普通转账：角色主动送钱、红包、礼物或感谢等（建议5-30美元，最多不超过50美元）
+    - 商业转账：需要对方完成任务的付费合作（50-300美元），设置isBusiness为true并填写任务描述和期限
+    - 🚫 **陌生人不要轻易转账**：只有关系亲密或有明确理由时才考虑转账
   * link：当需要分享文章、新闻或故事时（需包含完整的文章内容：title、description、author、source、body正文）
   * quoteTweet：当提及或讨论某条推文时
   * quoteProfile：当推荐某个账户或介绍某人时
@@ -36719,7 +37541,7 @@ ${index + 1}. ${sender}: ${content}
 5.1 普通转账：
 {
   "type": "transfer",
-  "amount": 50.00,
+  "amount": 20.00,
   "note": "请你喝咖啡",
   "status": "pending",
   "time": "时间描述"
@@ -36728,7 +37550,7 @@ ${index + 1}. ${sender}: ${content}
 5.2 商业转账（适用于合作、接广告、买水军等商业场景）：
 {
   "type": "transfer",
-  "amount": 200.00,
+  "amount": 150.00,
   "note": "合作费用",
   "status": "pending",
   "isBusiness": true,
@@ -36739,12 +37561,13 @@ ${index + 1}. ${sender}: ${content}
 }
 
 ⚠️ 转账消息说明：
-- amount：转账金额，必须是数字类型（不是字符串），建议1-100美元（普通转账）或50-500美元（商业转账）
+- amount：转账金额，必须是数字类型（不是字符串），建议5-30美元（普通转账）或50-300美元（商业转账）
 - note：转账备注，可选字段，用于说明转账目的
 - status：转账状态，必须是以下之一：
   * "pending"：待处理（默认状态，用于主动发起转账）
   * "accepted"：已接收（用于回应用户的转账请求，表示接受）
   * "rejected"：已拒绝（用于回应用户的转账请求，表示拒绝）
+- 🚫 **转账需谨慎**：与陌生人对话时不要随意转账，只有关系亲密或有明确理由时才考虑
 
 ⚠️ 商业转账额外字段（当isBusiness为true时必填）：
 - isBusiness：布尔值，true表示这是商业转账
@@ -36762,12 +37585,14 @@ ${index + 1}. ${sender}: ${content}
   * 50：先支付50%作为定金
 
 ⚠️ 转账使用场景：
-- 普通转账：角色主动送钱、红包、礼物、感谢费等简单金钱往来
-- 商业转账：需要对方完成特定任务的付费合作，增加游戏可玩性
-  * AI可以主动发起商业转账，雇佣用户完成任务（如"帮我宣传一下"、"发条推文"等）
+- 普通转账：关系亲密时可以送钱、红包、礼物、感谢费等（5-30美元）
+- 商业转账：有明确商业合作需求时的付费任务（50-300美元）
+  * AI可以主动发起商业转账雇佣用户，但需要有合理的商业理由和场景
   * AI可以响应用户的商业转账，决定是否接受任务
   * 商业转账会显示任务要求、期限、定金比例等详细信息
   * 接收商业转账即表示同意完成任务
+- 🚫 **陌生人不要轻易转账**：初次对话、不熟悉的人基本不应该主动转账
+- ⚠️ **转账需要理由**：不要无缘无故转账，要有合理的情境支撑
 
 ⚠️ 转账响应规则：
 - 当用户发送了待处理(pending)状态的转账给你时，你可以选择：
@@ -36788,10 +37613,12 @@ ${index + 1}. ${sender}: ${content}
   5. 接受商业转账时，可以在回复消息中表达对任务的理解和态度
   
 ⚠️ AI主动发起转账：
-- AI也可以主动发起转账（普通或商业），用户会收到转账请求
-- 转账金额要符合情境和角色经济状况，不要过大或过小
+- AI也可以主动发起转账（普通或商业），但需要谨慎，不要轻易转账
+- 🚫 **陌生人场景**：如果是陌生人私信或初次对话，基本不应该主动转账
+- ✅ **熟人/绑定角色场景**：关系亲密时可以考虑小额转账（5-30美元），大额需有明确理由
+- 转账金额要符合情境和角色经济状况，普通转账建议5-30美元，商业转账50-300美元
 - 商业转账的任务描述要具体明确，符合商业合作的真实场景
-- 可以雇佣用户完成任务（如"帮我发条推文宣传"、"帮我刷点数据"等）
+- 可以雇佣用户完成任务（如"帮我发条推文宣传"、"帮我刷点数据"等），但要有合理的商业理由
 
 6. 链接消息（文章类型）：
 {
@@ -36879,16 +37706,19 @@ AI应该根据这些完整的上下文信息来理解用户分享的内容并给
         // 提问箱查看模式：角色主动发起
         userMessageContent = `角色主动发起对话，因为发现用户查看了TA的提问箱。请生成角色${messageData.user.name}的主动消息。`;
       } else if (userMessages.length > 0) {
-        // 续写模式：检查用户最近消息中是否有图片
-        const hasImages = userMessages.some(msg => msg.type === 'image' && msg.imageData);
+        // 续写模式：检查用户最近消息中是否有真实图片（需要识图）
+        const hasRealImages = userMessages.some(msg => msg.type === 'image' && msg.imageData);
 
-        if (hasImages) {
-          // 有图片：构建多模态内容数组
+        if (hasRealImages) {
+          // 有真实图片：构建多模态内容数组
           userMessageContent = [];
 
           // 添加文字说明
           const textMessages = userMessages.filter(msg => msg.type === 'text');
-          const imageMessages = userMessages.filter(msg => msg.type === 'image' && msg.imageData);
+          const realImageMessages = userMessages.filter(msg => msg.type === 'image' && msg.imageData);
+          const textImageMessages = userMessages.filter(
+            msg => msg.type === 'image' && msg.imageDescription && !msg.imageData,
+          );
           const stickerMessages = userMessages.filter(msg => msg.type === 'sticker');
           const voiceMessages = userMessages.filter(msg => msg.type === 'voice');
 
@@ -36904,14 +37734,18 @@ AI应该根据这些完整的上下文信息来理解用户分享的内容并给
           if (stickerMessages.length > 0) {
             contentText += '\n用户发送了表情包：' + stickerMessages.map(msg => msg.stickerDescription).join('、');
           }
-          if (imageMessages.length > 0) {
-            contentText += `\n用户还发送了${imageMessages.length}张图片，请识别图片内容并结合图片内容给出回复。`;
+          if (textImageMessages.length > 0) {
+            contentText +=
+              '\n用户发送了文字图片描述：' + textImageMessages.map(msg => `"${msg.imageDescription}"`).join('、');
+          }
+          if (realImageMessages.length > 0) {
+            contentText += `\n用户还发送了${realImageMessages.length}张真实图片，请识别图片内容并结合图片内容给出回复。`;
           }
 
           userMessageContent.push({ type: 'text', text: contentText });
 
-          // 添加图片（仿照发帖生成器的逻辑，确保每张图片都有数据）
-          imageMessages.forEach(img => {
+          // 添加真实图片（用于识图）
+          realImageMessages.forEach(img => {
             if (img.imageData) {
               userMessageContent.push({
                 type: 'image_url',
@@ -36920,8 +37754,11 @@ AI应该根据这些完整的上下文信息来理解用户分享的内容并给
             }
           });
         } else {
-          // 无图片：纯文本、表情包和语音
+          // 无真实图片：纯文本、表情包、语音和文字图片
           const textMessages = userMessages.filter(msg => msg.type === 'text');
+          const textImageMessages = userMessages.filter(
+            msg => msg.type === 'image' && msg.imageDescription && !msg.imageData,
+          );
           const stickerMessages = userMessages.filter(msg => msg.type === 'sticker');
           const voiceMessages = userMessages.filter(msg => msg.type === 'voice');
 
@@ -36936,6 +37773,10 @@ AI应该根据这些完整的上下文信息来理解用户分享的内容并给
           }
           if (stickerMessages.length > 0) {
             contentText += '\n用户发送了表情包：' + stickerMessages.map(msg => msg.stickerDescription).join('、');
+          }
+          if (textImageMessages.length > 0) {
+            contentText +=
+              '\n用户发送了文字图片描述：' + textImageMessages.map(msg => `"${msg.imageDescription}"`).join('、');
           }
 
           userMessageContent = contentText;
@@ -37050,10 +37891,15 @@ AI应该根据这些完整的上下文信息来理解用户分享的内容并给
 
         // 🔍 检查是否包含特殊系统提示
         const hasBlockedMessage = conversationData.some(msg => msg.type === 'system' && msg.systemType === 'blocked');
+        const hasUnblockedMessage = conversationData.some(
+          msg => msg.type === 'system' && msg.systemType === 'unblocked',
+        );
         const hasAwayMessage = conversationData.some(msg => msg.type === 'system' && msg.systemType === 'away');
 
         if (hasBlockedMessage) {
           console.log('⚠️ AI决定拉黑用户');
+        } else if (hasUnblockedMessage) {
+          console.log('🎉 AI决定解除拉黑');
         } else if (hasAwayMessage) {
           console.log('⏰ AI暂时离开');
         } else if (conversationData.length === 0) {
@@ -37347,24 +38193,20 @@ AI应该根据这些完整的上下文信息来理解用户分享的内容并给
 
       for (let i = recentHistory.length - 1; i >= 0; i--) {
         const msg = recentHistory[i];
+        // 🔧 只检测AI角色的消息（role === 'assistant'），用户无法强制角色发帖
         if (msg.role === 'assistant' && msg.content) {
           const content = msg.content.toLowerCase();
           if (postKeywords.some(keyword => content.includes(keyword.toLowerCase()))) {
             foundKeyword = true;
             keywordIndex = i;
-            console.log(
-              `✅ [聊天记忆Tweet检测] 在 ${character.name} 的聊天记忆中检测到发帖关键词: ${msg.content.substring(
-                0,
-                50,
-              )}`,
-            );
+            console.log(`✅ [聊天记忆Tweet检测] ${character.name} 主动提及发帖: ${msg.content.substring(0, 50)}`);
             break;
           }
         }
       }
 
       if (!foundKeyword) {
-        console.log(`⏭️ [聊天记忆Tweet检测] ${character.name} 的聊天记忆中未检测到发帖关键词`);
+        console.log(`⏭️ [聊天记忆Tweet检测] ${character.name} 未主动提及发帖`);
         return;
       }
 
@@ -37493,25 +38335,26 @@ AI应该根据这些完整的上下文信息来理解用户分享的内容并给
         '晒到X',
       ];
 
-      // 检查最近的消息中是否包含关键词
+      // 检查最近的消息中是否包含关键词（只检测对方发送的消息，不检测用户消息）
       let foundKeyword = false;
       let keywordMessageIndex = -1;
 
       for (let i = conversationMessages.length - 1; i >= Math.max(0, conversationMessages.length - 10); i--) {
         const msg = conversationMessages[i];
-        if (msg.type === 'text' && msg.content) {
+        // 🔧 只检测非用户发送的消息（isOwn === false），用户无法强制对方发帖
+        if (msg.type === 'text' && msg.content && !msg.isOwn) {
           const content = msg.content.toLowerCase();
           if (postKeywords.some(keyword => content.includes(keyword.toLowerCase()))) {
             foundKeyword = true;
             keywordMessageIndex = i;
-            console.log('✅ [私信Tweet检测] 检测到发帖关键词:', msg.content.substring(0, 50));
+            console.log('✅ [私信Tweet检测] 对方主动提及发帖:', msg.content.substring(0, 50));
             break;
           }
         }
       }
 
       if (!foundKeyword) {
-        console.log('⏭️ [私信Tweet检测] 未检测到发帖关键词，跳过');
+        console.log('⏭️ [私信Tweet检测] 对方未主动提及发帖，跳过');
         return;
       }
 
@@ -37588,10 +38431,15 @@ AI应该根据这些完整的上下文信息来理解用户分享的内容并给
   }
 
   // 基于私信对话生成推文内容
-  async function generateTweetFromConversation(messageData, contextMessages) {
+  async function generateTweetFromConversation(messageData, contextMessages, options = {}) {
     try {
       const db = getDB();
       const xDb = getXDB();
+
+      // 🎯 提取选项参数
+      const isAutoTweet = options.isAutoTweet || false; // 是否为自动发推模式
+      const timeSinceLastMessage = options.timeSinceLastMessage || 0; // 距离上次聊天的时间（秒）
+      const autoTweetType = options.type || 'character'; // 自动发推类型：character | stranger
 
       const apiConfig = await db.apiConfig.get('main');
       if (!apiConfig || !apiConfig.proxyUrl || !apiConfig.apiKey || !apiConfig.model) {
@@ -37715,12 +38563,19 @@ AI应该根据这些完整的上下文信息来理解用户分享的内容并给
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🎯 核心任务：基于私信对话生成推文 🎯
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-你是X社交平台的推文生成器。在私信对话中，${messageData.user.name} (${messageData.user.handle}) 提到要发布推文。
+你是X社交平台的推文生成器。${
+        isAutoTweet
+          ? `${messageData.user.name} (${messageData.user.handle}) 在后台自动发布推文。
+🤖 **后台自动发推模式**：角色根据最近的聊天记录自主决定发布推文内容
+⏰ **距离上次聊天**: ${Math.floor(timeSinceLastMessage / 60)} 分钟前（${timeSinceLastMessage} 秒）
+📝 **推文重点**: 以刻画 ${messageData.user.name} 自身为主，可以分享日常、想法、近况等，聊天记录仅作为灵感参考`
+          : `在私信对话中，${messageData.user.name} (${messageData.user.handle}) 提到要发布推文。`
+      }
 🚨 **注意：是 ${messageData.user.name} 要发推文，不是用户本人！**
 
 请根据对话上下文，生成 ${messageData.user.name} 可能会发布的推文内容。
 
-**对话上下文**（最近的私信对话）：
+**对话上下文**（最近的私信对话${isAutoTweet ? '，作为灵感参考' : ''}）：
 `;
 
       // 添加对话记录
@@ -37862,7 +38717,15 @@ ${index + 1}. "${tweet.content}"
 
 **推文生成要求**：
 - 推文内容必须严格符合${senderProfile.name}的${senderProfile.type === 'character' ? '性格和说话风格' : '身份和风格'}
-- 推文要与私信对话内容相关
+${
+  isAutoTweet
+    ? `- 🎯 **后台自动发推重点**：推文以刻画${senderProfile.name}自身为主（日常、想法、近况、感受等）
+- 聊天记录仅作为灵感来源，不要直接提及或暗示与用户的对话
+- 推文应该像${senderProfile.name}的独立生活动态，而非对话延续
+- 可以是：分享心情、吐槽日常、发表观点、晒照片、记录生活等
+- 时间感：距离上次聊天已过去${Math.floor(timeSinceLastMessage / 60)}分钟，推文可以反映这段时间的活动`
+    : `- 推文要与私信对话内容相关`
+}
 `;
 
         // 特定类型的额外要求
@@ -37899,8 +38762,18 @@ ${index + 1}. "${tweet.content}"
 - 可以包含情绪、观点、分享或日常内容
 - 字数控制在20-200字之间
 - 可以带emoji表情
-- 30%的概率带图片（如果合适的话，提供图片描述）
+- ${isAutoTweet ? '40%' : '30%'}的概率带图片（如果合适的话，提供图片描述）
 - stats数据要合理（普通用户流量：comments 5-30, retweets 10-80, likes 20-150, views 100-2000）
+${
+  isAutoTweet
+    ? `
+🎯 **后台自动发推特别提示**：
+- 推文要体现${messageData.user.name}的独立生活和个性
+- 不要让推文看起来像是在回应某个对话
+- 可以发一些与聊天无关的日常内容
+- 展现角色在用户不在场时的生活状态`
+    : ''
+}
 
 【JSON返回格式】：
 \`\`\`json
@@ -41031,13 +41904,9 @@ ${getTransferStatusIcon(message.status, isLightMode)}
             border: 1px solid ${isLightMode ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)'};
             border-radius: 12px;
             transition: all 0.2s;
-            cursor: pointer;
             position: relative;
             overflow: hidden;
-          " onmouseover="this.style.backgroundColor='${
-            isLightMode ? 'rgba(0, 0, 0, 0.04)' : 'rgba(255, 255, 255, 0.05)'
-          }'"
-             onmouseout="this.style.backgroundColor='transparent'">
+          ">
             <!-- 票券水印 -->
             <div style="
               position: absolute;
@@ -41123,6 +41992,42 @@ ${getTransferStatusIcon(message.status, isLightMode)}
           transfer.depositAmount
         })</span></div>
               </div>
+              
+              <!-- 删除按钮 -->
+              <div style="margin-top: 12px; text-align: right;">
+                <button onclick="deleteBusinessTransfer('${transfer.transferId}', event)" style="
+                  background: linear-gradient(135deg, ${
+                    isLightMode ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.12)'
+                  } 0%, ${isLightMode ? 'rgba(0, 0, 0, 0.04)' : 'rgba(255, 255, 255, 0.06)'} 100%);
+                  color: ${isLightMode ? '#0f1419' : '#ffffff'};
+                  border: 1px dashed ${isLightMode ? 'rgba(0, 0, 0, 0.2)' : 'rgba(255, 255, 255, 0.2)'};
+                  border-radius: 8px;
+                  padding: 6px 12px;
+                  font-size: 11px;
+                  font-weight: 600;
+                  cursor: pointer;
+                  transition: all 0.2s;
+                  display: inline-flex;
+                  align-items: center;
+                  gap: 4px;
+                  position: relative;
+                  overflow: hidden;
+                " onmouseover="this.style.background='linear-gradient(135deg, ${
+                  isLightMode ? 'rgba(0, 0, 0, 0.12)' : 'rgba(255, 255, 255, 0.15)'
+                } 0%, ${
+          isLightMode ? 'rgba(0, 0, 0, 0.06)' : 'rgba(255, 255, 255, 0.08)'
+        } 100%)'; this.style.transform='scale(1.02)'"
+                   onmouseout="this.style.background='linear-gradient(135deg, ${
+                     isLightMode ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.12)'
+                   } 0%, ${
+          isLightMode ? 'rgba(0, 0, 0, 0.04)' : 'rgba(255, 255, 255, 0.06)'
+        } 100%)'; this.style.transform='scale(1)'">
+                  <svg viewBox="0 0 24 24" style="width: 12px; height: 12px; fill: currentColor; opacity: 0.7;">
+                    <g><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"></path></g>
+                  </svg>
+                  删除任务
+                </button>
+              </div>
             </div>
           </div>
         `;
@@ -41159,6 +42064,142 @@ ${getTransferStatusIcon(message.status, isLightMode)}
         modal.remove();
         document.body.style.overflow = 'auto';
       }, 200);
+    }
+  };
+
+  // 删除商业转账任务
+  window.deleteBusinessTransfer = async function (transferId, event) {
+    event.stopPropagation();
+
+    try {
+      const xDb = getXDB();
+      const businessTransfersId = `businessTransfers_${currentAccountId || 'main'}`;
+      const savedData = await xDb.xAccountProfiles.get(businessTransfersId);
+
+      if (!savedData || !savedData.data) {
+        showXToast('无法找到商业转账数据', 'error');
+        return;
+      }
+
+      const transfer = savedData.data.find(t => t.transferId === transferId);
+      if (!transfer) {
+        showXToast('无法找到该任务', 'error');
+        return;
+      }
+
+      // 计算违约费
+      const depositAmount = parseFloat(transfer.depositAmount) || 0;
+      const totalAmount = parseFloat(transfer.amount) || 0;
+      const penaltyAmount = depositAmount + totalAmount; // 定金 + 全款
+
+      // 确认删除
+      const confirmMessage = `删除此任务将扣除违约费 $${penaltyAmount.toFixed(2)}\n（定金 $${depositAmount.toFixed(
+        2,
+      )} + 全款 $${totalAmount.toFixed(2)}）\n并降低信用值\n\n是否确认删除？`;
+
+      if (!confirm(confirmMessage)) {
+        return;
+      }
+
+      // 找到对应的卡片元素并播放撕碎动画
+      const cardElement = event.target.closest('div[style*="margin-bottom: 12px"]');
+      if (cardElement) {
+        // 添加撕碎动画
+        cardElement.style.animation = 'crumple-tear 0.6s cubic-bezier(0.4, 0, 1, 1) forwards';
+        cardElement.style.transformOrigin = 'center center';
+
+        // 注入CSS动画（如果还没有注入）
+        if (!document.getElementById('business-transfer-animations')) {
+          const style = document.createElement('style');
+          style.id = 'business-transfer-animations';
+          style.textContent = `
+            @keyframes crumple-tear {
+              0% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+              }
+              20% {
+                transform: scale(0.95) rotate(-2deg);
+              }
+              40% {
+                transform: scale(0.9) rotate(2deg) translateY(-5px);
+                filter: blur(0px);
+              }
+              60% {
+                transform: scale(0.7) rotate(-5deg) translateY(-10px);
+                filter: blur(1px);
+                opacity: 0.8;
+              }
+              80% {
+                transform: scale(0.4) rotate(8deg) translateY(-15px);
+                filter: blur(3px);
+                opacity: 0.4;
+              }
+              100% {
+                transform: scale(0.1) rotate(15deg) translateY(-20px);
+                filter: blur(5px);
+                opacity: 0;
+              }
+            }
+          `;
+          document.head.appendChild(style);
+        }
+
+        // 等待动画完成
+        await new Promise(resolve => setTimeout(resolve, 600));
+      }
+
+      // 加载钱包数据
+      await loadWalletData();
+
+      // 扣除违约费
+      walletData.balance -= penaltyAmount;
+
+      // 降低信用值（根据任务金额，金额越大扣得越多）
+      const creditPenalty = Math.min(20, Math.floor(totalAmount / 10)); // 最多扣20，按金额/10计算
+      walletData.creditScore = Math.max(0, walletData.creditScore - creditPenalty);
+
+      // 添加违约费交易记录
+      const penaltyTransaction = {
+        id: 'penalty_' + Date.now(),
+        description: `删除商业任务违约费 - ${transfer.taskDescription.substring(0, 30)}...`,
+        amount: -penaltyAmount,
+        timestamp: new Date().toISOString(),
+        type: 'penalty',
+      };
+      walletData.transactions.unshift(penaltyTransaction);
+
+      // 保存钱包数据
+      await saveWalletData();
+
+      // 删除商业转账记录
+      savedData.data = savedData.data.filter(t => t.transferId !== transferId);
+      await xDb.xAccountProfiles.put(savedData);
+
+      // 显示通知
+      showPhoneNotification({
+        title: 'X Wallet',
+        message: `任务已删除，扣除违约费 $${penaltyAmount.toFixed(2)}，信用值 -${creditPenalty}`,
+        avatar: window.userProfileData?.avatar,
+        leftIcon: 'custom',
+        leftIconHtml: `
+          <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; fill: #71767b;">
+            <g><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"></path></g>
+          </svg>
+        `,
+        duration: 5000,
+      });
+
+      console.log(`🗑️ 商业任务已删除，扣除违约费 $${penaltyAmount.toFixed(2)}，信用值 -${creditPenalty}`);
+
+      // 刷新商业转账管理窗口
+      closeBusinessTransferManager();
+      setTimeout(() => {
+        openBusinessTransferManager();
+      }, 300);
+    } catch (error) {
+      console.error('删除商业转账失败:', error);
+      showXToast('删除失败', 'error');
     }
   };
 
@@ -41256,10 +42297,14 @@ ${getTransferStatusIcon(message.status, isLightMode)}
 
         // 2. 检查是否需要删除（过期超过1小时 或 完成超过3小时）
         let shouldDelete = false;
+        let isExpiredPenalty = false;
 
-        // 过期超过1小时
+        // 过期超过1小时（进行中的任务才扣违约费）
         if (timeToDeadline < 0 && Math.abs(timeToDeadline) > 3600000) {
           shouldDelete = true;
+          if (transfer.taskStatus === 'in_progress') {
+            isExpiredPenalty = true; // 标记需要扣除违约费
+          }
           console.log(`🗑️ 删除过期任务: ${transfer.taskDescription.substring(0, 30)}`);
         }
 
@@ -41277,6 +42322,51 @@ ${getTransferStatusIcon(message.status, isLightMode)}
         if (!shouldDelete) {
           transfersToKeep.push(transfer);
         } else {
+          // 如果是过期未完成的任务，扣除违约费
+          if (isExpiredPenalty) {
+            const totalAmount = parseFloat(transfer.amount) || 0;
+            const penaltyAmount = totalAmount; // 过期任务只扣全款
+
+            // 加载钱包数据
+            await loadWalletData();
+
+            // 扣除违约费
+            walletData.balance -= penaltyAmount;
+
+            // 降低信用值
+            const creditPenalty = Math.min(15, Math.floor(totalAmount / 15)); // 过期扣得少一些，最多扣15
+            walletData.creditScore = Math.max(0, walletData.creditScore - creditPenalty);
+
+            // 添加违约费交易记录
+            const penaltyTransaction = {
+              id: 'penalty_expired_' + Date.now(),
+              description: `任务过期违约费 - ${transfer.taskDescription.substring(0, 30)}...`,
+              amount: -penaltyAmount,
+              timestamp: new Date().toISOString(),
+              type: 'penalty',
+            };
+            walletData.transactions.unshift(penaltyTransaction);
+
+            // 保存钱包数据
+            await saveWalletData();
+
+            // 显示通知
+            showPhoneNotification({
+              title: 'X Wallet',
+              message: `任务已过期，扣除违约费 $${penaltyAmount.toFixed(2)}，信用值 -${creditPenalty}`,
+              avatar: window.userProfileData?.avatar,
+              leftIcon: 'custom',
+              leftIconHtml: `
+                <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; fill: #71767b;">
+                  <g><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7V7z"></path></g>
+                </svg>
+              `,
+              duration: 5000,
+            });
+
+            console.log(`💸 任务过期违约费 $${penaltyAmount.toFixed(2)}，信用值 -${creditPenalty}`);
+          }
+
           needsUpdate = true;
         }
       }
@@ -41814,6 +42904,19 @@ ${getTransferStatusIcon(message.status, isLightMode)}
     // 保存来源页面标记
     detailPage.dataset.fromNotifications = isFromNotifications ? 'true' : 'false';
 
+    // 🔧 初始化输入框状态为启用（防止之前被拉黑的对话影响）
+    setTimeout(() => {
+      const messageInput = document.getElementById('message-input');
+      const sendBtn = document.getElementById('message-send-btn');
+      if (messageInput) {
+        messageInput.disabled = false;
+        messageInput.placeholder = '发送私信';
+      }
+      if (sendBtn) {
+        sendBtn.disabled = false;
+      }
+    }, 50);
+
     const xDb = getXDB();
 
     // 清除未读标记
@@ -42097,6 +43200,144 @@ ${getTransferStatusIcon(message.status, isLightMode)}
       if (svg) svg.style.transform = 'rotate(0deg)';
     }
   });
+
+  // 打开图片类型选择器
+  window.openImageTypeSelector = function () {
+    const dialog = document.getElementById('image-type-selector-dialog');
+    if (dialog) {
+      dialog.style.display = 'flex';
+    }
+  };
+
+  // 关闭图片类型选择器
+  window.closeImageTypeSelector = function () {
+    const dialog = document.getElementById('image-type-selector-dialog');
+    if (dialog) {
+      dialog.style.display = 'none';
+    }
+  };
+
+  // 选择图片类型
+  window.selectImageType = function (type) {
+    closeImageTypeSelector();
+
+    if (type === 'real') {
+      // 上传真实图片
+      triggerMessageImageUpload();
+    } else if (type === 'text') {
+      // 打开文字图片输入框
+      openTextImageDialog();
+    }
+  };
+
+  // 打开文字图片对话框
+  function openTextImageDialog() {
+    const dialog = document.getElementById('text-image-dialog');
+    const input = document.getElementById('text-image-description-input');
+    const counter = document.getElementById('text-image-counter');
+
+    if (dialog) {
+      dialog.style.display = 'flex';
+    }
+
+    if (input) {
+      input.value = '';
+    }
+
+    if (counter) {
+      counter.textContent = '0 / 500';
+    }
+
+    // 聚焦到输入框
+    setTimeout(() => {
+      if (input) input.focus();
+    }, 100);
+  }
+
+  // 关闭文字图片对话框
+  window.closeTextImageDialog = function () {
+    const dialog = document.getElementById('text-image-dialog');
+    if (dialog) {
+      dialog.style.display = 'none';
+    }
+  };
+
+  // 更新文字图片字符计数
+  window.updateTextImageCounter = function () {
+    const input = document.getElementById('text-image-description-input');
+    const counter = document.getElementById('text-image-counter');
+
+    if (input && counter) {
+      counter.textContent = `${input.value.length} / 500`;
+    }
+  };
+
+  // 发送文字图片
+  window.sendTextImage = async function () {
+    const input = document.getElementById('text-image-description-input');
+
+    if (!input) return;
+
+    const description = input.value.trim();
+
+    if (!description) {
+      showXToast('请输入图片描述', 'error');
+      return;
+    }
+
+    // 关闭对话框
+    closeTextImageDialog();
+
+    // 获取当前时间
+    const now = new Date();
+    const hours = now.getHours();
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const timeStr = `${hours}:${minutes}`;
+
+    // 创建文字图片消息对象
+    const textImageMessage = {
+      type: 'image',
+      imageDescription: description,
+      sensitive: false,
+      time: timeStr,
+      timestamp: now.toISOString(),
+      isOwn: true,
+    };
+
+    // 添加到消息队列
+    userMessageQueue.push(textImageMessage);
+
+    // 渲染新消息
+    const contentContainer = document.getElementById('message-detail-content');
+    if (contentContainer) {
+      const currentMessageCount = contentContainer.querySelectorAll('.message-item').length;
+      const newMessage = renderMessageItem(textImageMessage, true, currentMessageCount);
+      contentContainer.appendChild(newMessage);
+
+      // 立即显示动画
+      setTimeout(() => {
+        newMessage.style.transition = 'all 0.3s ease';
+        newMessage.style.opacity = '1';
+        newMessage.style.transform = 'translateY(0)';
+      }, 10);
+
+      // 滚动到底部
+      setTimeout(() => {
+        const scrollable = document.getElementById('message-detail-scrollable');
+        if (scrollable) {
+          scrollable.scrollTo({
+            top: scrollable.scrollHeight,
+            behavior: 'smooth',
+          });
+        }
+      }, 100);
+    }
+
+    // 保存到数据库
+    await saveUserMessageToDB(textImageMessage);
+
+    console.log('✅ 文字图片消息已添加到队列，等待发送');
+  };
 
   // 触发图片上传
   window.triggerMessageImageUpload = function () {
@@ -42812,6 +44053,17 @@ ${getTransferStatusIcon(message.status, isLightMode)}
 
   // 发送表情包消息（立即显示，但不触发AI回复）
   async function sendStickerMessage(sticker) {
+    // 🔒 检查拉黑状态
+    const blockCheck = await checkIfBlocked();
+    if (blockCheck.isBlocked) {
+      showXToast('对方已将你拉黑，无法发送消息', 'error');
+      return;
+    }
+    if (blockCheck.error) {
+      showXToast(blockCheck.error, 'error');
+      return;
+    }
+
     // 更新使用统计
     const stickerIndex = userStickers.findIndex(s => s.url === sticker.url && s.description === sticker.description);
 
@@ -42873,6 +44125,41 @@ ${getTransferStatusIcon(message.status, isLightMode)}
     console.log('✅ 表情包消息已添加到队列，等待发送');
   }
 
+  // 🔒 检查拉黑状态（通用函数）
+  async function checkIfBlocked() {
+    if (!currentMessageConversation) {
+      return { isBlocked: false, error: '会话数据丢失' };
+    }
+
+    try {
+      const xDb = getXDB();
+      const conversationId = `messageConversation_${currentAccountId || 'main'}_${currentMessageConversation.id}`;
+      const savedConversation = await xDb.xAccountProfiles.get(conversationId);
+
+      if (savedConversation && savedConversation.isBlocked) {
+        console.log('⚠️ [拉黑] 对方已拉黑用户，禁止发送消息');
+
+        // 确保输入框被禁用
+        const input = document.getElementById('message-input');
+        const sendBtn = document.getElementById('message-send-btn');
+        if (input) {
+          input.disabled = true;
+          input.placeholder = '对方已将你拉黑';
+        }
+        if (sendBtn) {
+          sendBtn.disabled = true;
+        }
+
+        return { isBlocked: true };
+      }
+
+      return { isBlocked: false };
+    } catch (error) {
+      console.error('检查拉黑状态失败:', error);
+      return { isBlocked: false, error: error.message };
+    }
+  }
+
   // 发送用户消息
   window.sendMessageContent = async function () {
     const input = document.getElementById('message-input');
@@ -42880,6 +44167,17 @@ ${getTransferStatusIcon(message.status, isLightMode)}
 
     const content = input.value.trim();
     if (!content) return;
+
+    // 🔒 检查拉黑状态
+    const blockCheck = await checkIfBlocked();
+    if (blockCheck.isBlocked) {
+      showXToast('对方已将你拉黑，无法发送消息', 'error');
+      return;
+    }
+    if (blockCheck.error) {
+      showXToast(blockCheck.error, 'error');
+      return;
+    }
 
     // 获取当前时间
     const now = new Date();
@@ -43184,7 +44482,110 @@ ${getTransferStatusIcon(message.status, isLightMode)}
       // 🔍 检查特殊系统提示
       const hasBlockedMessage =
         aiMessages && aiMessages.some(msg => msg.type === 'system' && msg.systemType === 'blocked');
+      const hasUnblockedMessage =
+        aiMessages && aiMessages.some(msg => msg.type === 'system' && msg.systemType === 'unblocked');
       const hasAwayMessage = aiMessages && aiMessages.some(msg => msg.type === 'system' && msg.systemType === 'away');
+
+      // 🎉 处理解除拉黑情况
+      if (hasUnblockedMessage) {
+        console.log('🎉 [拉黑解除] 对方已解除拉黑');
+
+        // 解除拉黑状态
+        try {
+          const xDb = getXDB();
+          const conversationId = `messageConversation_${currentAccountId || 'main'}_${conversationRef.id}`;
+          const savedConversation = await xDb.xAccountProfiles.get(conversationId);
+
+          if (savedConversation) {
+            savedConversation.isBlocked = false;
+            delete savedConversation.blockedAt;
+            await xDb.xAccountProfiles.put(savedConversation);
+            console.log('✅ [拉黑解除] 拉黑状态已解除');
+          }
+        } catch (error) {
+          console.error('❌ [拉黑解除] 解除拉黑状态失败:', error);
+        }
+
+        // 启用输入框和发送按钮
+        const messageInput = document.getElementById('message-input');
+        const sendBtn = document.getElementById('message-send-btn');
+        if (messageInput) {
+          messageInput.disabled = false;
+          messageInput.placeholder = '发送私信';
+        }
+        if (sendBtn) {
+          sendBtn.disabled = false;
+        }
+
+        // 显示解除拉黑系统消息
+        const unblockedMessage = aiMessages.find(msg => msg.type === 'system' && msg.systemType === 'unblocked');
+        if (unblockedMessage) {
+          const contentContainer = document.getElementById('message-detail-content');
+          if (contentContainer) {
+            const currentMessageCount = contentContainer.querySelectorAll(
+              '.message-item:not(#typing-indicator)',
+            ).length;
+            const messageEl = renderMessageItem(unblockedMessage, false, currentMessageCount, true);
+            contentContainer.appendChild(messageEl);
+            requestAnimationFrame(() => {
+              messageEl.style.opacity = '1';
+              messageEl.style.transform = 'translateY(0)';
+            });
+          }
+        }
+
+        // 显示其他AI消息（解除拉黑后可能跟随的文本消息）
+        const otherMessages = aiMessages.filter(msg => msg.type !== 'system' || msg.systemType !== 'unblocked');
+        if (otherMessages.length > 0) {
+          const contentContainer = document.getElementById('message-detail-content');
+          if (contentContainer) {
+            let currentMessageCount = contentContainer.querySelectorAll('.message-item:not(#typing-indicator)').length;
+
+            otherMessages.forEach((msg, index) => {
+              const messageEl = renderMessageItem(
+                msg,
+                false,
+                currentMessageCount + index,
+                index === otherMessages.length - 1,
+              );
+              contentContainer.appendChild(messageEl);
+              requestAnimationFrame(() => {
+                messageEl.style.opacity = '1';
+                messageEl.style.transform = 'translateY(0)';
+              });
+            });
+          }
+          await saveAIMessagesToDB(aiMessages, conversationRef);
+        } else {
+          // 只有系统提示，也要保存
+          await saveAIMessagesToDB(aiMessages, conversationRef);
+        }
+
+        // 显示解除拉黑通知
+        const isEnglish = currentLanguage === 'en';
+        showPhoneNotification({
+          title: conversationRef.userName || conversationRef.user?.name || '未知用户',
+          message: isEnglish ? 'Has unblocked you' : '已解除拉黑',
+          avatar:
+            conversationRef.userAvatar ||
+            conversationRef.user?.avatar ||
+            'https://i.postimg.cc/4xmx7V4R/mmexport1759081128356.jpg',
+          leftIcon: 'x',
+          duration: 3000,
+        });
+
+        userMessageQueue = [];
+
+        // 滚动到底部
+        const scrollable = document.getElementById('message-detail-scrollable');
+        if (scrollable) {
+          setTimeout(() => {
+            scrollable.scrollTop = scrollable.scrollHeight;
+          }, 100);
+        }
+
+        return;
+      }
 
       // ⚠️ 处理拉黑情况
       if (hasBlockedMessage) {
@@ -44337,7 +45738,7 @@ ${getTransferStatusIcon(message.status, isLightMode)}
                   自动发信息
                 </div>
                 <div style="font-size: 13px; color: var(--x-text-secondary);">
-                  ${isInContactList ? '启用后该账户会自动发送私信' : '需先添加到联系人后才能启用'}
+                  ${isInContactList ? '启用后该账户会自动发送私信和推文' : '需先添加到联系人后才能启用'}
                 </div>
               </div>
               <div class="x-toggle" id="auto-message-toggle" onclick="${
@@ -45324,6 +46725,192 @@ ${getTransferStatusIcon(message.status, isLightMode)}
   };
 
   // ============================================
+  // 拉黑解除检测系统
+  // ============================================
+
+  /**
+   * 检测用户是否通过@或评论触发拉黑解除
+   * @param {string} userHandle - 用户句柄
+   * @param {string} targetHandle - 被拉黑对方的句柄
+   * @param {string} triggerSource - 触发来源：'mention' | 'comment'
+   * @param {string} content - 触发内容（推文内容或评论内容）
+   */
+  async function checkUnblockTrigger(userHandle, targetHandle, triggerSource, content) {
+    try {
+      const xDb = getXDB();
+
+      // 清理句柄
+      const cleanUserHandle = userHandle.replace('@', '').toLowerCase();
+      const cleanTargetHandle = targetHandle.replace('@', '').toLowerCase();
+
+      console.log(`🔓 [拉黑解除] 检测触发: 用户=${cleanUserHandle}, 对方=${cleanTargetHandle}, 来源=${triggerSource}`);
+
+      // 查找对方的资料，确定消息ID
+      let messageId = null;
+      let messageData = null;
+
+      // 尝试查找角色
+      const allXProfiles = await xDb.xCharacterProfiles.toArray();
+      const targetProfile = allXProfiles.find(
+        p => p.xHandle && p.xHandle.replace('@', '').toLowerCase() === cleanTargetHandle,
+      );
+
+      if (targetProfile) {
+        messageId = `msg_${targetProfile.characterId}`;
+        const messagesListId = `messagesList_${currentAccountId || 'main'}`;
+        const messagesListData = await xDb.xAccountProfiles.get(messagesListId);
+        if (messagesListData && messagesListData.data) {
+          messageData = messagesListData.data.find(m => m.id === messageId);
+        }
+      } else {
+        // 尝试查找账户
+        const accountProfile = await xDb.xAccountProfiles.get(cleanTargetHandle);
+        if (accountProfile) {
+          messageId = `msg_account_${cleanTargetHandle}`;
+          const messagesListId = `messagesList_${currentAccountId || 'main'}`;
+          const messagesListData = await xDb.xAccountProfiles.get(messagesListId);
+          if (messagesListData && messagesListData.data) {
+            messageData = messagesListData.data.find(m => m.id === messageId);
+          }
+        } else {
+          // 陌生人
+          const messagesListId = `messagesList_${currentAccountId || 'main'}`;
+          const messagesListData = await xDb.xAccountProfiles.get(messagesListId);
+          if (messagesListData && messagesListData.data) {
+            messageData = messagesListData.data.find(
+              m => m.userHandle && m.userHandle.replace('@', '').toLowerCase() === cleanTargetHandle,
+            );
+            if (messageData) {
+              messageId = messageData.id;
+            }
+          }
+        }
+      }
+
+      if (!messageId || !messageData) {
+        console.log(`⚠️ [拉黑解除] 未找到对应的私信记录`);
+        return;
+      }
+
+      // 检查是否被拉黑
+      const conversationId = `messageConversation_${currentAccountId || 'main'}_${messageId}`;
+      const savedConversation = await xDb.xAccountProfiles.get(conversationId);
+
+      if (!savedConversation || !savedConversation.isBlocked) {
+        console.log(`ℹ️ [拉黑解除] 对方并未拉黑用户，无需解除`);
+        return;
+      }
+
+      console.log(`✅ [拉黑解除] 检测到拉黑状态，准备生成AI回复评估是否解除`);
+
+      // 使用统一AI回复生成器，传入特殊上下文
+      const unblockContext = {
+        triggerSource: triggerSource, // 'mention' | 'comment'
+        triggerContent: content,
+        isUnblockTrigger: true, // 标记为拉黑解除触发
+      };
+
+      // 生成AI回复（带拉黑解除上下文）
+      const aiMessages = await generateMessageConversation(messageData, true, {
+        isUnblockRequest: true,
+        unblockContext: unblockContext,
+      });
+
+      // 检查是否包含解除拉黑系统提示
+      const hasUnblockedMessage =
+        aiMessages && aiMessages.some(msg => msg.type === 'system' && msg.systemType === 'unblocked');
+
+      if (hasUnblockedMessage) {
+        console.log(`🎉 [拉黑解除] AI决定解除拉黑！`);
+
+        // 解除拉黑状态
+        savedConversation.isBlocked = false;
+        delete savedConversation.blockedAt;
+        savedConversation.updatedAt = new Date().toISOString();
+
+        // 添加AI回复到对话记录
+        if (!savedConversation.data) {
+          savedConversation.data = { messages: [] };
+        }
+        if (!savedConversation.data.messages) {
+          savedConversation.data.messages = [];
+        }
+
+        // 添加上下文系统通知（说明用户通过何种方式触发）
+        const contextNotification = {
+          type: 'system',
+          systemType: 'unblockContext',
+          content:
+            triggerSource === 'mention'
+              ? `用户在推文中@了你: "${content.substring(0, 100)}..."`
+              : `用户在评论区提到了你: "${content.substring(0, 100)}..."`,
+          timestamp: new Date().toISOString(),
+          time: '刚刚',
+        };
+
+        savedConversation.data.messages.push(contextNotification);
+
+        // 添加AI消息
+        aiMessages.forEach(msg => {
+          if (!msg.timestamp) {
+            msg.timestamp = new Date().toISOString();
+          }
+          if (!msg.time) {
+            msg.time = '刚刚';
+          }
+          savedConversation.data.messages.push(msg);
+        });
+
+        // 保存到数据库
+        await xDb.xAccountProfiles.put(savedConversation);
+
+        // 🔔 显示手机样式通知
+        showPhoneNotification({
+          title: messageData.userName || messageData.user?.name || '未知用户',
+          message: '已解除拉黑',
+          avatar:
+            messageData.userAvatar ||
+            messageData.user?.avatar ||
+            'https://i.postimg.cc/4xmx7V4R/mmexport1759081128356.jpg',
+          onClick: () => {
+            // 点击通知打开私信详情
+            openMessageDetail(messageData);
+          },
+        });
+
+        // 如果当前正在查看该私信详情，刷新界面
+        const detailPage = document.getElementById('x-message-detail-page');
+        if (detailPage && detailPage.style.display === 'flex') {
+          const currentMessageData = window.currentViewingMessage;
+          if (currentMessageData && currentMessageData.id === messageId) {
+            console.log(`🔄 [拉黑解除] 刷新当前私信详情页`);
+
+            // 解除输入框禁用
+            const messageInput = document.getElementById('message-input');
+            const sendBtn = document.getElementById('message-send-btn');
+            if (messageInput) {
+              messageInput.disabled = false;
+              messageInput.placeholder = '发送私信';
+            }
+            if (sendBtn) {
+              sendBtn.disabled = false;
+            }
+
+            // 重新加载对话
+            loadMessageConversation(messageData, savedConversation.data);
+          }
+        }
+
+        console.log(`✅ [拉黑解除] 拉黑已解除，AI消息已发送`);
+      } else {
+        console.log(`❌ [拉黑解除] AI决定不解除拉黑`);
+      }
+    } catch (error) {
+      console.error('❌ [拉黑解除] 检测失败:', error);
+    }
+  }
+
+  // ============================================
   // 后台自动发消息系统
   // ============================================
 
@@ -45450,6 +47037,18 @@ ${getTransferStatusIcon(message.status, isLightMode)}
           // 触发自动发消息
           await triggerAutoMessage(messageItem, profile, timeSinceLastMessage);
         }
+
+        // 🎲 随机触发自动发推（20%概率）
+        if (messages.length > 0 && Math.random() < 0.2) {
+          const lastMessageTime = lastMessage.timestamp ? new Date(lastMessage.timestamp).getTime() : 0;
+          const timeSinceLastMsg = (now - lastMessageTime) / 1000;
+
+          // 只有在有聊天记录且距离上次聊天超过间隔时间才触发
+          if (timeSinceLastMsg >= intervalSeconds) {
+            console.log(`🎲 [角色自动发推] 触发: ${profile.xName}, 距离上次聊天 ${Math.floor(timeSinceLastMsg)}秒`);
+            await triggerAutoTweet(messageItem, profile, timeSinceLastMsg, 'character');
+          }
+        }
       }
 
       // === 第二部分：检查陌生人账户 ===
@@ -45514,9 +47113,107 @@ ${getTransferStatusIcon(message.status, isLightMode)}
           lastAutoMessageTrigger[messageItem.id] = now;
           await triggerStrangerAutoMessage(messageItem, strangerSettings, timeSinceLastMessage);
         }
+
+        // 🎲 随机触发自动发推（10%概率）
+        if (messages.length > 0 && Math.random() < 0.1) {
+          const lastMessageTime = lastMessage.timestamp ? new Date(lastMessage.timestamp).getTime() : 0;
+          const timeSinceLastMsg = (now - lastMessageTime) / 1000;
+
+          // 只有在有聊天记录且距离上次聊天超过间隔时间才触发
+          if (timeSinceLastMsg >= intervalSeconds) {
+            console.log(
+              `🎲 [陌生人自动发推] 触发: ${messageItem.user.name}, 距离上次聊天 ${Math.floor(timeSinceLastMsg)}秒`,
+            );
+            await triggerAutoTweet(messageItem, strangerSettings, timeSinceLastMsg, 'stranger');
+          }
+        }
       }
     } catch (error) {
       console.error('❌ 检查自动发消息失败:', error);
+    }
+  }
+
+  // 触发自动发推（角色/陌生人）
+  async function triggerAutoTweet(messageData, settings, timeSinceLastMessage, type = 'character') {
+    try {
+      const characterName = type === 'character' ? settings.xName : messageData.user.name;
+      console.log(`📨 ${type === 'character' ? '角色' : '陌生人'} ${characterName} 正在自动发推...`);
+
+      // 获取聊天记录
+      const xDb = getXDB();
+      const conversationId = `messageConversation_${currentAccountId || 'main'}_${messageData.id}`;
+      const savedConversation = await xDb.xAccountProfiles.get(conversationId);
+
+      if (!savedConversation || !savedConversation.data || !savedConversation.data.messages) {
+        console.warn('自动发推失败，无聊天记录');
+        return;
+      }
+
+      const messages = savedConversation.data.messages;
+      const contextMessages = messages.slice(-20); // 最近20条消息
+
+      // 调用新推生成器，传入时间信息
+      const tweetData = await generateTweetFromConversation(messageData, contextMessages, {
+        isAutoTweet: true,
+        timeSinceLastMessage: Math.floor(timeSinceLastMessage),
+        type: type,
+      });
+
+      if (!tweetData) {
+        console.warn('自动发推生成失败，无推文内容');
+        return;
+      }
+
+      // 创建 New Tweet 通知
+      const timestamp = Date.now();
+      const newTweetNotification = {
+        id: `mention_newtweet_auto_${timestamp}`,
+        type: 'newTweet',
+        user: messageData.user,
+        content: `New Tweet from ${messageData.user.name}`,
+        time: '刚刚',
+        timestamp: timestamp,
+        tweet: tweetData,
+      };
+
+      // 保存到 Mentions 数据库
+      const mentionsDataId = `mentions_${currentAccountId || 'main'}`;
+      let savedMentions = await xDb.xAccountProfiles.get(mentionsDataId);
+
+      if (!savedMentions) {
+        savedMentions = {
+          handle: mentionsDataId,
+          id: mentionsDataId,
+          data: [],
+        };
+      }
+
+      savedMentions.data.unshift(newTweetNotification);
+      await xDb.xAccountProfiles.put(savedMentions);
+
+      console.log(`✅ 自动发推成功: ${characterName}`);
+
+      // 将推文添加到发推者的账户主页
+      await addTweetToAccountProfile(messageData.user.handle, tweetData);
+
+      // 显示手机样式通知
+      const isEnglish = currentLanguage === 'en';
+      showPhoneNotification({
+        title: 'X',
+        message: isEnglish ? `${messageData.user.name} posted a new tweet!` : `${messageData.user.name} 发布了新推文！`,
+        avatar: messageData.user.avatar,
+        leftIcon: 'x',
+      });
+
+      // 如果当前在 Mentions 页面，刷新显示
+      const mentionsPage = document.getElementById('x-notifications-page');
+      if (mentionsPage && mentionsPage.style.display === 'flex') {
+        await loadNotifications();
+      } else {
+        showNavNotificationDot('notifications');
+      }
+    } catch (error) {
+      console.error('❌ 触发自动发推失败:', error);
     }
   }
 
