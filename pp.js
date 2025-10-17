@@ -30373,7 +30373,24 @@ ${tweetData.location ? `位置：${tweetData.location}` : ''}`;
 
       // 为评论分配ID和时间戳
       const timestamp = Date.now();
-      const tweetTimestamp = tweetData.timestamp || timestamp;
+      let tweetTimestamp = tweetData.timestamp || timestamp;
+
+      // 确保 tweetTimestamp 是数字格式（处理可能的Date对象或ISO字符串）
+      if (typeof tweetTimestamp !== 'number') {
+        if (tweetTimestamp instanceof Date) {
+          tweetTimestamp = tweetTimestamp.getTime();
+        } else if (typeof tweetTimestamp === 'string') {
+          tweetTimestamp = new Date(tweetTimestamp).getTime();
+        } else {
+          tweetTimestamp = timestamp;
+        }
+      }
+
+      // 验证转换后的时间戳有效性
+      if (isNaN(tweetTimestamp) || tweetTimestamp <= 0) {
+        console.warn('⚠️ [发帖生成器] 推文时间戳无效，使用当前时间');
+        tweetTimestamp = timestamp;
+      }
 
       interactionData.comments.forEach((comment, index) => {
         comment.id = `ai_${timestamp}_${index}`;
@@ -32508,7 +32525,18 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${comment.content}`
 
         // 详情页面：先更新数据，再渲染到页面
         // 将AI回复添加到推文数据中
-        const tweetTimestamp = tweetData.timestamp || tweetData.createdAt || Date.now();
+        let tweetTimestamp = tweetData.timestamp || tweetData.createdAt || Date.now();
+
+        // 确保时间戳是数字格式（处理可能的Date对象或字符串）
+        if (typeof tweetTimestamp !== 'number') {
+          if (tweetTimestamp instanceof Date) {
+            tweetTimestamp = tweetTimestamp.getTime();
+          } else if (typeof tweetTimestamp === 'string') {
+            tweetTimestamp = new Date(tweetTimestamp).getTime();
+          } else {
+            tweetTimestamp = Date.now();
+          }
+        }
 
         // 验证推文时间戳有效性
         if (isNaN(tweetTimestamp) || tweetTimestamp <= 0) {
@@ -32553,7 +32581,16 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${comment.content}`
                 delete reply.timeOffset;
               } else if (!reply.timestamp || isNaN(reply.timestamp)) {
                 // 回复时间应该比父评论晚
-                const parentTimestamp = targetComment.timestamp || targetComment.createdAt || tweetTimestamp;
+                let parentTimestamp = targetComment.timestamp || targetComment.createdAt || tweetTimestamp;
+                // 确保 parentTimestamp 是数字
+                if (typeof parentTimestamp !== 'number') {
+                  parentTimestamp =
+                    parentTimestamp instanceof Date
+                      ? parentTimestamp.getTime()
+                      : typeof parentTimestamp === 'string'
+                      ? new Date(parentTimestamp).getTime()
+                      : tweetTimestamp;
+                }
                 reply.timestamp = parentTimestamp + (1 + Math.random() * 10) * 60 * 1000;
               }
 
@@ -32795,7 +32832,18 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${comment.content}`
       } else {
         // 主页：更新数据并重新渲染
         console.log('🤖 [AI回复] 主页模式 - 开始处理');
-        const tweetTimestamp = tweetData.timestamp || tweetData.createdAt || Date.now();
+        let tweetTimestamp = tweetData.timestamp || tweetData.createdAt || Date.now();
+
+        // 确保时间戳是数字格式（处理可能的Date对象或字符串）
+        if (typeof tweetTimestamp !== 'number') {
+          if (tweetTimestamp instanceof Date) {
+            tweetTimestamp = tweetTimestamp.getTime();
+          } else if (typeof tweetTimestamp === 'string') {
+            tweetTimestamp = new Date(tweetTimestamp).getTime();
+          } else {
+            tweetTimestamp = Date.now();
+          }
+        }
 
         // 验证推文时间戳有效性
         if (isNaN(tweetTimestamp) || tweetTimestamp <= 0) {
@@ -32839,7 +32887,16 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${comment.content}`
                 reply.timestamp = tweetTimestamp + Math.abs(reply.timeOffset) * 60 * 1000;
                 delete reply.timeOffset;
               } else if (!reply.timestamp || isNaN(reply.timestamp)) {
-                const parentTimestamp = mainCommentObj.timestamp || mainCommentObj.createdAt || tweetTimestamp;
+                let parentTimestamp = mainCommentObj.timestamp || mainCommentObj.createdAt || tweetTimestamp;
+                // 确保 parentTimestamp 是数字
+                if (typeof parentTimestamp !== 'number') {
+                  parentTimestamp =
+                    parentTimestamp instanceof Date
+                      ? parentTimestamp.getTime()
+                      : typeof parentTimestamp === 'string'
+                      ? new Date(parentTimestamp).getTime()
+                      : tweetTimestamp;
+                }
                 reply.timestamp = parentTimestamp + (1 + Math.random() * 10) * 60 * 1000;
               }
 
