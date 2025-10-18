@@ -2968,7 +2968,8 @@
               alt="User" 
               style="width: 32px; height: 32px; border-radius: 50%; cursor: pointer; transition: opacity 0.2s;"
               onmouseover="this.style.opacity='0.8'"
-              onmouseout="this.style.opacity='1'">
+              onmouseout="this.style.opacity='1'"
+              onclick="handleMessageDetailAvatarClick()">
             <span id="message-detail-top-name" style="
                   font-size: 16px;
                   font-weight: 700;
@@ -7734,6 +7735,59 @@ ${userXProfileInfo.bio ? `- 个人简介：${userXProfileInfo.bio}` : ''}
 
         console.log(`🔍 [统一资料] 查询句柄: ${cleanHandle}`);
 
+        // 0. 🆕 检查是否是用户自己
+        // 用户句柄可能存储在多个字段中，按优先级尝试
+        let userXHandle =
+          window.userProfileData?.xHandle || window.userProfileData?.handle || window.userProfileData?.username;
+
+        if (userXHandle) {
+          userXHandle = userXHandle.replace('@', '').trim();
+        }
+
+        console.log(
+          `🔍 [统一资料] 用户句柄对比: 查询="${cleanHandle}" vs 用户="${userXHandle}" (来源: xHandle=${window.userProfileData?.xHandle}, handle=${window.userProfileData?.handle}, username=${window.userProfileData?.username})`,
+        );
+
+        // 不区分大小写比较句柄
+        if (userXHandle && cleanHandle.toLowerCase() === userXHandle.toLowerCase()) {
+          // 用户资料字段映射（兼容不同的字段名）
+          const userName = window.userProfileData.name || window.userProfileData.xName || '用户';
+          const userHandle = window.userProfileData.handle || window.userProfileData.xHandle || `@${userXHandle}`;
+          const userAvatar =
+            window.userProfileData.avatar ||
+            window.userProfileData.xAvatar ||
+            'https://i.postimg.cc/4xmx7V4R/mmexport1759081128356.jpg';
+          const userVerified = window.userProfileData.verified || window.userProfileData.xVerified || false;
+          const userBio = window.userProfileData.bio || window.userProfileData.xBio || '';
+          const userCover = window.userProfileData.cover || window.userProfileData.xCover || '';
+
+          console.log(`✅ [统一资料] 找到用户自己: ${userName} (${userHandle})`);
+
+          // 返回用户的X资料
+          const userProfile = {
+            type: 'user',
+            name: userName,
+            handle: userHandle,
+            avatar: userAvatar,
+            verified: userVerified,
+            publicIdentity: window.userProfileData.publicIdentity || '',
+            bio: userBio,
+            xProfile: {
+              xName: userName,
+              xHandle: userHandle,
+              xAvatar: userAvatar,
+              xVerified: userVerified,
+              xBio: userBio,
+              xCover: userCover,
+            },
+            // 用户没有"认识用户"这个概念
+            knowsUserIdentity: false,
+            xMessageHistory: [],
+            recentTweets: [],
+          };
+          return userProfile;
+        }
+
         // 1. 尝试作为角色查询
         const characterProfile = await this._getCharacterProfileByHandle(cleanHandle, options.userProfileInfo);
         if (characterProfile) {
@@ -8221,6 +8275,16 @@ ${userXProfileInfo.bio ? `- 个人简介：${userXProfileInfo.bio}` : ''}
         promptText += `${typeLabels[profile.type] || '【资料】'}\n`;
       }
 
+      // 🔧 空值保护：确保基本字段存在
+      if (!profile.name || !profile.handle) {
+        console.warn('⚠️ [格式化资料] profile 缺少必需字段 name 或 handle:', {
+          type: profile.type,
+          name: profile.name,
+          handle: profile.handle,
+        });
+        return '';
+      }
+
       // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
       // 📱 X平台公开信息（所有X用户都能看到）
       // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -8242,15 +8306,20 @@ ${profile.publicIdentity ? `公开身份：${profile.publicIdentity}` : ''}
       // 角色特有信息
       if (profile.type === 'character' && profile.characterData) {
         const cd = profile.characterData;
+
+        // 🔧 确保角色关键数据存在
+        const originalName = cd.originalName || profile.name || '未知';
+        const aiPersona = cd.aiPersona || '无特定人设';
+
         promptText += `
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🔒 角色私密资料（仅供AI理解角色，路人不知道）
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-真实姓名：${cd.originalName}
-人设描述：${cd.aiPersona || '无特定人设'}
+真实姓名：${originalName}
+人设描述：${aiPersona}
 
 ⚠️ 隐私规则：
-- 真实姓名"${cd.originalName}"是私密信息，路人评论中禁止提及！
+- 真实姓名"${originalName}"是私密信息，路人评论中禁止提及！
 - 路人只能称呼X姓名"${profile.name}"或使用句柄"${profile.handle}"
 - 只有该角色本人或关系NPC（已绑定的私人关系）才知道真实姓名
 - 人设描述仅供AI理解角色性格，路人不知道这些细节
@@ -8288,46 +8357,11 @@ ${cd.userPersona}
 `;
         }
 
-        // 记忆信息（只有知道用户身份且有专属人设时才显示）
-        if (
-          profile.knowsUserIdentity &&
-          cd.userPersona &&
-          cd.userPersona.trim() &&
-          cd.history &&
-          cd.history.length > 0
-        ) {
-          promptText += `
-【其他聊天记忆】（与用户在其他场景的对话，仅供参考）：
-`;
-          const recentHistory = cd.history.slice(-10);
-          let memCount = 0;
-          for (const msg of recentHistory) {
-            if (msg.role === 'user') {
-              promptText += `用户: ${msg.content.substring(0, 100)}${msg.content.length > 100 ? '...' : ''}\n`;
-              memCount++;
-            } else if (msg.role === 'assistant' && msg.content) {
-              promptText += `${profile.name}: ${msg.content.substring(0, 100)}${
-                msg.content.length > 100 ? '...' : ''
-              }\n`;
-              memCount++;
-            }
-            if (memCount >= 10) break;
-          }
-          promptText += `⚠️ 以上记忆仅供理解角色与用户关系，根据当前场景自然使用
-`;
-        }
-
-        // 🆕 X平台私信记忆（只有知道用户身份且有专属人设时才显示）
-        if (
-          profile.knowsUserIdentity &&
-          cd.userPersona &&
-          cd.userPersona.trim() &&
-          cd.xMessageHistory &&
-          cd.xMessageHistory.length > 0
-        ) {
+        // 🆕 X平台私信记忆（无论角色是否认识用户身份，只要有私信记录就显示）
+        if (cd.xMessageHistory && cd.xMessageHistory.length > 0) {
           const xMessageSectionStart = promptText.length;
           promptText += `
-【X平台私信记忆】（该角色与用户在X平台私信中的对话记录，仅供参考）：
+【X平台私信记忆】（该角色与用户在X平台私信中的对话记录）：
 `;
           const recentXMessages = cd.xMessageHistory.slice(-30); // 显示最近30条
           let xMemCount = 0;
@@ -8365,13 +8399,45 @@ ${cd.userPersona}
 
             if (xMemCount >= 30) break;
           }
-          promptText += `⚠️ 以上是X平台私信对话记录，仅供理解角色与用户的关系和沟通风格
-⚠️ 根据当前场景（推文/评论）自然使用，不要在公开推文中直接提及私信内容
+          promptText += `
+⚠️ 重要说明：
+- 这些是在X平台私信功能中的真实对话记录
+- 无论角色是否"认识用户身份"（其他场景的身份），这些X平台对话都是客观存在的
+- 根据当前场景（推文/评论/私信）自然使用，不要在公开推文中直接提及私信内容
 `;
           // 统计私信记忆的 token 数量
           const xMessageSection = promptText.substring(xMessageSectionStart);
           const xMessageTokens = TokenUtils.estimateTokens(xMessageSection);
           console.log(`📊 [私信] 角色 ${profile.name}: ${xMemCount}条, ~${xMessageTokens} tokens`);
+        }
+
+        // 记忆信息（只有知道用户身份且有专属人设时才显示）
+        if (
+          profile.knowsUserIdentity &&
+          cd.userPersona &&
+          cd.userPersona.trim() &&
+          cd.history &&
+          cd.history.length > 0
+        ) {
+          promptText += `
+【其他聊天记忆】（与用户在其他场景的对话，仅供参考）：
+`;
+          const recentHistory = cd.history.slice(-10);
+          let memCount = 0;
+          for (const msg of recentHistory) {
+            if (msg.role === 'user') {
+              promptText += `用户: ${msg.content.substring(0, 100)}${msg.content.length > 100 ? '...' : ''}\n`;
+              memCount++;
+            } else if (msg.role === 'assistant' && msg.content) {
+              promptText += `${profile.name}: ${msg.content.substring(0, 100)}${
+                msg.content.length > 100 ? '...' : ''
+              }\n`;
+              memCount++;
+            }
+            if (memCount >= 10) break;
+          }
+          promptText += `⚠️ 以上记忆仅供理解角色与用户关系，根据当前场景自然使用
+`;
         }
 
         // 长期记忆
@@ -15749,6 +15815,7 @@ ${npc.homepage || '暂无主页内容设置'}
 
     // 使用统一资料获取系统
     const profile = await StringBuilders.getUnifiedProfile(accountHandle, {
+      userProfileInfo: window.userProfileData, // 传递用户资料以检查身份识别
       includeRecentTweets: false, // 不需要推文，主页生成器会单独获取
       includeRelationships: true,
     });
@@ -15786,6 +15853,24 @@ ${npc.homepage || '暂无主页内容设置'}
     // 根据账户类型返回对应的数据结构
     console.log(`✅ 识别为 ${profile.type} 账户:`, profile.name, `(${profile.handle})`);
 
+    // 🆕 统一提取X平台私信记忆（所有账户类型通用）
+    let xMessageHistory = [];
+    if (profile.type === 'character' && profile.characterData?.xMessageHistory) {
+      xMessageHistory = profile.characterData.xMessageHistory;
+    } else if (profile.type === 'account' && profile.accountData?.xMessageHistory) {
+      xMessageHistory = profile.accountData.xMessageHistory;
+    } else if (profile.type === 'npc' && profile.npcData?.xMessageHistory) {
+      xMessageHistory = profile.npcData.xMessageHistory;
+    } else if (profile.type === 'relationshipNpc' && profile.relationshipData?.xMessageHistory) {
+      xMessageHistory = profile.relationshipData.xMessageHistory;
+    } else if (profile.type === 'stranger' && profile.accountData?.xMessageHistory) {
+      xMessageHistory = profile.accountData.xMessageHistory;
+    }
+
+    if (xMessageHistory.length > 0) {
+      console.log(`✅ [账户查询] 提取到 ${xMessageHistory.length} 条X平台私信记忆`);
+    }
+
     if (profile.type === 'character') {
       // 角色账户
       // 判断认证类型：检查该角色是否是用户的情侣认证对象
@@ -15815,6 +15900,7 @@ ${npc.homepage || '暂无主页内容设置'}
         characterData: profile.character,
         xProfileData: profile.xProfile,
         characterId: profile.characterId,
+        xMessageHistory: xMessageHistory, // 🆕 统一字段
       };
     } else if (profile.type === 'npc') {
       // NPC账户
@@ -15835,6 +15921,7 @@ ${npc.homepage || '暂无主页内容设置'}
         postingHabits: profile.npc.postingHabits || '',
         homepage: profile.npc.homepage || '',
         npcData: profile.npc,
+        xMessageHistory: xMessageHistory, // 🆕 统一字段
       };
     } else if (profile.type === 'relationshipNpc') {
       // 关系NPC账户
@@ -15857,6 +15944,7 @@ ${npc.homepage || '暂无主页内容设置'}
         ownerCharacterName: profile.ownerCharacter.name,
         ownerXProfile: profile.ownerXProfile,
         relationshipData: profile.relationship,
+        xMessageHistory: xMessageHistory, // 🆕 统一字段
       };
     } else if (profile.type === 'account') {
       // X账户（来自xAccountProfiles）
@@ -15875,6 +15963,7 @@ ${npc.homepage || '暂无主页内容设置'}
         followingCount: profile.accountInfo.followingCount || '',
         followersCount: profile.accountInfo.followersCount || '',
         accountInfo: profile.accountInfo,
+        xMessageHistory: xMessageHistory, // 🆕 统一字段
       };
     }
 
@@ -16447,6 +16536,7 @@ ${
           }
 
           systemPrompt += `
+
 该角色了解的用户信息：
 ${
   hasUserPersona
@@ -16644,6 +16734,63 @@ ${
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 `;
         }
+      }
+
+      // 5.2.5 🆕 统一添加X平台私信记忆（所有账户类型通用）
+      if (accountData.xMessageHistory && accountData.xMessageHistory.length > 0) {
+        const xMessageSectionStart = systemPrompt.length;
+        systemPrompt += `
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+【X平台私信记忆】（该账户与用户的私信对话记录）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
+        const recentXMessages = accountData.xMessageHistory.slice(-30);
+        let xMemCount = 0;
+        for (const msg of recentXMessages) {
+          const sender = msg.isOwn ? '用户' : accountData.name;
+          let content = '';
+
+          if (msg.type === 'text') {
+            content = msg.content;
+          } else if (msg.type === 'image') {
+            content = msg.isOwn ? '[用户发送了图片]' : `[图片: ${msg.imageDescription || '图片'}]`;
+          } else if (msg.type === 'voice') {
+            content = `[语音: ${msg.voiceText || '语音消息'}]`;
+          } else if (msg.type === 'sticker') {
+            content = '[表情包]';
+          } else if (msg.type === 'transfer') {
+            const amount = msg.amount ? `$${msg.amount}` : '';
+            const note = msg.note ? ` (${msg.note})` : '';
+            content = `[转账${amount}${note}]`;
+          } else if (msg.type === 'link') {
+            content = `[分享链接: ${msg.title || '链接'}]`;
+          } else if (msg.type === 'quoteTweet') {
+            content = `[转发推文: ${msg.tweet?.content || ''}]`;
+          } else if (msg.type === 'quoteProfile') {
+            content = `[分享主页: ${msg.profile?.name || ''}]`;
+          } else {
+            content = `[${msg.type}消息]`;
+          }
+
+          if (content) {
+            const displayContent = content.length > 80 ? `${content.substring(0, 80)}...` : content;
+            systemPrompt += `${sender}: ${displayContent}\n`;
+            xMemCount++;
+          }
+
+          if (xMemCount >= 30) break;
+        }
+        systemPrompt += `
+⚠️ 重要说明：
+- 这些是在X平台私信功能中的真实对话记录
+- 无论账户类型（角色/NPC/陌生人），这些对话都是客观存在的
+- 生成账户主页时，可以基于这些互动记录展现关系和沟通风格
+- 不要在公开推文中直接提及私密的私信内容
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
+        const xMessageSection = systemPrompt.substring(xMessageSectionStart);
+        tokenCount = TokenUtils.logTokenUsage('账户主页生成器', 'X平台私信记忆', xMessageSection, tokenCount);
       }
 
       // 5.3 统一的核心禁令（所有情况共用）
@@ -28652,15 +28799,20 @@ ${
     // 判断是否为账户推文或搜索结果推文，如果是则强制进入推进模式
     const isAccountTweet = latestTweetData._source === 'account';
     const isSearchTweet = latestTweetData._source === 'search';
+    const isUserTweet = latestTweetData.id && latestTweetData.id.startsWith('user_');
 
     if (isAccountTweet || isSearchTweet) {
       const sourceType = isAccountTweet ? '账户推文' : '搜索结果推文';
-      console.log(`📖 [显示详情] 检测到${sourceType}，强制启用推进模式`);
-      // 强制设置为推进模式
+      console.log(`📖 [显示详情] 检测到${sourceType}，强制启用推进模式（该类型推文仅支持推进）`);
+      // 强制设置为推进模式（账户推文/搜索推文只能推进，不能重回）
       if (!isTweetProgressMode) {
         isTweetProgressMode = true;
         updateTweetRerollButtonUI();
       }
+    } else if (isUserTweet) {
+      console.log(`📖 [显示详情] 检测到用户推文，支持重回+推进模式`);
+      // 用户推文：保持当前模式设置，支持切换
+      updateTweetRerollButtonUI();
     }
 
     // 渲染推文详情
@@ -29690,13 +29842,22 @@ ${
       const worldSetting = xSettings?.worldSetting || '';
       const boundCharacters = xSettings?.boundCharacters || [];
 
-      // 检测是否为账户推文
+      // 检测推文类型
       const isAccountTweet = tweetData._source === 'account';
-      // 检测是否为商业推文
+      const isUserTweet = tweetData.id && tweetData.id.startsWith('user_');
       const isBusinessPost = tweetData.isBusinessPost === true;
+
       let targetProfileInfo;
       let isBoundCharacterAccount = false; // 是否为绑定角色的账户
       let boundCharacterIdForAccount = null; // 绑定角色的ID
+      let isUserOwnTweet = isUserTweet; // 是否为用户自己的推文
+
+      console.log('🔍 [发帖生成器] 推文类型检测:', {
+        isAccountTweet,
+        isUserTweet,
+        isBusinessPost,
+        tweetId: tweetData.id,
+      });
 
       if (isAccountTweet) {
         // 账户推文：构建账户资料信息
@@ -29754,16 +29915,85 @@ ${
             knownIdentityCharacters: [],
           };
         }
-      } else {
-        // 用户推文：使用用户X个人资料信息
+      } else if (isUserTweet) {
+        // 用户自己的推文：使用用户X个人资料信息
+        console.log('✅ [发帖生成器] 检测到用户推文，使用用户资料');
         targetProfileInfo = StringBuilders.buildUserXProfileInfo(window.userProfileData);
+      } else {
+        // 主页推文（其他人发的）：使用统一资料获取系统获取发帖人资料
+        console.log('🔍 [发帖生成器] 检测到主页推文，查询发帖人资料:', tweetData.user.handle);
+
+        try {
+          const posterProfile = await StringBuilders.getUnifiedProfile(tweetData.user.handle, {
+            userProfileInfo: window.userProfileData,
+          });
+
+          if (posterProfile) {
+            console.log('✅ [发帖生成器] 已获取发帖人资料:', posterProfile.name);
+
+            // 检查发帖人是否为绑定角色
+            if (posterProfile.type === 'character' && boundCharacters.includes(posterProfile.characterId)) {
+              isBoundCharacterAccount = true;
+              boundCharacterIdForAccount = posterProfile.characterId;
+              console.log('🎭 [发帖生成器] 发帖人是绑定角色:', posterProfile.name);
+            }
+
+            targetProfileInfo = {
+              name: posterProfile.name,
+              handle: posterProfile.handle,
+              avatar: posterProfile.avatar,
+              verified: posterProfile.verified || false,
+              verificationType: posterProfile.xProfile?.xVerified ? 'verified' : 'none',
+              publicIdentity: posterProfile.publicIdentity || '',
+              bio: posterProfile.bio || '',
+              knownIdentityCharacters: [], // 其他人的推文，不使用用户的已知身份角色
+            };
+
+            isUserOwnTweet = false; // 明确标记这不是用户自己的推文
+          } else {
+            console.warn('⚠️ [发帖生成器] 未找到发帖人资料，使用推文用户信息');
+            targetProfileInfo = {
+              name: tweetData.user.name,
+              handle: tweetData.user.handle,
+              avatar: tweetData.user.avatar,
+              verified: tweetData.user.verified || false,
+              verificationType: tweetData.user.verificationType || 'none',
+              publicIdentity: '',
+              bio: '',
+              knownIdentityCharacters: [],
+            };
+            isUserOwnTweet = false;
+          }
+        } catch (error) {
+          console.error('❌ [发帖生成器] 获取发帖人资料失败:', error);
+          // 回退到使用推文中的用户信息
+          targetProfileInfo = {
+            name: tweetData.user.name,
+            handle: tweetData.user.handle,
+            avatar: tweetData.user.avatar,
+            verified: tweetData.user.verified || false,
+            verificationType: tweetData.user.verificationType || 'none',
+            publicIdentity: '',
+            bio: '',
+            knownIdentityCharacters: [],
+          };
+          isUserOwnTweet = false;
+        }
       }
 
       const userXProfileInfo = targetProfileInfo;
 
-      // 获取知道用户身份的角色信息（仅用于用户推文）
+      console.log('📋 [发帖生成器] 最终资料信息:', {
+        name: userXProfileInfo.name,
+        handle: userXProfileInfo.handle,
+        isUserOwnTweet,
+        isBoundCharacterAccount,
+        boundCharacterIdForAccount,
+      });
+
+      // 获取知道用户身份的角色信息（仅用于用户自己的推文）
       let knownIdentityCharactersInfo = '';
-      if (!isAccountTweet && userXProfileInfo.knownIdentityCharacters.length > 0 && boundCharacters.length > 0) {
+      if (isUserOwnTweet && userXProfileInfo.knownIdentityCharacters.length > 0 && boundCharacters.length > 0) {
         const allChats = await db.chats.toArray();
         const knownCharacters = allChats.filter(
           chat => !chat.isGroup && userXProfileInfo.knownIdentityCharacters.includes(chat.id),
@@ -29803,12 +30033,19 @@ ${
       // 1.5. 获取适用的世界书内容
       const worldBooksOptions = { boundCharacters: [] };
       if (isBoundCharacterAccount && boundCharacterIdForAccount) {
-        // 如果是绑定角色的账户推文，只传入该角色ID
+        // 如果发帖人是绑定角色，只传入该角色ID
         worldBooksOptions.boundCharacters = [boundCharacterIdForAccount];
-      } else {
-        // 用户推文或非绑定角色账户：传入所有绑定角色
+        console.log('📚 [发帖生成器] 加载绑定角色的世界书');
+      } else if (isUserOwnTweet) {
+        // 用户自己的推文：传入所有绑定角色
         worldBooksOptions.boundCharacters = boundCharacters;
+        console.log('📚 [发帖生成器] 加载用户所有绑定角色的世界书');
+      } else {
+        // 其他人的推文：不加载世界书
+        worldBooksOptions.boundCharacters = [];
+        console.log('📚 [发帖生成器] 跳过世界书（非用户推文）');
       }
+
       const worldBooksContent = await StringBuilders.getApplicableWorldBooks('tweetDetail', worldBooksOptions);
       if (worldBooksContent) {
         systemPrompt += worldBooksContent;
@@ -29816,7 +30053,7 @@ ${
       }
 
       // 2. 核心任务说明（根据模式不同调整）
-      const tweetAuthor = isAccountTweet ? `${userXProfileInfo.name} (${userXProfileInfo.handle})` : '用户';
+      const tweetAuthor = isUserOwnTweet ? '用户' : `${userXProfileInfo.name} (${userXProfileInfo.handle})`;
 
       if (isProgressMode) {
         // 计算时间流逝
@@ -29877,6 +30114,15 @@ ${
 ❌ 绝对不能生成${tweetAuthor}本人发表的任何内容
 
 **明确：${tweetAuthor}已经发布了推文，你只负责生成别人的回应！**
+
+${
+  !isUserOwnTweet && !isBoundCharacterAccount
+    ? `⚠️ **特别注意**：这是${tweetAuthor}发布的推文，与当前用户无关。
+- 应该生成普通路人用户的评论
+- 评论者是看到这条推文的陌生网友
+- 不要假设评论者与${tweetAuthor}有任何私人关系`
+    : ''
+}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
       }
 
@@ -29886,26 +30132,44 @@ ${
       // 3. 角色资料（互动反应场景）
       let charactersInfo = '';
 
+      // 🔧 确定传递给角色资料的用户信息
+      // 如果是绑定角色的推文，需要传递真实的用户资料（用于判断身份识别）
+      // 如果是用户自己的推文，传递用户资料
+      // 如果是其他人的推文，不加载角色资料
+      const userInfoForCharacter =
+        isBoundCharacterAccount || isUserOwnTweet ? StringBuilders.buildUserXProfileInfo(window.userProfileData) : null;
+
       if (isBoundCharacterAccount && boundCharacterIdForAccount) {
-        // 如果是绑定角色的账户推文，只加载该角色的信息
-        console.log('📋 [AI生成] 只加载当前绑定角色信息');
+        // 如果发帖人是绑定角色，只加载该角色的信息
+        console.log('📋 [发帖生成器] 发帖人是绑定角色，只加载该角色信息（传递真实用户资料以判断身份识别）');
         charactersInfo = await StringBuilders.buildCompleteCharacterInfo(
           [boundCharacterIdForAccount],
-          userXProfileInfo,
+          userInfoForCharacter, // 传递真实用户资料
+          'reaction',
+        );
+      } else if (isUserOwnTweet) {
+        // 用户自己的推文：加载所有绑定角色信息（这些角色可能会评论）
+        console.log('📋 [发帖生成器] 用户推文，加载所有绑定角色信息');
+        charactersInfo = await StringBuilders.buildCompleteCharacterInfo(
+          boundCharacters,
+          userInfoForCharacter,
           'reaction',
         );
       } else {
-        // 用户推文或非绑定角色账户：加载所有绑定角色信息
-        charactersInfo = await StringBuilders.buildCompleteCharacterInfo(boundCharacters, userXProfileInfo, 'reaction');
+        // 其他人的推文（非绑定角色）：不加载任何角色信息，让AI生成路人评论
+        console.log('📋 [发帖生成器] 其他人的推文，不加载用户角色（将生成路人评论）');
+        charactersInfo = '';
       }
 
       if (charactersInfo) {
         systemPrompt += charactersInfo;
         tokenCount = TokenUtils.logTokenUsage('发帖生成器', '角色资料信息', charactersInfo, tokenCount);
+      } else {
+        console.log('ℹ️ [发帖生成器] 跳过角色资料（非用户推文或无绑定角色）');
       }
 
-      // 添加角色关系册（仅在有绑定角色时）
-      if (boundCharacters && boundCharacters.length > 0) {
+      // 添加角色关系册（仅在用户推文或绑定角色推文时）
+      if ((isUserOwnTweet || isBoundCharacterAccount) && boundCharacters && boundCharacters.length > 0) {
         const relationshipsInfo = await StringBuilders.buildCharacterRelationships(boundCharacters, currentAccountId);
         if (relationshipsInfo) {
           systemPrompt += relationshipsInfo;
@@ -29930,8 +30194,9 @@ ${
         for (const handle of mentionHandles) {
           try {
             // 使用统一资料获取系统
+            // 如果是用户自己的推文，传递用户资料；否则传递发帖人资料
             const mentionedProfile = await StringBuilders.getUnifiedProfile(`@${handle}`, {
-              userProfileInfo: userXProfileInfo,
+              userProfileInfo: isUserOwnTweet ? window.userProfileData : null,
             });
 
             if (mentionedProfile) {
@@ -30512,6 +30777,24 @@ ${tweetData.location ? `位置：${tweetData.location}` : ''}`;
 
   // 切换推进模式（发帖生成器专用）
   window.toggleTweetProgressMode = function () {
+    // 检查当前推文类型
+    const currentTweetData = sessionStorage.getItem('currentTweetData');
+    if (currentTweetData) {
+      try {
+        const tweet = JSON.parse(currentTweetData);
+        const isAccountTweet = tweet._source === 'account';
+        const isSearchTweet = tweet._source === 'search';
+
+        // 账户推文和搜索推文只能使用推进模式，不允许切换到重回
+        if ((isAccountTweet || isSearchTweet) && isTweetProgressMode) {
+          showXToast('该推文只支持推进模式', 'warning');
+          return;
+        }
+      } catch (e) {
+        console.warn('解析推文数据失败:', e);
+      }
+    }
+
     isTweetProgressMode = !isTweetProgressMode;
     updateTweetRerollButtonUI();
 
@@ -30532,6 +30815,18 @@ ${tweetData.location ? `位置：${tweetData.location}` : ''}`;
       getComputedStyle(document.getElementById('x-social-screen')).getPropertyValue('--x-text-primary').trim() ||
       '#fff';
 
+    // 检查当前推文类型
+    let isAccountOrSearchTweet = false;
+    const currentTweetData = sessionStorage.getItem('currentTweetData');
+    if (currentTweetData) {
+      try {
+        const tweet = JSON.parse(currentTweetData);
+        isAccountOrSearchTweet = tweet._source === 'account' || tweet._source === 'search';
+      } catch (e) {
+        console.warn('解析推文数据失败:', e);
+      }
+    }
+
     if (isTweetProgressMode) {
       // 推进模式 - 心电图图标
       rerollBtn.innerHTML = `
@@ -30539,9 +30834,12 @@ ${tweetData.location ? `位置：${tweetData.location}` : ''}`;
           <path d="M3 12h4l3 8l4 -16l3 8h4" />
         </svg>
       `;
-      rerollBtn.setAttribute('title', '推进帖子互动（追加新评论）');
+      rerollBtn.setAttribute(
+        'title',
+        isAccountOrSearchTweet ? '推进帖子互动（追加新评论）' : '推进帖子互动（追加新评论）\n长按切换到重新生成模式',
+      );
     } else {
-      // 重新生成模式 - 星形图标
+      // 重新生成模式 - 星形图标（仅用户推文可用）
       rerollBtn.innerHTML = `
         <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; fill: ${textColor};">
           <g>
@@ -30549,7 +30847,7 @@ ${tweetData.location ? `位置：${tweetData.location}` : ''}`;
           </g>
         </svg>
       `;
-      rerollBtn.setAttribute('title', '重新生成回复');
+      rerollBtn.setAttribute('title', '重新生成回复\n长按切换到推进模式');
     }
   }
 
@@ -30591,6 +30889,26 @@ ${tweetData.location ? `位置：${tweetData.location}` : ''}`;
         return;
       }
 
+      // 检查推文类型并记录日志
+      const isAccountTweet = currentTweet._source === 'account';
+      const isSearchTweet = currentTweet._source === 'search';
+      const isUserTweet = currentTweet.id && currentTweet.id.startsWith('user_');
+
+      console.log(`🔄 [重回/推进] 推文类型:`, {
+        isAccountTweet,
+        isSearchTweet,
+        isUserTweet,
+        currentMode: isTweetProgressMode ? '推进模式' : '重回模式',
+        tweetId: currentTweetId,
+      });
+
+      // 安全检查：账户推文和搜索推文只能使用推进模式
+      if ((isAccountTweet || isSearchTweet) && !isTweetProgressMode) {
+        console.warn('⚠️ [重回/推进] 账户/搜索推文不支持重回模式，自动切换到推进模式');
+        isTweetProgressMode = true;
+        updateTweetRerollButtonUI();
+      }
+
       // 显示加载状态
       const rerollBtn = document.getElementById('reroll-replies-btn');
       const originalHTML = rerollBtn.innerHTML;
@@ -30606,8 +30924,16 @@ ${tweetData.location ? `位置：${tweetData.location}` : ''}`;
                `;
       rerollBtn.style.pointerEvents = 'none';
 
-      // 根据模式显示不同提示
-      showXToast(isTweetProgressMode ? '正在推进帖子互动...' : '正在重新生成回复...', 'info');
+      // 根据模式和推文类型显示不同提示
+      let toastMessage = '正在推进帖子互动...';
+      if (!isTweetProgressMode && isUserTweet) {
+        toastMessage = '正在重新生成回复...';
+      } else if (isAccountTweet) {
+        toastMessage = '正在推进账户推文互动...';
+      } else if (isSearchTweet) {
+        toastMessage = '正在推进搜索推文互动...';
+      }
+      showXToast(toastMessage, 'info');
 
       // 调用AI生成（传递推进模式参数）
       await generateAIResponseForTweet(currentTweet, !isTweetProgressMode, isTweetProgressMode);
@@ -31903,21 +32229,111 @@ ${
     try {
       const db = getXDB();
 
-      // 检查是否为账户推文
+      // 检查推文类型
       const currentTweetData = sessionStorage.getItem('currentTweetData');
       let isAccountTweet = false;
+      let isSearchTweet = false;
       let accountHandle = null;
 
       if (currentTweetData) {
         try {
           const tweet = JSON.parse(currentTweetData);
           isAccountTweet = tweet._source === 'account';
+          isSearchTweet = tweet._source === 'search';
           accountHandle = tweet._accountHandle;
         } catch (e) {
           console.warn('解析推文数据失败:', e);
         }
       }
 
+      // 处理搜索推文
+      if (isSearchTweet) {
+        console.log('📝 [更新数据] 检测到搜索结果推文，更新搜索数据');
+        const tweetsData = await db.xTweetsData.get('tweets');
+        if (tweetsData) {
+          let updated = false;
+
+          // 更新 forYouTweets
+          if (tweetsData.forYouTweets) {
+            const index = tweetsData.forYouTweets.findIndex(t => t.id === tweetId);
+            if (index !== -1) {
+              if (isProgressMode) {
+                // 推进模式：累加互动数据，追加评论
+                const currentStats = tweetsData.forYouTweets[index].stats;
+                tweetsData.forYouTweets[index].stats = {
+                  comments: Math.max(currentStats.comments, interactionData.stats.comments),
+                  retweets: Math.max(currentStats.retweets, interactionData.stats.retweets),
+                  likes: Math.max(currentStats.likes, interactionData.stats.likes),
+                  views: Math.max(currentStats.views, interactionData.stats.views),
+                };
+                const existingComments = tweetsData.forYouTweets[index].comments || [];
+                tweetsData.forYouTweets[index].comments = [...existingComments, ...(interactionData.comments || [])];
+              } else {
+                // 重新生成模式（搜索推文不应该使用，但防御性代码）
+                tweetsData.forYouTweets[index].stats = {
+                  ...tweetsData.forYouTweets[index].stats,
+                  ...interactionData.stats,
+                };
+                tweetsData.forYouTweets[index].comments = interactionData.comments || [];
+              }
+              updated = true;
+              console.log(`📈 [搜索推文] forYouTweets 新增 ${interactionData.comments?.length || 0} 条评论`);
+            }
+          }
+
+          // 更新 followingTweets
+          if (tweetsData.followingTweets && !updated) {
+            const index = tweetsData.followingTweets.findIndex(t => t.id === tweetId);
+            if (index !== -1) {
+              if (isProgressMode) {
+                const currentStats = tweetsData.followingTweets[index].stats;
+                tweetsData.followingTweets[index].stats = {
+                  comments: Math.max(currentStats.comments, interactionData.stats.comments),
+                  retweets: Math.max(currentStats.retweets, interactionData.stats.retweets),
+                  likes: Math.max(currentStats.likes, interactionData.stats.likes),
+                  views: Math.max(currentStats.views, interactionData.stats.views),
+                };
+                const existingComments = tweetsData.followingTweets[index].comments || [];
+                tweetsData.followingTweets[index].comments = [...existingComments, ...(interactionData.comments || [])];
+              } else {
+                tweetsData.followingTweets[index].stats = {
+                  ...tweetsData.followingTweets[index].stats,
+                  ...interactionData.stats,
+                };
+                tweetsData.followingTweets[index].comments = interactionData.comments || [];
+              }
+              updated = true;
+              console.log(`📈 [搜索推文] followingTweets 新增 ${interactionData.comments?.length || 0} 条评论`);
+            }
+          }
+
+          if (updated) {
+            await db.xTweetsData.put(tweetsData);
+            // 更新 sessionStorage
+            if (currentTweetData) {
+              try {
+                const currentTweet = JSON.parse(currentTweetData);
+                if (currentTweet.id === tweetId) {
+                  currentTweet.stats = interactionData.stats;
+                  currentTweet.comments = currentTweet.comments || [];
+                  if (isProgressMode) {
+                    currentTweet.comments = [...currentTweet.comments, ...(interactionData.comments || [])];
+                  } else {
+                    currentTweet.comments = interactionData.comments || [];
+                  }
+                  sessionStorage.setItem('currentTweetData', JSON.stringify(currentTweet));
+                }
+              } catch (e) {
+                console.warn('更新 sessionStorage 失败:', e);
+              }
+            }
+            console.log('✅ 搜索推文AI反应已保存:', tweetId, isProgressMode ? '(推进模式)' : '');
+            return;
+          }
+        }
+      }
+
+      // 处理账户推文
       if (isAccountTweet && accountHandle) {
         // 更新账户主页数据
         console.log('📝 [更新数据] 检测到账户推文，更新账户主页数据');
@@ -31972,6 +32388,99 @@ ${
             return;
           }
         }
+      }
+
+      // 检查是否为用户推文
+      const isUserTweet = tweetId && tweetId.startsWith('user_');
+
+      if (!isUserTweet) {
+        // 非用户推文：尝试从主页推文数据中更新
+        console.log('📝 [更新数据] 检测到主页推文，更新主页数据');
+        const tweetsData = await db.xTweetsData.get('tweets');
+        if (tweetsData) {
+          let updated = false;
+
+          // 更新 forYouTweets
+          if (tweetsData.forYouTweets) {
+            const index = tweetsData.forYouTweets.findIndex(t => t.id === tweetId);
+            if (index !== -1) {
+              if (isProgressMode) {
+                // 推进模式：累加互动数据，追加评论
+                const currentStats = tweetsData.forYouTweets[index].stats;
+                tweetsData.forYouTweets[index].stats = {
+                  comments: Math.max(currentStats.comments, interactionData.stats.comments),
+                  retweets: Math.max(currentStats.retweets, interactionData.stats.retweets),
+                  likes: Math.max(currentStats.likes, interactionData.stats.likes),
+                  views: Math.max(currentStats.views, interactionData.stats.views),
+                };
+                const existingComments = tweetsData.forYouTweets[index].comments || [];
+                tweetsData.forYouTweets[index].comments = [...existingComments, ...(interactionData.comments || [])];
+              } else {
+                // 重新生成模式
+                tweetsData.forYouTweets[index].stats = {
+                  ...tweetsData.forYouTweets[index].stats,
+                  ...interactionData.stats,
+                };
+                tweetsData.forYouTweets[index].comments = interactionData.comments || [];
+              }
+              updated = true;
+              console.log(`📈 [主页推文] forYouTweets 新增 ${interactionData.comments?.length || 0} 条评论`);
+            }
+          }
+
+          // 更新 followingTweets
+          if (tweetsData.followingTweets && !updated) {
+            const index = tweetsData.followingTweets.findIndex(t => t.id === tweetId);
+            if (index !== -1) {
+              if (isProgressMode) {
+                const currentStats = tweetsData.followingTweets[index].stats;
+                tweetsData.followingTweets[index].stats = {
+                  comments: Math.max(currentStats.comments, interactionData.stats.comments),
+                  retweets: Math.max(currentStats.retweets, interactionData.stats.retweets),
+                  likes: Math.max(currentStats.likes, interactionData.stats.likes),
+                  views: Math.max(currentStats.views, interactionData.stats.views),
+                };
+                const existingComments = tweetsData.followingTweets[index].comments || [];
+                tweetsData.followingTweets[index].comments = [...existingComments, ...(interactionData.comments || [])];
+              } else {
+                tweetsData.followingTweets[index].stats = {
+                  ...tweetsData.followingTweets[index].stats,
+                  ...interactionData.stats,
+                };
+                tweetsData.followingTweets[index].comments = interactionData.comments || [];
+              }
+              updated = true;
+              console.log(`📈 [主页推文] followingTweets 新增 ${interactionData.comments?.length || 0} 条评论`);
+            }
+          }
+
+          if (updated) {
+            await db.xTweetsData.put(tweetsData);
+            // 更新 sessionStorage
+            if (currentTweetData) {
+              try {
+                const currentTweet = JSON.parse(currentTweetData);
+                if (currentTweet.id === tweetId) {
+                  currentTweet.stats = interactionData.stats;
+                  currentTweet.comments = currentTweet.comments || [];
+                  if (isProgressMode) {
+                    currentTweet.comments = [...currentTweet.comments, ...(interactionData.comments || [])];
+                  } else {
+                    currentTweet.comments = interactionData.comments || [];
+                  }
+                  sessionStorage.setItem('currentTweetData', JSON.stringify(currentTweet));
+                }
+              } catch (e) {
+                console.warn('更新 sessionStorage 失败:', e);
+              }
+            }
+            console.log('✅ 主页推文AI反应已保存:', tweetId, isProgressMode ? '(推进模式)' : '');
+            return;
+          } else {
+            console.warn('⚠️ 未在主页数据中找到要更新的推文:', tweetId);
+          }
+        }
+        return; // 非用户推文处理结束
       }
 
       // 用户推文的处理逻辑
@@ -42811,6 +43320,134 @@ ${getTransferStatusIcon(message.status, isLightMode)}
     console.log('✅ 角色私信详情页已加载（首次对话）');
   }
 
+  // 加载粉丝群私信详情
+  async function loadFanGroupMessageDetail(messageData) {
+    const contentContainer = document.getElementById('message-detail-content');
+    if (!contentContainer) return;
+
+    // 清空现有内容
+    contentContainer.innerHTML = '';
+
+    // 更新顶部栏小头像和昵称
+    const topAvatar = document.getElementById('message-detail-top-avatar');
+    const topName = document.getElementById('message-detail-top-name');
+    if (topAvatar) topAvatar.src = messageData.userAvatar || messageData.groupAvatar;
+    if (topName) topName.textContent = messageData.userName || messageData.groupName;
+
+    // 隐藏中间的详细信息区域（大头像和用户信息）
+    const scrollableContainer = document.getElementById('message-detail-scrollable');
+    if (scrollableContainer) {
+      const userInfoSection = scrollableContainer.querySelector('[style*="padding: 24px"]');
+      if (userInfoSection) {
+        userInfoSection.style.display = 'none';
+      }
+    }
+
+    // 检查是否已有对话记录
+    try {
+      const xDb = getXDB();
+      const conversationId = `messageConversation_${currentAccountId || 'main'}_${messageData.id}`;
+      const savedConversation = await xDb.xAccountProfiles.get(conversationId);
+
+      if (
+        savedConversation &&
+        savedConversation.data &&
+        savedConversation.data.messages &&
+        savedConversation.data.messages.length > 0
+      ) {
+        // 已有对话记录，渲染消息
+        console.log('✅ 加载已有粉丝群对话记录');
+
+        // 渲染日期分隔符
+        const today = new Date();
+        const dateStr =
+          currentLanguage === 'en'
+            ? today.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+            : `${today.getFullYear()}年${today.getMonth() + 1}月${String(today.getDate()).padStart(2, '0')}日`;
+        contentContainer.appendChild(renderDateSeparator(dateStr));
+
+        // 使用分组渲染消息
+        const groups = groupMessagesBySender(savedConversation.data.messages);
+        const allMessageElements = [];
+
+        groups.forEach(group => {
+          const isOwn = group[0].message.isOwn === true;
+          group.forEach((item, indexInGroup) => {
+            const isLastInGroup = indexInGroup === group.length - 1;
+            const messageEl = renderMessageItem(item.message, isOwn, item.index, isLastInGroup);
+            contentContainer.appendChild(messageEl);
+            allMessageElements.push(messageEl);
+          });
+        });
+
+        // 立即显示所有消息（历史消息不需要动画）
+        allMessageElements.forEach(el => {
+          el.style.opacity = '1';
+          el.style.transform = 'translateY(0)';
+        });
+
+        // 恢复等待AI回复的消息到队列
+        try {
+          const waitingMessages = savedConversation.data.messages.filter(
+            msg => msg.isOwn && msg.waitingForAIResponse === true,
+          );
+
+          if (waitingMessages.length > 0) {
+            userMessageQueue = waitingMessages;
+            console.log(`✅ 恢复了 ${userMessageQueue.length} 条等待AI回复的消息到队列`);
+          }
+        } catch (error) {
+          console.error('恢复消息队列失败:', error);
+        }
+
+        // 滚动到底部
+        setTimeout(() => {
+          const scrollable = document.getElementById('message-detail-scrollable');
+          if (scrollable) {
+            scrollable.scrollTop = scrollable.scrollHeight;
+          }
+        }, 100);
+
+        return;
+      }
+    } catch (error) {
+      console.warn('检查粉丝群对话记录失败:', error);
+    }
+
+    // 没有对话记录，显示空状态（粉丝群不显示欢迎词）
+    contentContainer.innerHTML = `
+      <div style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 32px;">
+        <div style="text-align: center; max-width: 300px;">
+          <!-- 头像 -->
+          <img src="${messageData.userAvatar || messageData.groupAvatar}" 
+            style="
+              width: 64px; 
+              height: 64px; 
+              border-radius: 50%; 
+              margin-bottom: 16px;
+              object-fit: cover;
+            ">
+          
+          <!-- 提示文字 -->
+          <div style="
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--x-text-primary);
+            margin-bottom: 8px;
+          ">粉丝群聊天</div>
+          
+          <div style="
+            font-size: 14px;
+            color: var(--x-text-secondary);
+            line-height: 1.4;
+          ">向粉丝群发送消息开始互动</div>
+        </div>
+      </div>
+    `;
+
+    console.log('✅ 粉丝群私信详情页已加载（首次对话）');
+  }
+
   // 加载私信会话内容
   function loadMessageConversation(messageData, conversationData) {
     const contentContainer = document.getElementById('message-detail-content');
@@ -43006,6 +43643,16 @@ ${getTransferStatusIcon(message.status, isLightMode)}
       }
     } catch (error) {
       console.error('清除未读标记失败:', error);
+    }
+
+    // 检查是否是粉丝群
+    const isFanGroup = messageData.type === 'fangroup' || (messageData.id && messageData.id.startsWith('fangroup_'));
+
+    if (isFanGroup) {
+      // 粉丝群，直接加载粉丝群详情页（不触发 AI 生成）
+      console.log('👥 检测到粉丝群，加载粉丝群详情页');
+      loadFanGroupMessageDetail(messageData);
+      return;
     }
 
     // 检查是否是已绑定角色的私信（id格式为 msg_characterId）
@@ -45322,11 +45969,6 @@ ${getTransferStatusIcon(message.status, isLightMode)}
 
       console.log(`📨 绑定角色数: ${boundCharacters.length}`);
 
-      if (boundCharacters.length === 0) {
-        showXToast('请先在设置中绑定角色', 'error');
-        return;
-      }
-
       // 获取所有聊天角色
       const allChats = await db.chats.toArray();
       const characters = allChats.filter(chat => !chat.isGroup && boundCharacters.includes(chat.id));
@@ -45346,12 +45988,7 @@ ${getTransferStatusIcon(message.status, isLightMode)}
 
       console.log(`📨 可选择角色数: ${charactersWithXProfile.length}`);
 
-      if (charactersWithXProfile.length === 0) {
-        showXToast('没有已设置X资料的角色', 'error');
-        return;
-      }
-
-      // 显示选择角色弹窗
+      // 显示选择角色弹窗（即使没有角色也可以创建粉丝群）
       showNewMessageModal(charactersWithXProfile);
     } catch (error) {
       console.error('打开新建私信弹窗失败:', error);
@@ -45430,10 +46067,10 @@ ${getTransferStatusIcon(message.status, isLightMode)}
           <div style="
             color: var(--x-text-secondary);
             font-size: 14px;
-            margin-bottom: 16px;
+            margin-bottom: ${characters.length > 0 ? '16px' : '8px'};
             line-height: 1.4;
           ">
-            选择要发送私信的角色
+            ${characters.length > 0 ? '选择要发送私信的角色' : '暂无可用角色，可以创建粉丝群'}
           </div>
 
           <!-- 角色列表 -->
@@ -45501,6 +46138,63 @@ ${getTransferStatusIcon(message.status, isLightMode)}
             `,
               )
               .join('')}
+          </div>
+          
+          ${
+            characters.length > 0
+              ? `
+          <!-- 分隔线 -->
+          <div style="
+            height: 1px;
+            background-color: var(--x-border-color);
+            margin: 16px 0;
+          "></div>
+          `
+              : ''
+          }
+
+          <!-- 创建粉丝群选项 -->
+          <div onclick="createFanGroup()" style="
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            border: 2px dashed var(--x-border-color);
+          " onmouseover="this.style.backgroundColor='var(--x-bg-hover)'; this.style.borderColor='var(--x-accent)'"
+             onmouseout="this.style.backgroundColor='transparent'; this.style.borderColor='var(--x-border-color)'">
+            
+            <!-- 图标 -->
+            <div style="
+              width: 40px;
+              height: 40px;
+              border-radius: 50%;
+              background-color: var(--x-bg-secondary);
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              flex-shrink: 0;
+            ">
+              <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; fill: var(--x-accent);">
+                <g><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"></path></g>
+              </svg>
+            </div>
+            
+            <!-- 文字 -->
+            <div style="flex: 1; min-width: 0;">
+              <div style="
+                font-size: 15px;
+                font-weight: 700;
+                color: var(--x-text-primary);
+                margin-bottom: 2px;
+              ">创建粉丝群</div>
+              <div style="
+                font-size: 13px;
+                color: var(--x-text-secondary);
+              ">与你的粉丝群组互动</div>
+            </div>
           </div>
         </div>
       </div>
@@ -46442,6 +47136,493 @@ ${getTransferStatusIcon(message.status, isLightMode)}
   window.updateStrangerAvatar = updateStrangerAvatar;
   window.updateStrangerInterval = updateStrangerInterval;
   window.toggleStrangerAutoMessage = toggleStrangerAutoMessage;
+
+  // ============================================
+  // 粉丝群功能
+  // ============================================
+
+  // 创建粉丝群
+  async function createFanGroup() {
+    try {
+      const xDb = getXDB();
+      const dataId = `messagesList_${currentAccountId || 'main'}`;
+
+      // 从数据库加载最新的私信列表
+      const savedData = await xDb.xAccountProfiles.get(dataId);
+      let messagesList = savedData?.data || [];
+
+      // 生成唯一ID
+      const groupId = `fangroup_${Date.now()}`;
+
+      // 创建新粉丝群数据
+      const newFanGroup = {
+        id: groupId,
+        type: 'fangroup',
+        userName: '我的粉丝群',
+        userHandle: 'fangroup',
+        userAvatar: 'https://i.postimg.cc/4xmx7V4R/mmexport1759081128356.jpg', // 默认头像
+        lastMessage: '',
+        timestamp: new Date().toISOString(),
+        unread: false,
+        // 粉丝群特有属性
+        groupName: '我的粉丝群',
+        groupThreshold: '', // 入群门槛
+        memberCount: 0, // 成员数量
+      };
+
+      // 添加到列表开头
+      messagesList.unshift(newFanGroup);
+
+      // 保存到数据库
+      await xDb.xAccountProfiles.put({
+        handle: dataId,
+        name: 'messagesList',
+        data: messagesList,
+        updatedAt: new Date().toISOString(),
+      });
+
+      console.log('✅ [粉丝群] 已创建新粉丝群:', groupId);
+
+      // 关闭弹窗
+      closeNewMessageModal();
+
+      // 更新全局变量
+      sampleMessagesData = messagesList;
+
+      // 刷新私信列表
+      await loadMessagesList();
+
+      showXToast('已创建粉丝群', 'success');
+
+      // 自动打开粉丝群私信
+      setTimeout(() => {
+        window.openMessageDetail(newFanGroup);
+      }, 300);
+    } catch (error) {
+      console.error('❌ [粉丝群] 创建失败:', error);
+      showXToast('创建粉丝群失败', 'error');
+    }
+  }
+
+  // 打开粉丝群设置弹窗
+  async function openFanGroupSettings(groupData) {
+    console.log('🎯 [粉丝群] 打开设置弹窗', groupData);
+
+    try {
+      const xDb = getXDB();
+      const dataId = `messagesList_${currentAccountId || 'main'}`;
+      const savedData = await xDb.xAccountProfiles.get(dataId);
+      const messagesList = savedData?.data || [];
+
+      // 找到当前粉丝群数据
+      const fanGroup = messagesList.find(msg => msg.id === groupData.id);
+      if (!fanGroup) {
+        showXToast('未找到粉丝群数据', 'error');
+        return;
+      }
+
+      // 创建设置弹窗
+      const modal = document.createElement('div');
+      modal.id = 'fangroup-settings-modal';
+      modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 25;
+        backdrop-filter: blur(4px);
+      `;
+
+      modal.innerHTML = `
+        <div style="
+          background-color: var(--x-bg-primary);
+          border-radius: 16px;
+          width: 90%;
+          max-width: 500px;
+          max-height: 80vh;
+          overflow: hidden;
+          border: 1px solid var(--x-border-color);
+          display: flex;
+          flex-direction: column;
+        " onclick="event.stopPropagation()">
+          
+          <!-- 标题栏 -->
+          <div style="
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--x-border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+          ">
+            <div style="font-size: 18px; font-weight: 700; color: var(--x-text-primary);">粉丝群设置</div>
+            <div onclick="closeFanGroupSettings()" style="
+              cursor: pointer;
+              padding: 8px;
+              border-radius: 50%;
+              transition: background-color 0.2s;
+            " onmouseover="this.style.backgroundColor='var(--x-bg-hover)'"
+               onmouseout="this.style.backgroundColor='transparent'">
+              <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; fill: var(--x-text-primary);">
+                <g><path d="M10.59 12L4.54 5.96l1.42-1.42L12 10.59l6.04-6.05 1.42 1.42L13.41 12l6.05 6.04-1.42 1.42L12 13.41l-6.04 6.05-1.42-1.42L10.59 12z"></path></g>
+              </svg>
+            </div>
+          </div>
+
+          <!-- 设置内容 -->
+          <div style="
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+          ">
+            
+            <!-- 群头像设置 -->
+            <div style="margin-bottom: 24px;">
+              <div style="font-size: 16px; font-weight: 600; color: var(--x-text-primary); margin-bottom: 12px;">
+                群头像
+              </div>
+              <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                <img id="fangroup-avatar-preview" src="${
+                  fanGroup.userAvatar ||
+                  fanGroup.groupAvatar ||
+                  'https://i.postimg.cc/4xmx7V4R/mmexport1759081128356.jpg'
+                }" style="
+                  width: 64px;
+                  height: 64px;
+                  border-radius: 50%;
+                  object-fit: cover;
+                ">
+              </div>
+              <div style="display: flex; gap: 8px;">
+                <input 
+                  type="text" 
+                  id="fangroup-avatar-input" 
+                  placeholder="输入图片链接地址"
+                  value="${fanGroup.userAvatar || fanGroup.groupAvatar || ''}"
+                  style="
+                    flex: 1;
+                    background-color: var(--x-bg-secondary);
+                    border: 1px solid var(--x-border-color);
+                    border-radius: 20px;
+                    padding: 10px 16px;
+                    font-size: 14px;
+                    color: var(--x-text-primary);
+                    outline: none;
+                  "
+                  onfocus="this.style.borderColor='var(--x-accent)'"
+                  onblur="this.style.borderColor='var(--x-border-color)'"
+                  oninput="updateFanGroupAvatarPreview(this.value)"
+                >
+                <button onclick="saveFanGroupAvatar('${groupData.id}')" style="
+                  background-color: var(--x-accent);
+                  color: #fff;
+                  border: none;
+                  border-radius: 20px;
+                  padding: 10px 20px;
+                  font-size: 14px;
+                  font-weight: 600;
+                  cursor: pointer;
+                  transition: opacity 0.2s;
+                  white-space: nowrap;
+                " onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+                  更新
+                </button>
+              </div>
+            </div>
+
+            <!-- 群名称设置 -->
+            <div style="margin-bottom: 24px;">
+              <div style="font-size: 16px; font-weight: 600; color: var(--x-text-primary); margin-bottom: 12px;">
+                群名称
+              </div>
+              <input 
+                type="text" 
+                id="fangroup-name-input" 
+                placeholder="输入群名称"
+                value="${fanGroup.userName || fanGroup.groupName || '我的粉丝群'}"
+                maxlength="30"
+                style="
+                  width: 100%;
+                  background-color: var(--x-bg-secondary);
+                  border: 1px solid var(--x-border-color);
+                  border-radius: 8px;
+                  padding: 12px;
+                  font-size: 14px;
+                  color: var(--x-text-primary);
+                  outline: none;
+                "
+                onfocus="this.style.borderColor='var(--x-accent)'"
+                onblur="this.style.borderColor='var(--x-border-color)'"
+              >
+            </div>
+
+            <!-- 入群门槛设置 -->
+            <div style="margin-bottom: 24px;">
+              <div style="font-size: 16px; font-weight: 600; color: var(--x-text-primary); margin-bottom: 12px;">
+                入群门槛
+              </div>
+              <textarea 
+                id="fangroup-threshold-input" 
+                placeholder="例如：关注满30天、互动次数达到10次等..."
+                maxlength="200"
+                style="
+                  width: 100%;
+                  min-height: 100px;
+                  background-color: var(--x-bg-secondary);
+                  border: 1px solid var(--x-border-color);
+                  border-radius: 8px;
+                  padding: 12px;
+                  font-size: 14px;
+                  color: var(--x-text-primary);
+                  outline: none;
+                  resize: vertical;
+                  font-family: inherit;
+                  line-height: 1.5;
+                "
+                onfocus="this.style.borderColor='var(--x-accent)'"
+                onblur="this.style.borderColor='var(--x-border-color)'"
+              >${fanGroup.groupThreshold || ''}</textarea>
+              <div style="text-align: right; margin-top: 4px;">
+                <span style="font-size: 12px; color: var(--x-text-secondary);">设置粉丝需要满足的条件才能进群</span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- 底部按钮 -->
+          <div style="padding: 16px 20px; border-top: 1px solid var(--x-border-color);">
+            <div style="display: flex; gap: 8px; justify-content: flex-end;">
+              <button onclick="closeFanGroupSettings()" style="
+                background-color: var(--x-bg-secondary);
+                color: var(--x-text-primary);
+                border: none;
+                border-radius: 20px;
+                padding: 10px 20px;
+                font-size: 14px;
+                font-weight: 600;
+                cursor: pointer;
+              ">取消</button>
+              <button onclick="saveFanGroupSettings('${groupData.id}')" style="
+                background-color: var(--x-accent);
+                color: #fff;
+                border: none;
+                border-radius: 20px;
+                padding: 10px 20px;
+                font-size: 14px;
+                font-weight: 600;
+                cursor: pointer;
+              ">保存设置</button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      // 添加到DOM
+      const xSocialScreen = document.getElementById('x-social-screen');
+      if (xSocialScreen) {
+        xSocialScreen.appendChild(modal);
+      } else {
+        document.body.appendChild(modal);
+      }
+
+      // 点击背景关闭
+      modal.onclick = e => {
+        if (e.target === modal) {
+          closeFanGroupSettings();
+        }
+      };
+    } catch (error) {
+      console.error('❌ [粉丝群] 打开设置失败:', error);
+      showXToast('打开设置失败', 'error');
+    }
+  }
+
+  // 关闭粉丝群设置弹窗
+  function closeFanGroupSettings() {
+    const modal = document.getElementById('fangroup-settings-modal');
+    if (modal) {
+      modal.remove();
+    }
+  }
+
+  // 更新粉丝群头像预览
+  function updateFanGroupAvatarPreview(avatarUrl) {
+    const preview = document.getElementById('fangroup-avatar-preview');
+    if (preview && avatarUrl) {
+      preview.src = avatarUrl;
+    }
+  }
+
+  // 保存粉丝群头像
+  async function saveFanGroupAvatar(groupId) {
+    const avatarInput = document.getElementById('fangroup-avatar-input');
+    if (!avatarInput) return;
+
+    const newAvatar = avatarInput.value.trim();
+    if (!newAvatar) {
+      showXToast('请输入头像链接', 'warning');
+      return;
+    }
+
+    try {
+      const xDb = getXDB();
+      const dataId = `messagesList_${currentAccountId || 'main'}`;
+      const savedData = await xDb.xAccountProfiles.get(dataId);
+      let messagesList = savedData?.data || [];
+
+      // 找到并更新粉丝群
+      const groupIndex = messagesList.findIndex(msg => msg.id === groupId);
+      if (groupIndex !== -1) {
+        messagesList[groupIndex].userAvatar = newAvatar;
+        messagesList[groupIndex].groupAvatar = newAvatar;
+
+        // 保存到数据库
+        await xDb.xAccountProfiles.put({
+          handle: dataId,
+          name: 'messagesList',
+          data: messagesList,
+          updatedAt: new Date().toISOString(),
+        });
+
+        // 更新全局变量
+        sampleMessagesData = messagesList;
+
+        // 更新私信详情页的头像（如果正在查看）
+        const topAvatar = document.getElementById('message-detail-top-avatar');
+        if (topAvatar && currentMessageConversation?.id === groupId) {
+          topAvatar.src = newAvatar;
+        }
+
+        // 刷新私信列表
+        await loadMessagesList();
+
+        showXToast('头像已更新', 'success');
+      }
+    } catch (error) {
+      console.error('❌ [粉丝群] 保存头像失败:', error);
+      showXToast('保存失败', 'error');
+    }
+  }
+
+  // 保存粉丝群设置
+  async function saveFanGroupSettings(groupId) {
+    try {
+      const nameInput = document.getElementById('fangroup-name-input');
+      const thresholdInput = document.getElementById('fangroup-threshold-input');
+
+      if (!nameInput) return;
+
+      const newName = nameInput.value.trim();
+      const newThreshold = thresholdInput ? thresholdInput.value.trim() : '';
+
+      if (!newName) {
+        showXToast('请输入群名称', 'warning');
+        return;
+      }
+
+      const xDb = getXDB();
+      const dataId = `messagesList_${currentAccountId || 'main'}`;
+      const savedData = await xDb.xAccountProfiles.get(dataId);
+      let messagesList = savedData?.data || [];
+
+      // 找到并更新粉丝群
+      const groupIndex = messagesList.findIndex(msg => msg.id === groupId);
+      if (groupIndex !== -1) {
+        messagesList[groupIndex].userName = newName;
+        messagesList[groupIndex].groupName = newName;
+        messagesList[groupIndex].groupThreshold = newThreshold;
+
+        // 保存到数据库
+        await xDb.xAccountProfiles.put({
+          handle: dataId,
+          name: 'messagesList',
+          data: messagesList,
+          updatedAt: new Date().toISOString(),
+        });
+
+        // 更新全局变量
+        sampleMessagesData = messagesList;
+
+        // 更新私信详情页的名称（如果正在查看）
+        const topName = document.getElementById('message-detail-top-name');
+        if (topName && currentMessageConversation?.id === groupId) {
+          topName.textContent = newName;
+        }
+
+        // 刷新私信列表
+        await loadMessagesList();
+
+        showXToast('设置已保存', 'success');
+        closeFanGroupSettings();
+      }
+    } catch (error) {
+      console.error('❌ [粉丝群] 保存设置失败:', error);
+      showXToast('保存失败', 'error');
+    }
+  }
+
+  // 处理私信详情页小头像点击
+  function handleMessageDetailAvatarClick() {
+    if (!currentMessageConversation) return;
+
+    // 检查是否为粉丝群
+    if (currentMessageConversation.type === 'fangroup') {
+      // 打开粉丝群设置
+      openFanGroupSettings(currentMessageConversation);
+    } else {
+      // 其他类型可以添加其他逻辑（例如查看用户资料）
+      console.log('点击了普通对话头像');
+    }
+  }
+
+  // 调整粉丝群详情页显示（隐藏大头像和详细信息区域）
+  function adjustFanGroupDetailPage(isFanGroup) {
+    const scrollableContainer = document.getElementById('message-detail-scrollable');
+    if (!scrollableContainer) return;
+
+    // 找到用户详细信息区域（第一个子元素）
+    const userInfoSection = scrollableContainer.children[0];
+    if (!userInfoSection) return;
+
+    if (isFanGroup) {
+      // 粉丝群：隐藏用户详细信息区域
+      userInfoSection.style.display = 'none';
+      console.log('🎯 [粉丝群] 已隐藏详细信息区域');
+    } else {
+      // 普通对话：显示用户详细信息区域
+      userInfoSection.style.display = 'flex';
+    }
+  }
+
+  // 暴露粉丝群函数到全局
+  window.createFanGroup = createFanGroup;
+  window.openFanGroupSettings = openFanGroupSettings;
+  window.closeFanGroupSettings = closeFanGroupSettings;
+  window.updateFanGroupAvatarPreview = updateFanGroupAvatarPreview;
+  window.saveFanGroupAvatar = saveFanGroupAvatar;
+  window.saveFanGroupSettings = saveFanGroupSettings;
+  window.handleMessageDetailAvatarClick = handleMessageDetailAvatarClick;
+
+  // 包装原始的 openMessageDetail 函数，添加粉丝群特殊处理
+  const originalOpenMessageDetail = window.openMessageDetail;
+  window.openMessageDetail = async function (messageData, isFromNotifications) {
+    console.log('🎯 [粉丝群] 拦截器：检测消息类型', messageData);
+
+    // 调用原始函数
+    if (originalOpenMessageDetail) {
+      await originalOpenMessageDetail(messageData, isFromNotifications);
+    }
+
+    // 延迟执行以确保页面已渲染
+    setTimeout(() => {
+      const isFanGroup = messageData.type === 'fangroup';
+      adjustFanGroupDetailPage(isFanGroup);
+    }, 100);
+  };
 
   // ============================================
   // 私信多选删除功能
