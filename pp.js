@@ -17940,6 +17940,16 @@ accountLikes数组（3-5条，账户喜欢的推文）：
     const user = tweet.user || accountInfo;
     const isPinned = tweet.pinned || false;
 
+    // 🔧 确保 tweet.stats 存在，避免 undefined 错误
+    if (!tweet.stats) {
+      tweet.stats = {
+        comments: 0,
+        retweets: 0,
+        likes: 0,
+        views: 0,
+      };
+    }
+
     // 构建认证图标HTML
     let verifiedBadgeHtml = '';
     if (user.verified) {
@@ -43457,6 +43467,21 @@ ${getTransferStatusIcon(message.status, isLightMode)}
     // 清空现有内容
     contentContainer.innerHTML = '';
 
+    // 🔧 检测并设置账户类型（如果未设置）
+    if (!messageData._accountType && messageData.id) {
+      if (messageData.id.startsWith('msg_account_')) {
+        messageData._accountType = 'account';
+      } else if (messageData.id.startsWith('msg_npc_')) {
+        messageData._accountType = 'npc';
+      } else if (messageData.id.startsWith('msg_relationship_')) {
+        messageData._accountType = 'relationshipNpc';
+      } else if (!messageData.id.startsWith('msg_')) {
+        // 其他非角色消息默认为陌生人
+        messageData._accountType = 'stranger';
+      }
+      console.log('🔍 [类型检测] 设置消息类型为:', messageData._accountType);
+    }
+
     // 更新顶部栏小头像和昵称
     const topAvatar = document.getElementById('message-detail-top-avatar');
     const topName = document.getElementById('message-detail-top-name');
@@ -43464,12 +43489,18 @@ ${getTransferStatusIcon(message.status, isLightMode)}
     if (topName) topName.textContent = messageData.user.name;
 
     // 为非绑定角色的小头像添加点击事件（打开设置）
-    const isCharacterMessage = messageData.id && messageData.id.startsWith('msg_') && messageData.id !== 'msg_001';
+    const isCharacterMessage =
+      messageData.id &&
+      messageData.id.startsWith('msg_') &&
+      messageData.id !== 'msg_001' &&
+      !messageData.id.startsWith('msg_account_');
     if (topAvatar && !isCharacterMessage) {
       topAvatar.style.cursor = 'pointer';
       topAvatar.onclick = e => {
         e.stopPropagation();
-        openStrangerMessageSettings(messageData, conversationData);
+        // 使用通用联系人设置弹窗（支持账户/NPC/关系NPC/陌生人）
+        console.log('📱 [小头像点击] 打开联系人设置，类型:', messageData._accountType);
+        openMessageContactSettings(messageData, conversationData);
       };
     } else if (topAvatar) {
       topAvatar.style.cursor = 'default';
@@ -43569,6 +43600,21 @@ ${getTransferStatusIcon(message.status, isLightMode)}
 
   // 打开私信详情页面
   window.openMessageDetail = async function (messageData) {
+    // 🔧 检测并设置账户类型（如果未设置）
+    if (!messageData._accountType && messageData.id) {
+      if (messageData.id.startsWith('msg_account_')) {
+        messageData._accountType = 'account';
+      } else if (messageData.id.startsWith('msg_npc_')) {
+        messageData._accountType = 'npc';
+      } else if (messageData.id.startsWith('msg_relationship_')) {
+        messageData._accountType = 'relationshipNpc';
+      } else if (!messageData.id.startsWith('msg_') || messageData.id === 'msg_001') {
+        // 其他非角色消息默认为陌生人
+        messageData._accountType = 'stranger';
+      }
+      console.log('🔍 [打开私信] 检测到类型:', messageData._accountType, '| ID:', messageData.id);
+    }
+
     currentMessageConversation = messageData;
     userMessageQueue = [];
 
@@ -43806,14 +43852,32 @@ ${getTransferStatusIcon(message.status, isLightMode)}
 
     // 判断是从哪里打开的私信详情页
     // 如果messageData的id以msg_account_开头，说明是从账户主页打开的
-    if (
+    // 或者如果 _accountType 为 'account'/'npc'/'relationshipNpc'，也说明可能来自账户主页
+    const isFromAccountProfile =
       currentMessageConversation &&
       currentMessageConversation.id &&
-      currentMessageConversation.id.startsWith('msg_account_')
-    ) {
+      (currentMessageConversation.id.startsWith('msg_account_') ||
+        currentMessageConversation._accountType === 'account' ||
+        currentMessageConversation._accountType === 'npc' ||
+        currentMessageConversation._accountType === 'relationshipNpc');
+
+    if (isFromAccountProfile) {
       console.log('📖 [返回] 从私信详情页返回账户主页');
-      // 返回账户主页
-      document.getElementById('account-profile-page').style.display = 'flex';
+      // 检查账户主页是否正在显示
+      const accountProfilePage = document.getElementById('account-profile-page');
+      if (accountProfilePage && accountProfilePage.style.display !== 'none') {
+        // 返回账户主页
+        accountProfilePage.style.display = 'flex';
+      } else {
+        // 如果账户主页没有显示，返回私信列表
+        console.log('📖 [返回] 账户主页未显示，返回私信列表');
+        document.getElementById('x-messages-page').style.display = 'flex';
+        const composeBtn = document.getElementById('compose-message-btn');
+        if (composeBtn) composeBtn.style.display = 'flex';
+        if (typeof renderMessagesList === 'function') {
+          renderMessagesList(sampleMessagesData);
+        }
+      }
     } else if (isFromNotifications) {
       console.log('📖 [返回] 从私信详情页返回通知页面');
       // 返回通知页面
@@ -47574,10 +47638,37 @@ ${getTransferStatusIcon(message.status, isLightMode)}
     if (currentMessageConversation.type === 'fangroup') {
       // 打开粉丝群设置
       openFanGroupSettings(currentMessageConversation);
-    } else {
-      // 其他类型可以添加其他逻辑（例如查看用户资料）
-      console.log('点击了普通对话头像');
+      return;
     }
+
+    // 检查是否为角色私信（角色私信不支持设置功能）
+    const isCharacterMessage =
+      currentMessageConversation.id &&
+      currentMessageConversation.id.startsWith('msg_') &&
+      currentMessageConversation.id !== 'msg_001';
+
+    if (isCharacterMessage) {
+      console.log('点击了角色对话头像（角色对话不支持设置）');
+      return;
+    }
+
+    // 其他类型（账户/NPC/关系NPC/陌生人）：打开联系人设置
+    console.log('打开联系人设置，类型:', currentMessageConversation._accountType || 'stranger');
+
+    // 构建标准的 messageData 格式
+    const messageData = {
+      id: currentMessageConversation.id,
+      user: {
+        name: currentMessageConversation.userName || currentMessageConversation.name,
+        handle: currentMessageConversation.userHandle || currentMessageConversation.handle,
+        avatar: currentMessageConversation.userAvatar || currentMessageConversation.avatar,
+      },
+      preview: currentMessageConversation.lastMessage || '',
+      _accountType: currentMessageConversation._accountType || 'stranger',
+    };
+
+    // 打开通用联系人设置弹窗
+    openMessageContactSettings(messageData, null);
   }
 
   // 调整粉丝群详情页显示（隐藏大头像和详细信息区域）
