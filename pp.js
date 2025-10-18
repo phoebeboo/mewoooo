@@ -8370,7 +8370,7 @@ ${cd.userPersona}
             let content = '';
 
             if (msg.type === 'text') {
-              content = msg.content;
+              content = msg.content || ''; // 🔧 空值保护
             } else if (msg.type === 'image') {
               content = msg.isOwn ? '[用户发送了图片]' : `[图片: ${msg.imageDescription || '图片'}]`;
             } else if (msg.type === 'voice') {
@@ -8425,13 +8425,14 @@ ${cd.userPersona}
           const recentHistory = cd.history.slice(-10);
           let memCount = 0;
           for (const msg of recentHistory) {
-            if (msg.role === 'user') {
-              promptText += `用户: ${msg.content.substring(0, 100)}${msg.content.length > 100 ? '...' : ''}\n`;
+            // 🔧 空值保护：确保 msg.content 存在
+            if (msg.role === 'user' && msg.content) {
+              const content = String(msg.content); // 确保是字符串
+              promptText += `用户: ${content.substring(0, 100)}${content.length > 100 ? '...' : ''}\n`;
               memCount++;
             } else if (msg.role === 'assistant' && msg.content) {
-              promptText += `${profile.name}: ${msg.content.substring(0, 100)}${
-                msg.content.length > 100 ? '...' : ''
-              }\n`;
+              const content = String(msg.content); // 确保是字符串
+              promptText += `${profile.name}: ${content.substring(0, 100)}${content.length > 100 ? '...' : ''}\n`;
               memCount++;
             }
             if (memCount >= 10) break;
@@ -8478,7 +8479,7 @@ ${ad.followersCount ? `关注者：${ad.followersCount}` : ''}
             let content = '';
 
             if (msg.type === 'text') {
-              content = msg.content;
+              content = msg.content || ''; // 🔧 空值保护
             } else if (msg.type === 'image') {
               content = msg.isOwn ? '[用户发送了图片]' : `[图片: ${msg.imageDescription || '图片'}]`;
             } else if (msg.type === 'voice') {
@@ -8545,7 +8546,7 @@ ${nd.homepage ? `主页链接：${nd.homepage}` : ''}
             let content = '';
 
             if (msg.type === 'text') {
-              content = msg.content;
+              content = msg.content || ''; // 🔧 空值保护
             } else if (msg.type === 'image') {
               content = msg.isOwn ? '[用户发送了图片]' : `[图片: ${msg.imageDescription || '图片'}]`;
             } else if (msg.type === 'voice') {
@@ -8613,7 +8614,7 @@ ${rd.description ? `关系描述：${rd.description}` : ''}
             let content = '';
 
             if (msg.type === 'text') {
-              content = msg.content;
+              content = msg.content || ''; // 🔧 空值保护
             } else if (msg.type === 'image') {
               content = msg.isOwn ? '[用户发送了图片]' : `[图片: ${msg.imageDescription || '图片'}]`;
             } else if (msg.type === 'voice') {
@@ -8676,7 +8677,7 @@ ${rd.description ? `关系描述：${rd.description}` : ''}
             let content = '';
 
             if (msg.type === 'text') {
-              content = msg.content;
+              content = msg.content || ''; // 🔧 空值保护
             } else if (msg.type === 'image') {
               content = msg.isOwn ? '[用户发送了图片]' : `[图片: ${msg.imageDescription || '图片'}]`;
             } else if (msg.type === 'voice') {
