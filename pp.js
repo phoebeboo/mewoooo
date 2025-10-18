@@ -7864,29 +7864,30 @@ ${userXProfileInfo.bio ? `- 个人简介：${userXProfileInfo.bio}` : ''}
         // 🆕 读取X平台私信记忆
         let xMessageHistory = [];
         try {
-          // 私信数据的key格式: messageConversation_${currentAccountId}_msg_${characterId}
           const currentAccount = window.currentAccountId || 'main';
-          const messageConversationId = `messageConversation_${currentAccount}_msg_${character.id}`;
-          let messageConversation = await xDB.xAccountProfiles.get(messageConversationId);
 
-          // 🔧 如果未找到，尝试跨账户模糊匹配
-          if (!messageConversation) {
-            const allProfiles = await xDB.xAccountProfiles.toArray();
-            const conversationKeys = allProfiles
-              .filter(p => p.handle && p.handle.startsWith('messageConversation_'))
-              .map(p => p.handle);
+          // 尝试在多个账户下查找（当前账户优先，然后是main账户）
+          const accountsToTry = [currentAccount];
+          if (currentAccount !== 'main') {
+            accountsToTry.push('main');
+          }
 
-            // 尝试查找包含当前角色ID的任何key（适配多账户数据）
-            const matchingKey = conversationKeys.find(key => key.includes(`msg_${character.id}`));
-            if (matchingKey) {
-              messageConversation = await xDB.xAccountProfiles.get(matchingKey);
-              console.log(`ℹ️ [私信数据] 角色 ${xProfile.xName} 使用了其他账户的私信数据 (${matchingKey})`);
+          let messageConversation = null;
+
+          // 尝试查找角色的私信对话
+          for (const accountId of accountsToTry) {
+            const messageConversationId = `messageConversation_${accountId}_msg_${character.id}`;
+            const data = await xDB.xAccountProfiles.get(messageConversationId);
+
+            if (data && data.data && data.data.messages) {
+              messageConversation = data;
+              break;
             }
           }
 
           if (messageConversation && messageConversation.data && messageConversation.data.messages) {
             // 提取最近的私信对话（最多30条）
-            const messages = messageConversation.data.messages.slice(-30);
+            const messages = messageConversation.data.messages.slice(-50);
             xMessageHistory = messages.map(msg => ({
               type: msg.type,
               content: msg.content || '',
@@ -7895,8 +7896,6 @@ ${userXProfileInfo.bio ? `- 个人简介：${userXProfileInfo.bio}` : ''}
               timestamp: msg.timestamp || '',
             }));
             console.log(`✅ [私信数据] 角色 ${xProfile.xName}: ${xMessageHistory.length} 条记忆`);
-          } else {
-            console.log(`ℹ️ [私信数据] 角色 ${xProfile.xName}: 无数据`);
           }
         } catch (error) {
           console.error(`❌ [私信数据] 角色 ${xProfile.xName} 读取失败:`, error);
@@ -8023,36 +8022,76 @@ ${userXProfileInfo.bio ? `- 个人简介：${userXProfileInfo.bio}` : ''}
         const currentAccount = window.currentAccountId || 'main';
         const cleanHandle = handle.replace('@', '');
 
-        // 通过私信列表查找对话ID
-        const messagesListId = `messagesList_${currentAccount}`;
-        const messagesListData = await xDB.xAccountProfiles.get(messagesListId);
+        // 尝试在多个账户下查找（当前账户优先，然后是main账户）
+        const accountsToTry = [currentAccount];
+        if (currentAccount !== 'main') {
+          accountsToTry.push('main');
+        }
 
-        if (!messagesListData || !messagesListData.data) {
-          console.log(`ℹ️ [私信数据] ${handle}: 无私信列表`);
+        let messagesListData = null;
+        let messagesListAccount = null;
+
+        // 1. 首先尝试从私信列表中查找
+        for (const accountId of accountsToTry) {
+          const messagesListId = `messagesList_${accountId}`;
+          const data = await xDB.xAccountProfiles.get(messagesListId);
+
+          if (data && data.data && data.data.length > 0) {
+            messagesListData = data;
+            messagesListAccount = accountId;
+            break;
+          }
+        }
+
+        if (!messagesListData) {
           return [];
         }
 
-        // 查找对应句柄的对话
+        // 2. 在私信列表中查找对应句柄的对话
         const conversation = messagesListData.data.find(
           msg => msg.userHandle && msg.userHandle.replace('@', '').toLowerCase() === cleanHandle.toLowerCase(),
         );
 
-        if (!conversation) {
-          console.log(`ℹ️ [私信数据] ${handle}: 未找到对话`);
-          return [];
-        }
+        let conversationId, conversationData;
 
-        // 读取对话详细消息
-        const conversationId = `messageConversation_${currentAccount}_${conversation.id}`;
-        const conversationData = await xDB.xAccountProfiles.get(conversationId);
+        if (!conversation) {
+          // 3. 如果私信列表中没有，尝试备用查找（直接通过ID格式查找对话数据）
+          const possibleIds = [
+            `msg_account_${cleanHandle}`,
+            `msg_npc_${cleanHandle}`,
+            `msg_relationship_${cleanHandle}`,
+            cleanHandle,
+          ];
+
+          for (const accountId of accountsToTry) {
+            for (const possibleId of possibleIds) {
+              const testConversationId = `messageConversation_${accountId}_${possibleId}`;
+              const testData = await xDB.xAccountProfiles.get(testConversationId);
+
+              if (testData && testData.data && testData.data.messages) {
+                conversationId = testConversationId;
+                conversationData = testData;
+                break;
+              }
+            }
+            if (conversationData) break;
+          }
+
+          if (!conversationData) {
+            return [];
+          }
+        } else {
+          // 4. 找到对话ID，读取对话详细消息
+          conversationId = `messageConversation_${messagesListAccount}_${conversation.id}`;
+          conversationData = await xDB.xAccountProfiles.get(conversationId);
+        }
 
         if (!conversationData || !conversationData.data || !conversationData.data.messages) {
-          console.log(`ℹ️ [私信数据] ${handle}: 对话数据为空`);
           return [];
         }
 
-        // 提取最近20条私信
-        const messages = conversationData.data.messages.slice(-20);
+        // 5. 提取最近50条私信
+        const messages = conversationData.data.messages.slice(-50);
         const history = messages.map(msg => ({
           type: msg.type,
           content: msg.content || '',
@@ -8363,7 +8402,7 @@ ${cd.userPersona}
           promptText += `
 【X平台私信记忆】（该角色与用户在X平台私信中的对话记录）：
 `;
-          const recentXMessages = cd.xMessageHistory.slice(-30); // 显示最近30条
+          const recentXMessages = cd.xMessageHistory.slice(-50); // 显示最近50条
           let xMemCount = 0;
           for (const msg of recentXMessages) {
             const sender = msg.isOwn ? '用户' : profile.name;
@@ -8397,7 +8436,7 @@ ${cd.userPersona}
               xMemCount++;
             }
 
-            if (xMemCount >= 30) break;
+            if (xMemCount >= 50) break;
           }
           promptText += `
 ⚠️ 重要说明：
@@ -8472,7 +8511,7 @@ ${ad.followersCount ? `关注者：${ad.followersCount}` : ''}
           promptText += `
 【X平台私信记忆】（该账户与用户在X平台私信中的对话记录，仅供参考）：
 `;
-          const recentXMessages = ad.xMessageHistory.slice(-15);
+          const recentXMessages = ad.xMessageHistory.slice(-50);
           let xMemCount = 0;
           for (const msg of recentXMessages) {
             const sender = msg.isOwn ? '用户' : profile.name;
@@ -8506,7 +8545,7 @@ ${ad.followersCount ? `关注者：${ad.followersCount}` : ''}
               xMemCount++;
             }
 
-            if (xMemCount >= 15) break;
+            if (xMemCount >= 50) break;
           }
           promptText += `⚠️ 以上是X平台私信对话记录，仅供理解该账户与用户的关系和沟通风格
 ⚠️ 根据当前场景（推文/评论）自然使用，不要在公开推文中直接提及私信内容
@@ -8539,7 +8578,7 @@ ${nd.homepage ? `主页链接：${nd.homepage}` : ''}
           promptText += `
 【X平台私信记忆】（该NPC与用户在X平台私信中的对话记录，仅供参考）：
 `;
-          const recentXMessages = nd.xMessageHistory.slice(-15);
+          const recentXMessages = nd.xMessageHistory.slice(-50);
           let xMemCount = 0;
           for (const msg of recentXMessages) {
             const sender = msg.isOwn ? '用户' : profile.name;
@@ -8573,7 +8612,7 @@ ${nd.homepage ? `主页链接：${nd.homepage}` : ''}
               xMemCount++;
             }
 
-            if (xMemCount >= 15) break;
+            if (xMemCount >= 50) break;
           }
           promptText += `⚠️ 以上是X平台私信对话记录，仅供理解该NPC与用户的关系和沟通风格
 ⚠️ 根据当前场景（推文/评论）自然使用，不要在公开推文中直接提及私信内容
@@ -8607,7 +8646,7 @@ ${rd.description ? `关系描述：${rd.description}` : ''}
           promptText += `
 【X平台私信记忆】（该关系NPC与用户在X平台私信中的对话记录，仅供参考）：
 `;
-          const recentXMessages = rd.xMessageHistory.slice(-15);
+          const recentXMessages = rd.xMessageHistory.slice(-50);
           let xMemCount = 0;
           for (const msg of recentXMessages) {
             const sender = msg.isOwn ? '用户' : profile.name;
@@ -8641,7 +8680,7 @@ ${rd.description ? `关系描述：${rd.description}` : ''}
               xMemCount++;
             }
 
-            if (xMemCount >= 15) break;
+            if (xMemCount >= 50) break;
           }
           promptText += `⚠️ 以上是X平台私信对话记录，仅供理解该NPC与用户的关系和沟通风格
 ⚠️ 根据当前场景（推文/评论）自然使用，不要在公开推文中直接提及私信内容
@@ -8670,7 +8709,7 @@ ${rd.description ? `关系描述：${rd.description}` : ''}
           promptText += `
 【X平台私信记忆】（该陌生人与用户在X平台私信中的对话记录，仅供参考）：
 `;
-          const recentXMessages = profile.accountData.xMessageHistory.slice(-15);
+          const recentXMessages = profile.accountData.xMessageHistory.slice(-50);
           let xMemCount = 0;
           for (const msg of recentXMessages) {
             const sender = msg.isOwn ? '用户' : profile.name;
@@ -8704,7 +8743,7 @@ ${rd.description ? `关系描述：${rd.description}` : ''}
               xMemCount++;
             }
 
-            if (xMemCount >= 15) break;
+            if (xMemCount >= 50) break;
           }
           promptText += `⚠️ 以上是X平台私信对话记录，仅供理解该陌生人与用户的关系和沟通风格
 ⚠️ 根据当前场景（推文/评论）自然使用，不要在公开推文中直接提及私信内容
@@ -9079,14 +9118,18 @@ ${rd.description ? `关系描述：${rd.description}` : ''}
 
         // 筛选适用的世界书
         const applicableBooks = globalSettings.worldBooks.filter(book => {
-          // 跳过闲置状态的世界书（没有任何绑定）
-          if (book.isIdle || book.targetType === 'none') {
+          const hasSceneBinding = book.scenes && book.scenes.length > 0; // 是否绑定了场景
+          const hasTargetBinding = book.targetType && book.targetType !== 'none'; // 是否绑定了目标
+
+          // 真正的闲置状态：既没有场景绑定，也没有目标绑定
+          const isTrulyIdle = !hasSceneBinding && !hasTargetBinding;
+
+          if (isTrulyIdle) {
             console.log(`⏸️ [世界书] "${book.name}" - 闲置状态，跳过应用`);
             return false;
           }
 
           const isMessagesScene = scene === 'messages'; // 私信详情页
-          const hasSceneBinding = book.scenes && book.scenes.length > 0; // 是否绑定了场景
 
           // 【指定角色】：该角色出现的任何地方都使用，无视场景
           if (book.targetType === 'specific' && book.selectedCharacters) {
@@ -9102,10 +9145,16 @@ ${rd.description ? `关系描述：${rd.description}` : ''}
 
           // 【私信详情页场景】：通过绑定目标（全局对话/仅角色对话）判断
           if (isMessagesScene) {
-            // 私信场景不应该有场景绑定（有场景绑定的是其他场景的世界书）
-            if (hasSceneBinding) {
+            // 如果绑定了场景（且不包含全局），则不适用于私信场景
+            if (hasSceneBinding && !book.scenes.includes('global')) {
               console.log(`❌ [世界书] "${book.name}" - 私信场景但绑定了其他场景 (${book.scenes.join(', ')})`);
               return false;
+            }
+
+            // 如果包含全局场景，直接适用
+            if (book.scenes && book.scenes.includes('global')) {
+              console.log(`✅ [世界书] "${book.name}" - 全局场景，适用于所有场景`);
+              return true;
             }
 
             // 全局对话：所有私信详情页
@@ -9144,9 +9193,15 @@ ${rd.description ? `关系描述：${rd.description}` : ''}
 
           console.log(`✅ [世界书] "${book.name}" - 场景匹配 (${book.scenes.join(', ')})`);
 
-          // 场景匹配后，检查目标类型
+          // 场景匹配后，如果是全局场景，直接适用
+          if (book.scenes.includes('global')) {
+            console.log(`✅ [世界书] "${book.name}" - 全局场景，无需检查目标类型`);
+            return true;
+          }
+
+          // 其他场景需要检查目标类型
           if (book.targetType === 'all') {
-            console.log(`✅ [世界书] "${book.name}" - 目标: 全局，适用`);
+            console.log(`✅ [世界书] "${book.name}" - 目标: 全局对话，适用`);
             return true;
           } else if (book.targetType === 'characterOnly') {
             const applicable = boundCharacters && boundCharacters.length > 0;
@@ -9154,6 +9209,10 @@ ${rd.description ? `关系描述：${rd.description}` : ''}
               `${applicable ? '✅' : '❌'} [世界书] "${book.name}" - 目标: 仅角色 (角色数: ${boundCharacters.length})`,
             );
             return applicable;
+          } else if (book.targetType === 'none') {
+            // targetType为none但有场景绑定，也应该适用（只要场景匹配）
+            console.log(`✅ [世界书] "${book.name}" - 场景绑定，无特定目标限制`);
+            return true;
           }
 
           console.log(`❌ [世界书] "${book.name}" - 未知目标类型: ${book.targetType}`);
@@ -15758,10 +15817,20 @@ ${npc.homepage || '暂无主页内容设置'}
           console.log('✅ [账户主页] 已同步最新X资料信息');
         }
 
+        // 🆕 重新读取X平台私信记忆（即使是已保存的数据，私信记忆也要实时读取）
+        console.log('🔄 [账户主页] 重新读取X平台私信记忆');
+        savedProfile.xMessageHistory = await StringBuilders._loadXMessageHistory(accountHandle);
+        if (savedProfile.xMessageHistory && savedProfile.xMessageHistory.length > 0) {
+          console.log(`✅ [账户主页] 重新读取到 ${savedProfile.xMessageHistory.length} 条私信记忆`);
+        } else {
+          console.log('ℹ️ [账户主页] 该账户暂无私信记忆');
+        }
+
         console.log('📊 [账户主页] 加载数据统计:', {
           推文数: savedProfile.tweets?.length || 0,
           回复数: savedProfile.accountReplies?.length || 0,
           喜欢数: savedProfile.accountLikes?.length || 0,
+          私信数: savedProfile.xMessageHistory?.length || 0,
         });
         currentViewingAccount = savedProfile;
         renderAccountProfile(savedProfile);
@@ -16740,13 +16809,14 @@ ${
       // 5.2.5 🆕 统一添加X平台私信记忆（所有账户类型通用）
       if (accountData.xMessageHistory && accountData.xMessageHistory.length > 0) {
         const xMessageSectionStart = systemPrompt.length;
+        console.log(`📝 [账户主页生成器] 开始处理私信记忆，总数: ${accountData.xMessageHistory.length} 条`);
         systemPrompt += `
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 【X平台私信记忆】（该账户与用户的私信对话记录）
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 `;
-        const recentXMessages = accountData.xMessageHistory.slice(-30);
+        const recentXMessages = accountData.xMessageHistory.slice(-50);
         let xMemCount = 0;
         for (const msg of recentXMessages) {
           const sender = msg.isOwn ? '用户' : accountData.name;
@@ -16780,7 +16850,7 @@ ${
             xMemCount++;
           }
 
-          if (xMemCount >= 30) break;
+          if (xMemCount >= 50) break;
         }
         systemPrompt += `
 ⚠️ 重要说明：
@@ -16791,7 +16861,15 @@ ${
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 `;
         const xMessageSection = systemPrompt.substring(xMessageSectionStart);
+        const xMessageTokens = TokenUtils.estimateTokens(xMessageSection);
+        console.log(
+          `📊 [私信] ${
+            accountData.accountType === 'character' ? '角色' : accountData.accountType === 'npc' ? 'NPC' : '账户'
+          } ${accountData.name}: ${xMemCount}条, ~${xMessageTokens} tokens`,
+        );
         tokenCount = TokenUtils.logTokenUsage('账户主页生成器', 'X平台私信记忆', xMessageSection, tokenCount);
+      } else {
+        console.log(`ℹ️ [账户主页生成器] 该账户无私信记忆数据`);
       }
 
       // 5.3 统一的核心禁令（所有情况共用）
@@ -17939,16 +18017,6 @@ accountLikes数组（3-5条，账户喜欢的推文）：
 
     const user = tweet.user || accountInfo;
     const isPinned = tweet.pinned || false;
-
-    // 🔧 确保 tweet.stats 存在，避免 undefined 错误
-    if (!tweet.stats) {
-      tweet.stats = {
-        comments: 0,
-        retweets: 0,
-        likes: 0,
-        views: 0,
-      };
-    }
 
     // 构建认证图标HTML
     let verifiedBadgeHtml = '';
@@ -24858,8 +24926,9 @@ ${
 
   // 多账户管理功能
 
-  // 当前激活的账户ID
-  let currentAccountId = 'main';
+  // 当前激活的账户ID - 使用全局变量确保所有地方都能访问
+  window.currentAccountId = window.currentAccountId || 'main';
+  let currentAccountId = window.currentAccountId;
 
   // 切换个人主页菜单
   function toggleProfileMenu() {
@@ -25133,8 +25202,9 @@ ${
       // 更新激活账户记录
       await db.xActiveAccount.put({ id: 'current', accountId: accountId });
 
-      // 更新当前账户ID
+      // 更新当前账户ID（同步到全局和局部）
       currentAccountId = accountId;
+      window.currentAccountId = accountId;
 
       // 加载新账户的数据
       await loadUserProfileFromDB(accountId);
@@ -25373,14 +25443,18 @@ ${
       const activeAccount = await db.xActiveAccount.get('current');
       if (activeAccount) {
         currentAccountId = activeAccount.accountId;
+        window.currentAccountId = activeAccount.accountId; // 同步到全局
       } else {
         // 如果没有激活账户记录，使用默认账户
         currentAccountId = 'main';
+        window.currentAccountId = 'main'; // 同步到全局
         await db.xActiveAccount.put({ id: 'current', accountId: 'main' });
       }
+      console.log('✅ 已加载激活账户:', currentAccountId);
     } catch (error) {
       console.error('加载激活账户失败:', error);
       currentAccountId = 'main';
+      window.currentAccountId = 'main'; // 同步到全局
     }
   }
 
@@ -33986,7 +34060,7 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${comment.content}`
 
       // 3. 加载活跃账号（必须在加载用户资料之前）
       await loadActiveAccount();
-      console.log('📌 当前活跃账户:', currentAccountId);
+      console.log('📌 当前活跃账户:', currentAccountId, '(window.currentAccountId:', window.currentAccountId + ')');
 
       // 4. 初始化推文数据
       await initializeTweets();
@@ -48381,14 +48455,22 @@ ${getTransferStatusIcon(message.status, isLightMode)}
         }
       }
 
-      // === 第二部分：检查陌生人账户 ===
+      // === 第二部分：检查账户/NPC/陌生人 ===
       for (const messageItem of messagesList) {
-        // 跳过绑定角色和系统账户
-        if (messageItem.id.startsWith('msg_') && messageItem.id !== 'msg_001') {
-          continue;
+        // 🔧 只跳过绑定角色（msg_xxx格式但不是 msg_account_/msg_npc_/msg_relationship_ 等）
+        // 绑定角色的ID格式：msg_chatId（纯数字或字母组合，不带下划线前缀）
+        const isCharacterMessage =
+          messageItem.id.startsWith('msg_') &&
+          messageItem.id !== 'msg_001' &&
+          !messageItem.id.startsWith('msg_account_') &&
+          !messageItem.id.startsWith('msg_npc_') &&
+          !messageItem.id.startsWith('msg_relationship_');
+
+        if (isCharacterMessage) {
+          continue; // 跳过绑定角色（它们在第一部分已经处理了）
         }
 
-        // 检查该陌生人是否启用了自动发消息
+        // 检查该账户/NPC/陌生人是否启用了自动发消息
         const strangerSettingsId = `strangerSettings_${currentAccountId || 'main'}_${messageItem.id}`;
         const strangerSettings = await xDb.xAccountProfiles.get(strangerSettingsId);
 
@@ -48398,7 +48480,21 @@ ${getTransferStatusIcon(message.status, isLightMode)}
 
         // 获取自定义的时间间隔（默认60秒）
         const intervalSeconds = strangerSettings.autoMessageInterval || 60;
-        console.log(`⏰ [陌生人自动发消息] ${messageItem.user.name} 间隔: ${intervalSeconds}秒`);
+
+        // 确定账户类型用于日志
+        const accountType =
+          messageItem._accountType ||
+          (messageItem.id.startsWith('msg_account_')
+            ? '账户'
+            : messageItem.id.startsWith('msg_npc_')
+            ? 'NPC'
+            : messageItem.id.startsWith('msg_relationship_')
+            ? '关系NPC'
+            : '陌生人');
+
+        console.log(
+          `⏰ [${accountType}自动发消息] ${messageItem.userName || messageItem.user?.name} 间隔: ${intervalSeconds}秒`,
+        );
 
         // 检查最后一次互动时间
         const conversationId = `messageConversation_${currentAccountId || 'main'}_${messageItem.id}`;
@@ -48417,7 +48513,9 @@ ${getTransferStatusIcon(message.status, isLightMode)}
         // 情况1：没有任何聊天记录，触发初次主动消息
         if (messages.length === 0) {
           if (timeSinceLastTrigger >= intervalSeconds) {
-            console.log(`🤖 触发陌生人自动发消息（无聊天记录）: ${messageItem.user.name}`);
+            console.log(
+              `🤖 触发${accountType}自动发消息（无聊天记录）: ${messageItem.userName || messageItem.user?.name}`,
+            );
             lastAutoMessageTrigger[messageItem.id] = now;
             await triggerStrangerAutoMessage(messageItem, strangerSettings, 0);
           }
@@ -48429,16 +48527,16 @@ ${getTransferStatusIcon(message.status, isLightMode)}
         const lastMessageTime = lastMessage.timestamp ? new Date(lastMessage.timestamp).getTime() : 0;
         const timeSinceLastMessage = (now - lastMessageTime) / 1000;
 
-        // 情况2：最后一条消息是陌生人发送的，且超过设定时间
+        // 情况2：最后一条消息是对方发送的，且超过设定时间
         if (
           timeSinceLastMessage >= intervalSeconds &&
           !lastMessage.isOwn &&
           timeSinceLastTrigger >= intervalSeconds / 2
         ) {
           console.log(
-            `🤖 触发陌生人自动发消息（用户未回复）: ${messageItem.user.name}, 距离上次互动 ${Math.floor(
-              timeSinceLastMessage,
-            )}秒`,
+            `🤖 触发${accountType}自动发消息（用户未回复）: ${
+              messageItem.userName || messageItem.user?.name
+            }, 距离上次互动 ${Math.floor(timeSinceLastMessage)}秒`,
           );
           lastAutoMessageTrigger[messageItem.id] = now;
           await triggerStrangerAutoMessage(messageItem, strangerSettings, timeSinceLastMessage);
@@ -48452,7 +48550,9 @@ ${getTransferStatusIcon(message.status, isLightMode)}
           // 只有在有聊天记录且距离上次聊天超过间隔时间才触发
           if (timeSinceLastMsg >= intervalSeconds) {
             console.log(
-              `🎲 [陌生人自动发推] 触发: ${messageItem.user.name}, 距离上次聊天 ${Math.floor(timeSinceLastMsg)}秒`,
+              `🎲 [${accountType}自动发推] 触发: ${
+                messageItem.userName || messageItem.user?.name
+              }, 距离上次聊天 ${Math.floor(timeSinceLastMsg)}秒`,
             );
             await triggerAutoTweet(messageItem, strangerSettings, timeSinceLastMsg, 'stranger');
           }
@@ -48463,11 +48563,34 @@ ${getTransferStatusIcon(message.status, isLightMode)}
     }
   }
 
-  // 触发自动发推（角色/陌生人）
+  // 触发自动发推（角色/账户/NPC/关系NPC/陌生人）
   async function triggerAutoTweet(messageData, settings, timeSinceLastMessage, type = 'character') {
     try {
-      const characterName = type === 'character' ? settings.xName : messageData.user.name;
-      console.log(`📨 ${type === 'character' ? '角色' : '陌生人'} ${characterName} 正在自动发推...`);
+      // 确定账户类型和名称
+      let accountType, accountName, accountHandle, accountAvatar;
+
+      if (type === 'character') {
+        accountType = '角色';
+        accountName = settings.xName;
+        accountHandle = settings.xHandle;
+        accountAvatar = settings.xAvatar;
+      } else {
+        // 非角色：账户/NPC/关系NPC/陌生人
+        accountType =
+          messageData._accountType ||
+          (messageData.id.startsWith('msg_account_')
+            ? '账户'
+            : messageData.id.startsWith('msg_npc_')
+            ? 'NPC'
+            : messageData.id.startsWith('msg_relationship_')
+            ? '关系NPC'
+            : '陌生人');
+        accountName = messageData.userName || messageData.user?.name || messageData.name;
+        accountHandle = messageData.userHandle || messageData.user?.handle || messageData.handle;
+        accountAvatar = messageData.userAvatar || messageData.user?.avatar || messageData.avatar;
+      }
+
+      console.log(`📨 ${accountType} ${accountName} 正在自动发推...`);
 
       // 获取聊天记录
       const xDb = getXDB();
@@ -48499,8 +48622,12 @@ ${getTransferStatusIcon(message.status, isLightMode)}
       const newTweetNotification = {
         id: `mention_newtweet_auto_${timestamp}`,
         type: 'newTweet',
-        user: messageData.user,
-        content: `New Tweet from ${messageData.user.name}`,
+        user: {
+          name: accountName,
+          handle: accountHandle,
+          avatar: accountAvatar,
+        },
+        content: `New Tweet from ${accountName}`,
         time: '刚刚',
         timestamp: timestamp,
         tweet: tweetData,
@@ -48521,17 +48648,17 @@ ${getTransferStatusIcon(message.status, isLightMode)}
       savedMentions.data.unshift(newTweetNotification);
       await xDb.xAccountProfiles.put(savedMentions);
 
-      console.log(`✅ 自动发推成功: ${characterName}`);
+      console.log(`✅ ${accountType}自动发推成功: ${accountName}`);
 
       // 将推文添加到发推者的账户主页
-      await addTweetToAccountProfile(messageData.user.handle, tweetData);
+      await addTweetToAccountProfile(accountHandle, tweetData);
 
       // 显示手机样式通知
       const isEnglish = currentLanguage === 'en';
       showPhoneNotification({
         title: 'X',
-        message: isEnglish ? `${messageData.user.name} posted a new tweet!` : `${messageData.user.name} 发布了新推文！`,
-        avatar: messageData.user.avatar,
+        message: isEnglish ? `${accountName} posted a new tweet!` : `${accountName} 发布了新推文！`,
+        avatar: accountAvatar,
         leftIcon: 'x',
       });
 
@@ -48547,10 +48674,22 @@ ${getTransferStatusIcon(message.status, isLightMode)}
     }
   }
 
-  // 触发陌生人自动发消息
+  // 触发非角色账户自动发消息（账户/NPC/关系NPC/陌生人）
   async function triggerStrangerAutoMessage(messageData, strangerSettings, timeSinceLastMessage) {
     try {
-      console.log(`📨 陌生人 ${messageData.user.name} 正在自动发消息...`);
+      // 确定账户类型用于日志
+      const accountType =
+        messageData._accountType ||
+        (messageData.id.startsWith('msg_account_')
+          ? '账户'
+          : messageData.id.startsWith('msg_npc_')
+          ? 'NPC'
+          : messageData.id.startsWith('msg_relationship_')
+          ? '关系NPC'
+          : '陌生人');
+
+      const accountName = messageData.userName || messageData.user?.name || messageData.name;
+      console.log(`📨 ${accountType} ${accountName} 正在自动发消息...`);
 
       // 调用生成器，使用自动模式
       const newMessages = await generateMessageConversation(messageData, true, {
@@ -48559,7 +48698,7 @@ ${getTransferStatusIcon(message.status, isLightMode)}
       });
 
       if (!newMessages || newMessages.length === 0) {
-        console.warn('陌生人自动发消息生成失败，无新消息');
+        console.warn(`${accountType}自动发消息生成失败，无新消息`);
         return;
       }
 
@@ -48581,13 +48720,13 @@ ${getTransferStatusIcon(message.status, isLightMode)}
 
         await xDb.xAccountProfiles.put(savedConversation);
 
-        console.log(`✅ 陌生人自动消息已保存: ${newMessages.length}条`);
+        console.log(`✅ ${accountType}自动消息已保存: ${newMessages.length}条`);
 
         // 显示顶部提醒
         const isEnglish = currentLanguage === 'en';
         const toastMessage = isEnglish
-          ? `${messageData.user.name} sent you ${newMessages.length} message(s)`
-          : `${messageData.user.name} 向你发送了 ${newMessages.length} 条私信`;
+          ? `${accountName} sent you ${newMessages.length} message(s)`
+          : `${accountName} 向你发送了 ${newMessages.length} 条私信`;
         showXToast(toastMessage, 'info');
 
         // 如果当前正在查看该私信详情，刷新显示
@@ -48625,7 +48764,7 @@ ${getTransferStatusIcon(message.status, isLightMode)}
               });
 
               sampleMessagesData = messagesList;
-              console.log('✅ 已标记陌生人私信为未读');
+              console.log(`✅ 已标记${accountType}私信为未读`);
             }
           }
         } catch (error) {
