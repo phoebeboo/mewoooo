@@ -14614,9 +14614,14 @@ accountLikes数组（3-5条，账户喜欢的推文）：
  </div>
  </div>
 
- <div style="position: absolute; top: 12px; right: 16px; cursor: pointer; padding: 4px; border-radius: 50%; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='rgba(29,155,240,0.1)'" onmouseout="this.style.backgroundColor='transparent'">
+   <div onclick="deleteAccountTweet('${tweet.id}', '${(
+      accountInfo.handle || user.handle
+    ).replace(
+      "@",
+      ""
+    )}', event)" style="position: absolute; top: 12px; right: 16px; cursor: pointer; padding: 4px; border-radius: 50%; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='rgba(29,155,240,0.1)'" onmouseout="this.style.backgroundColor='transparent'">
  <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; fill: #71767b;">
- <g><path d="M3 12c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2-2-.9-2-2zm9 2c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm7 0c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"></path></g>
+ <g><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></g>
  </svg>
  </div>
  </div>
@@ -14991,6 +14996,71 @@ accountLikes数组（3-5条，账户喜欢的推文）：
       console.error("保存账户主页数据失败:", error);
     }
   }
+  // 🗑️ 删除账户主页推文
+  window.deleteAccountTweet = async function (tweetId, accountHandle, event) {
+    // 阻止事件冒泡（防止触发推文详情页）
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
+    const confirmDelete = confirm("确定要删除这条推文吗？删除后无法恢复。");
+    if (!confirmDelete) return;
+
+    try {
+      const xDB = getXDB();
+      const cleanHandle = accountHandle.replace("@", "");
+
+      // 从数据库中获取账户主页数据
+      const accountProfile = await xDB.xAccountProfiles.get(cleanHandle);
+
+      if (!accountProfile || !accountProfile.tweets) {
+        showXToast("未找到账户数据", "error");
+        return;
+      }
+
+      // 过滤掉要删除的推文
+      const originalLength = accountProfile.tweets.length;
+      accountProfile.tweets = accountProfile.tweets.filter(
+        (tweet) => tweet.id !== tweetId
+      );
+
+      // 检查是否真的删除了推文
+      if (accountProfile.tweets.length === originalLength) {
+        showXToast("未找到该推文", "error");
+        return;
+      }
+
+      // 更新时间戳
+      accountProfile.updatedAt = new Date().toISOString();
+
+      // 保存到数据库
+      await xDB.xAccountProfiles.put(accountProfile);
+
+      console.log(
+        `✅ 已删除账户推文: ${tweetId}，剩余推文数: ${accountProfile.tweets.length}`
+      );
+      showXToast("推文已删除", "success");
+
+      // 如果当前正在查看该账户主页，刷新显示
+      if (
+        currentViewingAccount &&
+        (currentViewingAccount.accountInfo?.handle === `@${cleanHandle}` ||
+          currentViewingAccount.accountInfo?.handle === cleanHandle ||
+          currentViewingAccount.handle === `@${cleanHandle}` ||
+          currentViewingAccount.handle === cleanHandle)
+      ) {
+        console.log("🔄 刷新当前查看的账户主页");
+        // 更新当前查看的账户数据
+        currentViewingAccount.tweets = accountProfile.tweets;
+        // 重新渲染账户主页
+        renderAccountProfile(currentViewingAccount);
+      }
+    } catch (error) {
+      console.error("❌ 删除账户推文失败:", error);
+      showXToast("删除失败", "error");
+    }
+  };
   // 🆕 将推文添加到账户主页（用于智能检测生成的推文）
   async function addTweetToAccountProfile(userHandle, tweetData) {
     try {
@@ -18542,10 +18612,7 @@ ${
           .map(
             (qa, index) => `${index + 1}. Q: ${qa.question}\n A: ${qa.answer}`
           )
-          .join("\n\n"); // 将函数暴露到全局
-        window.openAccentColorPicker = openAccentColorPicker;
-        window.closeAccentColorPicker = closeAccentColorPicker;
-        window.applyAccentColor = applyAccentColor; // 延迟1秒后触发（让用户看到提问箱生成成功的提示）
+          .join("\n\n"); // 延迟1秒后触发（让用户看到提问箱生成成功的提示）
         setTimeout(async () => {
           try {
             // 查找或创建与该角色的私信对话
@@ -37227,13 +37294,17 @@ ${getTransferStatusIcon(message.status, isLightMode)}
           ...transferMessage,
           transferId: transferMessage.timestamp,
           conversationId: currentMessageConversation.id,
-          senderName: receiverName,
-          senderHandle: receiverHandle,
-          senderAvatar: receiverAvatar,
+          // 🔧 修复：发送方应该保存接收者信息
+          receiverName: receiverName,
+          receiverHandle: receiverHandle,
+          receiverAvatar: receiverAvatar,
           direction: "sent", // 发出的商业转账
           createdAt: transferMessage.timestamp,
         });
-        console.log("💼 商业转账已记录到数据库（发出方）:", receiverName);
+        console.log(
+          "💼 商业转账已记录到数据库（发出方）- 接收者:",
+          receiverName
+        );
       }
       // 关闭弹窗
       closeTransferDialog();
@@ -37708,21 +37779,38 @@ ${getTransferStatusIcon(message.status, isLightMode)}
           walletData.transactions.unshift(transaction); // 保存钱包数据
           await saveWalletData(); // 商业转账：保存到商业转账数据库
           if (isBusiness && currentMessageConversation) {
+            // 🔧 确保获取正确的发送者信息
+            const actualSenderName =
+              currentMessageConversation.user?.name ||
+              currentMessageConversation.userName ||
+              "对方";
+            const actualSenderHandle =
+              currentMessageConversation.user?.handle ||
+              currentMessageConversation.userHandle ||
+              "unknown";
+            const actualSenderAvatar =
+              currentMessageConversation.user?.avatar ||
+              currentMessageConversation.userAvatar ||
+              "https://i.postimg.cc/4xmx7V4R/mmexport1759081128356.jpg";
+
             const businessTransferRecord = {
               ...transferMessage,
               transferId: transferId,
               conversationId: currentMessageConversation.id,
-              senderName: senderName,
-              senderHandle:
-                currentMessageConversation.user?.handle || "unknown",
-              senderAvatar:
-                currentMessageConversation.user?.avatar ||
-                "https://i.postimg.cc/4xmx7V4R/mmexport1759081128356.jpg",
+              senderName: actualSenderName,
+              senderHandle: actualSenderHandle,
+              senderAvatar: actualSenderAvatar,
               direction: "received", // 接收的商业转账
               createdAt: transferMessage.timestamp,
               acceptedAt: new Date().toISOString(),
             };
             console.log("💼 [保存商业转账] 准备保存:", businessTransferRecord);
+            console.log(
+              "💼 [发送者信息] 名字:",
+              actualSenderName,
+              "句柄:",
+              actualSenderHandle
+            );
             console.log(
               "💼 [保存商业转账] taskDeadline:",
               businessTransferRecord.taskDeadline
@@ -38181,8 +38269,8 @@ ${getTransferStatusIcon(message.status, isLightMode)}
    isLightMode ? "#0f1419" : "#ffffff"
  }; font-size: 15px; font-weight: 600; margin-bottom: 4px; ">${
           type === "sent"
-            ? `发给 ${transfer.senderName}`
-            : `来自 ${transfer.senderName}`
+            ? `发给 ${transfer.receiverName || transfer.senderName || "对方"}`
+            : `来自 ${transfer.senderName || transfer.receiverName || "对方"}`
         }</div>
  <div style="color: ${
    isLightMode ? "#536471" : "#71767b"
@@ -50073,6 +50161,10 @@ ${
   window.goBackFromTweetDetail = goBackFromTweetDetail; // 主题切换相关函数
   window.toggleXTheme = toggleXTheme; // 语言切换相关函数
   window.toggleXLanguage = toggleXLanguage;
+  // 🔧 添加主题色相关函数导出
+  window.openAccentColorPicker = openAccentColorPicker;
+  window.closeAccentColorPicker = closeAccentColorPicker;
+  window.applyAccentColor = applyAccentColor;
   // 直播相关函数
   window.switchLiveTab = switchLiveTab;
   window.joinLiveStream = joinLiveStream;
