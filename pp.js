@@ -11673,7 +11673,7 @@ ${index + 1}. [${event.category}] ${event.title}
   .join("")}
 
 【大事件融入规则】：
-🎯 核心原则：约30-50%的推文应该围绕这些大事件展开，让世界显得鲜活
+🎯 核心原则：约10-40%的推文应该围绕这些大事件展开，让世界显得鲜活
 1. **直接讨论**：路人/角色直接评论某个事件，发表看法
 2. **间接影响**：事件影响了日常生活（如天气影响穿着、政策影响工作等）
 3. **转发声明**：如果某个事件涉及明星/公众人物，可能有当事人声明或粉丝转发
@@ -11682,7 +11682,7 @@ ${index + 1}. [${event.category}] ${event.title}
 6. **自然融入**：不要强行在每条推文中提及，保持多样性
 
 【注意】：
-- 其余50-70%的推文可以是与事件无关的日常内容
+- 其余60-90%的推文可以是与事件无关的日常内容
 - 事件讨论要符合用户/角色的身份和视角
 - 路人评论只能基于事件的公开信息，不能知道内幕细节
 - 角色如果与事件相关（如明星角色遇到娱乐事件），可以有更深入的互动
@@ -11715,8 +11715,8 @@ ${index + 1}. [${event.category}] ${event.title}
 🚨 **重要：你必须只返回有效的JSON格式数据，任何语法错误都会导致系统崩溃！** 🚨
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 【生成要求】：
-- 每组生成5-15条推文，内容多样化
-- 热门推文10-20条评论，普通推文1-10条，支持多层级楼中楼回复
+- 每组生成5-10条推文，内容多样化
+- 热门推文5-12条评论，普通推文1-5条，支持多层级楼中楼回复
 - **绑定角色可以作为推文发布者**：根据角色设定和兴趣发布独立推文
 - **绑定NPC可以作为推文发布者**：根据NPC人设和发帖习惯发布推文
 - NPC关系互动：有绑定关系的NPC在角色推文下自然留言，体现关系特点
@@ -12079,6 +12079,8 @@ ${npc.homepage || "暂无主页内容设置"}
     const toggle = document.getElementById("world-events-toggle");
     const circle = toggle.querySelector(".toggle-circle");
     const area = document.getElementById("world-events-area");
+    const xDb = getXDB();
+    const dataId = `worldEvents_${currentAccountId || "main"}`;
 
     if (worldEventsEnabled) {
       // 开启
@@ -12087,8 +12089,6 @@ ${npc.homepage || "暂无主页内容设置"}
       area.style.display = "block";
 
       // 检查是否已有数据
-      const xDb = getXDB();
-      const dataId = `worldEvents_${currentAccountId || "main"}`;
       const existingData = await xDb.xWorldEvents.get(dataId);
 
       if (
@@ -12104,7 +12104,9 @@ ${npc.homepage || "暂无主页内容设置"}
         );
         await generateWorldEvents();
       } else {
-        // 已有数据，直接渲染
+        // 已有数据，更新enabled状态并渲染
+        existingData.enabled = true;
+        await xDb.xWorldEvents.put(existingData);
         renderWorldEvents(existingData);
       }
 
@@ -12114,7 +12116,14 @@ ${npc.homepage || "暂无主页内容设置"}
         "success"
       );
     } else {
-      // 关闭
+      // 关闭：更新数据库中的enabled状态
+      const existingData = await xDb.xWorldEvents.get(dataId);
+      if (existingData) {
+        existingData.enabled = false;
+        await xDb.xWorldEvents.put(existingData);
+        console.log("🔴 [世界大事件] 已在数据库中标记为禁用");
+      }
+
       toggle.style.backgroundColor = "#333";
       circle.style.left = "2px";
       area.style.display = "none";
@@ -12125,7 +12134,7 @@ ${npc.homepage || "暂无主页内容设置"}
       );
     }
 
-    // 保存状态
+    // 保存状态到设置表（双重保险）
     await saveWorldEventsState(worldEventsEnabled);
   };
 
@@ -13402,7 +13411,7 @@ ${
         usageRate: 0.3, // 30%的推文涉及大事件（账户主页展示多样性）
         isPublicFigure: isPublicFigure,
         usageDescription: `**账户主页场景的大事件使用**：
-1. **推文内容**：约30%的推文可能围绕大事件展开
+1. **推文内容**：约10%的推文可能围绕大事件展开
    - 发表对大事件的看法或评论
    - 分享与大事件相关的内容或心得
    - 如果是相关领域专家，可能深入分析
@@ -13417,7 +13426,7 @@ ${
             ? "公众人物的推文可能被要求对大事件表态"
             : "普通账户可能自然讨论大事件"
         }
-5. **自然融入**：只有约30%的内容涉及大事件，其余70%展示账户的日常和个性`,
+5. **自然融入**：只有约10%的内容涉及大事件，其余90%展示账户的日常和个性`,
       });
 
       if (worldEventsPrompt) {
@@ -40891,7 +40900,7 @@ ${getTransferStatusIcon(message.status, isLightMode)}
     if (window.setCommentStickerMode) {
       window.setCommentStickerMode(false);
     }
-  }; // 渲染表情包列表
+  }; // 渲染表情包列表（分批异步渲染，避免UI阻塞）
   function renderStickerList() {
     const listContainer = document.getElementById("sticker-list");
     if (!listContainer) return; // 根据屏幕宽度动态调整网格列宽
@@ -40952,49 +40961,116 @@ ${getTransferStatusIcon(message.status, isLightMode)}
         listContainer.style.display = "grid";
       }
     }
-    displayStickers.forEach((sticker, displayIndex) => {
-      // 找到原始索引
-      const originalIndex = userStickers.findIndex(
-        (s) => s.url === sticker.url && s.description === sticker.description
-      );
-      const stickerEl = document.createElement("div");
-      stickerEl.style.cssText = `
- position: relative; cursor: pointer; border-radius: 8px; overflow: hidden; transition: transform 0.2s; width: 100%; padding-bottom: 100%; background-color:var(--x-bg-secondary); `;
-      stickerEl.onmouseover = () => {
-        stickerEl.style.transform = "scale(1.05)";
-      };
-      stickerEl.onmouseout = () => {
-        stickerEl.style.transform = "scale(1)";
-      };
-      stickerEl.onclick = () => {
-        // 检查是否在评论模式
-        if (window.getCommentStickerMode && window.getCommentStickerMode()) {
-          // 评论模式：调用评论表情包选择函数
-          if (window.selectCommentSticker) {
-            window.selectCommentSticker(sticker);
+
+    // 🚀 分批异步渲染：每10个一批，避免UI阻塞
+    const BATCH_SIZE = 10;
+    const totalCount = displayStickers.length;
+    let currentIndex = 0;
+
+    // 显示加载提示（仅当数量较多时）
+    if (totalCount > BATCH_SIZE) {
+      const loadingEl = document.createElement("div");
+      loadingEl.id = "sticker-loading-indicator";
+      loadingEl.style.cssText = `
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 20px;
+        color: var(--x-text-secondary);
+        font-size: 13px;
+      `;
+      loadingEl.textContent = `正在加载表情包... (0/${totalCount})`;
+      listContainer.appendChild(loadingEl);
+    }
+
+    // 分批渲染函数
+    function renderBatch() {
+      const batchEnd = Math.min(currentIndex + BATCH_SIZE, totalCount);
+      const batch = displayStickers.slice(currentIndex, batchEnd);
+
+      // 创建文档碎片，减少DOM操作次数
+      const fragment = document.createDocumentFragment();
+
+      batch.forEach((sticker, batchIndex) => {
+        const displayIndex = currentIndex + batchIndex;
+        // 找到原始索引
+        const originalIndex = userStickers.findIndex(
+          (s) => s.url === sticker.url && s.description === sticker.description
+        );
+
+        const stickerEl = document.createElement("div");
+        stickerEl.style.cssText = `
+          position: relative; cursor: pointer; border-radius: 8px; overflow: hidden; 
+          transition: transform 0.2s; width: 100%; padding-bottom: 100%; 
+          background-color:var(--x-bg-secondary);
+        `;
+        stickerEl.onmouseover = () => {
+          stickerEl.style.transform = "scale(1.05)";
+        };
+        stickerEl.onmouseout = () => {
+          stickerEl.style.transform = "scale(1)";
+        };
+        stickerEl.onclick = () => {
+          // 检查是否在评论模式
+          if (window.getCommentStickerMode && window.getCommentStickerMode()) {
+            // 评论模式：调用评论表情包选择函数
+            if (window.selectCommentSticker) {
+              window.selectCommentSticker(sticker);
+            }
+          } else {
+            // 正常模式：发送私信表情包
+            sendStickerMessage(sticker);
+            closeStickerPicker();
           }
-        } else {
-          // 正常模式：发送私信表情包
-          sendStickerMessage(sticker);
-          closeStickerPicker();
+        };
+        stickerEl.innerHTML = `
+          <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+            <img src="${sticker.url}" alt="${sticker.description}"
+              style="width: 100%; height: 100%; object-fit: cover; display: block;"
+              onerror="this.parentElement.innerHTML='<div style=\\'display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%; background-color:var(--x-bg-secondary); color:var(--x-text-secondary); font-size: 11px; padding: 4px; text-align: center;\\'>❌<br>加载失败<br><button onclick=\\'deleteSticker(${originalIndex})\\' style=\\'margin-top: 4px; padding: 2px 6px; font-size: 10px; background: var(--x-accent); color: white; border: none; border-radius: 4px; cursor: pointer;\\'>删除</button></div>';">
+          </div>
+          <button onclick="deleteSticker(${originalIndex}); event.stopPropagation();"
+            ontouchstart="this.style.opacity='1'"
+            style="position: absolute; top: 4px; right: 4px; background: rgba(0,0,0,0.7); border: none; border-radius: 50%; width: 24px; height: 24px; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; opacity: 0; transition: opacity 0.2s; z-index: 2; " 
+            onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0'">
+            <svg viewBox="0 0 24 24" style="width: 14px; height: 14px; fill: #fff;">
+              <g><path d="M10.59 12L4.54 5.96l1.42-1.42L12 10.59l6.04-6.05 1.42 1.42L13.41 12l6.05 6.04-1.42 1.42L12 13.41l-6.04 6.05-1.42-1.42L10.59 12z"></path></g>
+            </svg>
+          </button>
+        `;
+        fragment.appendChild(stickerEl);
+      });
+
+      // 一次性添加整批元素
+      listContainer.appendChild(fragment);
+
+      currentIndex = batchEnd;
+
+      // 更新加载提示
+      if (totalCount > BATCH_SIZE) {
+        const loadingEl = document.getElementById("sticker-loading-indicator");
+        if (loadingEl) {
+          if (currentIndex < totalCount) {
+            loadingEl.textContent = `正在加载表情包... (${currentIndex}/${totalCount})`;
+          } else {
+            loadingEl.remove();
+          }
         }
-      };
-      stickerEl.innerHTML = `
- <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
- <img src="${sticker.url}" alt="${sticker.description}"
- style="width: 100%; height: 100%; object-fit: cover; display: block;"
- onerror="this.parentElement.innerHTML='<div style=\\'display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%; background-color:var(--x-bg-secondary); color:var(--x-text-secondary); font-size: 11px; padding: 4px; text-align: center;\\'>❌<br>加载失败<br><button onclick=\\'deleteSticker(${originalIndex})\\' style=\\'margin-top: 4px; padding: 2px 6px; font-size: 10px; background: var(--x-accent); color: white; border: none; border-radius: 4px; cursor: pointer;\\'>删除</button></div>';">
- </div>
- <button onclick="deleteSticker(${originalIndex}); event.stopPropagation();"
- ontouchstart="this.style.opacity='1'"
- style="position: absolute; top: 4px; right: 4px; background: rgba(0,0,0,0.7); border: none; border-radius: 50%; width: 24px; height: 24px; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; opacity: 0; transition: opacity 0.2s; z-index: 2; " onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0'">
- <svg viewBox="0 0 24 24" style="width: 14px; height: 14px; fill: #fff;">
- <g><path d="M10.59 12L4.54 5.96l1.42-1.42L12 10.59l6.04-6.05 1.42 1.42L13.41 12l6.05 6.04-1.42 1.42L12 13.41l-6.04 6.05-1.42-1.42L10.59 12z"></path></g>
- </svg>
- </button>
- `;
-      listContainer.appendChild(stickerEl);
-    });
+      }
+
+      // 如果还有未渲染的，继续下一批
+      if (currentIndex < totalCount) {
+        requestAnimationFrame(renderBatch);
+      } else {
+        console.log(
+          `✅ [表情包渲染] 完成，共${totalCount}个，分${Math.ceil(
+            totalCount / BATCH_SIZE
+          )}批渲染`
+        );
+      }
+    }
+
+    // 启动第一批渲染
+    requestAnimationFrame(renderBatch);
   }
   // 删除表情包
   window.deleteSticker = async function (index) {
@@ -48474,7 +48550,7 @@ ${recentUserTweets
   .join("\n")}`
     : "**用户最近推文**：暂无推文（新用户或较少发帖）"
 }
-你的任务是生成 3-8 个入群申请。
+你的任务是生成 5-15个入群申请。
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📋 申请生成规则 📋
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
