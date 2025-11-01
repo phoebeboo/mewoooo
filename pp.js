@@ -1075,6 +1075,99 @@ color: #ffffff !important; }
  100% {
  background-position: 0% 50%; }
  }
+/* 轮盘光晕脉动动画 */
+@keyframes pulse {
+  0% {
+    opacity: 0.2;
+    transform: scale(0.98);
+  }
+  30% {
+    opacity: 0.4;
+    transform: scale(1.03);
+  }
+  60% {
+    opacity: 0.5;
+    transform: scale(1.06);
+  }
+  100% {
+    opacity: 0.2;
+    transform: scale(0.98);
+  }
+}
+
+/* 标签微脉动动画 */
+@keyframes labelPulse {
+  0%, 100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* 点赞上浮动画 */
+@keyframes floatUp {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(0.8) rotate(0deg);
+  }
+  20% {
+    opacity: 1;
+    transform: translateY(-50px) scale(1) rotate(5deg);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translateY(-125px) scale(1.2) rotate(-3deg);
+  }
+  80% {
+    opacity: 0.3;
+    transform: translateY(-200px) scale(1.35) rotate(2deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-250px) scale(1.4) rotate(0deg);
+  }
+}
+
+/* 标签悬停浮起效果 */
+@keyframes tagFloat {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-3px) scale(1.03);
+  }
+  100% {
+    transform: translateY(-2px) scale(1.02);
+  }
+}
+
+/* 按钮按下动画 */
+@keyframes btnPress {
+  0% {
+    transform: translateY(-1px) scale(1);
+  }
+  50% {
+    transform: translateY(3px) scale(0.95);
+  }
+  100% {
+    transform: translateY(2px) scale(0.97);
+  }
+}
+
+/* 弹幕列表初始化动画 */
+@keyframes danmakuScroll {
+  0% {
+    transform: translateY(-15px);
+    opacity: 0;
+    filter: blur(3px);
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+    filter: blur(0);
+  }
+}
 `;
     document.head.appendChild(style);
     console.log("✅ X Social App: 样式已注入");
@@ -1100,7 +1193,7 @@ color: #ffffff !important; }
 
  <div style="display: flex; align-items: center; gap: 12px;">
 <div class="x-back-btn" onclick="showScreen('home-screen')" style="cursor: pointer;">
-<svg viewBox="0 0 24 24" aria-hidden="true" style="width: 20px; height: 20px; fill: #fff;">
+<svg viewBox="0 0 24 24" aria-hidden="true" style="width: 20px; height: 20px; fill: var(--x-text-primary);">
 <g>
 <path d="M7.414 13l5.043 5.04-1.414 1.42L3.586 12l7.457-7.46 1.414 1.42L7.414 11H21v2H7.414z"></path>
 </g>
@@ -1109,7 +1202,7 @@ color: #ffffff !important; }
 
 <!-- 添加直播按钮 -->
 <div class="x-live-btn" onclick="switchXPage('live')" style="cursor: pointer;">
-<svg viewBox="0 0 24 24" aria-hidden="true" style="width: 20px; height: 20px; fill: none; stroke: #fff; stroke-width: 1; stroke-linecap: round; stroke-linejoin: round;">
+<svg viewBox="0 0 24 24" aria-hidden="true" style="width: 20px; height: 20px; fill: none; stroke: var(--x-text-primary); stroke-width: 1; stroke-linecap: round; stroke-linejoin: round;">
 <path d="M10.5 20h-5.5a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2h1a2 2 0 0 0 2 -2a1 1 0 0 1 1 -1h6a1 1 0 0 1 1 1a2 2 0 0 0 2 2h1a2 2 0 0 1 2 2v2.5" />
 <path d="M14.569 11.45a3 3 0 1 0 -4.518 3.83" />
 <path d="M17.8 20.817l-2.172 1.138a.392 .392 0 0 1 -.568 -.41l.415 -2.411l-1.757 -1.707a.389 .389 0 0 1 .217 -.665l2.428 -.352l1.086 -2.193a.392 .392 0 0 1 .702 0l1.086 2.193l2.428 .352a.39 .39 0 0 1 .217 .665l-1.757 1.707l.414 2.41a.39 .39 0 0 1 -.567 .411l-2.172 -1.138z" />
@@ -4192,10 +4285,6 @@ style="position: absolute; width: 5px; height: 5px; background-color: var(--x-ac
     console.log("✅ X Social App: HTML结构已创建");
   }
 
-  // 第三部分: 核心JavaScript功能
-  // ============================================
-  // === 工具函数集合 (从31766行开始) ===
-  // X社交专用数据库配置函数
   function getXDB() {
     const db = new Dexie("XSocialDB");
     // 版本1：初始表结构
@@ -16923,1873 +17012,6 @@ accountLikes数组（3-5条，账户喜欢的推文）：
     }
   }
   // ============================================
-  // 直播功能
-  // ============================================
-
-  // 当前直播标签页
-  let currentLiveTab = "audio";
-
-  // 自定义直播分类数据
-  let liveCustomCategories = [];
-
-  // 直播收纳按钮状态（使用全局变量）
-  // let liveBtnExpanded = false; // 移至全局导出
-
-  // 直播封面背景图片集合
-  const liveBackgroundImages = [
-    "https://i.postimg.cc/8PDPnVzb/00a041b0fad26d28187d01ff3beaa5bb.jpg",
-    "https://i.postimg.cc/mDCB8dxy/01a0641ac6ccdd39d92c010c0de96081.jpg",
-    "https://i.postimg.cc/BQMsYLyJ/09c6de67b73f8cb6c98df9c5e6de780b.jpg",
-    "https://i.postimg.cc/HnTD3d4q/156e25617d2a3e905d2e5a7e1d489700.jpg",
-    "https://i.postimg.cc/JncSsSV2/c05d136d6ab0836ba4a89cc58ac1a201.jpg",
-    "https://i.postimg.cc/vHmCmPq8/f1ecc90ac9e91d2a968faead1464d0bc.jpg",
-    "https://i.postimg.cc/RC1n0d3N/01f3e825a988ae3fa59d498217478964.jpg",
-    "https://i.postimg.cc/7ZR5RQRc/72700355d3069eb2cea793d7b9d40ad4.jpg",
-    "https://i.postimg.cc/5N7yHRfz/bea6a5355ed311f47a397d7bc0257865.jpg",
-  ];
-
-  // 获取随机背景图片
-  function getRandomBackground() {
-    const randomIndex = Math.floor(Math.random() * liveBackgroundImages.length);
-    return liveBackgroundImages[randomIndex];
-  }
-
-  // 测试直播数据
-  const liveStreamData = {
-    audio: [
-      {
-        id: "audio_1",
-        title: "深夜聊天室 | 来聊聊最近的心情故事吧",
-        streamerHandle: "@nighttalker",
-        streamerName: "夜谈者",
-        streamerAvatar: "https://i.postimg.cc/pXxk1JXk/IMG-6442.jpg",
-        description: "和大家聊聊生活中的点点滴滴，分享今天的心情和想法",
-        onlineCount: 156,
-        category: "生活分享",
-        isLive: true,
-        duration: "1h 23m",
-        background: getRandomBackground(),
-      },
-    ],
-    video: [
-      {
-        id: "video_1",
-        title: "AI技术探讨 - 大语言模型的发展与未来",
-        streamerHandle: "@techexplorer",
-        streamerName: "科技探索者",
-        streamerAvatar:
-          "https://i.postimg.cc/4xmx7V4R/mmexport1759081128356.jpg",
-        description: "探讨最新的人工智能技术趋势，欢迎大家一起交流学习",
-        onlineCount: 892,
-        category: "科技教育",
-        isLive: true,
-        duration: "2h 15m",
-        background: getRandomBackground(),
-      },
-    ],
-  };
-
-  // 切换直播标签页
-  function switchLiveTab(tabName) {
-    currentLiveTab = tabName;
-
-    // 更新标签样式
-    const tabs = document.querySelectorAll(".live-tab");
-    tabs.forEach((tab) => {
-      tab.classList.remove("live-tab-active");
-      tab.style.color = "#71767b";
-      tab.style.backgroundColor = "rgba(255,255,255,0.1)";
-    });
-
-    // 激活当前标签
-    let activeTab = null;
-    if (tabName === "audio") {
-      activeTab = tabs[0];
-    } else if (tabName === "video") {
-      activeTab = tabs[1];
-    } else {
-      // 自定义分类
-      activeTab = Array.from(tabs).find(
-        (tab) => tab.onclick && tab.onclick.toString().includes(tabName)
-      );
-    }
-
-    if (activeTab) {
-      activeTab.classList.add("live-tab-active");
-      activeTab.style.color = "#fff";
-      activeTab.style.backgroundColor = "var(--x-accent)";
-    }
-
-    // 切换内容显示（带淡出淡入动画）
-    const allContents = document.querySelectorAll(".live-tab-content");
-
-    // 淡出所有内容
-    allContents.forEach((content) => {
-      content.style.opacity = "0";
-      content.style.transition = "opacity 0.2s ease-out";
-    });
-
-    setTimeout(() => {
-      allContents.forEach((content) => {
-        content.style.display = "none";
-      });
-
-      // 对于基础分类，显示对应的内容区域
-      if (tabName === "audio" || tabName === "video") {
-        const targetContent = document.getElementById(
-          `live-${tabName}-content`
-        );
-        if (targetContent) {
-          targetContent.style.display = "block";
-          // 淡入动画
-          setTimeout(() => {
-            targetContent.style.opacity = "1";
-          }, 10);
-        }
-        // 重新渲染直播列表
-        renderLiveStreams(tabName);
-      } else {
-        // 自定义分类：显示自定义内容
-        const audioContent = document.getElementById("live-audio-content");
-        if (audioContent) {
-          audioContent.style.display = "block";
-          // 淡入动画
-          setTimeout(() => {
-            audioContent.style.opacity = "1";
-          }, 10);
-          const container = document.getElementById("live-audio-list");
-          if (container) {
-            const customStreams = liveStreamData[tabName] || [];
-            const category = liveCustomCategories.find(
-              (cat) => cat.id === tabName
-            );
-            const categoryName = category ? category.name : "自定义分类";
-
-            if (customStreams.length === 0) {
-              // 显示空状态
-              container.innerHTML = `
-                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 20px; color: #aaa; text-align: center;">
-                  <svg viewBox="0 0 24 24" style="width: 48px; height: 48px; fill: currentColor; opacity: 0.5; margin-bottom: 16px;">
-                    <path d="M10.5 20h-5.5a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2h1a2 2 0 0 0 2 -2a1 1 0 0 1 1 -1h6a1 1 0 0 1 1 1a2 2 0 0 0 2 2h1a2 2 0 0 1 2 2v2.5" />
-                    <path d="M14.569 11.45a3 3 0 1 0 -4.518 3.83" />
-                  </svg>
-                  <div style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">${categoryName}直播</div>
-                  <div style="font-size: 14px; opacity: 0.8;">该分类下暂无直播内容</div>
-                </div>
-              `;
-            } else {
-              // 渲染自定义分类的直播内容
-              customStreams.forEach((stream) => {
-                if (!stream.background) {
-                  stream.background = getRandomBackground();
-                }
-              });
-              container.innerHTML = customStreams
-                .map((stream, index) =>
-                  createLiveStreamCard(stream, tabName, index)
-                )
-                .join("");
-            }
-          }
-        }
-      }
-    }, 200); // 等待淡出动画完成
-  }
-
-  // 渲染直播列表
-  function renderLiveStreams(type) {
-    const container = document.getElementById(`live-${type}-list`);
-    if (!container) return;
-
-    const streams = liveStreamData[type] || [];
-
-    if (streams.length === 0) {
-      const config = languageConfig[currentLanguage] || languageConfig["zh"];
-      const noStreamsText =
-        type === "audio"
-          ? config.liveNoAudioStreams
-          : config.liveNoVideoStreams;
-
-      container.innerHTML = `
-        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 20px; color: #aaa; text-align: center;">
-          <svg viewBox="0 0 24 24" style="width: 48px; height: 48px; fill: currentColor; opacity: 0.5; margin-bottom: 16px;">
-            <path d="M10.5 20h-5.5a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2h1a2 2 0 0 0 2 -2a1 1 0 0 1 1 -1h6a1 1 0 0 1 1 1a2 2 0 0 0 2 2h1a2 2 0 0 1 2 2v2.5" />
-            <path d="M14.569 11.45a3 3 0 1 0 -4.518 3.83" />
-          </svg>
-          <div style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">${noStreamsText}</div>
-          <div style="font-size: 14px; opacity: 0.8;">${config.liveWaitingContent}</div>
-        </div>
-      `;
-      return;
-    }
-
-    // 如果测试模式下需要添加随机背景，确保每个stream都有background
-    streams.forEach((stream) => {
-      if (!stream.background) {
-        stream.background = getRandomBackground();
-      }
-    });
-
-    // 生成直播卡片HTML
-    container.innerHTML = streams
-      .map((stream, index) => createLiveStreamCard(stream, type, index))
-      .join("");
-  }
-
-  // 创建直播卡片
-  function createLiveStreamCard(stream, type, index = 0) {
-    const config = languageConfig[currentLanguage] || languageConfig["zh"];
-    const animationDelay = index * 0.05; // 每个卡片延迟50ms
-
-    return `
-      <div class="live-stream-card" onclick="joinLiveStream('${stream.id}')" 
-        style="cursor: pointer; transition: all 0.2s ease; position: relative; margin-bottom: 16px; animation: liveCardFadeIn 0.4s ease-out ${animationDelay}s both; opacity: 0;"
-        onmouseover="this.querySelector('.card-overlay').style.opacity='1'"
-        onmouseout="this.querySelector('.card-overlay').style.opacity='0'">
-        
-        <!-- 缩略图容器 -->
-        <div style="position: relative; width: 100%; aspect-ratio: 16/9; border-radius: 12px; overflow: hidden; margin-bottom: 12px; background-color: #1a1a1a;">
-          <!-- 背景图片 -->
-          <img src="${stream.background}" alt="${stream.title}" 
-            style="width: 100%; height: 100%; object-fit: cover;">
-          
-          <!-- 在线人数指示器 -->
-          <div style="position: absolute; top: 8px; left: 8px; display: flex; align-items: center; gap: 4px; background-color: rgba(0,0,0,0.7); padding: 3px 8px; border-radius: 4px;">
-            <div style="width: 8px; height: 8px; background-color: var(--x-accent); border-radius: 50%; animation: pulse 2s infinite;"></div>
-            <span style="color: #fff; font-size: 12px; font-weight: 500;">${stream.onlineCount.toLocaleString()}</span>
-          </div>
-          
-          <!-- 持续时间 -->
-          <div style="position: absolute; bottom: 8px; right: 8px; background-color: rgba(0,0,0,0.7); padding: 3px 8px; border-radius: 4px;">
-            <span style="color: #fff; font-size: 12px; font-weight: 500;">${
-              stream.duration
-            }</span>
-          </div>
-          
-          <!-- 悬停覆盖层 -->
-          <div class="card-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.2s ease;">
-            <div style="width: 48px; height: 48px; border-radius: 50%; background-color: var(--x-accent); display: flex; justify-content: center; align-items: center;">
-              <svg viewBox="0 0 24 24" style="width: 24px; height: 24px; fill: #fff;">
-                <path d="M8 5v14l11-7z"></path>
-              </svg>
-            </div>
-          </div>
-        </div>
-        
-        <!-- 内容区域 -->
-        <div style="display: flex; gap: 12px;">
-          <!-- 主播头像 -->
-          <div style="width: 36px; height: 36px; border-radius: 50%; overflow: hidden; flex-shrink: 0;">
-            <img src="${stream.streamerAvatar}" alt="${
-      stream.streamerName
-    }" style="width: 100%; height: 100%; object-fit: cover;">
-          </div>
-          
-          <!-- 文本内容 -->
-          <div style="flex: 1; min-width: 0;">
-            <!-- 直播标题 -->
-            <h3 style="color: #fff; font-size: 14px; font-weight: 500; margin: 0 0 6px 0; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${
-              stream.title
-            }</h3>
-            
-            <!-- 主播名和分类 -->
-            <div style="display: flex; flex-direction: column;">
-              <span style="color: #aaa; font-size: 12px; margin-bottom: 2px;">${
-                stream.streamerName
-              } ${stream.streamerHandle}</span>
-              <div style="display: flex; align-items: center; gap: 8px;">
-                <span style="color: #aaa; font-size: 12px;">${
-                  stream.category
-                }</span>
-              </div>
-            </div>
-          </div>
-          
-          <!-- 更多选项 -->
-          <div style="width: 24px; display: flex; justify-content: center; cursor: pointer;" onclick="event.stopPropagation()">
-            <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; fill: #fff;">
-              <path d="M12 16.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5zM10.5 12c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5zm0-6c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5z"></path>
-            </svg>
-          </div>
-        </div>
-      </div>
-      
-      <style>
-        @keyframes pulse {
-          0% { opacity: 1; }
-          50% { opacity: 0.5; }
-          100% { opacity: 1; }
-        }
-        
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-        
-        @keyframes liveCardFadeIn {
-          0% {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          100% {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-      </style>
-    `;
-  }
-
-  // 测试弹幕数据
-  const testDanmakuData = [
-    {
-      id: 1,
-      user: "夜行者",
-      content: "主播声音好好听！",
-      avatar: "https://i.postimg.cc/4xmx7V4R/mmexport1759081128356.jpg",
-    },
-    {
-      id: 2,
-      user: "星辰",
-      content: "终于等到直播了",
-      avatar: "https://i.postimg.cc/4xmx7V4R/mmexport1759081128356.jpg",
-    },
-    {
-      id: 3,
-      user: "月光",
-      content: "今天聊什么话题？",
-      avatar: "https://i.postimg.cc/4xmx7V4R/mmexport1759081128356.jpg",
-    },
-    {
-      id: 4,
-      user: "追梦人",
-      content: "666666",
-      avatar: "https://i.postimg.cc/4xmx7V4R/mmexport1759081128356.jpg",
-    },
-    {
-      id: 5,
-      user: "流年",
-      content: "主播加油！",
-      avatar: "https://i.postimg.cc/4xmx7V4R/mmexport1759081128356.jpg",
-    },
-  ];
-
-  // 测试主播发言数据
-  const testStreamerMessages = [
-    "大家好，欢迎来到我的直播间！",
-    "今天我们来聊聊最近的生活趣事",
-    "有什么想问的可以发弹幕哦",
-    "感谢大家的支持！",
-  ];
-
-  // 当前直播间数据
-  let currentLiveRoomData = null;
-  let danmakuInterval = null;
-  let streamerMessageInterval = null;
-
-  // 加入直播间
-  function joinLiveStream(streamId) {
-    console.log("🎬 [直播间] 正在加入直播间:", streamId);
-
-    // 查找直播数据
-    let streamData = null;
-
-    // 在所有分类中查找
-    for (const category in liveStreamData) {
-      const found = liveStreamData[category].find((s) => s.id === streamId);
-      if (found) {
-        streamData = found;
-        break;
-      }
-    }
-
-    if (!streamData) {
-      console.error("❌ [直播间] 未找到直播数据:", streamId);
-      showXToast("直播间不存在", "error");
-      return;
-    }
-
-    // 保存当前直播间数据
-    currentLiveRoomData = {
-      ...streamData,
-      type:
-        streamData.category.includes("语音") || streamId.startsWith("audio")
-          ? "audio"
-          : "video",
-    };
-
-    console.log("✅ [直播间] 直播间数据:", currentLiveRoomData);
-
-    // 打开直播间页面
-    openLiveRoomPage();
-  }
-
-  // 初始化直播页面
-  async function initLivePage() {
-    try {
-      // 默认显示语音直播
-      currentLiveTab = "audio";
-
-      // 加载已保存的直播数据
-      await loadSavedLiveData();
-
-      // 加载已保存的直播状态
-      const liveCharacters = await loadLiveCharacterStatus();
-
-      // 渲染直播内容
-      renderLiveStreams("audio");
-      renderLiveStreams("video");
-
-      // 同步用户头像
-      syncLivePageAvatar();
-
-      // 加载自定义直播分类
-      await loadLiveCustomCategories();
-
-      // 同步角色头像（使用已保存的直播状态）
-      await syncLiveCharacterAvatars(liveCharacters);
-
-      // 重置收纳按钮状态
-      window.liveBtnExpanded = false;
-      resetLiveActionButtons();
-
-      console.log("✅ [直播页面] 初始化完成");
-    } catch (error) {
-      console.error("❌ [直播页面] 初始化失败:", error);
-    }
-  }
-
-  // ============================================
-  // 直播间功能
-  // ============================================
-
-  // 打开直播间页面
-  function openLiveRoomPage() {
-    if (!currentLiveRoomData) {
-      console.error("❌ [直播间] 无直播间数据");
-      return;
-    }
-
-    console.log("🎬 [直播间] 打开直播间，类型:", currentLiveRoomData.type);
-
-    // 根据类型创建对应的直播间UI
-    if (currentLiveRoomData.type === "audio") {
-      createAudioLiveRoom();
-    } else {
-      createVideoLiveRoom();
-    }
-  }
-
-  // 创建语音直播间UI
-  function createAudioLiveRoom() {
-    const config = languageConfig[currentLanguage] || languageConfig.zh;
-
-    // 检查是否已存在直播间容器
-    let liveRoomContainer = document.getElementById("live-room-container");
-    if (!liveRoomContainer) {
-      liveRoomContainer = document.createElement("div");
-      liveRoomContainer.id = "live-room-container";
-      document.body.appendChild(liveRoomContainer);
-    }
-
-    liveRoomContainer.innerHTML =
-      // 启动弹幕和主播发言模拟
-      startDanmakuSimulation();
-    startStreamerMessageSimulation();
-
-    console.log("✅ [直播间] 语音直播间已创建");
-  }
-
-  // 创建视频直播间UI（暂时占位）
-  function createVideoLiveRoom() {
-    showXToast("视频直播间功能开发中...", "info");
-    currentLiveRoomData = null;
-  }
-
-  // 关闭直播间
-  function closeLiveRoom() {
-    // 停止所有定时器
-    if (danmakuInterval) {
-      clearInterval(danmakuInterval);
-      danmakuInterval = null;
-    }
-    if (streamerMessageInterval) {
-      clearInterval(streamerMessageInterval);
-      streamerMessageInterval = null;
-    }
-
-    // 移除直播间容器
-    const container = document.getElementById("live-room-container");
-    if (container) {
-      container.remove();
-    }
-
-    currentLiveRoomData = null;
-    console.log("✅ [直播间] 已关闭");
-  }
-
-  // 切换直播信息展开/收起
-  function toggleLiveInfo() {
-    const content = document.getElementById("live-info-content");
-    const arrow = document.getElementById("live-info-arrow");
-
-    if (!content || !arrow) return;
-
-    const isExpanded =
-      content.style.maxHeight && content.style.maxHeight !== "0px";
-
-    if (isExpanded) {
-      content.style.maxHeight = "0";
-      arrow.style.transform = "rotate(0deg)";
-    } else {
-      content.style.maxHeight = content.scrollHeight + "px";
-      arrow.style.transform = "rotate(180deg)";
-    }
-  }
-
-  // 启动弹幕模拟
-  function startDanmakuSimulation() {
-    const danmakuList = document.getElementById("danmaku-list");
-    if (!danmakuList) return;
-
-    let messageIndex = 0;
-
-    danmakuInterval = setInterval(() => {
-      const message = testDanmakuData[messageIndex % testDanmakuData.length];
-
-      const danmakuItem = document.createElement("div");
-      danmakuItem.style.cssText = `
-        display: flex; 
-        align-items: flex-start; 
-        gap: 8px; 
-        padding: 6px; 
-        border-radius: 8px; 
-        background-color: rgba(255,255,255,0.05); 
-        animation: danmakuSlideIn 0.3s ease;
-      `;
-
-      danmakuItem.innerHTML = `
-        <img src="${message.avatar}" style="width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0;">
-        <div style="flex: 1; min-width: 0;">
-          <div style="color: var(--x-accent); font-size: 12px; font-weight: 600; margin-bottom: 2px;">${message.user}</div>
-          <div style="color: #fff; font-size: 13px; line-height: 1.3; word-break: break-word;">${message.content}</div>
-        </div>
-      `;
-
-      danmakuList.appendChild(danmakuItem);
-
-      // 限制弹幕数量
-      if (danmakuList.children.length > 10) {
-        danmakuList.removeChild(danmakuList.firstChild);
-      }
-
-      // 自动滚动到底部
-      const container = document.getElementById("danmaku-container");
-      if (container) {
-        container.scrollTop = container.scrollHeight;
-      }
-
-      messageIndex++;
-    }, 3000); // 每3秒一条弹幕
-  }
-
-  // 启动主播发言模拟
-  function startStreamerMessageSimulation() {
-    let messageIndex = 0;
-
-    streamerMessageInterval = setInterval(() => {
-      const message =
-        testStreamerMessages[messageIndex % testStreamerMessages.length];
-      showStreamerMessage(message);
-      messageIndex++;
-    }, 8000); // 每8秒主播发言一次
-
-    // 立即显示第一条消息
-    setTimeout(() => {
-      showStreamerMessage(testStreamerMessages[0]);
-    }, 2000);
-  }
-
-  // 显示主播发言
-  function showStreamerMessage(message) {
-    const bubble = document.getElementById("streamer-message-bubble");
-    const text = document.getElementById("streamer-message-text");
-
-    if (!bubble || !text) return;
-
-    text.textContent = message;
-    bubble.style.opacity = "1";
-    bubble.style.transform = "translateY(-50%) translateX(100%) scale(1)";
-
-    // 3秒后隐藏
-    setTimeout(() => {
-      bubble.style.opacity = "0";
-      bubble.style.transform = "translateY(-50%) translateX(100%) scale(0.9)";
-    }, 3000);
-  }
-
-  // 发送弹幕
-  function sendDanmaku(content, inputElement) {
-    if (!content || !content.trim()) return;
-
-    const config = languageConfig[currentLanguage] || languageConfig.zh;
-    const danmakuList = document.getElementById("danmaku-list");
-
-    if (!danmakuList) return;
-
-    const userAvatar =
-      window.userProfileData?.avatar ||
-      "https://i.postimg.cc/4xmx7V4R/mmexport1759081128356.jpg";
-    const userName = window.userProfileData?.name || config.you || "我";
-
-    const danmakuItem = document.createElement("div");
-    danmakuItem.style.cssText = `
-      display: flex; 
-      align-items: flex-start; 
-      gap: 8px; 
-      padding: 6px; 
-      border-radius: 8px; 
-      background-color: rgba(29,155,240,0.1); 
-      border-left: 2px solid var(--x-accent);
-      animation: danmakuSlideIn 0.3s ease;
-    `;
-
-    danmakuItem.innerHTML = `
-      <img src="${userAvatar}" style="width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0;">
-      <div style="flex: 1; min-width: 0;">
-        <div style="color: var(--x-accent); font-size: 12px; font-weight: 600; margin-bottom: 2px;">${userName}</div>
-        <div style="color: #fff; font-size: 13px; line-height: 1.3; word-break: break-word;">${content.trim()}</div>
-      </div>
-    `;
-
-    danmakuList.appendChild(danmakuItem);
-
-    // 限制弹幕数量
-    if (danmakuList.children.length > 10) {
-      danmakuList.removeChild(danmakuList.firstChild);
-    }
-
-    // 自动滚动到底部
-    const container = document.getElementById("danmaku-container");
-    if (container) {
-      container.scrollTop = container.scrollHeight;
-    }
-
-    // 清空输入框
-    if (inputElement) {
-      inputElement.value = "";
-    }
-
-    showXToast(config.danmakuSent || "弹幕已发送", "success");
-  }
-
-  // 发送点赞
-  function sendLike() {
-    const container = document.getElementById("like-animation-container");
-    if (!container) return;
-
-    // 创建心形图标
-    const heart = document.createElement("div");
-    heart.style.cssText = `
-      position: absolute;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      animation: likeFloat 2s ease-out forwards;
-      pointer-events: none;
-    `;
-
-    const colors = ["#ff6b6b", "#ff8787", "#ffa5a5", "#ff6b9d", "#c44569"];
-    const randomColor = colors[Math.floor(Math.random() * colors.length)];
-    const randomSize = 20 + Math.random() * 15;
-    const randomLeft = -10 + Math.random() * 20;
-
-    heart.style.left = `calc(50% + ${randomLeft}px)`;
-
-    heart.innerHTML = `
-      <svg viewBox="0 0 24 24" style="width: ${randomSize}px; height: ${randomSize}px; fill: ${randomColor}; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">
-        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-      </svg>
-    `;
-
-    container.appendChild(heart);
-
-    // 2秒后移除
-    setTimeout(() => {
-      heart.remove();
-    }, 2000);
-  }
-
-  // 显示直播间菜单
-  function showLiveRoomMenu() {
-    showXToast("直播间菜单功能开发中...", "info");
-  }
-
-  // 重置收纳按钮状态
-  function resetLiveActionButtons() {
-    setTimeout(() => {
-      const refreshBtn = document.getElementById("live-refresh-btn");
-      const startBtn = document.getElementById("live-start-btn");
-      const mainBtn = document.getElementById("live-main-btn");
-      const mainIcon = document.getElementById("live-main-icon");
-
-      if (refreshBtn && startBtn && mainBtn && mainIcon) {
-        // 重置所有按钮到初始状态
-        refreshBtn.style.transform = "scale(0)";
-        refreshBtn.style.opacity = "0";
-        startBtn.style.transform = "scale(0)";
-        startBtn.style.opacity = "0";
-        mainBtn.style.transform = "scale(1)";
-        mainIcon.style.transform = "rotate(0deg)";
-      }
-    }, 100);
-  }
-
-  // 同步直播页面用户头像
-  function syncLivePageAvatar() {
-    const liveAvatar = document.getElementById("live-page-user-avatar");
-    if (liveAvatar && window.userProfileData && window.userProfileData.avatar) {
-      liveAvatar.src = window.userProfileData.avatar;
-    }
-  }
-
-  // 同步角色头像和直播状态
-  async function syncLiveCharacterAvatars(liveCharacters = []) {
-    try {
-      console.log("🎭 [角色头像] 开始同步角色头像和直播状态...");
-
-      const xDb = getXDB();
-      const allXProfiles = await xDb.xCharacterProfiles.toArray();
-
-      // 获取绑定角色列表
-      let boundCharacters = [];
-      try {
-        const { xSettings } = await APIUtils.loadConfigAndSettings();
-        boundCharacters = xSettings.boundCharacters || [];
-      } catch (error) {
-        console.warn("⚠️ [角色头像] 获取绑定角色失败:", error);
-        boundCharacters = [];
-      }
-
-      // 获取所有绑定角色的资料
-      const characterAvatars = [];
-      for (const charId of boundCharacters) {
-        const xProfile = allXProfiles.find((p) => p.characterId === charId);
-        if (xProfile) {
-          const isLive = liveCharacters.some((lc) => lc.characterId === charId);
-          characterAvatars.push({
-            characterId: charId,
-            name: xProfile.xName,
-            handle: xProfile.xHandle,
-            avatar: xProfile.xAvatar,
-            isLive: isLive,
-            xProfile: xProfile,
-          });
-        }
-      }
-
-      // 按直播状态排序：正在直播的在前面
-      characterAvatars.sort((a, b) => {
-        if (a.isLive && !b.isLive) return -1;
-        if (!a.isLive && b.isLive) return 1;
-        return 0;
-      });
-
-      // 更新顶部头像栏（用户频道栏是直播页面的第二个div）
-      let avatarContainer = document.querySelector(
-        "#x-live-page > div:nth-child(2)"
-      );
-      if (!avatarContainer) {
-        console.warn("⚠️ [角色头像] 未找到头像容器，尝试备用选择器...");
-        // 备用选择器：通过样式特征查找
-        avatarContainer = document.querySelector(
-          '#x-live-page div[style*="overflow-x: auto"][style*="padding: 8px 16px"]'
-        );
-        if (avatarContainer) {
-          console.log("✅ [角色头像] 使用备用选择器找到容器");
-        } else {
-          console.error("❌ [角色头像] 完全未找到头像容器");
-          return;
-        }
-      }
-
-      // 构建头像HTML
-      if (characterAvatars.length === 0) {
-        // 如果没有绑定角色，显示默认提示
-        avatarContainer.innerHTML = `
-          <div style="display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 64px;">
-            <div style="width: 56px; height: 56px; border-radius: 50%; overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; background-color: rgba(255,255,255,0.1);">
-              <svg viewBox="0 0 24 24" style="width: 24px; height: 24px; fill: #71767b;">
-                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-              </svg>
-            </div>
-            <span style="color: #71767b; font-size: 12px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; max-width: 60px;">暂无角色</span>
-          </div>
-        `;
-      } else {
-        // 生成角色头像
-        const avatarHTML = characterAvatars
-          .map((char, index) => {
-            const glowEffect = char.isLive
-              ? `box-shadow: 0 0 0 3px var(--x-accent), 0 0 15px var(--x-accent); animation: liveGlow 2s ease-in-out infinite;`
-              : "";
-
-            return `
-            <div style="display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 64px; margin-right: ${
-              index < characterAvatars.length - 1 ? "12px" : "0"
-            };">
-              <div style="width: 56px; height: 56px; border-radius: 50%; overflow: hidden; position: relative; ${glowEffect}" 
-                   title="${char.name} ${char.isLive ? "(正在直播)" : ""}"
-                   onclick="handleLiveCharacterClick('${char.characterId}', ${
-              char.isLive
-            })">
-                <img src="${char.avatar}" 
-                     style="width: 100%; height: 100%; object-fit: cover; cursor: pointer;"
-                     alt="${char.name}">
-                ${
-                  char.isLive
-                    ? `
-                  <div style="position: absolute; top: -2px; right: -2px; width: 20px; height: 20px; background-color: var(--x-accent); border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 3px solid #0f0f0f;">
-                    <div style="width: 8px; height: 8px; background-color: #fff; border-radius: 50%; animation: pulse 2s infinite;"></div>
-                  </div>
-                `
-                    : ""
-                }
-              </div>
-              <span style="color: ${
-                char.isLive ? "var(--x-accent)" : "#fff"
-              }; font-size: 12px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; max-width: 60px; font-weight: ${
-              char.isLive ? "600" : "400"
-            };">
-                ${char.name}
-              </span>
-            </div>
-          `;
-          })
-          .join("");
-
-        avatarContainer.innerHTML = avatarHTML;
-
-        // 添加光晕动画样式
-        if (liveCharacters.length > 0) {
-          const style = document.getElementById("live-glow-style");
-          if (!style) {
-            const newStyle = document.createElement("style");
-            newStyle.id = "live-glow-style";
-            newStyle.textContent = `
-              @keyframes liveGlow {
-                0% { box-shadow: 0 0 0 3px var(--x-accent), 0 0 15px var(--x-accent); }
-                50% { box-shadow: 0 0 0 3px var(--x-accent), 0 0 25px var(--x-accent); }
-                100% { box-shadow: 0 0 0 3px var(--x-accent), 0 0 15px var(--x-accent); }
-              }
-            `;
-            document.head.appendChild(newStyle);
-          }
-        }
-      }
-
-      const liveCount = characterAvatars.filter((c) => c.isLive).length;
-      console.log(
-        `✅ [角色头像] 同步完成，共${characterAvatars.length}个角色，${liveCount}个正在直播`
-      );
-    } catch (error) {
-      console.error("❌ [角色头像] 同步失败:", error);
-    }
-  }
-
-  // ============================================
-  // 直播收纳按钮动画功能
-  // ============================================
-
-  // 切换收纳按钮展开状态
-  function toggleLiveActionButtons() {
-    const refreshBtn = document.getElementById("live-refresh-btn");
-    const startBtn = document.getElementById("live-start-btn");
-    const mainBtn = document.getElementById("live-main-btn");
-    const mainIcon = document.getElementById("live-main-icon");
-
-    if (!refreshBtn || !startBtn || !mainBtn || !mainIcon) return;
-
-    window.liveBtnExpanded = !window.liveBtnExpanded;
-
-    if (window.liveBtnExpanded) {
-      // 展开动画
-      // 主按钮旋转
-      mainBtn.style.transform = "rotate(45deg)";
-      mainIcon.style.transform = "rotate(-45deg)";
-
-      // 左侧刷新按钮从右向左滑入
-      setTimeout(() => {
-        refreshBtn.style.transform = "scale(1) translateX(0)";
-        refreshBtn.style.opacity = "1";
-      }, 50);
-
-      // 右侧开启按钮从左向右滑入
-      setTimeout(() => {
-        startBtn.style.transform = "scale(1) translateX(0)";
-        startBtn.style.opacity = "1";
-      }, 100);
-    } else {
-      // 收起动画
-      // 主按钮恢复
-      mainBtn.style.transform = "scale(1)";
-      mainIcon.style.transform = "rotate(0deg)";
-
-      // 按钮收起
-      refreshBtn.style.transform = "scale(0) translateX(15px)";
-      refreshBtn.style.opacity = "0";
-
-      startBtn.style.transform = "scale(0) translateX(-15px)";
-      startBtn.style.opacity = "0";
-    }
-  }
-
-  // ▼▼▼ 【主要！！！】第十二个情景：直播刷新生成器 ▼▼▼
-  // 刷新直播列表
-  async function refreshLiveStreams() {
-    console.log("🔴 [直播刷新] 开始刷新直播列表...");
-
-    // 添加旋转动画效果
-    const refreshBtn = document.getElementById("live-refresh-btn");
-    if (refreshBtn) {
-      const svg = refreshBtn.querySelector("svg");
-      if (svg) {
-        svg.style.animation = "spin 1s linear";
-      }
-    }
-
-    try {
-      // 🔧 使用统一的API配置加载工具
-      const { db, xDb, apiConfig, xSettings } =
-        await APIUtils.loadConfigAndSettings();
-      const { userPrompt, worldSetting, boundCharacters } = xSettings;
-
-      // 使用工具函数构建用户X个人资料信息
-      const userXProfileInfo = StringBuilders.buildUserXProfileInfo(
-        window.userProfileData
-      );
-
-      // Token计数器
-      let tokenCount = 0;
-
-      // 1. 构建基础系统提示词
-      let systemPrompt = StringBuilders.buildBaseSystemPrompt({
-        userPrompt,
-        worldSetting,
-      });
-      tokenCount = TokenUtils.logTokenUsage(
-        "直播刷新生成器",
-        "基础系统提示词",
-        systemPrompt,
-        tokenCount
-      );
-
-      // 1.5. 获取适用的世界书内容
-      const worldBooksContent = await StringBuilders.getApplicableWorldBooks(
-        "live",
-        {
-          boundCharacters,
-        }
-      );
-      if (worldBooksContent) {
-        systemPrompt += worldBooksContent;
-        tokenCount = TokenUtils.logTokenUsage(
-          "直播刷新生成器",
-          "世界书内容",
-          worldBooksContent,
-          tokenCount
-        );
-      }
-
-      // 2. 添加直播生成任务说明
-      systemPrompt += `
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🎯 核心任务说明 🎯
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-你是X社交平台的直播内容生成器。请生成当前的直播数据。
-
-【生成要求】：
-- 为"语音直播"和"视频直播"各生成3个直播间
-- 如果有自定义直播分类，也为每个分类生成3个直播间
-- 直播内容要多样化，符合分类特点
-- 直播者可以是绑定角色、绑定NPC或虚构的普通用户
-- 绑定角色是否正在直播由AI根据角色人设和兴趣决定
-
-【直播数据格式】：
-- 直播标题：简洁有趣，符合直播内容
-- 直播者信息：姓名、句柄、头像、认证状态
-- 直播时长：合理的时长（如 "1h 23m", "2h 15m", "35m"等）
-- 在线人数：1-2000之间的合理数字
-- 直播类别：符合分类的具体标签
-- 直播间简介：可选，简短描述直播内容
-
-🚨 **重要：你必须只返回有效的JSON格式数据，任何语法错误都会导致系统崩溃！** 🚨
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-`;
-
-      const coreTaskSection = systemPrompt.substring(
-        systemPrompt.lastIndexOf("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-      );
-      tokenCount = TokenUtils.logTokenUsage(
-        "直播刷新生成器",
-        "核心任务说明",
-        coreTaskSection,
-        tokenCount
-      );
-
-      // 3. 角色资料（直播生成场景）
-      const charactersInfo = await StringBuilders.buildCompleteCharacterInfo(
-        boundCharacters,
-        userXProfileInfo,
-        "live"
-      );
-      if (charactersInfo) {
-        systemPrompt += charactersInfo;
-        tokenCount = TokenUtils.logTokenUsage(
-          "直播刷新生成器",
-          "角色资料信息",
-          charactersInfo,
-          tokenCount
-        );
-      }
-
-      // 3.5. 加载绑定NPC信息
-      const boundNPCs = await APIUtils.loadBoundNPCs();
-      if (boundNPCs.length > 0) {
-        const npcSectionStart = systemPrompt.length;
-        systemPrompt += `
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📋 绑定NPC资料（可作为直播者）
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-以下NPC可以作为直播者出现：
-`;
-        for (const npc of boundNPCs) {
-          systemPrompt += `
-【NPC信息】
-- X姓名：${npc.name}
-- X句柄：${npc.handle}
-- X头像：${npc.avatar}
-- 认证状态：false
-【人设描述】
-${npc.personality || "暂无人设描述"}
-【发帖习惯/兴趣】
-${npc.postingHabits || "暂无描述"}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-`;
-        }
-        const npcSection = systemPrompt.substring(npcSectionStart);
-        tokenCount = TokenUtils.logTokenUsage(
-          "直播刷新生成器",
-          "NPC资料信息",
-          npcSection,
-          tokenCount
-        );
-      }
-
-      // 4. 获取自定义直播分类
-      const enabledCustomCategories = liveCustomCategories.filter(
-        (cat) => cat.enabled && cat.name.trim()
-      );
-
-      // 5. 构建自定义分类信息
-      if (enabledCustomCategories.length > 0) {
-        systemPrompt += `
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📂 自定义直播分类
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-`;
-        enabledCustomCategories.forEach((category) => {
-          systemPrompt += `
-【${category.name}】
-- 分类描述：${category.description || "无描述"}
-- 生成要求：为此分类生成3个相关的直播间
-`;
-        });
-        systemPrompt += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-`;
-        tokenCount = TokenUtils.logTokenUsage(
-          "直播刷新生成器",
-          "自定义分类信息",
-          systemPrompt.substring(systemPrompt.lastIndexOf("📂 自定义直播分类")),
-          tokenCount
-        );
-      }
-
-      // 6. 用户约束信息
-      const userConstraintsStart = systemPrompt.length;
-      systemPrompt +=
-        StringBuilders.buildUniversalConstraints(userXProfileInfo);
-      const userConstraints = systemPrompt.substring(userConstraintsStart);
-      tokenCount = TokenUtils.logTokenUsage(
-        "直播刷新生成器",
-        "用户约束信息",
-        userConstraints,
-        tokenCount
-      );
-
-      // 7. 构建JSON返回格式
-      let jsonFormat = `{
-  "audio": [
-    {
-      "title": "直播标题",
-      "streamerName": "主播姓名",
-      "streamerHandle": "@句柄",
-      "streamerAvatar": "头像链接",
-      "description": "直播间简介（可选）",
-      "onlineCount": 数字,
-      "category": "直播类别",
-      "duration": "直播时长",
-      "isLive": true
-    }
-  ],
-  "video": [
-    {
-      "title": "直播标题", 
-      "streamerName": "主播姓名",
-      "streamerHandle": "@句柄",
-      "streamerAvatar": "头像链接",
-      "description": "直播间简介（可选）",
-      "onlineCount": 数字,
-      "category": "直播类别", 
-      "duration": "直播时长",
-      "isLive": true
-    }
-  ]`;
-
-      // 添加自定义分类到JSON格式
-      if (enabledCustomCategories.length > 0) {
-        enabledCustomCategories.forEach((category) => {
-          jsonFormat += `,
-  "${category.id}": [
-    {
-      "title": "直播标题",
-      "streamerName": "主播姓名", 
-      "streamerHandle": "@句柄",
-      "streamerAvatar": "头像链接",
-      "description": "直播间简介（可选）",
-      "onlineCount": 数字,
-      "category": "直播类别",
-      "duration": "直播时长", 
-      "isLive": true
-    }
-  ]`;
-        });
-      }
-
-      jsonFormat += `
-}`;
-
-      systemPrompt += `
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📋 JSON返回格式 - 严格执行 📋
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-⚠️ 必须返回完全有效的JSON，任何语法错误都将导致解析失败！
-
-${jsonFormat}
-
-🚨 【JSON语法严格要求】🚨
-1. **字符串值**：必须用双引号包围，内容中的引号必须转义为\\"
-2. **数字值**：onlineCount直接写数字，不要加引号 ✅ "onlineCount": 156 ❌ "onlineCount": "156"
-3. **布尔值**：isLive固定为true，不加引号 ✅ "isLive": true ❌ "isLive": "true"
-4. **数组**：用[]包围，元素间用逗号分隔，最后一个元素后不要逗号
-5. **对象**：用{}包围，键必须用双引号，最后一个元素后不要逗号
-
-🔒 【必需字段检查】🔒
-每个直播间必须包含：title, streamerName, streamerHandle, streamerAvatar, onlineCount, category, duration, isLive
-其中 description 是可选字段
-
-【直播者选择策略】：
-1. 绑定角色：根据角色人设、兴趣、X资料等判断是否适合直播，如果适合则可作为主播
-2. 绑定NPC：根据NPC人设和发帖习惯判断是否适合直播
-3. 虚构用户：创建符合直播内容的虚构主播
-4. 头像规则：
-   - 绑定角色：使用角色的xAvatar
-   - 绑定NPC：使用NPC的avatar
-   - 虚构用户：使用默认头像 https://i.postimg.cc/4xmx7V4R/mmexport1759081128356.jpg
-5. 认证状态：绑定角色根据xVerified，绑定NPC和虚构用户默认false
-
-【内容质量要求】：
-1. 直播标题要有趣吸引人，符合分类特点
-2. 在线人数要合理（1-2000），热门内容人数可以多一些
-3. 直播时长要现实合理（15分钟到8小时之间）
-4. 直播类别要具体且符合内容（如"音乐分享"、"技术教程"、"游戏娱乐"等）
-5. 直播间简介简洁明了，1-2句话描述直播内容
-
-请直接返回JSON数据，不要添加任何解释文字或markdown标记。
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
-
-      const formatSection = systemPrompt.substring(
-        systemPrompt.lastIndexOf("📋 JSON返回格式")
-      );
-      tokenCount = TokenUtils.logTokenUsage(
-        "直播刷新生成器",
-        "JSON格式要求",
-        formatSection,
-        tokenCount
-      );
-
-      const messages = [
-        {
-          role: "user",
-          content: `请生成新的X直播平台直播数据。
-
-⚠️ 关键要求：
-1. 必须返回完全有效的JSON格式，不要有任何语法错误
-2. 严格按照上述示例的格式和字段类型
-3. 数字字段不要加引号，布尔值不要加引号
-4. 字符串中的引号必须转义
-5. 不要在对象或数组末尾添加多余的逗号
-
-请直接返回JSON，不要添加任何解释文字。`,
-        },
-      ];
-
-      // 最终统计
-      const userMessage = messages[0].content;
-      TokenUtils.logFinalPrompt("直播刷新生成器", systemPrompt, userMessage);
-
-      // 🔧 使用统一的API请求工具
-      const aiResponseContent = await APIUtils.sendAIRequest({
-        apiConfig,
-        systemPrompt,
-        messages,
-        temperature: 0.8,
-      });
-
-      // 🔧 使用统一的JSON解析工具
-      let newLiveData = APIUtils.parseJSONResponse(aiResponseContent);
-
-      // 🔧 使用统一的后处理工具
-      newLiveData = await APIUtils.postProcessData(
-        newLiveData,
-        userXProfileInfo
-      );
-
-      // 验证数据格式
-      if (!newLiveData.audio || !newLiveData.video) {
-        throw new Error("AI返回的数据格式不正确，缺少必要字段");
-      }
-
-      // 为直播添加ID和随机背景
-      const timestamp = Date.now();
-      const processStreams = (streams, type) => {
-        return streams.map((stream, index) => {
-          return {
-            ...stream,
-            id: `${type}_${timestamp}_${index}`,
-            background: getRandomBackground(), // 随机背景图
-            createdAt: timestamp,
-          };
-        });
-      };
-
-      // 处理基础分类
-      newLiveData.audio = processStreams(newLiveData.audio, "audio");
-      newLiveData.video = processStreams(newLiveData.video, "video");
-
-      // 处理自定义分类
-      enabledCustomCategories.forEach((category) => {
-        if (
-          newLiveData[category.id] &&
-          Array.isArray(newLiveData[category.id])
-        ) {
-          newLiveData[category.id] = processStreams(
-            newLiveData[category.id],
-            category.id
-          );
-        }
-      });
-
-      // 更新全局直播数据
-      liveStreamData.audio = newLiveData.audio;
-      liveStreamData.video = newLiveData.video;
-
-      // 更新自定义分类数据
-      enabledCustomCategories.forEach((category) => {
-        if (newLiveData[category.id]) {
-          liveStreamData[category.id] = newLiveData[category.id];
-        }
-      });
-
-      // 保存到数据库
-      try {
-        const saveData = {
-          id: "liveStreams",
-          audio: newLiveData.audio,
-          video: newLiveData.video,
-          lastUpdated: new Date().toISOString(),
-        };
-
-        // 添加自定义分类数据
-        enabledCustomCategories.forEach((category) => {
-          if (newLiveData[category.id]) {
-            saveData[category.id] = newLiveData[category.id];
-          }
-        });
-
-        await xDb.xTweetsData.put(saveData);
-        console.log("✅ 直播数据已保存到数据库");
-      } catch (saveError) {
-        console.error("⚠️ 保存直播数据失败:", saveError);
-      }
-
-      // 分析哪些绑定角色正在直播
-      const liveCharacters = [];
-      const allStreams = [
-        ...newLiveData.audio,
-        ...newLiveData.video,
-        ...Object.keys(newLiveData)
-          .filter((key) => !["audio", "video"].includes(key))
-          .reduce((acc, key) => {
-            if (Array.isArray(newLiveData[key])) {
-              acc.push(...newLiveData[key]);
-            }
-            return acc;
-          }, []),
-      ];
-
-      // 检查绑定角色是否在直播
-      if (boundCharacters.length > 0) {
-        const allXProfiles = await xDb.xCharacterProfiles.toArray();
-        for (const charId of boundCharacters) {
-          const xProfile = allXProfiles.find((p) => p.characterId === charId);
-          if (xProfile) {
-            // 检查该角色是否在任何直播中出现
-            const isStreaming = allStreams.some(
-              (stream) =>
-                stream.streamerHandle === xProfile.xHandle ||
-                stream.streamerName === xProfile.xName
-            );
-            if (isStreaming) {
-              liveCharacters.push({
-                characterId: charId,
-                xProfile: xProfile,
-                isLive: true,
-              });
-            }
-          }
-        }
-      }
-
-      // 保存直播角色状态
-      await saveLiveCharacterStatus(liveCharacters);
-
-      // 同步角色头像和直播状态
-      await syncLiveCharacterAvatars(liveCharacters);
-
-      // 重新渲染当前标签页的直播内容
-      if (currentLiveTab === "audio" || currentLiveTab === "video") {
-        renderLiveStreams(currentLiveTab);
-      } else {
-        // 自定义分类
-        const targetContent = document.getElementById("live-audio-content");
-        if (targetContent && targetContent.style.display !== "none") {
-          const container = document.getElementById("live-audio-list");
-          if (container && liveStreamData[currentLiveTab]) {
-            container.innerHTML = liveStreamData[currentLiveTab]
-              .map((stream, index) =>
-                createLiveStreamCard(stream, currentLiveTab, index)
-              )
-              .join("");
-          }
-        }
-      }
-
-      // 显示成功消息
-      const liveCharacterCount = liveCharacters.length;
-      const totalStreams = allStreams.length;
-
-      // 显示手机样式通知
-      const isEnglish = currentLanguage === "en";
-      const userAvatar =
-        window.userProfileData?.avatar ||
-        "https://i.postimg.cc/4xmx7V4R/mmexport1759081128356.jpg";
-
-      if (liveCharacterCount > 0) {
-        showPhoneNotification({
-          title: "X",
-          message: isEnglish
-            ? `Live list refreshed! ${liveCharacterCount} character${
-                liveCharacterCount > 1 ? "s are" : " is"
-              } now streaming!`
-            : `直播列表已刷新！${liveCharacterCount}个绑定角色正在直播`,
-          avatar: userAvatar,
-          leftIcon: "x",
-        });
-      } else {
-        showPhoneNotification({
-          title: "X",
-          message: isEnglish
-            ? `Live list refreshed! ${totalStreams} stream${
-                totalStreams > 1 ? "s" : ""
-              } available`
-            : `直播列表已刷新！共${totalStreams}个直播间`,
-          avatar: userAvatar,
-          leftIcon: "x",
-        });
-      }
-
-      console.log("✅ [直播刷新] 刷新完成", {
-        总直播间数: totalStreams,
-        正在直播的角色: liveCharacterCount,
-        自定义分类: enabledCustomCategories.length,
-      });
-    } catch (error) {
-      console.error("❌ [直播刷新] 刷新失败:", error);
-      showXToast(`直播刷新失败: ${error.message}`, "error");
-    } finally {
-      // 停止旋转动画
-      if (refreshBtn) {
-        const svg = refreshBtn.querySelector("svg");
-        if (svg) {
-          svg.style.animation = "";
-        }
-      }
-    }
-  }
-  // ▲▲▲ 【主要！！！】第十二个情景：直播刷新生成器 ▲▲▲
-
-  // 开启直播
-  function startLiveStream() {
-    console.log("开启直播");
-    showXToast("直播功能开发中...", "info");
-  }
-
-  // 处理直播角色头像点击
-  async function handleLiveCharacterClick(characterId, isLive) {
-    if (isLive) {
-      // 如果角色正在直播，查找对应的直播间并进入
-      console.log("🎬 [直播间] 点击正在直播的角色:", characterId);
-
-      try {
-        const xDb = getXDB();
-        const allXProfiles = await xDb.xCharacterProfiles.toArray();
-        const xProfile = allXProfiles.find(
-          (p) => p.characterId === characterId
-        );
-
-        if (!xProfile) {
-          showXToast("未找到角色信息", "error");
-          return;
-        }
-
-        // 在所有直播数据中查找该角色的直播间
-        let streamData = null;
-        for (const category in liveStreamData) {
-          const found = liveStreamData[category].find(
-            (s) =>
-              s.streamerHandle === xProfile.xHandle ||
-              s.streamerName === xProfile.xName
-          );
-          if (found) {
-            streamData = found;
-            break;
-          }
-        }
-
-        if (streamData) {
-          // 保存当前直播间数据
-          currentLiveRoomData = {
-            ...streamData,
-            type:
-              streamData.category.includes("语音") ||
-              streamData.id.startsWith("audio")
-                ? "audio"
-                : "video",
-          };
-
-          // 打开直播间
-          openLiveRoomPage();
-        } else {
-          showXToast("未找到该角色的直播间", "error");
-        }
-      } catch (error) {
-        console.error("❌ [直播间] 进入失败:", error);
-        showXToast("进入直播间失败", "error");
-      }
-    } else {
-      // 如果角色未直播，显示提示
-      console.log("角色未在直播:", characterId);
-      showXToast("该角色当前未在直播", "info");
-    }
-  }
-
-  // 按钮悬停事件处理函数
-  function handleLiveMainBtnMouseOver() {
-    const mainBtn = document.getElementById("live-main-btn");
-    if (mainBtn) {
-      mainBtn.style.transform = "scale(1.1)";
-    }
-  }
-
-  function handleLiveMainBtnMouseOut() {
-    const mainBtn = document.getElementById("live-main-btn");
-    if (mainBtn) {
-      mainBtn.style.transform = window.liveBtnExpanded
-        ? "rotate(45deg)"
-        : "scale(1)";
-    }
-  }
-
-  function handleLiveMainBtnTouchStart() {
-    const mainBtn = document.getElementById("live-main-btn");
-    if (mainBtn) {
-      mainBtn.style.transform = "scale(1.05)";
-    }
-  }
-
-  function handleLiveMainBtnTouchEnd() {
-    const mainBtn = document.getElementById("live-main-btn");
-    if (mainBtn) {
-      mainBtn.style.transform = window.liveBtnExpanded
-        ? "rotate(45deg)"
-        : "scale(1)";
-    }
-  }
-
-  // 子按钮悬停事件处理函数
-  function handleLiveSubBtnMouseOver(element) {
-    if (element) {
-      element.style.transform = "scale(1.1)";
-    }
-  }
-
-  function handleLiveSubBtnMouseOut(element) {
-    if (element) {
-      element.style.transform = "scale(1)";
-    }
-  }
-
-  function handleLiveSubBtnTouchStart(element) {
-    if (element) {
-      element.style.transform = "scale(1.05)";
-    }
-  }
-
-  function handleLiveSubBtnTouchEnd(element) {
-    if (element) {
-      element.style.transform = "scale(1)";
-    }
-  }
-
-  // ============================================
-  // 直播自定义分类管理
-  // ============================================
-
-  // 打开直播分类管理模态框
-  function openLiveCategoryModal() {
-    const modal = document.getElementById("live-category-manager-modal");
-    if (modal) {
-      modal.style.display = "block";
-      document.body.style.overflow = "hidden";
-      renderLiveCustomCategoriesList();
-    }
-  }
-
-  // 关闭直播分类管理模态框
-  function closeLiveCategoryModal(event) {
-    if (event && event.target !== event.currentTarget) {
-      return;
-    }
-    const modal = document.getElementById("live-category-manager-modal");
-    if (modal) {
-      modal.style.display = "none";
-      document.body.style.overflow = "auto";
-    }
-  }
-
-  // 添加新的直播分类
-  function addNewLiveCategory() {
-    const newCategory = {
-      id: `live_cat_${Date.now()}`,
-      name: "",
-      description: "",
-      enabled: true,
-    };
-    liveCustomCategories.push(newCategory);
-    renderLiveCustomCategoriesList();
-  }
-
-  // 删除直播分类
-  function deleteLiveCategory(categoryId) {
-    liveCustomCategories = liveCustomCategories.filter(
-      (cat) => cat.id !== categoryId
-    );
-    renderLiveCustomCategoriesList();
-    renderLiveCategoryTabs();
-  }
-
-  // 切换直播分类启用状态
-  function toggleLiveCategory(categoryId) {
-    const category = liveCustomCategories.find((cat) => cat.id === categoryId);
-    if (category) {
-      category.enabled = !category.enabled;
-      renderLiveCategoryTabs();
-    }
-  }
-
-  // 更新直播分类名称
-  function updateLiveCategoryName(categoryId, name) {
-    const category = liveCustomCategories.find((cat) => cat.id === categoryId);
-    if (category) {
-      category.name = name;
-    }
-  }
-
-  // 更新直播分类描述
-  function updateLiveCategoryDescription(categoryId, description) {
-    const category = liveCustomCategories.find((cat) => cat.id === categoryId);
-    if (category) {
-      category.description = description;
-    }
-  }
-
-  // 渲染直播自定义分类列表
-  function renderLiveCustomCategoriesList() {
-    const container = document.getElementById("live-custom-categories-list");
-    if (!container) return;
-
-    if (liveCustomCategories.length === 0) {
-      container.innerHTML = `
-        <div style="text-align: center; padding: 40px 20px; color: #71767b;">
-          <svg viewBox="0 0 24 24" style="width: 48px; height: 48px; fill: currentColor; margin-bottom: 16px; opacity: 0.5;">
-            <path d="M19.5 12.75h-6.75V19.5h-1.5v-6.75H4.5v-1.5h6.75V4.5h1.5v6.75h6.75v1.5z"></path>
-          </svg>
-          <div style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">暂无自定义分类</div>
-          <div style="font-size: 14px;">点击"添加分类"开始创建</div>
-        </div>
-      `;
-      return;
-    }
-
-    container.innerHTML = liveCustomCategories
-      .map(
-        (category) => `
-      <div style="background-color: rgba(255,255,255,0.05); border-radius: 12px; padding: 16px; border: 1px solid rgba(255,255,255,0.1);">
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-          <div style="display: flex; align-items: center; gap: 12px; flex: 1;">
-            <label style="display: flex; align-items: center; cursor: pointer;">
-              <input type="checkbox" ${category.enabled ? "checked" : ""} 
-                onchange="toggleLiveCategory('${category.id}')"
-                style="width: 18px; height: 18px; accent-color: var(--x-accent);">
-            </label>
-            <input type="text" placeholder="分类名称" value="${category.name}" 
-              onchange="updateLiveCategoryName('${category.id}', this.value)"
-              style="flex: 1; background-color: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #fff; padding: 8px 12px; font-size: 14px; outline: none;"
-              onfocus="this.style.borderColor='var(--x-accent)'"
-              onblur="this.style.borderColor='rgba(255,255,255,0.2)'">
-          </div>
-          <button onclick="deleteLiveCategory('${category.id}')" 
-            style="background: transparent; border: 1px solid #f4212e; color: #f4212e; border-radius: 8px; padding: 6px 12px; font-size: 12px; cursor: pointer; transition: all 0.2s;"
-            onmouseover="this.style.backgroundColor='rgba(244,33,46,0.1)'"
-            onmouseout="this.style.backgroundColor='transparent'">
-            删除
-          </button>
-        </div>
-        <textarea placeholder="分类描述（可选）" 
-          onchange="updateLiveCategoryDescription('${category.id}', this.value)"
-          style="width: 100%; background-color: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #fff; padding: 8px 12px; font-size: 14px; resize: vertical; min-height: 60px; outline: none; font-family: inherit;"
-          onfocus="this.style.borderColor='var(--x-accent)'"
-          onblur="this.style.borderColor='rgba(255,255,255,0.2)'">${
-            category.description
-          }</textarea>
-      </div>
-    `
-      )
-      .join("");
-  }
-
-  // 保存直播自定义分类设置
-  async function saveLiveCustomCategories() {
-    try {
-      // 验证分类名称
-      const validCategories = liveCustomCategories.filter((cat) =>
-        cat.name.trim()
-      );
-
-      if (validCategories.length !== liveCustomCategories.length) {
-        showXToast("请填写所有分类的名称", "error");
-        return;
-      }
-
-      // 保存到数据库
-      const xDb = getXDB();
-      const categoryDataId = `liveCategories_${currentAccountId || "main"}`;
-      await xDb.xSettings.put({
-        id: categoryDataId,
-        categories: liveCustomCategories,
-        updatedAt: new Date().toISOString(),
-      });
-
-      // 重新渲染分类标签
-      renderLiveCategoryTabs();
-
-      showXToast("直播分类设置已保存", "success");
-      closeLiveCategoryModal();
-    } catch (error) {
-      console.error("保存直播分类失败:", error);
-      showXToast("保存失败: " + error.message, "error");
-    }
-  }
-
-  // 加载直播自定义分类
-  async function loadLiveCustomCategories() {
-    try {
-      const xDb = getXDB();
-      const categoryDataId = `liveCategories_${currentAccountId || "main"}`;
-      const savedData = await xDb.xSettings.get(categoryDataId);
-
-      if (savedData && savedData.categories) {
-        liveCustomCategories = savedData.categories;
-        renderLiveCategoryTabs();
-        console.log(
-          `✅ [直播分类] 已加载 ${liveCustomCategories.length} 个自定义分类`
-        );
-      } else {
-        console.log("ℹ️ [直播分类] 未找到保存的自定义分类");
-      }
-    } catch (error) {
-      console.error("❌ [直播分类] 加载失败:", error);
-    }
-  }
-
-  // 加载已保存的直播数据
-  async function loadSavedLiveData() {
-    try {
-      const xDb = getXDB();
-      const savedData = await xDb.xTweetsData.get("liveStreams");
-
-      if (savedData) {
-        // 检查数据是否过期（超过2小时自动清除）
-        const lastUpdated = new Date(savedData.lastUpdated);
-        const now = new Date();
-        const diffHours = (now - lastUpdated) / (1000 * 60 * 60);
-
-        if (diffHours > 2) {
-          console.log("🕐 [直播数据] 数据已过期，使用默认数据");
-          return;
-        }
-
-        // 恢复保存的直播数据
-        if (savedData.audio) {
-          liveStreamData.audio = savedData.audio;
-        }
-        if (savedData.video) {
-          liveStreamData.video = savedData.video;
-        }
-
-        // 恢复自定义分类数据
-        Object.keys(savedData).forEach((key) => {
-          if (
-            key !== "id" &&
-            key !== "audio" &&
-            key !== "video" &&
-            key !== "lastUpdated"
-          ) {
-            liveStreamData[key] = savedData[key];
-          }
-        });
-
-        console.log("✅ [直播数据] 已加载保存的直播数据");
-      } else {
-        console.log("ℹ️ [直播数据] 未找到保存的直播数据，使用默认数据");
-      }
-    } catch (error) {
-      console.error("❌ [直播数据] 加载失败:", error);
-    }
-  }
-
-  // 加载直播角色状态
-  async function loadLiveCharacterStatus() {
-    try {
-      const xDb = getXDB();
-      const statusDataId = `liveCharacterStatus_${currentAccountId || "main"}`;
-      const savedStatus = await xDb.xSettings.get(statusDataId);
-
-      if (savedStatus && savedStatus.liveCharacters) {
-        // 检查状态是否过期（超过2小时自动清除）
-        const lastUpdated = new Date(savedStatus.lastUpdated);
-        const now = new Date();
-        const diffHours = (now - lastUpdated) / (1000 * 60 * 60);
-
-        if (diffHours > 2) {
-          console.log("🕐 [直播状态] 直播状态已过期，清除状态");
-          // 清除过期状态
-          await xDb.xSettings.delete(statusDataId);
-          return [];
-        }
-
-        console.log(
-          `✅ [直播状态] 已加载 ${savedStatus.liveCharacters.length} 个角色的直播状态`
-        );
-        return savedStatus.liveCharacters;
-      } else {
-        console.log("ℹ️ [直播状态] 未找到保存的直播状态");
-        return [];
-      }
-    } catch (error) {
-      console.error("❌ [直播状态] 加载失败:", error);
-      return [];
-    }
-  }
-
-  // 保存直播角色状态
-  async function saveLiveCharacterStatus(liveCharacters) {
-    try {
-      const xDb = getXDB();
-      const statusDataId = `liveCharacterStatus_${currentAccountId || "main"}`;
-
-      await xDb.xSettings.put({
-        id: statusDataId,
-        liveCharacters: liveCharacters,
-        lastUpdated: new Date().toISOString(),
-      });
-
-      console.log(
-        `✅ [直播状态] 已保存 ${liveCharacters.length} 个角色的直播状态`
-      );
-    } catch (error) {
-      console.error("❌ [直播状态] 保存失败:", error);
-    }
-  }
-
-  // 渲染直播分类标签到页面
-  function renderLiveCategoryTabs() {
-    const container = document.getElementById("live-categories-container");
-    if (!container) return;
-
-    // 移除现有的自定义分类标签
-    const existingCustomTabs = container.querySelectorAll(".live-custom-tab");
-    existingCustomTabs.forEach((tab) => tab.remove());
-
-    // 添加启用的自定义分类标签
-    const enabledCategories = liveCustomCategories.filter(
-      (cat) => cat.enabled && cat.name.trim()
-    );
-    const addButton = container.querySelector(".live-add-category-btn");
-
-    enabledCategories.forEach((category) => {
-      const tabElement = document.createElement("div");
-      tabElement.className = "live-tab live-custom-tab";
-      tabElement.onclick = () => switchLiveTab(category.id);
-      tabElement.style.cssText = `
-        padding: 8px 12px; 
-        background-color: rgba(255,255,255,0.1); 
-        border-radius: 16px; 
-        font-size: 14px; 
-        font-weight: 500; 
-        cursor: pointer; 
-        color: #71767b;
-        white-space: nowrap;
-      `;
-      tabElement.innerHTML = `<span>${category.name}</span>`;
-
-      // 在添加按钮之前插入
-      container.insertBefore(tabElement, addButton);
-    });
-  }
-
-  // ============================================
   // 主题色自定义功能
   // ============================================
   // 预设主题色
@@ -21248,6 +19470,106 @@ ${
           startAutoMessageSystem();
         }, 500);
       }
+
+      // 🔧 修复：刷新私信列表中该角色的头像（如果存在）
+      try {
+        const messageId = `msg_${characterId}`;
+        const dataId = `messagesList_${currentAccountId || "main"}`;
+        const savedData = await db.xAccountProfiles.get(dataId);
+
+        if (savedData && savedData.data) {
+          const messagesList = savedData.data;
+          const messageIndex = messagesList.findIndex(
+            (msg) => msg.id === messageId
+          );
+
+          if (messageIndex !== -1) {
+            // 更新私信列表中的头像和用户名
+            messagesList[messageIndex].userAvatar = xAvatar;
+            messagesList[messageIndex].userName = xName;
+            messagesList[messageIndex].userHandle = xHandle;
+
+            // 保存到数据库
+            await db.xAccountProfiles.put({
+              handle: dataId,
+              name: "messagesList",
+              data: messagesList,
+              updatedAt: new Date().toISOString(),
+            });
+
+            console.log(
+              `✅ [保存X资料] 已更新私信列表数据库中角色 ${characterId} 的信息`
+            );
+
+            // 🔧 无条件刷新私信列表UI（如果列表页面存在）
+            const messagesPage = document.getElementById("x-messages-page");
+            if (messagesPage && typeof window.loadMessagesList === "function") {
+              // 不管页面是否显示，都标记需要刷新
+              // 如果列表正在显示，立即刷新；否则下次显示时会自动刷新
+              if (messagesPage.style.display === "flex") {
+                await window.loadMessagesList();
+                console.log("✅ [保存X资料] 私信列表UI已立即刷新");
+              } else {
+                console.log("✅ [保存X资料] 私信列表将在下次显示时自动刷新");
+              }
+            }
+
+            // 🔧 如果私信详情页正在显示该角色，同步更新详情页头像
+            const detailPage = document.getElementById("x-message-detail-page");
+            if (detailPage && detailPage.style.display === "flex") {
+              // 检查详情页是否显示的是当前角色
+              if (
+                window.currentMessageConversation &&
+                window.currentMessageConversation.id === messageId
+              ) {
+                // 更新顶部小头像
+                const topAvatar = document.getElementById(
+                  "message-detail-top-avatar"
+                );
+                if (topAvatar) {
+                  topAvatar.src = xAvatar;
+                  console.log("✅ [保存X资料] 已更新详情页顶部头像");
+                }
+                // 更新中间大头像
+                const detailAvatar = document.getElementById(
+                  "message-detail-avatar"
+                );
+                if (detailAvatar) {
+                  detailAvatar.src = xAvatar;
+                  console.log("✅ [保存X资料] 已更新详情页大头像");
+                }
+                // 更新用户名
+                const topName = document.getElementById(
+                  "message-detail-top-name"
+                );
+                if (topName) {
+                  topName.textContent = xName;
+                }
+                const detailName = document.getElementById(
+                  "message-detail-name"
+                );
+                if (detailName) {
+                  detailName.textContent = xName;
+                }
+                // 更新句柄
+                const detailHandle = document.getElementById(
+                  "message-detail-handle"
+                );
+                if (detailHandle) {
+                  detailHandle.textContent = xHandle;
+                }
+                console.log("✅ [保存X资料] 私信详情页UI已实时更新");
+              }
+            }
+          }
+        }
+      } catch (refreshError) {
+        console.warn(
+          "⚠️ [保存X资料] 刷新私信显示失败（不影响保存）:",
+          refreshError
+        );
+      }
+
       closeCharacterXProfileModal();
     } catch (error) {
       console.error("❌ [保存X资料] 保存角色X资料失败:", error);
@@ -31912,8 +30234,1103 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
     }
   };
 
-  // ▲▲▲ 【整合】X社交app的JavaScript代码结束 ▲▲▲
+  // ??? ????X??app?JavaScript???? ???
   // ============================================
+
+  // 第一部分: 权限验证模块
+  // ============================================
+
+  // ========== 配置区域 ==========
+  const CONFIG = {
+    // ✅ 你的Cloudflare Worker地址（已配置）
+    WORKER_URL: "https://pozp.chimiao777-e56.workers.dev/verify",
+
+    // Token有效期（毫秒）
+    TOKEN_EXPIRY: 7 * 24 * 60 * 60 * 1000, // 7天
+
+    // LocalStorage键名
+    STORAGE_KEY: "x_live_access_token",
+  };
+
+  // ========== 辅助函数 ==========
+
+  /**
+   * 获取或生成设备ID
+   */
+  function getDeviceId() {
+    const storageKey = "x_device_id";
+    let deviceId = localStorage.getItem(storageKey);
+
+    if (!deviceId) {
+      // 生成唯一设备ID
+      deviceId =
+        "device_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9);
+      localStorage.setItem(storageKey, deviceId);
+    }
+
+    return deviceId;
+  }
+
+  /**
+   * 安全的 Base64 编码（支持 Unicode）
+   */
+  function safeBase64Encode(str) {
+    try {
+      // 将字符串转换为 UTF-8 字节序列，然后编码为 Base64
+      return btoa(
+        encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (match, p1) => {
+          return String.fromCharCode(parseInt(p1, 16));
+        })
+      );
+    } catch (error) {
+      console.error("Base64 编码失败:", error);
+      // 降级方案：移除所有非 ASCII 字符
+      return btoa(str.replace(/[^\x00-\x7F]/g, ""));
+    }
+  }
+
+  /**
+   * 安全的 Base64 解码（支持 Unicode）
+   */
+  function safeBase64Decode(str) {
+    try {
+      // 从 Base64 解码，然后转换回 Unicode 字符串
+      const decoded = atob(str);
+      return decodeURIComponent(
+        Array.prototype.map
+          .call(decoded, (c) => {
+            return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+          })
+          .join("")
+      );
+    } catch (error) {
+      console.error("Base64 解码失败:", error);
+      // 降级方案：直接使用 atob
+      return atob(str);
+    }
+  }
+
+  // ========== 核心功能 ==========
+
+  /**
+   * 检查是否有有效的访问权限
+   */
+  function checkLiveAccess() {
+    const token = localStorage.getItem(CONFIG.STORAGE_KEY);
+    if (!token) return false;
+
+    try {
+      const data = JSON.parse(safeBase64Decode(token));
+      // 检查token是否过期
+      if (Date.now() > data.exp) {
+        localStorage.removeItem(CONFIG.STORAGE_KEY);
+        return false;
+      }
+      return true;
+    } catch (error) {
+      console.warn("Token验证失败:", error);
+      localStorage.removeItem(CONFIG.STORAGE_KEY);
+      return false;
+    }
+  }
+
+  /**
+   * 显示密钥输入弹窗
+   */
+  function requestLiveAccess() {
+    // 避免重复弹窗
+    if (document.getElementById("live-auth-modal")) return;
+
+    const modal = document.createElement("div");
+    modal.id = "live-auth-modal";
+    modal.className = "live-auth-container";
+    modal.innerHTML = `
+      <div class="auth-overlay"></div>
+      <div class="auth-cassette-box">
+        <!-- 磁带纹理 -->
+        <div class="cassette-texture"></div>
+        
+        <!-- 头部：唱片图标 + 标题 -->
+        <div class="auth-header">
+          <div class="vinyl-lock-icon">
+            <svg class="vinyl-disc-svg" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="45" fill="url(#vinylGradient)"/>
+              <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/>
+              <circle cx="50" cy="50" r="30" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/>
+              <circle cx="50" cy="50" r="20" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/>
+              <circle cx="50" cy="50" r="8" fill="#0a0a0a"/>
+              <defs>
+                <radialGradient id="vinylGradient">
+                  <stop offset="0%" style="stop-color:#2a2a2a"/>
+                  <stop offset="50%" style="stop-color:#1a1a1a"/>
+                  <stop offset="100%" style="stop-color:#0a0a0a"/>
+                </radialGradient>
+              </defs>
+            </svg>
+            <div class="lock-overlay">
+              <svg viewBox="0 0 24 24" width="24" height="24" stroke="#fff" fill="none" stroke-width="2">
+                <rect x="5" y="11" width="14" height="10" rx="2"/>
+                <path d="M12 15v2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+            </div>
+          </div>
+          
+          <div class="auth-title-section">
+            <h3 class="auth-title">ACCESS REQUIRED</h3>
+            <p class="auth-subtitle">请输入管理员提供的通行密钥</p>
+            <p class="auth-hint">验证成功后7天内有效</p>
+          </div>
+        </div>
+        
+        <!-- 输入区域 -->
+        <div class="auth-input-section">
+          <div class="input-label">
+            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2">
+              <rect x="5" y="11" width="14" height="10" rx="2"/>
+              <path d="M12 15v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+            <span>PASS KEY</span>
+          </div>
+          <div class="input-wrapper">
+            <input 
+              id="live-key-input" 
+              type="password" 
+              placeholder="••••••••••••" 
+              class="auth-input"
+              onkeypress="if(event.key==='Enter')document.getElementById('verify-live-key').click()"
+            />
+            <div class="input-underline"></div>
+          </div>
+        </div>
+        
+        <!-- 按钮组 -->
+        <div class="auth-buttons">
+          <button class="auth-btn auth-btn-cancel" onclick="document.getElementById('live-auth-modal').remove()">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2.5">
+              <path d="M18 6L6 18M6 6l12 12"/>
+            </svg>
+            <span>CANCEL</span>
+          </button>
+          <button id="verify-live-key" class="auth-btn auth-btn-verify">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2.5">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            <span>VERIFY</span>
+          </button>
+        </div>
+        
+        <!-- 状态提示 -->
+        <div id="verify-status" class="auth-status"></div>
+      </div>
+      
+      <style>
+        .live-auth-container {
+          position: fixed;
+          inset: 0;
+          z-index: 99999;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          opacity: 0;
+          animation: authFadeIn 0.4s ease forwards;
+        }
+        
+        @keyframes authFadeIn {
+          to { opacity: 1; }
+        }
+        
+        .auth-overlay {
+          position: fixed;
+          inset: 0;
+          background: rgba(0, 0, 0, 0.85);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+        }
+        
+        .auth-cassette-box {
+          position: relative;
+          width: 90%;
+          max-width: 340px;
+          background: linear-gradient(
+            135deg,
+            rgba(25, 25, 25, 0.98) 0%,
+            rgba(20, 20, 20, 0.98) 50%,
+            rgba(15, 15, 15, 0.98) 100%
+          );
+          backdrop-filter: blur(40px) saturate(150%);
+          -webkit-backdrop-filter: blur(40px) saturate(150%);
+          border: 1px solid rgba(255, 255, 255, 0.15);
+          border-radius: 20px;
+          box-shadow: 
+            0 20px 60px rgba(0, 0, 0, 0.6),
+            0 0 1px rgba(255, 255, 255, 0.2),
+            inset 0 1px 1px rgba(255, 255, 255, 0.1);
+          overflow: hidden;
+          padding: 24px 20px;
+          transform: translateY(40px) scale(0.9);
+          opacity: 0;
+          animation: authSlideUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s forwards;
+          z-index: 1;
+        }
+        
+        @keyframes authSlideUp {
+          to { 
+            transform: translateY(0) scale(1);
+            opacity: 1;
+          }
+        }
+        
+        .cassette-texture {
+          position: absolute;
+          inset: 0;
+          background: repeating-linear-gradient(
+            90deg,
+            transparent,
+            transparent 2px,
+            rgba(255, 255, 255, 0.01) 2px,
+            rgba(255, 255, 255, 0.01) 4px
+          );
+          pointer-events: none;
+        }
+        
+        .auth-header {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          margin-bottom: 22px;
+          position: relative;
+        }
+        
+        .vinyl-lock-icon {
+          width: 64px;
+          height: 64px;
+          position: relative;
+          margin-bottom: 12px;
+          animation: vinylSpin 8s linear infinite;
+        }
+        
+        @keyframes vinylSpin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        
+        .vinyl-disc-svg {
+          width: 100%;
+          height: 100%;
+          filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.6));
+        }
+        
+        .lock-overlay {
+          position: absolute;
+          inset: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          animation: lockPulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes lockPulse {
+          0%, 100% { opacity: 0.9; transform: scale(1); }
+          50% { opacity: 1; transform: scale(1.05); }
+        }
+        
+        .auth-title-section {
+          text-align: center;
+        }
+        
+        .auth-title {
+          margin: 0 0 6px 0;
+          font-size: 13px;
+          font-weight: 800;
+          letter-spacing: 2.5px;
+          text-transform: uppercase;
+          font-family: "Courier New", monospace;
+          color: rgba(255, 255, 255, 0.95);
+          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .auth-subtitle {
+          margin: 0 0 3px 0;
+          font-size: 12px;
+          color: rgba(255, 255, 255, 0.7);
+          line-height: 1.4;
+        }
+        
+        .auth-hint {
+          margin: 0;
+          font-size: 10px;
+          color: rgba(255, 255, 255, 0.45);
+          font-family: "Courier New", monospace;
+        }
+        
+        .auth-input-section {
+          margin-bottom: 20px;
+        }
+        
+        .input-label {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          margin-bottom: 8px;
+          font-size: 9px;
+          font-weight: 800;
+          letter-spacing: 1.2px;
+          text-transform: uppercase;
+          font-family: "Courier New", monospace;
+          color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .input-wrapper {
+          position: relative;
+        }
+        
+        .auth-input {
+          width: 100%;
+          padding: 12px 14px;
+          background: rgba(10, 10, 10, 0.6);
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          border-radius: 10px;
+          color: #fff;
+          font-size: 14px;
+          font-family: "Courier New", monospace;
+          letter-spacing: 1.5px;
+          box-sizing: border-box;
+          outline: none;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .auth-input:focus {
+          border-color: rgba(255, 255, 255, 0.3);
+          background: rgba(15, 15, 15, 0.8);
+          box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05);
+        }
+        
+        .auth-input::placeholder {
+          color: rgba(255, 255, 255, 0.3);
+          letter-spacing: 4px;
+        }
+        
+        .input-underline {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          height: 2px;
+          background: linear-gradient(90deg, 
+            transparent,
+            rgba(255, 255, 255, 0.3),
+            transparent
+          );
+          transform: scaleX(0);
+          transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+          pointer-events: none;
+        }
+        
+        .auth-input:focus + .input-underline {
+          transform: scaleX(1);
+        }
+        
+        .auth-buttons {
+          display: flex;
+          gap: 10px;
+          margin-bottom: 14px;
+        }
+        
+        .auth-btn {
+          flex: 1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+          padding: 12px 16px;
+          border-radius: 10px;
+          font-size: 11px;
+          font-weight: 800;
+          letter-spacing: 1.2px;
+          font-family: "Courier New", monospace;
+          cursor: pointer;
+          transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+          border: none;
+          outline: none;
+        }
+        
+        .auth-btn-cancel {
+          background: rgba(255, 255, 255, 0.06);
+          color: rgba(255, 255, 255, 0.8);
+          border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+        
+        .auth-btn-cancel:hover {
+          background: rgba(255, 255, 255, 0.1);
+          transform: translateY(-2px);
+        }
+        
+        .auth-btn-cancel:active {
+          transform: scale(0.95);
+        }
+        
+        .auth-btn-verify {
+          flex: 1.5;
+          background: linear-gradient(135deg, 
+            rgba(255, 255, 255, 0.15),
+            rgba(255, 255, 255, 0.08)
+          );
+          color: #fff;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        }
+        
+        .auth-btn-verify:hover {
+          background: linear-gradient(135deg, 
+            rgba(255, 255, 255, 0.22),
+            rgba(255, 255, 255, 0.12)
+          );
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+        
+        .auth-btn-verify:active {
+          transform: scale(0.95);
+        }
+        
+        .auth-btn:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+          transform: none !important;
+        }
+        
+        .auth-status {
+          min-height: 20px;
+          text-align: center;
+          font-size: 11px;
+          font-weight: 600;
+          padding: 6px 10px;
+          border-radius: 6px;
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid transparent;
+          transition: all 0.3s ease;
+        }
+        
+        .auth-status:empty {
+          opacity: 0;
+        }
+        
+        .auth-status.warning {
+          color: #f59e0b;
+          border-color: rgba(245, 158, 11, 0.2);
+          background: rgba(245, 158, 11, 0.05);
+        }
+        
+        .auth-status.loading {
+          color: rgba(255, 255, 255, 0.8);
+          border-color: rgba(255, 255, 255, 0.15);
+          background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .auth-status.success {
+          color: #00ba7c;
+          border-color: rgba(0, 186, 124, 0.2);
+          background: rgba(0, 186, 124, 0.05);
+        }
+        
+        .auth-status.error {
+          color: #f91880;
+          border-color: rgba(249, 24, 128, 0.2);
+          background: rgba(249, 24, 128, 0.05);
+        }
+        
+        @media (max-width: 480px) {
+          .auth-cassette-box {
+            padding: 20px 18px;
+            max-width: 320px;
+          }
+          
+          .vinyl-lock-icon {
+            width: 56px;
+            height: 56px;
+          }
+          
+          .lock-overlay svg {
+            width: 20px;
+            height: 20px;
+          }
+          
+          .auth-header {
+            margin-bottom: 18px;
+          }
+          
+          .auth-title {
+            font-size: 12px;
+            letter-spacing: 2px;
+          }
+          
+          .auth-subtitle {
+            font-size: 11px;
+          }
+          
+          .auth-hint {
+            font-size: 9px;
+          }
+          
+          .auth-input {
+            padding: 10px 12px;
+            font-size: 13px;
+          }
+          
+          .auth-btn {
+            padding: 10px 14px;
+            font-size: 10px;
+            gap: 5px;
+          }
+          
+          .auth-btn svg {
+            width: 14px;
+            height: 14px;
+          }
+          
+          .auth-status {
+            font-size: 10px;
+            padding: 5px 8px;
+          }
+        }
+      </style>
+    `;
+
+    document.body.appendChild(modal);
+
+    // 自动聚焦输入框
+    setTimeout(() => {
+      const input = document.getElementById("live-key-input");
+      if (input) input.focus();
+    }, 600);
+
+    // 绑定验证按钮事件
+    setupVerificationButton();
+  }
+
+  /**
+   * 设置验证按钮功能
+   */
+  function setupVerificationButton() {
+    const btn = document.getElementById("verify-live-key");
+    if (!btn) return;
+
+    btn.onclick = async () => {
+      const input = document.getElementById("live-key-input");
+      const status = document.getElementById("verify-status");
+      const key = input.value.trim();
+
+      // 验证输入
+      if (!key) {
+        showStatus(status, "请输入通行密钥", "warning");
+        input.focus();
+        return;
+      }
+
+      // 显示加载状态
+      btn.innerHTML = `
+        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2.5" style="animation: spin 1s linear infinite;">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 2 A10 10 0 0 1 22 12"/>
+        </svg>
+        <span>VERIFYING...</span>
+        <style>
+          @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+          }
+        </style>
+      `;
+      btn.disabled = true;
+      showStatus(status, "正在验证密钥，请稍候...", "loading");
+
+      try {
+        // 调用验证API
+        const deviceId = getDeviceId();
+        const response = await fetch(CONFIG.WORKER_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ key, deviceId }),
+          signal: AbortSignal.timeout(10000), // 10秒超时
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        const result = await response.json();
+
+        if (result.valid) {
+          // 验证成功，生成token
+          const token = safeBase64Encode(
+            JSON.stringify({
+              exp: Date.now() + CONFIG.TOKEN_EXPIRY,
+              user: result.user || "用户",
+              timestamp: Date.now(),
+              key: key, // 保存原始 key，用于自动加载
+            })
+          );
+
+          localStorage.setItem(CONFIG.STORAGE_KEY, token);
+
+          // ✨ 如果响应中包含 live 代码，执行它
+          if (result.code) {
+            try {
+              console.log("🔓 正在加载 live 功能代码...");
+              // 使用直接 eval 在当前作用域执行代码
+              // 合并后，x-live.js 和 x-core.js 在同一个大 IIFE 中，可以互相访问
+              eval(result.code);
+
+              // 标记代码已加载
+              window._xLiveCodeLoaded = true;
+
+              // ✨ 重新导出所有被覆盖的局部变量到 window
+              window.switchLiveTab = switchLiveTab;
+              window.joinLiveStream = joinLiveStream;
+              window.initLivePage = initLivePage;
+              window.renderLiveStreams = renderLiveStreams;
+              window.openLiveCategoryModal = openLiveCategoryModal;
+              window.closeLiveCategoryModal = closeLiveCategoryModal;
+              window.addNewLiveCategory = addNewLiveCategory;
+              window.deleteLiveCategory = deleteLiveCategory;
+              window.toggleLiveCategory = toggleLiveCategory;
+              window.updateLiveCategoryName = updateLiveCategoryName;
+              window.updateLiveCategoryDescription =
+                updateLiveCategoryDescription;
+              window.saveLiveCustomCategories = saveLiveCustomCategories;
+              window.syncLivePageAvatar = syncLivePageAvatar;
+              window.toggleLiveActionButtons = toggleLiveActionButtons;
+              window.refreshLiveStreams = refreshLiveStreams;
+              window.startLiveStream = startLiveStream;
+              window.syncLiveCharacterAvatars = syncLiveCharacterAvatars;
+              window.handleLiveCharacterClick = handleLiveCharacterClick;
+              window.loadSavedLiveData = loadSavedLiveData;
+              window.loadLiveCharacterStatus = loadLiveCharacterStatus;
+              window.saveLiveCharacterStatus = saveLiveCharacterStatus;
+              window.handleLiveMainBtnMouseOver = handleLiveMainBtnMouseOver;
+              window.handleLiveMainBtnMouseOut = handleLiveMainBtnMouseOut;
+              window.handleLiveMainBtnTouchStart = handleLiveMainBtnTouchStart;
+              window.handleLiveMainBtnTouchEnd = handleLiveMainBtnTouchEnd;
+              window.handleLiveSubBtnMouseOver = handleLiveSubBtnMouseOver;
+              window.handleLiveSubBtnMouseOut = handleLiveSubBtnMouseOut;
+              window.handleLiveSubBtnTouchStart = handleLiveSubBtnTouchStart;
+              window.handleLiveSubBtnTouchEnd = handleLiveSubBtnTouchEnd;
+              window.closeLiveRoom = closeLiveRoom;
+              window.toggleLiveInfo = toggleLiveInfo;
+              window.sendDanmaku = sendDanmaku;
+              window.sendLike = sendLike;
+              window.showLiveRoomMenu = showLiveRoomMenu;
+
+              console.log("✅ live 功能已加载，所有函数已更新");
+            } catch (codeError) {
+              console.error("❌ live 代码执行失败:", codeError);
+              // 即使代码执行失败，验证仍然成功，只是功能可能不完整
+            }
+          }
+
+          showStatus(
+            status,
+            `验证成功！欢迎 ${result.user || "用户"}`,
+            "success"
+          );
+
+          // 延迟关闭弹窗并刷新
+          setTimeout(() => {
+            document.getElementById("live-auth-modal")?.remove();
+
+            // 如果代码已加载，重新初始化直播页面
+            if (
+              window._xLiveCodeLoaded &&
+              typeof window.initLivePage === "function"
+            ) {
+              console.log("🚀 正在初始化 live 页面...");
+              window.initLivePage();
+            }
+
+            // 如果在直播标签页，刷新内容
+            const livePage = document.getElementById("x-live-page");
+            if (livePage && !livePage.classList.contains("hidden")) {
+              window.location.reload();
+            }
+          }, 1200);
+        } else {
+          showStatus(status, "密钥无效或已过期，请重试", "error");
+          resetButton(btn);
+          input.focus();
+          input.select();
+        }
+      } catch (error) {
+        console.error("验证失败:", error);
+
+        let errorMsg = "验证失败，请重试";
+        if (error.name === "AbortError") {
+          errorMsg = "请求超时，请检查网络连接";
+        } else if (!navigator.onLine) {
+          errorMsg = "网络未连接，请检查后重试";
+        }
+
+        showStatus(status, errorMsg, "error");
+        resetButton(btn);
+      }
+    };
+  }
+
+  /**
+   * 显示状态消息
+   */
+  function showStatus(element, message, type) {
+    // 移除所有状态类
+    element.classList.remove("warning", "loading", "success", "error");
+
+    // 添加对应的状态类
+    if (type) {
+      element.classList.add(type);
+    }
+
+    element.textContent = message;
+  }
+
+  /**
+   * 重置按钮状态
+   */
+  function resetButton(btn) {
+    btn.innerHTML = `
+      <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2.5">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+      <span>VERIFY</span>
+    `;
+    btn.disabled = false;
+  }
+
+  /**
+   * 包装需要权限的函数
+   */
+  function protectFunction(funcName) {
+    const original = window[funcName];
+    if (typeof original !== "function") return;
+
+    window[funcName] = function (...args) {
+      if (!checkLiveAccess()) {
+        console.log(`🔒 ${funcName} 需要权限验证`);
+        requestLiveAccess();
+        return;
+      }
+      return original.apply(this, args);
+    };
+  }
+
+  // ========== 初始化保护 ==========
+
+  // 保护所有直播相关函数
+  const protectedFunctions = [
+    "initLivePage",
+    "joinLiveStream",
+    "startLiveStream",
+    "openLiveRoomPage",
+    "renderLiveStreams",
+    "switchLiveTab",
+    "handleLiveCharacterClick",
+    "openLiveSettings",
+    "refreshLiveStreams",
+  ];
+
+  // 延迟包装，确保函数已定义
+  setTimeout(() => {
+    protectedFunctions.forEach(protectFunction);
+    console.log("🔐 已保护", protectedFunctions.length, "个直播功能");
+  }, 100);
+
+  // 监听DOM加载完成
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initNavigationProtection);
+  } else {
+    initNavigationProtection();
+  }
+
+  /**
+   * 初始化导航栏保护
+   */
+  function initNavigationProtection() {
+    // 延迟执行，确保导航栏已渲染
+    setTimeout(() => {
+      // 查找所有可能的直播按钮（包括顶部和底部导航）
+      const liveButtons = [
+        ...document.querySelectorAll(".x-live-btn"), // 顶部直播按钮
+        ...document.querySelectorAll(".x-nav-item"), // 底部导航项
+      ];
+
+      liveButtons.forEach((item) => {
+        const onclick = item.getAttribute("onclick");
+
+        // 找到直播相关的导航项
+        if (onclick && (onclick.includes("live") || onclick.includes("Live"))) {
+          const originalHandler = item.onclick;
+
+          item.onclick = function (e) {
+            if (!checkLiveAccess()) {
+              e.preventDefault();
+              e.stopPropagation();
+              console.log("🔒 直播功能需要权限验证");
+              requestLiveAccess();
+              return false;
+            }
+
+            // 执行原始处理函数
+            if (originalHandler) {
+              return originalHandler.call(this, e);
+            }
+          };
+
+          console.log("🔐 已保护直播按钮:", item.className || "live-button");
+        }
+      });
+    }, 1500);
+  }
+
+  // ========== 调试工具 ==========
+
+  // 在控制台暴露管理函数
+  window.xLiveAuth = {
+    // 检查权限状态
+    checkStatus: () => {
+      const hasAccess = checkLiveAccess();
+      const token = localStorage.getItem(CONFIG.STORAGE_KEY);
+
+      if (!hasAccess) {
+        console.log("❌ 未授权");
+        return { authorized: false };
+      }
+
+      try {
+        const data = JSON.parse(safeBase64Decode(token));
+        const remainingDays = Math.ceil(
+          (data.exp - Date.now()) / (24 * 60 * 60 * 1000)
+        );
+        console.log("✅ 已授权");
+        console.log("用户:", data.user);
+        console.log("剩余有效期:", remainingDays, "天");
+        return {
+          authorized: true,
+          user: data.user,
+          remainingDays,
+        };
+      } catch {
+        return { authorized: false };
+      }
+    },
+
+    // 手动清除授权
+    clearAuth: () => {
+      localStorage.removeItem(CONFIG.STORAGE_KEY);
+      console.log("✅ 已清除授权，下次访问需要重新验证");
+    },
+
+    // 手动触发验证
+    verify: () => {
+      requestLiveAccess();
+    },
+  };
+
+  console.log("🔐 X Live 权限保护模块已加载");
+  console.log("💡 调试命令: xLiveAuth.checkStatus() / xLiveAuth.clearAuth()");
+
+  // ============================================
+  // 第二部分: Live 函数占位符（防止导出时报错）
+  // ============================================
+  // 这些占位符函数会在验证成功后被 x-live-secret.js 的真实函数覆盖
+  // 如果未验证时调用，会触发验证弹窗
+
+  /**
+   * 创建受保护的占位符函数
+   */
+  function createProtectedPlaceholder(funcName) {
+    return function (...args) {
+      if (!checkLiveAccess()) {
+        console.log(`🔒 ${funcName} 需要权限验证`);
+        requestLiveAccess();
+        return;
+      }
+
+      // 已验证但代码未加载，尝试按需加载
+      if (!window._xLiveCodeLoaded) {
+        console.log(`🔄 ${funcName} 需要 live 代码，正在按需加载...`);
+
+        // 异步加载代码
+        loadLiveCodeOnDemand()
+          .then(() => {
+            // 加载成功后重新调用函数（此时已被 x-live-secret.js 覆盖）
+            if (typeof window[funcName] === "function") {
+              window[funcName](...args);
+            }
+          })
+          .catch((error) => {
+            console.error(`❌ 按需加载失败:`, error);
+            // 清除可能已损坏的 token
+            localStorage.removeItem(CONFIG.STORAGE_KEY);
+            requestLiveAccess(); // 重新验证
+          });
+        return;
+      }
+
+      console.warn(`⚠️ ${funcName} 未加载，请刷新页面`);
+    };
+  }
+
+  /**
+   * 按需加载 live 代码
+   */
+  async function loadLiveCodeOnDemand() {
+    if (window._xLiveCodeLoaded) return;
+
+    const token = localStorage.getItem(CONFIG.STORAGE_KEY);
+    if (!token) throw new Error("No token");
+
+    const data = JSON.parse(safeBase64Decode(token));
+    const deviceId = getDeviceId();
+
+    const response = await fetch(CONFIG.WORKER_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ key: data.key, deviceId }),
+      signal: AbortSignal.timeout(10000),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    const result = await response.json();
+
+    if (!result.valid) {
+      throw new Error(result.error || "验证失败");
+    }
+
+    if (result.code) {
+      eval(result.code);
+      window._xLiveCodeLoaded = true;
+
+      // ✨ 重新导出所有被覆盖的局部变量到 window
+      // eval执行后，局部变量已被真实函数覆盖，需要更新 window 引用
+      window.switchLiveTab = switchLiveTab;
+      window.joinLiveStream = joinLiveStream;
+      window.initLivePage = initLivePage;
+      window.renderLiveStreams = renderLiveStreams;
+      window.openLiveCategoryModal = openLiveCategoryModal;
+      window.closeLiveCategoryModal = closeLiveCategoryModal;
+      window.addNewLiveCategory = addNewLiveCategory;
+      window.deleteLiveCategory = deleteLiveCategory;
+      window.toggleLiveCategory = toggleLiveCategory;
+      window.updateLiveCategoryName = updateLiveCategoryName;
+      window.updateLiveCategoryDescription = updateLiveCategoryDescription;
+      window.saveLiveCustomCategories = saveLiveCustomCategories;
+      window.syncLivePageAvatar = syncLivePageAvatar;
+      window.toggleLiveActionButtons = toggleLiveActionButtons;
+      window.refreshLiveStreams = refreshLiveStreams;
+      window.startLiveStream = startLiveStream;
+      window.syncLiveCharacterAvatars = syncLiveCharacterAvatars;
+      window.handleLiveCharacterClick = handleLiveCharacterClick;
+      window.loadSavedLiveData = loadSavedLiveData;
+      window.loadLiveCharacterStatus = loadLiveCharacterStatus;
+      window.saveLiveCharacterStatus = saveLiveCharacterStatus;
+      window.handleLiveMainBtnMouseOver = handleLiveMainBtnMouseOver;
+      window.handleLiveMainBtnMouseOut = handleLiveMainBtnMouseOut;
+      window.handleLiveMainBtnTouchStart = handleLiveMainBtnTouchStart;
+      window.handleLiveMainBtnTouchEnd = handleLiveMainBtnTouchEnd;
+      window.handleLiveSubBtnMouseOver = handleLiveSubBtnMouseOver;
+      window.handleLiveSubBtnMouseOut = handleLiveSubBtnMouseOut;
+      window.handleLiveSubBtnTouchStart = handleLiveSubBtnTouchStart;
+      window.handleLiveSubBtnTouchEnd = handleLiveSubBtnTouchEnd;
+      window.closeLiveRoom = closeLiveRoom;
+      window.toggleLiveInfo = toggleLiveInfo;
+      window.sendDanmaku = sendDanmaku;
+      window.sendLike = sendLike;
+      window.showLiveRoomMenu = showLiveRoomMenu;
+
+      console.log("✅ live 代码按需加载成功，已更新所有函数引用");
+    } else {
+      throw new Error("响应中没有代码");
+    }
+  }
+
+  // 定义所有 live 相关函数的占位符（作为局部变量，由 x-exports.js 导出）
+  // x-live-secret.js 加载后会覆盖这些局部变量
+  let switchLiveTab = createProtectedPlaceholder("switchLiveTab");
+  let joinLiveStream = createProtectedPlaceholder("joinLiveStream");
+  let initLivePage = createProtectedPlaceholder("initLivePage");
+  let renderLiveStreams = createProtectedPlaceholder("renderLiveStreams");
+  let openLiveCategoryModal = createProtectedPlaceholder(
+    "openLiveCategoryModal"
+  );
+  let closeLiveCategoryModal = createProtectedPlaceholder(
+    "closeLiveCategoryModal"
+  );
+  let addNewLiveCategory = createProtectedPlaceholder("addNewLiveCategory");
+  let deleteLiveCategory = createProtectedPlaceholder("deleteLiveCategory");
+  let toggleLiveCategory = createProtectedPlaceholder("toggleLiveCategory");
+  let updateLiveCategoryName = createProtectedPlaceholder(
+    "updateLiveCategoryName"
+  );
+  let updateLiveCategoryDescription = createProtectedPlaceholder(
+    "updateLiveCategoryDescription"
+  );
+  let saveLiveCustomCategories = createProtectedPlaceholder(
+    "saveLiveCustomCategories"
+  );
+  let syncLivePageAvatar = createProtectedPlaceholder("syncLivePageAvatar");
+  let toggleLiveActionButtons = createProtectedPlaceholder(
+    "toggleLiveActionButtons"
+  );
+  let refreshLiveStreams = createProtectedPlaceholder("refreshLiveStreams");
+  let startLiveStream = createProtectedPlaceholder("startLiveStream");
+  let syncLiveCharacterAvatars = createProtectedPlaceholder(
+    "syncLiveCharacterAvatars"
+  );
+  let handleLiveCharacterClick = createProtectedPlaceholder(
+    "handleLiveCharacterClick"
+  );
+  let loadSavedLiveData = createProtectedPlaceholder("loadSavedLiveData");
+  let loadLiveCharacterStatus = createProtectedPlaceholder(
+    "loadLiveCharacterStatus"
+  );
+  let saveLiveCharacterStatus = createProtectedPlaceholder(
+    "saveLiveCharacterStatus"
+  );
+  let handleLiveMainBtnMouseOver = createProtectedPlaceholder(
+    "handleLiveMainBtnMouseOver"
+  );
+  let handleLiveMainBtnMouseOut = createProtectedPlaceholder(
+    "handleLiveMainBtnMouseOut"
+  );
+  let handleLiveMainBtnTouchStart = createProtectedPlaceholder(
+    "handleLiveMainBtnTouchStart"
+  );
+  let handleLiveMainBtnTouchEnd = createProtectedPlaceholder(
+    "handleLiveMainBtnTouchEnd"
+  );
+  let handleLiveSubBtnMouseOver = createProtectedPlaceholder(
+    "handleLiveSubBtnMouseOver"
+  );
+  let handleLiveSubBtnMouseOut = createProtectedPlaceholder(
+    "handleLiveSubBtnMouseOut"
+  );
+  let handleLiveSubBtnTouchStart = createProtectedPlaceholder(
+    "handleLiveSubBtnTouchStart"
+  );
+  let handleLiveSubBtnTouchEnd = createProtectedPlaceholder(
+    "handleLiveSubBtnTouchEnd"
+  );
+  let closeLiveRoom = createProtectedPlaceholder("closeLiveRoom");
+  let toggleLiveInfo = createProtectedPlaceholder("toggleLiveInfo");
+  let sendDanmaku = createProtectedPlaceholder("sendDanmaku");
+  let sendLike = createProtectedPlaceholder("sendLike");
+  let showLiveRoomMenu = createProtectedPlaceholder("showLiveRoomMenu");
+
+  console.log("🔧 已创建", 33, "个 live 函数占位符（局部变量模式）");
+
+  console.log("🔐 X Live 权限保护模块已加载");
 
   // 第四部分: 初始化和对外接口
   // ============================================
@@ -31992,10 +31409,16 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
   async function showWelcomePopup() {
     try {
       // 🆕 定义当前弹窗内容版本（内容变化时修改此版本号）
-      const currentPopupVersion = "v2.1"; // 修改版本号以触发重新显示
-      const currentPopupContent = `x修复bug
-x设置页面新增答疑按钮 点击跳转答疑页面
-!!新增的直播功能请勿点击 还未完善 出错本羊概不负责`;
+      const currentPopupVersion = "v2.2"; // 修改版本号以触发重新显示
+      const currentPopupContent = `x修复bug 答疑页面所有问题已修复
++未绑定角色在私信列表自动隐藏
++刷新粉丝群入群申请
+
+!!重要通知必须看：
+由于该仿x软件的特殊性及敏感性 所以吃点羊决定增加通行验证 仅成年可用
+吃点羊将在明天关闭通知页面和私信页面功能 及以后所有新功能都必须通过验证后才能使用
+实在抱歉给各位宝宝带来困扰 这是我深思熟虑后的决定 因为使用群体无法保证具体年龄 我很担心会有年龄小的宝宝因此受到坏的影响。
+所有验证明天下午开启 请及时备份 这个验证不会损伤任何现有数据 但还是请多多备份!!`;
 
       // 检查是否已经显示过此版本的弹窗
       const lastShownVersion = localStorage.getItem(
@@ -32099,19 +31522,24 @@ x设置页面新增答疑按钮 点击跳转答疑页面
  flex-shrink: 0;
  ">💡</div>
 
- <!-- 消息内容 -->
- <div style="
- flex: 1;
- font-size: 11px;
- line-height: 1.4;
- color: #000;
- font-family: 'Fusion Pixel 10px P zh_hans', monospace;
- ">
- <div style="font-weight: bold; margin-bottom: 6px;">吃点羊提醒您：</div>
- <div style="margin-bottom: 4px;">x修复bug</div>
- <div style="margin-bottom: 4px; font-weight: bold;">x新增世界独立大事件功能！请在设置页面查看</div>
- <div>羊祝你天天开心</div>
- </div>
+             <!-- 消息内容 -->
+            <div style="
+            flex: 1;
+            font-size: 11px;
+            line-height: 1.4;
+            color: #000;
+            font-family: 'Fusion Pixel 10px P zh_hans', monospace;
+            ">
+            <div style="font-weight: bold; margin-bottom: 6px;">吃点羊提醒您：</div>
+            <div style="margin-bottom: 4px;">x修复bug 答疑页面所有问题已修复</div>
+            <div style="margin-bottom: 4px;">+未绑定角色在私信列表自动隐藏</div>
+            <div style="margin-bottom: 8px;">+刷新粉丝群入群申请</div>
+            <div style="font-weight: bold; margin-bottom: 4px;">!!重要通知必须看：</div>
+            <div style="margin-bottom: 4px;">由于该仿x软件的特殊性及敏感性 所以吃点羊决定增加通行验证 仅成年可用</div>
+            <div style="margin-bottom: 4px;">吃点羊将在明天关闭通知页面和私信页面功能 及以后所有新功能都必须通过验证后才能使用</div>
+            <div style="margin-bottom: 4px;">实在抱歉给各位宝宝带来困扰 这是我深思熟虑后的决定 因为使用群体无法保证具体年龄 我很担心会有年龄小的宝宝因此受到坏的影响。</div>
+            <div style="font-weight: bold;">所有验证明天下午开启 请及时备份 这个验证不会损伤任何现有数据 但还是请多多备份!!</div>
+            </div>
  </div>
 
  <!-- 按钮区域 -->
@@ -42624,21 +42052,70 @@ ${getTransferStatusIcon(message.status, isLightMode)}
       return;
     }
     // 清空容器
-    container.innerHTML = ""; // 如果没有消息,显示空状态
-    if (!messages || messages.length === 0) {
+    container.innerHTML = "";
+
+    // 🔧 获取当前绑定的角色列表（用于过滤未绑定的角色）
+    let boundCharacters = [];
+    try {
+      const xDb = getXDB();
+      const settingsId = `xSettings_${currentAccountId || "main"}`;
+      const xSettings = await xDb.xSettings.get(settingsId);
+      boundCharacters = xSettings?.boundCharacters || [];
+      console.log("📋 [渲染私信列表] 当前绑定角色数:", boundCharacters.length);
+    } catch (error) {
+      console.warn("⚠️ [渲染私信列表] 获取绑定角色列表失败:", error);
+    }
+
+    // 🔧 过滤消息：隐藏未绑定的角色（保留数据，只是不显示）
+    const filteredMessages = [];
+    for (const message of messages || []) {
+      // 检查是否是纯角色私信（msg_xxx格式，但排除特殊类型和陌生人）
+      // 特殊类型：msg_account_、msg_npc_、msg_relationship_、msg_001
+      const isPureCharacterMessage =
+        message.id &&
+        message.id.startsWith("msg_") &&
+        message.id !== "msg_001" &&
+        !message.id.startsWith("msg_account_") &&
+        !message.id.startsWith("msg_npc_") &&
+        !message.id.startsWith("msg_relationship_");
+
+      if (isPureCharacterMessage) {
+        // 提取角色ID
+        const characterId = message.id.replace("msg_", "");
+
+        // 检查角色是否仍在绑定列表中
+        if (boundCharacters.includes(characterId)) {
+          filteredMessages.push(message);
+        } else {
+          console.log(`🔍 [私信列表过滤] 跳过未绑定角色: ${characterId}`);
+        }
+      } else {
+        // 非纯角色私信（账户、NPC、陌生人、粉丝群等），直接显示
+        filteredMessages.push(message);
+      }
+    }
+
+    console.log(
+      `📨 [渲染私信列表] 原始消息: ${messages?.length || 0}条，过滤后: ${
+        filteredMessages.length
+      }条`
+    );
+
+    // 如果没有消息,显示空状态
+    if (filteredMessages.length === 0) {
       container.innerHTML = `
- <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 32px; text-align: center; ">
- <svg viewBox="0 0 24 24" style="width: 56px; height: 56px; fill: var(--x-text-secondary); margin-bottom: 16px;">
- <g><path d="M1.998 5.5c0-1.381 1.119-2.5 2.5-2.5h15c1.381 0 2.5 1.119 2.5 2.5v13c0 1.381-1.119 2.5-2.5 2.5h-15c-1.381 0-2.5-1.119-2.5-2.5v-13zm2.5-.5c-.276 0-.5.224-.5.5v2.764l8 3.638 8-3.636V5.5c0-.276-.224-.5-.5-.5h-15zm15.5 5.463l-8 3.636-8-3.638V18.5c0 .276.224.5.5.5h15c.276 0 .5-.224.5-.5v-8.037z"></path></g>
- </svg>
- <div style="font-size: 28px; font-weight: 700; color:var(--x-text-primary); margin-bottom: 8px; " data-i18n="messagesEmpty">暂无私信</div>
- <div style="font-size: 14px; color:var(--x-text-secondary); max-width: 320px; " data-i18n="messagesEmptyDesc">发送私信与朋友保持联系</div>
- </div>
- `;
+<div style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 32px; text-align: center; ">
+<svg viewBox="0 0 24 24" style="width: 56px; height: 56px; fill: var(--x-text-secondary); margin-bottom: 16px;">
+<g><path d="M1.998 5.5c0-1.381 1.119-2.5 2.5-2.5h15c1.381 0 2.5 1.119 2.5 2.5v13c0 1.381-1.119 2.5-2.5 2.5h-15c-1.381 0-2.5-1.119-2.5-2.5v-13zm2.5-.5c-.276 0-.5.224-.5.5v2.764l8 3.638 8-3.636V5.5c0-.276-.224-.5-.5-.5h-15zm15.5 5.463l-8 3.636-8-3.638V18.5c0 .276.224.5.5.5h15c.276 0 .5-.224.5-.5v-8.037z"></path></g>
+</svg>
+<div style="font-size: 28px; font-weight: 700; color:var(--x-text-primary); margin-bottom: 8px; " data-i18n="messagesEmpty">暂无私信</div>
+<div style="font-size: 14px; color:var(--x-text-secondary); max-width: 320px; " data-i18n="messagesEmptyDesc">发送私信与朋友保持联系</div>
+</div>
+`;
       return;
     }
     // 渲染每条私信（异步创建）
-    for (const message of messages) {
+    for (const message of filteredMessages) {
       const messageItem = await createMessageItem(message);
       container.appendChild(messageItem);
     }
@@ -42648,9 +42125,11 @@ ${getTransferStatusIcon(message.status, isLightMode)}
     const messageDiv = document.createElement("div");
     messageDiv.className = "message-item";
     messageDiv.style.cssText = `
- display: flex; align-items: center; padding: 16px; border-bottom: 1px solid var(--x-border-color); cursor: pointer; transition: background-color 0.2s;
-`; // 获取最新头像（对于绑定角色，从X资料读取）
+display: flex; align-items: center; padding: 16px; border-bottom: 1px solid var(--x-border-color); cursor: pointer; transition: background-color 0.2s;
+`; // 🔧 获取最新的头像、昵称、句柄（对于绑定角色，从X资料实时读取）
     let currentAvatar = message.userAvatar;
+    let currentUserName = message.userName;
+    let currentUserHandle = message.userHandle;
     const isCharacterMessage =
       message.id && message.id.startsWith("msg_") && message.id !== "msg_001";
     if (isCharacterMessage) {
@@ -42658,11 +42137,20 @@ ${getTransferStatusIcon(message.status, isLightMode)}
         const xDb = getXDB();
         const characterId = message.id.replace("msg_", "");
         const xProfile = await xDb.xCharacterProfiles.get(characterId);
-        if (xProfile && xProfile.xAvatar) {
-          currentAvatar = xProfile.xAvatar;
+        if (xProfile) {
+          // 实时读取最新的头像、昵称和句柄
+          if (xProfile.xAvatar) {
+            currentAvatar = xProfile.xAvatar;
+          }
+          if (xProfile.xName) {
+            currentUserName = xProfile.xName;
+          }
+          if (xProfile.xHandle) {
+            currentUserHandle = xProfile.xHandle;
+          }
         }
       } catch (error) {
-        console.warn("读取角色头像失败:", error);
+        console.warn("读取角色X资料失败:", error);
       }
     }
     // 获取最新消息内容
@@ -42708,34 +42196,30 @@ ${getTransferStatusIcon(message.status, isLightMode)}
     const timeStr = formatMessageTime(lastMessageTime);
     messageDiv.innerHTML = `
 
- <div style="position: relative; flex-shrink: 0; margin-right: 12px;">
+<div style="position: relative; flex-shrink: 0; margin-right: 12px;">
 
- <img src="${currentAvatar}"
- alt="${message.userName}"
- style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover; ">
+<img src="${currentAvatar}"
+alt="${currentUserName}"
+style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover; ">
 
- ${
-   message.unread
-     ? `
- <div style="position: absolute; top: -2px; right: -2px; width: 12px; height: 12px; background-color: var(--x-accent); border: 2px solid var(--x-bg-primary); border-radius: 50%; "></div>
- `
-     : ""
- }
- </div>
+${
+  message.unread
+    ? `
+<div style="position: absolute; top: -2px; right: -2px; width: 12px; height: 12px; background-color: var(--x-accent); border: 2px solid var(--x-bg-primary); border-radius: 50%; "></div>
+`
+    : ""
+}
+</div>
 
- <div style="flex: 1; min-width: 0;">
+<div style="flex: 1; min-width: 0;">
 
- <div style="display: flex; align-items: center; margin-bottom: 4px;">
- <span style="font-size: 15px; font-weight: ${
-   message.unread ? "700" : "700"
- }; color:var(--x-text-primary); margin-right: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; ">${
-      message.userName
-    }</span>
- <span style="font-size: 15px; color:var(--x-text-secondary); margin-right: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; ">@${
-   message.userHandle
- }</span>
- <span style="font-size: 15px; color:var(--x-text-secondary); margin-left: auto; flex-shrink: 0; ">· ${timeStr}</span>
- </div>
+<div style="display: flex; align-items: center; margin-bottom: 4px;">
+<span style="font-size: 15px; font-weight: ${
+      message.unread ? "700" : "700"
+    }; color:var(--x-text-primary); margin-right: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; ">${currentUserName}</span>
+<span style="font-size: 15px; color:var(--x-text-secondary); margin-right: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; ">@${currentUserHandle}</span>
+<span style="font-size: 15px; color:var(--x-text-secondary); margin-left: auto; flex-shrink: 0; ">· ${timeStr}</span>
+</div>
 
  <div style="font-size: 15px; color: ${
    message.unread ? "var(--x-text-primary)" : "var(--x-text-secondary)"
@@ -43498,10 +42982,18 @@ ${getTransferStatusIcon(message.status, isLightMode)}
           name: "messagesList",
           data: sampleMessagesData,
           updatedAt: new Date().toISOString(),
-        }); // 刷新私信列表显示
+        });
+
+        // 🔧 智能刷新私信列表显示
         const messagesPage = document.getElementById("x-messages-page");
-        if (messagesPage && messagesPage.style.display === "flex") {
-          await loadMessagesList();
+        if (messagesPage) {
+          // 如果列表正在显示，立即刷新；否则下次显示时自动刷新
+          if (messagesPage.style.display === "flex") {
+            await loadMessagesList();
+            console.log("✅ [陌生人头像] 私信列表已立即刷新");
+          } else {
+            console.log("✅ [陌生人头像] 私信列表将在下次显示时自动刷新");
+          }
         }
       }
       // 更新当前设置数据
@@ -43597,7 +43089,9 @@ ${getTransferStatusIcon(message.status, isLightMode)}
   window.toggleStrangerContact = toggleStrangerContact;
   window.updateStrangerAvatar = updateStrangerAvatar;
   window.updateStrangerInterval = updateStrangerInterval;
-  window.toggleStrangerAutoMessage = toggleStrangerAutoMessage; // ============================================
+  window.toggleStrangerAutoMessage = toggleStrangerAutoMessage;
+  window.loadMessagesList = loadMessagesList; // 暴露以便外部刷新私信列表
+  // ============================================
   // 粉丝群功能
   // ============================================
   // 创建粉丝群
@@ -43926,13 +43420,32 @@ ${getTransferStatusIcon(message.status, isLightMode)}
           data: messagesList,
           updatedAt: new Date().toISOString(),
         }); // 更新全局变量
-        sampleMessagesData = messagesList; // 更新私信详情页的头像（如果正在查看）
-        const topAvatar = document.getElementById("message-detail-top-avatar");
-        if (topAvatar && currentMessageConversation?.id === groupId) {
-          topAvatar.src = newAvatar;
+        sampleMessagesData = messagesList;
+
+        // 🔧 更新私信详情页的头像（如果正在查看该粉丝群）
+        if (currentMessageConversation?.id === groupId) {
+          const topAvatar = document.getElementById(
+            "message-detail-top-avatar"
+          );
+          if (topAvatar) {
+            topAvatar.src = newAvatar;
+            console.log("✅ [粉丝群头像] 已更新详情页顶部头像");
+          }
+          const detailAvatar = document.getElementById("message-detail-avatar");
+          if (detailAvatar) {
+            detailAvatar.src = newAvatar;
+            console.log("✅ [粉丝群头像] 已更新详情页大头像");
+          }
         }
-        // 刷新私信列表
-        await loadMessagesList();
+
+        // 🔧 智能刷新私信列表
+        const messagesPage = document.getElementById("x-messages-page");
+        if (messagesPage && messagesPage.style.display === "flex") {
+          await loadMessagesList();
+          console.log("✅ [粉丝群头像] 私信列表已立即刷新");
+        } else {
+          console.log("✅ [粉丝群头像] 私信列表将在下次显示时自动刷新");
+        }
         showXToast("头像已更新", "success");
       }
     } catch (error) {
@@ -48727,6 +48240,80 @@ ${
       return [];
     }
   }
+  // 刷新粉丝群入群申请（查找最新帖子并触发生成器）
+  window.refreshFanGroupApplications = async function (groupId) {
+    console.log("🔄 [粉丝群申请] 开始刷新申请", groupId);
+
+    // 禁用刷新按钮，防止重复点击
+    const refreshBtn = document.getElementById("refresh-applications-btn");
+    if (refreshBtn) {
+      refreshBtn.disabled = true;
+      refreshBtn.style.opacity = "0.5";
+      refreshBtn.style.cursor = "not-allowed";
+    }
+
+    try {
+      showXToast("正在查找相关帖子...", "info");
+
+      // 1. 查找用户最新的、引用该粉丝群的推文
+      const xDb = getXDB();
+      const userTweetsId = `userTweets_${currentAccountId || "main"}`;
+      const userTweetsData = await xDb.xUserTweets.get(userTweetsId);
+
+      if (
+        !userTweetsData ||
+        !userTweetsData.tweets ||
+        userTweetsData.tweets.length === 0
+      ) {
+        showXToast("请先发布引用该粉丝群的帖子", "warning");
+        return;
+      }
+
+      // 2. 查找最新的引用该粉丝群的推文
+      const tweets = userTweetsData.tweets;
+      let latestFanGroupTweet = null;
+
+      for (const tweet of tweets) {
+        // 检查是否引用了该粉丝群
+        if (tweet.quotedFanGroup && tweet.quotedFanGroup.id === groupId) {
+          latestFanGroupTweet = tweet;
+          break; // 找到最新的就停止
+        }
+      }
+
+      if (!latestFanGroupTweet) {
+        showXToast("未找到引用该粉丝群的帖子，请先发布相关帖子", "warning");
+        return;
+      }
+
+      console.log("✅ [粉丝群申请] 找到相关帖子:", latestFanGroupTweet.id);
+      showXToast("正在生成新的入群申请...", "info");
+
+      // 3. 调用生成器
+      await triggerFanGroupApplicationGenerator(latestFanGroupTweet);
+
+      showXToast("成功生成新申请！", "success");
+
+      // 4. 关闭当前弹窗
+      closeFanGroupApplicationsModal();
+
+      // 5. 延迟一下再重新打开弹窗（显示新的申请）
+      setTimeout(() => {
+        openFanGroupApplicationsModal(groupId);
+      }, 500);
+    } catch (error) {
+      console.error("❌ [粉丝群申请] 刷新失败:", error);
+      showXToast("刷新失败: " + error.message, "error");
+    } finally {
+      // 恢复按钮状态
+      if (refreshBtn) {
+        refreshBtn.disabled = false;
+        refreshBtn.style.opacity = "1";
+        refreshBtn.style.cursor = "pointer";
+      }
+    }
+  };
+
   // 打开粉丝群申请弹窗
   async function openFanGroupApplicationsModal(groupId) {
     console.log("📋 [粉丝群申请] 打开申请弹窗", groupId);
@@ -48786,14 +48373,20 @@ ${
    isLightMode ? "rgba(255, 255, 255, 0.85)" : "rgba(0, 0, 0, 0.85)"
  }; "></div>
 
- <button onclick="closeFanGroupApplicationsModal()" style="position: absolute; top: 16px; right: 16px; background: transparent; border: none; color:var(--x-text-secondary); cursor: pointer; padding: 8px; border-radius: 50%; transition: all 0.2s; " onmouseover="this.style.backgroundColor='var(--x-bg-hover)'"
- onmouseout="this.style.backgroundColor='transparent'">
- <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; fill: currentColor;">
- <g><path d="M10.59 12L4.54 5.96l1.42-1.42L12 10.59l6.04-6.05 1.42 1.42L13.41 12l6.05 6.04-1.42 1.42L12 13.41l-6.04 6.05-1.42-1.42L10.59 12z"></path></g>
- </svg>
- </button>
+  <button onclick="refreshFanGroupApplications('${groupId}')" id="refresh-applications-btn" style="position: absolute; top: 16px; right: 56px; background: transparent; border: none; color:var(--x-text-secondary); cursor: pointer; padding: 8px; border-radius: 50%; transition: all 0.2s; " onmouseover="this.style.backgroundColor='var(--x-bg-hover)'" onmouseout="this.style.backgroundColor='transparent'" title="刷新申请">
+<svg viewBox="0 0 24 24" style="width: 18px; height: 18px; fill: currentColor;">
+<g><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"></path></g>
+</svg>
+</button>
 
- <div style="color:var(--x-text-primary); font-size: 20px; font-weight: 700; margin-bottom: 8px; ">入群申请</div>
+<button onclick="closeFanGroupApplicationsModal()" style="position: absolute; top: 16px; right: 16px; background: transparent; border: none; color:var(--x-text-secondary); cursor: pointer; padding: 8px; border-radius: 50%; transition: all 0.2s; " onmouseover="this.style.backgroundColor='var(--x-bg-hover)'"
+onmouseout="this.style.backgroundColor='transparent'">
+<svg viewBox="0 0 24 24" style="width: 20px; height: 20px; fill: currentColor;">
+<g><path d="M10.59 12L4.54 5.96l1.42-1.42L12 10.59l6.04-6.05 1.42 1.42L13.41 12l6.05 6.04-1.42 1.42L12 13.41l-6.04 6.05-1.42-1.42L10.59 12z"></path></g>
+</svg>
+</button>
+
+<div style="color:var(--x-text-primary); font-size: 20px; font-weight: 700; margin-bottom: 8px; ">入群申请</div>
  <div style="color:var(--x-text-secondary); font-size: 13px; margin-bottom: 12px; ">${
    fanGroup.userName || fanGroup.groupName
  }</div>
@@ -51278,3 +50871,4 @@ ${
 // 4. 需要的依赖:
 // - Dexie.js (数据库)
 // - 确保有 showScreen() 全局函数
+
