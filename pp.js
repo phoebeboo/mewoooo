@@ -2302,6 +2302,20 @@ onmouseout="this.style.opacity='1'">
  </div>
  <div style="display: flex; align-items: center; gap: 8px;">
 
+ <div id="review-toggle-btn" onclick="openReviewPage()"
+ style="cursor: pointer; padding: 8px; border-radius: 50%; transition: background-color 0.2s; display: flex; align-items: center; justify-content: center;"
+ onmouseover="this.style.backgroundColor='rgba(255,255,255,0.1)'"
+ onmouseout="this.style.backgroundColor='transparent'"
+ title="审核">
+ <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--x-accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+ <path d="M5 10v-4a3 3 0 0 1 3 -3h8a3 3 0 0 1 3 3v4" />
+ <path d="M16 15v-2a3 3 0 1 1 3 3v3h-14v-3a3 3 0 1 1 3 -3v2" />
+ <path d="M8 12h8" />
+ <path d="M7 19v2" />
+ <path d="M17 19v2" />
+ </svg>
+ </div>
+
  <div id="help-toggle-btn" onclick="openHelpPage()"
  style="cursor: pointer; padding: 8px; border-radius: 50%; transition: background-color 0.2s; display: flex; align-items: center; justify-content: center;"
  onmouseover="this.style.backgroundColor='rgba(255,255,255,0.1)'"
@@ -7006,6 +7020,33 @@ ${rd.description ? `关系描述：${rd.description}` : ""}
   // 页面切换函数
   // 切换X社交页面的函数 - 优化后
   function switchXPage(pageType) {
+    // 🔒 社交功能权限验证：通知和私信页面需要验证
+    if (pageType === "notifications" || pageType === "messages") {
+      if (
+        typeof window.xSocialAuth !== "undefined" &&
+        !window.xSocialAuth.hasAccess()
+      ) {
+        console.log(`🔒 访问 ${pageType} 页面需要社交功能权限`);
+        window.xSocialAuth.requestAccess();
+        return; // 阻止页面切换
+      }
+
+      // 🔍 实时验证 Token 是否仍然有效（防止密钥被删除或拉黑）
+      if (
+        typeof window.xSocialAuth !== "undefined" &&
+        window.xSocialAuth.validateToken
+      ) {
+        window.xSocialAuth.validateToken().catch((error) => {
+          console.error("社交功能 Token 验证失败:", error);
+          // Token 验证失败会自动清除本地 token 并显示提示
+          // 刷新页面以重新检查权限
+          setTimeout(() => {
+            window.location.reload();
+          }, 1500);
+        });
+      }
+    }
+
     // 如果切换到主页、消息、通知、设置等主要页面，清除搜索结果标记
     const mainPages = [
       "home",
@@ -15802,6 +15843,16 @@ accountLikes数组（3-5条，账户喜欢的推文）：
     showXToast("通知设置已更新", "success");
   }; // 发送私信
   window.sendMessageToAccount = async function () {
+    // 🔒 社交功能权限验证：发送私信需要验证
+    if (
+      typeof window.xSocialAuth !== "undefined" &&
+      !window.xSocialAuth.hasAccess()
+    ) {
+      console.log("🔒 发送私信需要社交功能权限");
+      window.xSocialAuth.requestAccess();
+      return; // 阻止操作
+    }
+
     if (!currentViewingAccount) {
       showXToast("无法获取账户信息", "error");
       return;
@@ -30212,6 +30263,29 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
   // ▲▲▲ 推文详情页评论表情包功能JavaScript ▲▲▲
 
   // ============================================
+  // 审核页面跳转功能
+  // ============================================
+  window.openReviewPage = function () {
+    // 检测当前语言
+    const isEnglish = currentLanguage === "en";
+
+    // 显示确认弹窗
+    if (
+      confirm(
+        isEnglish
+          ? "Are you ready to navigate to the Review page?"
+          : "是否准备移动到审核页面？"
+      )
+    ) {
+      // 用户确认，跳转到Discord审核页面
+      window.open("https://discord.gg/eyE5hn4K", "_blank");
+      console.log("✅ 已打开审核页面");
+    } else {
+      console.log("❌ 用户取消跳转审核页面");
+    }
+  };
+
+  // ============================================
   // 答疑页面跳转功能
   // ============================================
   window.openHelpPage = function () {
@@ -30248,8 +30322,11 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
     // Token有效期（毫秒）
     TOKEN_EXPIRY: 7 * 24 * 60 * 60 * 1000, // 7天
 
-    // LocalStorage键名
+    // LocalStorage键名（直播功能）
     STORAGE_KEY: "x_live_access_token",
+
+    // LocalStorage键名（社交功能：通知+私信）
+    SOCIAL_STORAGE_KEY: "x_social_access_token",
   };
 
   // ========== 辅助函数 ==========
@@ -30313,7 +30390,7 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
   // ========== 核心功能 ==========
 
   /**
-   * 检查是否有有效的访问权限
+   * 检查是否有有效的访问权限（直播功能）
    */
   function checkLiveAccess() {
     const token = localStorage.getItem(CONFIG.STORAGE_KEY);
@@ -30335,7 +30412,125 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
   }
 
   /**
-   * 显示密钥输入弹窗
+   * 实时验证 Token 是否仍然有效（防止密钥被删除或拉黑）
+   * 在关键操作时调用，确保用户权限未被撤销
+   */
+  async function validateLiveTokenWithServer() {
+    const token = localStorage.getItem(CONFIG.STORAGE_KEY);
+    if (!token) return false;
+
+    try {
+      const data = JSON.parse(safeBase64Decode(token));
+      const deviceId = getDeviceId();
+
+      const response = await fetch(CONFIG.WORKER_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          key: data.key,
+          deviceId,
+          action: "validateToken", // 标记为 token 验证请求
+        }),
+        signal: AbortSignal.timeout(5000),
+      });
+
+      if (!response.ok) return false;
+
+      const result = await response.json();
+
+      if (!result.valid) {
+        // Token 已失效（密钥被删除或拉黑）
+        console.warn("⚠️ Token 已失效:", result.error);
+        localStorage.removeItem(CONFIG.STORAGE_KEY);
+
+        if (result.blacklisted) {
+          alert("❌ 您的访问权限已被撤销");
+        } else if (result.tokenInvalidated) {
+          alert("⚠️ 密钥已过期，请重新验证");
+        }
+
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error("Token 验证失败:", error);
+      // 网络错误不清除 token，允许离线使用
+      return true;
+    }
+  }
+
+  /**
+   * 检查是否有社交功能访问权限（通知+私信）
+   */
+  function checkSocialAccess() {
+    const token = localStorage.getItem(CONFIG.SOCIAL_STORAGE_KEY);
+    if (!token) return false;
+
+    try {
+      const data = JSON.parse(safeBase64Decode(token));
+      // 检查token是否过期
+      if (Date.now() > data.exp) {
+        localStorage.removeItem(CONFIG.SOCIAL_STORAGE_KEY);
+        return false;
+      }
+      return true;
+    } catch (error) {
+      console.warn("社交功能Token验证失败:", error);
+      localStorage.removeItem(CONFIG.SOCIAL_STORAGE_KEY);
+      return false;
+    }
+  }
+
+  /**
+   * 实时验证社交 Token 是否仍然有效
+   */
+  async function validateSocialTokenWithServer() {
+    const token = localStorage.getItem(CONFIG.SOCIAL_STORAGE_KEY);
+    if (!token) return false;
+
+    try {
+      const data = JSON.parse(safeBase64Decode(token));
+      const deviceId = getDeviceId();
+
+      const response = await fetch(CONFIG.WORKER_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          key: data.key,
+          deviceId,
+          featureType: "social",
+          action: "validateToken",
+        }),
+        signal: AbortSignal.timeout(5000),
+      });
+
+      if (!response.ok) return false;
+
+      const result = await response.json();
+
+      if (!result.valid) {
+        console.warn("⚠️ 社交功能 Token 已失效:", result.error);
+        localStorage.removeItem(CONFIG.SOCIAL_STORAGE_KEY);
+
+        if (result.blacklisted) {
+          alert("❌ 您的社交功能访问权限已被撤销");
+        } else if (result.tokenInvalidated) {
+          alert("⚠️ 社交功能密钥已过期，请重新验证");
+        }
+
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error("社交功能 Token 验证失败:", error);
+      return true;
+    }
+  }
+
+  /**
+   * 显示密钥输入弹窗（直播功能）
    */
   function requestLiveAccess() {
     // 避免重复弹窗
@@ -30383,6 +30578,14 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
           </div>
         </div>
         
+        <!-- 刷新提示 -->
+        <div class="auth-warning-box">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+          </svg>
+          <span>验证成功后将自动刷新页面，请确保已保存数据</span>
+        </div>
+        
         <!-- 输入区域 -->
         <div class="auth-input-section">
           <div class="input-label">
@@ -30410,13 +30613,13 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
           <button class="auth-btn auth-btn-cancel" onclick="document.getElementById('live-auth-modal').remove()">
             <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2.5">
               <path d="M18 6L6 18M6 6l12 12"/>
-            </svg>
+          </svg>
             <span>CANCEL</span>
           </button>
           <button id="verify-live-key" class="auth-btn auth-btn-verify">
             <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2.5">
               <polyline points="20 6 9 17 4 12"/>
-            </svg>
+          </svg>
             <span>VERIFY</span>
           </button>
         </div>
@@ -30427,12 +30630,12 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
       
       <style>
         .live-auth-container {
-          position: fixed;
-          inset: 0;
+        position: fixed;
+        inset: 0;
           z-index: 99999;
-          display: flex;
-          align-items: center;
-          justify-content: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
           opacity: 0;
           animation: authFadeIn 0.4s ease forwards;
         }
@@ -30450,18 +30653,18 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
         }
         
         .auth-cassette-box {
-          position: relative;
+        position: relative;
           width: 90%;
           max-width: 340px;
-          background: linear-gradient(
-            135deg,
+        background: linear-gradient(
+          135deg,
             rgba(25, 25, 25, 0.98) 0%,
             rgba(20, 20, 20, 0.98) 50%,
             rgba(15, 15, 15, 0.98) 100%
-          );
-          backdrop-filter: blur(40px) saturate(150%);
+        );
+        backdrop-filter: blur(40px) saturate(150%);
           -webkit-backdrop-filter: blur(40px) saturate(150%);
-          border: 1px solid rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.15);
           border-radius: 20px;
           box-shadow: 
             0 20px 60px rgba(0, 0, 0, 0.6),
@@ -30477,36 +30680,36 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
         
         @keyframes authSlideUp {
           to { 
-            transform: translateY(0) scale(1);
+          transform: translateY(0) scale(1);
             opacity: 1;
           }
         }
         
         .cassette-texture {
-          position: absolute;
-          inset: 0;
-          background: repeating-linear-gradient(
+        position: absolute;
+        inset: 0;
+        background: repeating-linear-gradient(
             90deg,
-            transparent,
+          transparent,
             transparent 2px,
             rgba(255, 255, 255, 0.01) 2px,
             rgba(255, 255, 255, 0.01) 4px
           );
-          pointer-events: none;
+        pointer-events: none;
         }
         
         .auth-header {
-          display: flex;
+        display: flex;
           flex-direction: column;
-          align-items: center;
+        align-items: center;
           margin-bottom: 22px;
-          position: relative;
-        }
-        
+        position: relative;
+      }
+
         .vinyl-lock-icon {
           width: 64px;
           height: 64px;
-          position: relative;
+        position: relative;
           margin-bottom: 12px;
           animation: vinylSpin 8s linear infinite;
         }
@@ -30518,15 +30721,15 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
         
         .vinyl-disc-svg {
           width: 100%;
-          height: 100%;
+        height: 100%;
           filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.6));
         }
         
         .lock-overlay {
-          position: absolute;
-          inset: 0;
-          display: flex;
-          align-items: center;
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
           justify-content: center;
           animation: lockPulse 2s ease-in-out infinite;
         }
@@ -30537,32 +30740,32 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
         }
         
         .auth-title-section {
-          text-align: center;
+        text-align: center;
         }
         
         .auth-title {
           margin: 0 0 6px 0;
           font-size: 13px;
-          font-weight: 800;
+        font-weight: 800;
           letter-spacing: 2.5px;
-          text-transform: uppercase;
-          font-family: "Courier New", monospace;
+        text-transform: uppercase;
+        font-family: "Courier New", monospace;
           color: rgba(255, 255, 255, 0.95);
           text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-        }
-        
+      }
+
         .auth-subtitle {
           margin: 0 0 3px 0;
-          font-size: 12px;
+        font-size: 12px;
           color: rgba(255, 255, 255, 0.7);
           line-height: 1.4;
         }
         
         .auth-hint {
           margin: 0;
-          font-size: 10px;
+        font-size: 10px;
           color: rgba(255, 255, 255, 0.45);
-          font-family: "Courier New", monospace;
+        font-family: "Courier New", monospace;
         }
         
         .auth-input-section {
@@ -30571,14 +30774,14 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
         
         .input-label {
           display: flex;
-          align-items: center;
-          gap: 6px;
+        align-items: center;
+        gap: 6px;
           margin-bottom: 8px;
-          font-size: 9px;
-          font-weight: 800;
+        font-size: 9px;
+        font-weight: 800;
           letter-spacing: 1.2px;
-          text-transform: uppercase;
-          font-family: "Courier New", monospace;
+        text-transform: uppercase;
+        font-family: "Courier New", monospace;
           color: rgba(255, 255, 255, 0.6);
         }
         
@@ -30590,7 +30793,7 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
           width: 100%;
           padding: 12px 14px;
           background: rgba(10, 10, 10, 0.6);
-          border: 1px solid rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.12);
           border-radius: 10px;
           color: #fff;
           font-size: 14px;
@@ -30613,21 +30816,21 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
         }
         
         .input-underline {
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          right: 0;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
           height: 2px;
           background: linear-gradient(90deg, 
-            transparent,
+          transparent,
             rgba(255, 255, 255, 0.3),
-            transparent
-          );
+          transparent
+        );
           transform: scaleX(0);
           transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-          pointer-events: none;
-        }
-        
+        pointer-events: none;
+      }
+
         .auth-input:focus + .input-underline {
           transform: scaleX(1);
         }
@@ -30639,10 +30842,10 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
         }
         
         .auth-btn {
-          flex: 1;
-          display: flex;
-          align-items: center;
-          justify-content: center;
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
           gap: 6px;
           padding: 12px 16px;
           border-radius: 10px;
@@ -30650,8 +30853,8 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
           font-weight: 800;
           letter-spacing: 1.2px;
           font-family: "Courier New", monospace;
-          cursor: pointer;
-          transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
           border: none;
           outline: none;
         }
@@ -30674,9 +30877,9 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
         .auth-btn-verify {
           flex: 1.5;
           background: linear-gradient(135deg, 
-            rgba(255, 255, 255, 0.15),
-            rgba(255, 255, 255, 0.08)
-          );
+          rgba(255, 255, 255, 0.15),
+          rgba(255, 255, 255, 0.08)
+        );
           color: #fff;
           border: 1px solid rgba(255, 255, 255, 0.2);
           box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
@@ -30684,9 +30887,9 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
         
         .auth-btn-verify:hover {
           background: linear-gradient(135deg, 
-            rgba(255, 255, 255, 0.22),
-            rgba(255, 255, 255, 0.12)
-          );
+          rgba(255, 255, 255, 0.22),
+          rgba(255, 255, 255, 0.12)
+        );
           transform: translateY(-2px);
           box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
         }
@@ -30697,13 +30900,13 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
         
         .auth-btn:disabled {
           opacity: 0.5;
-          cursor: not-allowed;
+        cursor: not-allowed;
           transform: none !important;
         }
         
         .auth-status {
           min-height: 20px;
-          text-align: center;
+        text-align: center;
           font-size: 11px;
           font-weight: 600;
           padding: 6px 10px;
@@ -30725,7 +30928,7 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
         
         .auth-status.loading {
           color: rgba(255, 255, 255, 0.8);
-          border-color: rgba(255, 255, 255, 0.15);
+        border-color: rgba(255, 255, 255, 0.15);
           background: rgba(255, 255, 255, 0.05);
         }
         
@@ -30739,6 +30942,27 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
           color: #f91880;
           border-color: rgba(249, 24, 128, 0.2);
           background: rgba(249, 24, 128, 0.05);
+        }
+        
+        .auth-warning-box {
+        display: flex;
+        align-items: center;
+          gap: 6px;
+          margin-top: 10px;
+        font-size: 10px;
+          color: rgba(255, 255, 255, 0.6);
+        font-family: "Courier New", monospace;
+        }
+
+        .auth-warning-box svg {
+          width: 14px;
+          height: 14px;
+          animation: warningPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes warningPulse {
+          0%, 100% { opacity: 0.9; transform: scale(1); }
+          50% { opacity: 1; transform: scale(1.05); }
         }
         
         @media (max-width: 480px) {
@@ -30762,20 +30986,20 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
           }
           
           .auth-title {
-            font-size: 12px;
+          font-size: 12px;
             letter-spacing: 2px;
           }
           
           .auth-subtitle {
-            font-size: 11px;
-          }
-          
+          font-size: 11px;
+        }
+
           .auth-hint {
-            font-size: 9px;
+          font-size: 9px;
           }
           
           .auth-input {
-            padding: 10px 12px;
+          padding: 10px 12px;
             font-size: 13px;
           }
           
@@ -30786,12 +31010,12 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
           }
           
           .auth-btn svg {
-            width: 14px;
-            height: 14px;
+        width: 14px;
+        height: 14px;
           }
           
           .auth-status {
-            font-size: 10px;
+        font-size: 10px;
             padding: 5px 8px;
           }
         }
@@ -30998,11 +31222,622 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
   function resetButton(btn) {
     btn.innerHTML = `
       <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2.5">
-        <polyline points="20 6 9 17 4 12"/>
-      </svg>
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
       <span>VERIFY</span>
     `;
     btn.disabled = false;
+  }
+
+  /**
+   * 显示社交功能密钥输入弹窗（通知+私信）
+   */
+  function requestSocialAccess() {
+    // 避免重复弹窗
+    if (document.getElementById("social-auth-modal")) return;
+
+    const modal = document.createElement("div");
+    modal.id = "social-auth-modal";
+    modal.className = "live-auth-container"; // 复用直播功能的样式
+    modal.innerHTML = `
+      <div class="auth-overlay"></div>
+      <div class="auth-cassette-box">
+        <!-- 磁带纹理 -->
+        <div class="cassette-texture"></div>
+        
+        <!-- 头部：唱片图标 + 标题 -->
+        <div class="auth-header">
+          <div class="vinyl-lock-icon">
+            <svg class="vinyl-disc-svg" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="45" fill="url(#vinylGradient)"/>
+              <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/>
+              <circle cx="50" cy="50" r="30" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/>
+              <circle cx="50" cy="50" r="20" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/>
+              <circle cx="50" cy="50" r="8" fill="#0a0a0a"/>
+              <defs>
+                <radialGradient id="vinylGradient">
+                  <stop offset="0%" style="stop-color:#2a2a2a"/>
+                  <stop offset="50%" style="stop-color:#1a1a1a"/>
+                  <stop offset="100%" style="stop-color:#0a0a0a"/>
+                </radialGradient>
+              </defs>
+            </svg>
+            <div class="lock-overlay">
+              <svg viewBox="0 0 24 24" width="24" height="24" stroke="#fff" fill="none" stroke-width="2">
+                <rect x="5" y="11" width="14" height="10" rx="2"/>
+                <path d="M12 15v2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+          </div>
+        </div>
+
+          <div class="auth-title-section">
+            <h3 class="auth-title">ACCESS REQUIRED</h3>
+            <p class="auth-subtitle">请输入管理员提供的社交功能密钥</p>
+            <p class="auth-hint">验证成功后7天内有效</p>
+          </div>
+        </div>
+
+        <!-- 刷新提示 -->
+        <div class="auth-warning-box">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+            </svg>
+          <span>验证成功后将自动刷新页面，请确保已保存数据</span>
+          </div>
+          
+        <!-- 输入区域 -->
+        <div class="auth-input-section">
+          <div class="input-label">
+            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2">
+              <rect x="5" y="11" width="14" height="10" rx="2"/>
+              <path d="M12 15v2"/>
+              <circle cx="12" cy="7" r="4"/>
+                </svg>
+            <span>PASS KEY</span>
+            </div>
+          <div class="input-wrapper">
+              <input 
+              id="social-key-input" 
+              type="password" 
+              placeholder="••••••••••••" 
+              class="auth-input"
+              onkeypress="if(event.key==='Enter')document.getElementById('verify-social-key').click()"
+            />
+            <div class="input-underline"></div>
+              </div>
+            </div>
+            
+        <!-- 按钮组 -->
+        <div class="auth-buttons">
+          <button class="auth-btn auth-btn-cancel" onclick="document.getElementById('social-auth-modal').remove()">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2.5">
+              <path d="M18 6L6 18M6 6l12 12"/>
+              </svg>
+            <span>CANCEL</span>
+            </button>
+          <button id="verify-social-key" class="auth-btn auth-btn-verify">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2.5">
+              <polyline points="20 6 9 17 4 12"/>
+          </svg>
+            <span>VERIFY</span>
+          </button>
+        </div>
+
+        <!-- 状态提示 -->
+        <div id="social-verify-status" class="auth-status"></div>
+            </div>
+      
+      <style>
+        .live-auth-container {
+        position: fixed;
+        inset: 0;
+          z-index: 99999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+          animation: authFadeIn 0.4s ease forwards;
+        }
+        
+        @keyframes authFadeIn {
+          to { opacity: 1; }
+        }
+        
+        .auth-overlay {
+        position: fixed;
+        inset: 0;
+          background: rgba(0, 0, 0, 0.85);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+      }
+
+        .auth-cassette-box {
+        position: relative;
+        width: 90%;
+          max-width: 340px;
+        background: linear-gradient(
+          135deg,
+          rgba(25, 25, 25, 0.98) 0%,
+          rgba(20, 20, 20, 0.98) 50%,
+          rgba(15, 15, 15, 0.98) 100%
+        );
+        backdrop-filter: blur(40px) saturate(150%);
+          -webkit-backdrop-filter: blur(40px) saturate(150%);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+          border-radius: 20px;
+          box-shadow: 
+            0 20px 60px rgba(0, 0, 0, 0.6),
+                    0 0 1px rgba(255, 255, 255, 0.2),
+                    inset 0 1px 1px rgba(255, 255, 255, 0.1);
+        overflow: hidden;
+          padding: 24px 20px;
+          transform: translateY(40px) scale(0.9);
+        opacity: 0;
+          animation: authSlideUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s forwards;
+          z-index: 1;
+        }
+        
+        @keyframes authSlideUp {
+          to { 
+          transform: translateY(0) scale(1);
+            opacity: 1;
+          }
+        }
+        
+        .cassette-texture {
+        position: absolute;
+        inset: 0;
+        background: repeating-linear-gradient(
+          90deg,
+          transparent,
+          transparent 2px,
+          rgba(255, 255, 255, 0.01) 2px,
+          rgba(255, 255, 255, 0.01) 4px
+        );
+        pointer-events: none;
+      }
+
+        .auth-header {
+        display: flex;
+          flex-direction: column;
+        align-items: center;
+          margin-bottom: 22px;
+        position: relative;
+      }
+
+        .vinyl-lock-icon {
+          width: 64px;
+          height: 64px;
+        position: relative;
+          margin-bottom: 12px;
+          animation: vinylSpin 8s linear infinite;
+        }
+        
+        @keyframes vinylSpin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        
+        .vinyl-disc-svg {
+          width: 100%;
+        height: 100%;
+          filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.6));
+        }
+        
+        .lock-overlay {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+          justify-content: center;
+          animation: lockPulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes lockPulse {
+          0%, 100% { opacity: 0.9; transform: scale(1); }
+          50% { opacity: 1; transform: scale(1.05); }
+        }
+        
+        .auth-title-section {
+        text-align: center;
+        }
+        
+        .auth-title {
+          margin: 0 0 6px 0;
+          font-size: 13px;
+        font-weight: 800;
+          letter-spacing: 2.5px;
+        text-transform: uppercase;
+        font-family: "Courier New", monospace;
+          color: rgba(255, 255, 255, 0.95);
+          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+      }
+
+        .auth-subtitle {
+          margin: 0 0 3px 0;
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.7);
+          line-height: 1.4;
+        }
+        
+        .auth-hint {
+          margin: 0;
+        font-size: 10px;
+          color: rgba(255, 255, 255, 0.45);
+        font-family: "Courier New", monospace;
+        }
+        
+        .auth-input-section {
+          margin-bottom: 20px;
+        }
+        
+        .input-label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+          margin-bottom: 8px;
+        font-size: 9px;
+        font-weight: 800;
+          letter-spacing: 1.2px;
+        text-transform: uppercase;
+        font-family: "Courier New", monospace;
+          color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .input-wrapper {
+        position: relative;
+        }
+        
+        .auth-input {
+          width: 100%;
+          padding: 12px 14px;
+          background: rgba(10, 10, 10, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+          border-radius: 10px;
+          color: #fff;
+          font-size: 14px;
+          font-family: "Courier New", monospace;
+          letter-spacing: 1.5px;
+          box-sizing: border-box;
+          outline: none;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .auth-input:focus {
+          border-color: rgba(255, 255, 255, 0.3);
+          background: rgba(15, 15, 15, 0.8);
+          box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05);
+        }
+        
+        .auth-input::placeholder {
+          color: rgba(255, 255, 255, 0.3);
+          letter-spacing: 4px;
+        }
+        
+        .input-underline {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+          height: 2px;
+          background: linear-gradient(90deg, 
+          transparent,
+            rgba(255, 255, 255, 0.3),
+          transparent
+        );
+          transform: scaleX(0);
+          transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        pointer-events: none;
+      }
+
+        .auth-input:focus + .input-underline {
+          transform: scaleX(1);
+        }
+        
+        .auth-buttons {
+        display: flex;
+          gap: 10px;
+          margin-bottom: 14px;
+        }
+        
+        .auth-btn {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+          gap: 6px;
+          padding: 12px 16px;
+          border-radius: 10px;
+          font-size: 11px;
+        font-weight: 800;
+          letter-spacing: 1.2px;
+        font-family: "Courier New", monospace;
+        cursor: pointer;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+          border: none;
+          outline: none;
+        }
+        
+        .auth-btn-cancel {
+          background: rgba(255, 255, 255, 0.06);
+          color: rgba(255, 255, 255, 0.8);
+          border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+        
+        .auth-btn-cancel:hover {
+          background: rgba(255, 255, 255, 0.1);
+          transform: translateY(-2px);
+        }
+        
+        .auth-btn-cancel:active {
+          transform: scale(0.95);
+        }
+        
+        .auth-btn-verify {
+          flex: 1.5;
+        background: linear-gradient(135deg,
+          rgba(255, 255, 255, 0.15),
+          rgba(255, 255, 255, 0.08)
+        );
+          color: #fff;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        }
+        
+        .auth-btn-verify:hover {
+        background: linear-gradient(135deg,
+          rgba(255, 255, 255, 0.22),
+          rgba(255, 255, 255, 0.12)
+        );
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+        
+        .auth-btn-verify:active {
+          transform: scale(0.95);
+        }
+        
+        .auth-btn:disabled {
+          opacity: 0.5;
+        cursor: not-allowed;
+          transform: none !important;
+        }
+        
+        .auth-status {
+          min-height: 20px;
+        text-align: center;
+          font-size: 11px;
+          font-weight: 600;
+          padding: 6px 10px;
+          border-radius: 6px;
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid transparent;
+          transition: all 0.3s ease;
+        }
+        
+        .auth-status:empty {
+        opacity: 0;
+        }
+        
+        .auth-status.warning {
+          color: #f59e0b;
+          border-color: rgba(245, 158, 11, 0.2);
+          background: rgba(245, 158, 11, 0.05);
+        }
+        
+        .auth-status.loading {
+          color: rgba(255, 255, 255, 0.8);
+        border-color: rgba(255, 255, 255, 0.15);
+        background: rgba(255, 255, 255, 0.05);
+      }
+
+        .auth-status.success {
+          color: #00ba7c;
+          border-color: rgba(0, 186, 124, 0.2);
+          background: rgba(0, 186, 124, 0.05);
+        }
+        
+        .auth-status.error {
+          color: #f91880;
+          border-color: rgba(249, 24, 128, 0.2);
+          background: rgba(249, 24, 128, 0.05);
+        }
+        
+        .auth-warning-box {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+          margin-top: 10px;
+        font-size: 10px;
+        color: rgba(255, 255, 255, 0.6);
+        font-family: "Courier New", monospace;
+        }
+
+        .auth-warning-box svg {
+        width: 14px;
+        height: 14px;
+          animation: warningPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes warningPulse {
+          0%, 100% { opacity: 0.9; transform: scale(1); }
+          50% { opacity: 1; transform: scale(1.05); }
+        }
+        
+        @media (max-width: 480px) {
+          .auth-cassette-box {
+            padding: 20px 18px;
+            max-width: 320px;
+          }
+          
+          .vinyl-lock-icon {
+            width: 56px;
+            height: 56px;
+          }
+          
+          .lock-overlay svg {
+            width: 20px;
+            height: 20px;
+          }
+          
+          .auth-header {
+            margin-bottom: 18px;
+          }
+          
+          .auth-title {
+          font-size: 12px;
+            letter-spacing: 2px;
+          }
+          
+          .auth-subtitle {
+          font-size: 11px;
+        }
+
+          .auth-hint {
+          font-size: 9px;
+          }
+          
+          .auth-input {
+          padding: 10px 12px;
+            font-size: 13px;
+          }
+          
+          .auth-btn {
+            padding: 10px 14px;
+            font-size: 10px;
+            gap: 5px;
+          }
+          
+          .auth-btn svg {
+        width: 14px;
+        height: 14px;
+          }
+          
+          .auth-status {
+        font-size: 10px;
+            padding: 5px 8px;
+          }
+        }
+      </style>
+    `;
+
+    document.body.appendChild(modal);
+
+    // 自动聚焦输入框
+    setTimeout(() => {
+      const input = document.getElementById("social-key-input");
+      if (input) input.focus();
+    }, 600);
+
+    // 绑定验证按钮事件
+    setupSocialVerificationButton();
+  }
+
+  /**
+   * 设置社交功能验证按钮
+   */
+  function setupSocialVerificationButton() {
+    const btn = document.getElementById("verify-social-key");
+    if (!btn) return;
+
+    btn.onclick = async () => {
+      const input = document.getElementById("social-key-input");
+      const status = document.getElementById("social-verify-status");
+      const key = input.value.trim();
+
+      // 验证输入
+      if (!key) {
+        showStatus(status, "请输入通行密钥", "warning");
+        input.focus();
+        return;
+      }
+
+      // 显示加载状态
+      btn.innerHTML = `
+        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2.5" style="animation: spin 1s linear infinite;">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 2 A10 10 0 0 1 22 12"/>
+        </svg>
+        <span>VERIFYING...</span>
+        <style>
+          @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+          }
+        </style>
+      `;
+      btn.disabled = true;
+      showStatus(status, "正在验证密钥，请稍候...", "loading");
+
+      try {
+        // 调用验证API（使用 featureType 参数区分功能类型）
+        const deviceId = getDeviceId();
+        const response = await fetch(CONFIG.WORKER_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            key,
+            deviceId,
+            featureType: "social", // 标识为社交功能
+          }),
+          signal: AbortSignal.timeout(10000),
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        const result = await response.json();
+
+        if (result.valid) {
+          // 验证成功，生成token
+          const token = safeBase64Encode(
+            JSON.stringify({
+              exp: Date.now() + CONFIG.TOKEN_EXPIRY,
+              user: result.user || "用户",
+              timestamp: Date.now(),
+              key: key,
+            })
+          );
+
+          localStorage.setItem(CONFIG.SOCIAL_STORAGE_KEY, token);
+
+          showStatus(
+            status,
+            `验证成功！欢迎 ${result.user || "用户"}`,
+            "success"
+          );
+
+          // 延迟关闭弹窗并刷新
+          setTimeout(() => {
+            document.getElementById("social-auth-modal")?.remove();
+
+            console.log("✅ 社交功能已解锁");
+
+            // 刷新当前页面
+            window.location.reload();
+          }, 1200);
+        } else {
+          showStatus(status, "密钥无效或已过期，请重试", "error");
+          resetButton(btn);
+          input.focus();
+          input.select();
+        }
+      } catch (error) {
+        console.error("社交功能验证失败:", error);
+
+        let errorMsg = "验证失败，请重试";
+        if (error.name === "AbortError") {
+          errorMsg = "请求超时，请检查网络连接";
+        } else if (!navigator.onLine) {
+          errorMsg = "网络未连接，请检查后重试";
+        }
+
+        showStatus(status, errorMsg, "error");
+        resetButton(btn);
+      }
+    };
   }
 
   /**
@@ -31185,6 +32020,12 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
   async function loadLiveCodeOnDemand() {
     if (window._xLiveCodeLoaded) return;
 
+    // 🔍 先实时验证 token 是否仍然有效（防止被拉黑）
+    const isValid = await validateLiveTokenWithServer();
+    if (!isValid) {
+      throw new Error("Token 已失效");
+    }
+
     const token = localStorage.getItem(CONFIG.STORAGE_KEY);
     if (!token) throw new Error("No token");
 
@@ -31205,6 +32046,11 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
     const result = await response.json();
 
     if (!result.valid) {
+      // 检查是否被拉黑
+      if (result.blacklisted) {
+        localStorage.removeItem(CONFIG.STORAGE_KEY);
+        throw new Error("访问权限已被撤销");
+      }
       throw new Error(result.error || "验证失败");
     }
 
@@ -31330,7 +32176,70 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
 
   console.log("🔧 已创建", 33, "个 live 函数占位符（局部变量模式）");
 
+  // ============================================
+  // 第三部分: 导出社交功能验证API（供其他模块使用）
+  // ============================================
+  window.xSocialAuth = {
+    // 检查权限状态
+    checkStatus: () => {
+      const hasAccess = checkSocialAccess();
+      const token = localStorage.getItem(CONFIG.SOCIAL_STORAGE_KEY);
+
+      if (!hasAccess) {
+        console.log("❌ 社交功能未授权");
+        return { authorized: false };
+      }
+
+      try {
+        const data = JSON.parse(safeBase64Decode(token));
+        const remainingDays = Math.ceil(
+          (data.exp - Date.now()) / (24 * 60 * 60 * 1000)
+        );
+        console.log("✅ 社交功能已授权");
+        console.log("用户:", data.user);
+        console.log("剩余有效期:", remainingDays, "天");
+        return {
+          authorized: true,
+          user: data.user,
+          remainingDays,
+        };
+      } catch {
+        return { authorized: false };
+      }
+    },
+
+    // 手动清除授权
+    clearAuth: () => {
+      localStorage.removeItem(CONFIG.SOCIAL_STORAGE_KEY);
+      console.log("✅ 已清除社交功能授权，下次访问需要重新验证");
+    },
+
+    // 手动触发验证
+    verify: () => {
+      requestSocialAccess();
+    },
+
+    // 检查是否有权限（供其他模块调用）
+    hasAccess: () => {
+      return checkSocialAccess();
+    },
+
+    // 请求权限（供其他模块调用）
+    requestAccess: () => {
+      requestSocialAccess();
+    },
+
+    // 🔍 实时验证 Token（异步，返回 Promise）
+    validateToken: () => {
+      return validateSocialTokenWithServer();
+    },
+  };
+
   console.log("🔐 X Live 权限保护模块已加载");
+  console.log("🔐 X Social 权限保护模块已加载");
+  console.log(
+    "💡 调试命令: xSocialAuth.checkStatus() / xSocialAuth.clearAuth()"
+  );
 
   // 第四部分: 初始化和对外接口
   // ============================================
@@ -31409,16 +32318,11 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
   async function showWelcomePopup() {
     try {
       // 🆕 定义当前弹窗内容版本（内容变化时修改此版本号）
-      const currentPopupVersion = "v2.2"; // 修改版本号以触发重新显示
-      const currentPopupContent = `x修复bug 答疑页面所有问题已修复
-+未绑定角色在私信列表自动隐藏
-+刷新粉丝群入群申请
-
-!!重要通知必须看：
-由于该仿x软件的特殊性及敏感性 所以吃点羊决定增加通行验证 仅成年可用
-吃点羊将在明天关闭通知页面和私信页面功能 及以后所有新功能都必须通过验证后才能使用
-实在抱歉给各位宝宝带来困扰 这是我深思熟虑后的决定 因为使用群体无法保证具体年龄 我很担心会有年龄小的宝宝因此受到坏的影响。
-所有验证明天下午开启 请及时备份 这个验证不会损伤任何现有数据 但还是请多多备份!!`;
+      const currentPopupVersion = "v2.3"; // 修改版本号以触发重新显示
+      const currentPopupContent = `开启成年验证
+请点击X设置页面沙发按钮 直接跳转到审核邀请页面
+具体审核要求简述如下
+限女  ＞17   基本-酒馆基础`;
 
       // 检查是否已经显示过此版本的弹窗
       const lastShownVersion = localStorage.getItem(
@@ -31531,14 +32435,10 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
             font-family: 'Fusion Pixel 10px P zh_hans', monospace;
             ">
             <div style="font-weight: bold; margin-bottom: 6px;">吃点羊提醒您：</div>
-            <div style="margin-bottom: 4px;">x修复bug 答疑页面所有问题已修复</div>
-            <div style="margin-bottom: 4px;">+未绑定角色在私信列表自动隐藏</div>
-            <div style="margin-bottom: 8px;">+刷新粉丝群入群申请</div>
-            <div style="font-weight: bold; margin-bottom: 4px;">!!重要通知必须看：</div>
-            <div style="margin-bottom: 4px;">由于该仿x软件的特殊性及敏感性 所以吃点羊决定增加通行验证 仅成年可用</div>
-            <div style="margin-bottom: 4px;">吃点羊将在明天关闭通知页面和私信页面功能 及以后所有新功能都必须通过验证后才能使用</div>
-            <div style="margin-bottom: 4px;">实在抱歉给各位宝宝带来困扰 这是我深思熟虑后的决定 因为使用群体无法保证具体年龄 我很担心会有年龄小的宝宝因此受到坏的影响。</div>
-            <div style="font-weight: bold;">所有验证明天下午开启 请及时备份 这个验证不会损伤任何现有数据 但还是请多多备份!!</div>
+            <div style="font-weight: bold; margin-bottom: 6px;">开启成年验证</div>
+            <div style="font-weight: bold; margin-bottom: 6px;">请点击X设置页面沙发按钮 直接跳转到审核邀请页面</div>
+            <div style="margin-bottom: 4px;">具体审核要求简述如下</div>
+            <div>限女  ＞17   基本-酒馆基础</div>
             </div>
  </div>
 
@@ -42104,14 +43004,14 @@ ${getTransferStatusIcon(message.status, isLightMode)}
     // 如果没有消息,显示空状态
     if (filteredMessages.length === 0) {
       container.innerHTML = `
-<div style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 32px; text-align: center; ">
-<svg viewBox="0 0 24 24" style="width: 56px; height: 56px; fill: var(--x-text-secondary); margin-bottom: 16px;">
-<g><path d="M1.998 5.5c0-1.381 1.119-2.5 2.5-2.5h15c1.381 0 2.5 1.119 2.5 2.5v13c0 1.381-1.119 2.5-2.5 2.5h-15c-1.381 0-2.5-1.119-2.5-2.5v-13zm2.5-.5c-.276 0-.5.224-.5.5v2.764l8 3.638 8-3.636V5.5c0-.276-.224-.5-.5-.5h-15zm15.5 5.463l-8 3.636-8-3.638V18.5c0 .276.224.5.5.5h15c.276 0 .5-.224.5-.5v-8.037z"></path></g>
-</svg>
-<div style="font-size: 28px; font-weight: 700; color:var(--x-text-primary); margin-bottom: 8px; " data-i18n="messagesEmpty">暂无私信</div>
-<div style="font-size: 14px; color:var(--x-text-secondary); max-width: 320px; " data-i18n="messagesEmptyDesc">发送私信与朋友保持联系</div>
-</div>
-`;
+ <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 32px; text-align: center; ">
+ <svg viewBox="0 0 24 24" style="width: 56px; height: 56px; fill: var(--x-text-secondary); margin-bottom: 16px;">
+ <g><path d="M1.998 5.5c0-1.381 1.119-2.5 2.5-2.5h15c1.381 0 2.5 1.119 2.5 2.5v13c0 1.381-1.119 2.5-2.5 2.5h-15c-1.381 0-2.5-1.119-2.5-2.5v-13zm2.5-.5c-.276 0-.5.224-.5.5v2.764l8 3.638 8-3.636V5.5c0-.276-.224-.5-.5-.5h-15zm15.5 5.463l-8 3.636-8-3.638V18.5c0 .276.224.5.5.5h15c.276 0 .5-.224.5-.5v-8.037z"></path></g>
+ </svg>
+ <div style="font-size: 28px; font-weight: 700; color:var(--x-text-primary); margin-bottom: 8px; " data-i18n="messagesEmpty">暂无私信</div>
+ <div style="font-size: 14px; color:var(--x-text-secondary); max-width: 320px; " data-i18n="messagesEmptyDesc">发送私信与朋友保持联系</div>
+ </div>
+ `;
       return;
     }
     // 渲染每条私信（异步创建）
@@ -42125,7 +43025,7 @@ ${getTransferStatusIcon(message.status, isLightMode)}
     const messageDiv = document.createElement("div");
     messageDiv.className = "message-item";
     messageDiv.style.cssText = `
-display: flex; align-items: center; padding: 16px; border-bottom: 1px solid var(--x-border-color); cursor: pointer; transition: background-color 0.2s;
+ display: flex; align-items: center; padding: 16px; border-bottom: 1px solid var(--x-border-color); cursor: pointer; transition: background-color 0.2s;
 `; // 🔧 获取最新的头像、昵称、句柄（对于绑定角色，从X资料实时读取）
     let currentAvatar = message.userAvatar;
     let currentUserName = message.userName;
@@ -42196,30 +43096,30 @@ display: flex; align-items: center; padding: 16px; border-bottom: 1px solid var(
     const timeStr = formatMessageTime(lastMessageTime);
     messageDiv.innerHTML = `
 
-<div style="position: relative; flex-shrink: 0; margin-right: 12px;">
+ <div style="position: relative; flex-shrink: 0; margin-right: 12px;">
 
-<img src="${currentAvatar}"
+ <img src="${currentAvatar}"
 alt="${currentUserName}"
-style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover; ">
+ style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover; ">
 
-${
-  message.unread
-    ? `
-<div style="position: absolute; top: -2px; right: -2px; width: 12px; height: 12px; background-color: var(--x-accent); border: 2px solid var(--x-bg-primary); border-radius: 50%; "></div>
-`
-    : ""
-}
-</div>
+ ${
+   message.unread
+     ? `
+ <div style="position: absolute; top: -2px; right: -2px; width: 12px; height: 12px; background-color: var(--x-accent); border: 2px solid var(--x-bg-primary); border-radius: 50%; "></div>
+ `
+     : ""
+ }
+ </div>
 
-<div style="flex: 1; min-width: 0;">
+ <div style="flex: 1; min-width: 0;">
 
-<div style="display: flex; align-items: center; margin-bottom: 4px;">
-<span style="font-size: 15px; font-weight: ${
-      message.unread ? "700" : "700"
-    }; color:var(--x-text-primary); margin-right: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; ">${currentUserName}</span>
+ <div style="display: flex; align-items: center; margin-bottom: 4px;">
+ <span style="font-size: 15px; font-weight: ${
+   message.unread ? "700" : "700"
+ }; color:var(--x-text-primary); margin-right: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; ">${currentUserName}</span>
 <span style="font-size: 15px; color:var(--x-text-secondary); margin-right: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; ">@${currentUserHandle}</span>
-<span style="font-size: 15px; color:var(--x-text-secondary); margin-left: auto; flex-shrink: 0; ">· ${timeStr}</span>
-</div>
+ <span style="font-size: 15px; color:var(--x-text-secondary); margin-left: auto; flex-shrink: 0; ">· ${timeStr}</span>
+ </div>
 
  <div style="font-size: 15px; color: ${
    message.unread ? "var(--x-text-primary)" : "var(--x-text-secondary)"
@@ -48379,14 +49279,14 @@ ${
 </svg>
 </button>
 
-<button onclick="closeFanGroupApplicationsModal()" style="position: absolute; top: 16px; right: 16px; background: transparent; border: none; color:var(--x-text-secondary); cursor: pointer; padding: 8px; border-radius: 50%; transition: all 0.2s; " onmouseover="this.style.backgroundColor='var(--x-bg-hover)'"
-onmouseout="this.style.backgroundColor='transparent'">
-<svg viewBox="0 0 24 24" style="width: 20px; height: 20px; fill: currentColor;">
-<g><path d="M10.59 12L4.54 5.96l1.42-1.42L12 10.59l6.04-6.05 1.42 1.42L13.41 12l6.05 6.04-1.42 1.42L12 13.41l-6.04 6.05-1.42-1.42L10.59 12z"></path></g>
-</svg>
-</button>
+ <button onclick="closeFanGroupApplicationsModal()" style="position: absolute; top: 16px; right: 16px; background: transparent; border: none; color:var(--x-text-secondary); cursor: pointer; padding: 8px; border-radius: 50%; transition: all 0.2s; " onmouseover="this.style.backgroundColor='var(--x-bg-hover)'"
+ onmouseout="this.style.backgroundColor='transparent'">
+ <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; fill: currentColor;">
+ <g><path d="M10.59 12L4.54 5.96l1.42-1.42L12 10.59l6.04-6.05 1.42 1.42L13.41 12l6.05 6.04-1.42 1.42L12 13.41l-6.04 6.05-1.42-1.42L10.59 12z"></path></g>
+ </svg>
+ </button>
 
-<div style="color:var(--x-text-primary); font-size: 20px; font-weight: 700; margin-bottom: 8px; ">入群申请</div>
+ <div style="color:var(--x-text-primary); font-size: 20px; font-weight: 700; margin-bottom: 8px; ">入群申请</div>
  <div style="color:var(--x-text-secondary); font-size: 13px; margin-bottom: 12px; ">${
    fanGroup.userName || fanGroup.groupName
  }</div>
