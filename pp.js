@@ -2315,7 +2315,7 @@ onmouseout="this.style.opacity='1'">
  <path d="M17 19v2" />
  </svg>
  </div>
-
+ 
  <div id="help-toggle-btn" onclick="openHelpPage()"
  style="cursor: pointer; padding: 8px; border-radius: 50%; transition: background-color 0.2s; display: flex; align-items: center; justify-content: center;"
  onmouseover="this.style.backgroundColor='rgba(255,255,255,0.1)'"
@@ -5648,28 +5648,66 @@ ${rd.description ? `关系描述：${rd.description}` : ""}
     },
     // ========== 用户身份冒用筛选工具 ==========
     // 删除所有冒充用户身份的内容
-    filterUserImpersonation(data, userHandle, userName) {
+    async filterUserImpersonation(data, userHandle = null, userName = null) {
+      console.log("═══════════════════════════════════════");
       console.log("🚫 [身份筛选] 开始检查用户身份冒用...");
-      if (!userHandle || !userName) {
-        console.warn("⚠️ [身份筛选] 缺少用户信息，跳过筛选");
-        return data;
+
+      // 🔧 修复：如果未提供用户信息，从数据库实时读取
+      let actualUserHandle = userHandle;
+      let actualUserName = userName;
+
+      if (!actualUserHandle || !actualUserName) {
+        console.log("🔍 [身份筛选] 未提供用户信息，从数据库读取最新数据...");
+        try {
+          const xDB = getXDB();
+          const currentAccountId = window.currentAccountId || "main";
+          const userProfile = await xDB.xUserProfile.get(currentAccountId);
+
+          if (userProfile) {
+            actualUserHandle = userProfile.handle;
+            actualUserName = userProfile.name;
+            console.log(
+              `✅ [身份筛选] 已从数据库读取用户信息: ${actualUserName} (@${actualUserHandle})`
+            );
+          } else {
+            console.warn("⚠️ [身份筛选] 数据库中未找到用户资料，跳过筛选");
+            console.log("═══════════════════════════════════════");
+            return data;
+          }
+        } catch (error) {
+          console.error("❌ [身份筛选] 读取用户资料失败:", error);
+          console.log("═══════════════════════════════════════");
+          return data;
+        }
+      } else {
+        console.log(
+          `📋 [身份筛选] 使用提供的用户信息: ${actualUserName} (@${actualUserHandle})`
+        );
       }
-      const cleanUserHandle = HandleUtils.clean(userHandle);
-      const cleanUserName = userName.toLowerCase();
+
+      const cleanUserHandle = HandleUtils.clean(actualUserHandle);
+      const cleanUserName = actualUserName.toLowerCase();
       let removedCount = 0; // 检查用户对象是否冒用了用户身份
       const isUserImpersonation = (user) => {
         if (!user || !user.handle) return false;
+
         // 句柄完全匹配
-        if (HandleUtils.equals(user.handle, userHandle)) {
-          console.warn(`🚫 [身份筛选] 检测到句柄冒用: ${user.handle}`);
+        if (HandleUtils.equals(user.handle, actualUserHandle)) {
+          console.warn(
+            `  🚫 检测到句柄冒用: @${user.handle} (假扮: ${actualUserName})`
+          );
           return true;
         }
+
         // 姓名完全匹配
         const cleanName = (user.name || "").toLowerCase();
         if (cleanName === cleanUserName) {
-          console.warn(`🚫 [身份筛选] 检测到姓名冒用: ${user.name}`);
+          console.warn(
+            `  🚫 检测到姓名冒用: ${user.name} (假扮: ${actualUserName})`
+          );
           return true;
         }
+
         return false;
       }; // 筛选推文数组
       const filterTweets = (tweets) => {
@@ -5678,7 +5716,7 @@ ${rd.description ? `关系描述：${rd.description}` : ""}
           // 检查推文作者是否冒用（这是真正的冒用：假扮用户发推文）
           if (isUserImpersonation(tweet.user)) {
             console.warn(
-              `🗑️ [身份筛选] 删除冒用推文: "${tweet.content?.substring(
+              `  🗑️ 删除冒用推文: "${(tweet.content || "").substring(
                 0,
                 50
               )}..."`
@@ -5702,7 +5740,7 @@ ${rd.description ? `关系描述：${rd.description}` : ""}
           // 检查评论作者
           if (isUserImpersonation(comment.user)) {
             console.warn(
-              `🗑️ [身份筛选] 删除冒用评论: "${comment.content?.substring(
+              `  🗑️ 删除冒用评论: "${(comment.content || "").substring(
                 0,
                 50
               )}..."`
@@ -5738,7 +5776,7 @@ ${rd.description ? `关系描述：${rd.description}` : ""}
           const allUsers = like.users || [];
           like.users = allUsers.filter((user) => !isUserImpersonation(user));
           if (like.users.length === 0) {
-            console.warn(`🗑️ [身份筛选] 删除全冒用点赞通知`);
+            console.warn(`  🗑️ 删除全冒用点赞通知`);
             removedCount++;
             return false;
           }
@@ -5749,7 +5787,7 @@ ${rd.description ? `关系描述：${rd.description}` : ""}
         data.retweets = data.retweets.filter((retweet) => {
           // 检查转推者
           if (isUserImpersonation(retweet.user)) {
-            console.warn(`🗑️ [身份筛选] 删除冒用转推通知`);
+            console.warn(`  🗑️ 删除冒用转推通知`);
             removedCount++;
             return false;
           }
@@ -5760,13 +5798,16 @@ ${rd.description ? `关系描述：${rd.description}` : ""}
           return true;
         });
       }
+      console.log("═══════════════════════════════════════");
       if (removedCount > 0) {
         console.log(
-          `✅ [身份筛选] 共删除 ${removedCount} 个冒用用户身份的内容`
+          `✅ [身份筛选] 筛选完成，共删除 ${removedCount} 个冒用身份的内容`
         );
       } else {
-        console.log(`✅ [身份筛选] 未检测到身份冒用`);
+        console.log(`✅ [身份筛选] 筛选完成，未检测到身份冒用`);
       }
+      console.log("═══════════════════════════════════════");
+
       return data;
     },
     // ========== 头像强制修正工具 ==========
@@ -5777,26 +5818,44 @@ ${rd.description ? `关系描述：${rd.description}` : ""}
       const avatarMap = new Map();
       const defaultAvatar =
         "https://i.postimg.cc/4xmx7V4R/mmexport1759081128356.jpg";
+
+      console.log("🔍 [头像修正] 开始从数据库加载最新头像数据...");
+
       // 辅助函数：添加头像映射
       const addAvatarMapping = (handle, avatar, type, name) => {
         const cleanHandle = HandleUtils.clean(handle);
         if (!cleanHandle) return;
         avatarMap.set(cleanHandle, { avatar, type, name });
       };
-      // 加载用户的X资料（最高优先级）
-      if (window.userProfileData?.handle && window.userProfileData?.avatar) {
-        addAvatarMapping(
-          window.userProfileData.handle,
-          window.userProfileData.avatar,
-          "user",
-          window.userProfileData.name
-        );
-        console.log(
-          `👤 [头像修正] 已加载用户头像: ${window.userProfileData.name} (${window.userProfileData.handle})`
-        );
+
+      // 🔧 修复：从数据库实时读取用户头像（最高优先级）
+      try {
+        const currentAccountId = window.currentAccountId || "main";
+        const userProfile = await xDB.xUserProfile.get(currentAccountId);
+
+        if (userProfile?.handle && userProfile?.avatar) {
+          addAvatarMapping(
+            userProfile.handle,
+            userProfile.avatar,
+            "user",
+            userProfile.name
+          );
+          console.log(
+            `👤 [头像修正] 已加载用户头像（数据库）: ${userProfile.name} (@${
+              userProfile.handle
+            }) -> ${userProfile.avatar.substring(0, 50)}...`
+          );
+        } else {
+          console.warn("⚠️ [头像修正] 未找到用户资料或头像为空");
+        }
+      } catch (error) {
+        console.error("❌ [头像修正] 读取用户头像失败:", error);
       }
       // 加载所有角色的X资料
       const allXProfiles = await xDB.xCharacterProfiles.toArray();
+      let characterCount = 0;
+      let relationshipNpcCount = 0;
+
       for (const xProfile of allXProfiles) {
         if (xProfile.xHandle && xProfile.xAvatar) {
           addAvatarMapping(
@@ -5805,7 +5864,9 @@ ${rd.description ? `关系描述：${rd.description}` : ""}
             "character",
             xProfile.xName
           );
+          characterCount++;
         }
+
         // 加载关系NPC（使用默认头像）
         if (xProfile.relationships?.length > 0) {
           for (const rel of xProfile.relationships) {
@@ -5816,18 +5877,35 @@ ${rd.description ? `关系描述：${rd.description}` : ""}
                 "relationshipNpc",
                 rel.npcName
               );
+              relationshipNpcCount++;
             }
           }
         }
+      }
+
+      if (characterCount > 0) {
+        console.log(`🎭 [头像修正] 已加载 ${characterCount} 个角色头像`);
+      }
+      if (relationshipNpcCount > 0) {
+        console.log(
+          `👥 [头像修正] 已加载 ${relationshipNpcCount} 个关系NPC头像（默认）`
+        );
       }
       // 加载所有绑定NPC
       const npcDataId = "xNPCs_global";
       const npcData = await xDB.xNPCs.get(npcDataId);
       const allNPCs = npcData?.npcs || [];
+      let npcCount = 0;
+
       for (const npc of allNPCs) {
         if (npc.handle && npc.avatar) {
           addAvatarMapping(npc.handle, npc.avatar, "npc", npc.name);
+          npcCount++;
         }
+      }
+
+      if (npcCount > 0) {
+        console.log(`🤖 [头像修正] 已加载 ${npcCount} 个绑定NPC头像`);
       }
       // 加载所有陌生人的自定义头像
       const allProfiles = await xDB.xAccountProfiles.toArray();
@@ -5838,13 +5916,19 @@ ${rd.description ? `关系描述：${rd.description}` : ""}
       const messagesLists = allProfiles.filter(
         (item) => item.name === "messagesList"
       );
+
+      let strangerCount = 0;
       for (const setting of strangerSettings) {
         if (!setting.messageId) continue;
+
+        // 优化：在所有私信列表中查找该陌生人
+        let found = false;
         for (const msgList of messagesLists) {
           if (!msgList.data || !Array.isArray(msgList.data)) continue;
           const stranger = msgList.data.find(
             (msg) => msg.id === setting.messageId
           );
+
           if (stranger?.userHandle) {
             addAvatarMapping(
               stranger.userHandle,
@@ -5852,28 +5936,53 @@ ${rd.description ? `关系描述：${rd.description}` : ""}
               "stranger",
               stranger.userName || "陌生人"
             );
-            console.log(
-              `🆕 [头像修正] 已加载陌生人自定义头像: ${stranger.userName} (${stranger.userHandle}) -> ${setting.customAvatar}`
-            );
+            strangerCount++;
+            found = true;
             break;
           }
         }
+
+        if (!found) {
+          console.warn(
+            `⚠️ [头像修正] 陌生人设置存在但未找到对应私信: ${setting.messageId}`
+          );
+        }
       }
+
+      if (strangerCount > 0) {
+        console.log(`👻 [头像修正] 已加载 ${strangerCount} 个陌生人自定义头像`);
+      }
+
       console.log(
-        `📋 [头像修正] 已加载 ${avatarMap.size} 个用户/角色/NPC/陌生人的头像信息`
+        `✅ [头像修正] 头像映射表构建完成，共 ${avatarMap.size} 个用户`
       );
       return avatarMap;
     },
     // 强制修正所有用户头像，确保遵守头像规则
     async enforceAvatarRules(data, userHandle = null) {
-      console.log("🔧 [头像修正] 开始修正头像...");
-      const avatarMap = await this._buildAvatarMap(); // 2. 定义修正函数
+      console.log("═══════════════════════════════════════");
+      console.log("🔧 [头像修正] 开始修正头像数据...");
+      console.log("═══════════════════════════════════════");
+
+      const avatarMap = await this._buildAvatarMap();
       const defaultAvatar =
         "https://i.postimg.cc/4xmx7V4R/mmexport1759081128356.jpg";
-      let fixedCount = 0;
+
+      // 统计修正的数量（按类型分类）
+      const fixStats = {
+        user: 0,
+        character: 0,
+        npc: 0,
+        relationshipNpc: 0,
+        stranger: 0,
+        passerby: 0, // 路人
+        total: 0,
+      };
       const fixUser = (user) => {
         if (!user || !user.handle) return;
-        const cleanHandle = HandleUtils.clean(user.handle); // 检查是否是已知用户/角色/NPC/陌生人
+        const cleanHandle = HandleUtils.clean(user.handle);
+
+        // 检查是否是已知用户/角色/NPC/陌生人
         if (avatarMap.has(cleanHandle)) {
           const correctInfo = avatarMap.get(cleanHandle);
           if (user.avatar !== correctInfo.avatar) {
@@ -5883,22 +5992,28 @@ ${rd.description ? `关系描述：${rd.description}` : ""}
                 character: "角色",
                 npc: "NPC",
                 relationshipNpc: "关系NPC",
-                stranger: "陌生人（自定义）",
+                stranger: "陌生人",
               }[correctInfo.type] || correctInfo.type;
+
+            console.log(`  🔄 ${typeLabel}: ${user.name} (@${cleanHandle})`);
+            console.log(`     旧头像: ${user.avatar.substring(0, 60)}...`);
             console.log(
-              `🔧 [头像修正] ${user.name} (${user.handle}): ${typeLabel}头像 ${user.avatar} -> ${correctInfo.avatar}`
+              `     新头像: ${correctInfo.avatar.substring(0, 60)}...`
             );
+
             user.avatar = correctInfo.avatar;
-            fixedCount++;
+            fixStats[correctInfo.type]++;
+            fixStats.total++;
           }
         } else {
           // 未知用户（路人），强制使用默认头像
           if (user.avatar !== defaultAvatar) {
             console.log(
-              `🔧 [头像修正] ${user.name} (${user.handle}): 路人头像 ${user.avatar} -> ${defaultAvatar}`
+              `  🔄 路人: ${user.name} (@${cleanHandle}) -> 默认头像`
             );
             user.avatar = defaultAvatar;
-            fixedCount++;
+            fixStats.passerby++;
+            fixStats.total++;
           }
         }
       }; // 3. 递归修正所有用户对象
@@ -5924,22 +6039,32 @@ ${rd.description ? `关系描述：${rd.description}` : ""}
                   character: "角色",
                   npc: "NPC",
                   relationshipNpc: "关系NPC",
-                  stranger: "陌生人（自定义）",
+                  stranger: "陌生人",
                 }[correctInfo.type] || correctInfo.type;
+
               console.log(
-                `🔧 [头像修正-粉丝群] ${obj.senderName} (${obj.senderHandle}): ${typeLabel}头像 ${obj.senderAvatar} -> ${correctInfo.avatar}`
+                `  🔄 ${typeLabel}[粉丝群]: ${obj.senderName} (@${cleanHandle})`
               );
+              console.log(
+                `     旧头像: ${obj.senderAvatar.substring(0, 60)}...`
+              );
+              console.log(
+                `     新头像: ${correctInfo.avatar.substring(0, 60)}...`
+              );
+
               obj.senderAvatar = correctInfo.avatar;
-              fixedCount++;
+              fixStats[correctInfo.type]++;
+              fixStats.total++;
             }
           } else {
             // 未知用户（路人），强制使用默认头像
             if (obj.senderAvatar !== defaultAvatar) {
               console.log(
-                `🔧 [头像修正-粉丝群] ${obj.senderName} (${obj.senderHandle}): 路人头像 ${obj.senderAvatar} -> ${defaultAvatar}`
+                `  🔄 路人[粉丝群]: ${obj.senderName} (@${cleanHandle}) -> 默认头像`
               );
               obj.senderAvatar = defaultAvatar;
-              fixedCount++;
+              fixStats.passerby++;
+              fixStats.total++;
             }
           }
         }
@@ -5949,13 +6074,32 @@ ${rd.description ? `关系描述：${rd.description}` : ""}
             fixDataRecursively(obj[key]);
           }
         }
-      }; // 4. 开始修正
+      };
+
+      // 4. 开始修正
       fixDataRecursively(data);
-      if (fixedCount > 0) {
-        console.log(`✅ [头像修正] 共修正了 ${fixedCount} 个头像`);
+
+      // 5. 输出修正统计
+      console.log("═══════════════════════════════════════");
+      if (fixStats.total > 0) {
+        console.log(
+          `✅ [头像修正] 修正完成，共修正 ${fixStats.total} 个头像：`
+        );
+        if (fixStats.user > 0) console.log(`   👤 用户: ${fixStats.user} 个`);
+        if (fixStats.character > 0)
+          console.log(`   🎭 角色: ${fixStats.character} 个`);
+        if (fixStats.npc > 0) console.log(`   🤖 NPC: ${fixStats.npc} 个`);
+        if (fixStats.relationshipNpc > 0)
+          console.log(`   👥 关系NPC: ${fixStats.relationshipNpc} 个`);
+        if (fixStats.stranger > 0)
+          console.log(`   👻 陌生人: ${fixStats.stranger} 个`);
+        if (fixStats.passerby > 0)
+          console.log(`   🚶 路人: ${fixStats.passerby} 个`);
       } else {
         console.log(`✅ [头像修正] 所有头像都正确，无需修正`);
       }
+      console.log("═══════════════════════════════════════");
+
       return data;
     },
     // 🔧 JSON修复工具 - 尝试修复AI返回的常见JSON格式错误
@@ -6824,15 +6968,17 @@ ${rd.description ? `关系描述：${rd.description}` : ""}
       }
     },
     // 后处理：身份筛选和头像修正
-    async postProcessData(data, userProfileInfo) {
-      // 身份冒用筛选
-      data = StringBuilders.filterUserImpersonation(
+    async postProcessData(data, userProfileInfo = null) {
+      // 身份冒用筛选（如果未提供用户信息，函数会自动从数据库读取）
+      data = await StringBuilders.filterUserImpersonation(
         data,
-        userProfileInfo.handle,
-        userProfileInfo.name
+        userProfileInfo?.handle,
+        userProfileInfo?.name
       );
-      // 头像修正
-      await StringBuilders.enforceAvatarRules(data, userProfileInfo.handle);
+
+      // 头像修正（总是从数据库读取最新头像）
+      await StringBuilders.enforceAvatarRules(data);
+
       return data;
     },
   }; // 数据处理工具 - 简化重复的数据处理逻辑
@@ -8995,18 +9141,42 @@ ${
   // 处理推文内容，为话题标签和提及添加高亮
   function processContent(content, options = {}) {
     if (!content) return "";
+
     const isOwn = options.isOwn || false;
     const highlightColor = isOwn
       ? "rgba(255, 255, 255, 0.9)"
-      : "var(--x-accent)"; // 处理话题标签 (#hashtag)
+      : "var(--x-accent)";
+
+    // 🔧 修复：先转义HTML特殊字符（防止XSS）
+    content = content
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+
+    // 🔧 修复：保留换行 - 将 \n 转换为 <br>
+    content = content.replace(/\n/g, "<br>");
+
+    // 🔧 修复：保留多个空格 - 将连续空格转换为 &nbsp;
+    // 但保留单个空格为普通空格，只转换多余的空格
+    content = content.replace(/ {2,}/g, (match) => {
+      // 第一个空格用普通空格，其余用 &nbsp;
+      return " " + "&nbsp;".repeat(match.length - 1);
+    });
+
+    // 处理话题标签 (#hashtag) - 注意：此时内容已转义，所以匹配转义后的字符
     content = content.replace(
-      /#([^\s#@]+)/g,
+      /#([^\s#@<]+)/g,
       `<span class="hashtag" style="color: ${highlightColor}; font-weight: 600;">#$1</span>`
-    ); // 处理提及 (@mention)
+    );
+
+    // 处理提及 (@mention)
     content = content.replace(
-      /@([^\s#@]+)/g,
+      /@([^\s#@<]+)/g,
       `<span class="mention" style="color: ${highlightColor}; font-weight: 600;">@$1</span>`
     );
+
     return content;
   }
   // 清理评论内容中的重复回复文本
@@ -30682,22 +30852,22 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
           to { 
           transform: translateY(0) scale(1);
             opacity: 1;
-          }
         }
-        
+      }
+
         .cassette-texture {
         position: absolute;
         inset: 0;
         background: repeating-linear-gradient(
-            90deg,
+          90deg,
           transparent,
             transparent 2px,
             rgba(255, 255, 255, 0.01) 2px,
             rgba(255, 255, 255, 0.01) 4px
-          );
+        );
         pointer-events: none;
-        }
-        
+      }
+
         .auth-header {
         display: flex;
           flex-direction: column;
@@ -30720,7 +30890,7 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
         }
         
         .vinyl-disc-svg {
-          width: 100%;
+        width: 100%;
         height: 100%;
           filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.6));
         }
@@ -30730,7 +30900,7 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
         inset: 0;
         display: flex;
         align-items: center;
-          justify-content: center;
+        justify-content: center;
           animation: lockPulse 2s ease-in-out infinite;
         }
         
@@ -30745,12 +30915,12 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
         
         .auth-title {
           margin: 0 0 6px 0;
-          font-size: 13px;
+        font-size: 13px;
         font-weight: 800;
           letter-spacing: 2.5px;
         text-transform: uppercase;
         font-family: "Courier New", monospace;
-          color: rgba(255, 255, 255, 0.95);
+        color: rgba(255, 255, 255, 0.95);
           text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
       }
 
@@ -30773,22 +30943,22 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
         }
         
         .input-label {
-          display: flex;
+        display: flex;
         align-items: center;
         gap: 6px;
-          margin-bottom: 8px;
+        margin-bottom: 8px;
         font-size: 9px;
         font-weight: 800;
-          letter-spacing: 1.2px;
+        letter-spacing: 1.2px;
         text-transform: uppercase;
         font-family: "Courier New", monospace;
           color: rgba(255, 255, 255, 0.6);
         }
         
         .input-wrapper {
-          position: relative;
-        }
-        
+        position: relative;
+      }
+
         .auth-input {
           width: 100%;
           padding: 12px 14px;
@@ -30836,7 +31006,7 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
         }
         
         .auth-buttons {
-          display: flex;
+        display: flex;
           gap: 10px;
           margin-bottom: 14px;
         }
@@ -30849,10 +31019,10 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
           gap: 6px;
           padding: 12px 16px;
           border-radius: 10px;
-          font-size: 11px;
-          font-weight: 800;
+        font-size: 11px;
+        font-weight: 800;
           letter-spacing: 1.2px;
-          font-family: "Courier New", monospace;
+        font-family: "Courier New", monospace;
         cursor: pointer;
         transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
           border: none;
@@ -30862,7 +31032,7 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
         .auth-btn-cancel {
           background: rgba(255, 255, 255, 0.06);
           color: rgba(255, 255, 255, 0.8);
-          border: 1px solid rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.12);
         }
         
         .auth-btn-cancel:hover {
@@ -30907,7 +31077,7 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
         .auth-status {
           min-height: 20px;
         text-align: center;
-          font-size: 11px;
+        font-size: 11px;
           font-weight: 600;
           padding: 6px 10px;
           border-radius: 6px;
@@ -30927,7 +31097,7 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
         }
         
         .auth-status.loading {
-          color: rgba(255, 255, 255, 0.8);
+        color: rgba(255, 255, 255, 0.8);
         border-color: rgba(255, 255, 255, 0.15);
           background: rgba(255, 255, 255, 0.05);
         }
@@ -31336,7 +31506,7 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
         display: flex;
         align-items: center;
         justify-content: center;
-        opacity: 0;
+          opacity: 0;
           animation: authFadeIn 0.4s ease forwards;
         }
         
@@ -31430,7 +31600,7 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
         inset: 0;
         display: flex;
         align-items: center;
-          justify-content: center;
+        justify-content: center;
           animation: lockPulse 2s ease-in-out infinite;
         }
         
@@ -31445,7 +31615,7 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
         
         .auth-title {
           margin: 0 0 6px 0;
-          font-size: 13px;
+        font-size: 13px;
         font-weight: 800;
           letter-spacing: 2.5px;
         text-transform: uppercase;
@@ -31608,7 +31778,7 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
           min-height: 20px;
         text-align: center;
           font-size: 11px;
-          font-weight: 600;
+        font-weight: 600;
           padding: 6px 10px;
           border-radius: 6px;
           background: rgba(255, 255, 255, 0.03);
@@ -31617,7 +31787,7 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
         }
         
         .auth-status:empty {
-        opacity: 0;
+          opacity: 0;
         }
         
         .auth-status.warning {
@@ -32318,11 +32488,16 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
   async function showWelcomePopup() {
     try {
       // 🆕 定义当前弹窗内容版本（内容变化时修改此版本号）
-      const currentPopupVersion = "v2.3"; // 修改版本号以触发重新显示
-      const currentPopupContent = `开启成年验证
-请点击X设置页面沙发按钮 直接跳转到审核邀请页面
-具体审核要求简述如下
-限女  ＞17   基本-酒馆基础`;
+      const currentPopupVersion = "v2.2"; // 修改版本号以触发重新显示
+      const currentPopupContent = `x修复bug 答疑页面所有问题已修复
++未绑定角色在私信列表自动隐藏
++刷新粉丝群入群申请
+
+!!重要通知必须看：
+由于该仿x软件的特殊性及敏感性 所以吃点羊决定增加通行验证 仅成年可用
+吃点羊将在明天关闭通知页面和私信页面功能 及以后所有新功能都必须通过验证后才能使用
+实在抱歉给各位宝宝带来困扰 这是我深思熟虑后的决定 因为使用群体无法保证具体年龄 我很担心会有年龄小的宝宝因此受到坏的影响。
+所有验证明天下午开启 请及时备份 这个验证不会损伤任何现有数据 但还是请多多备份!!`;
 
       // 检查是否已经显示过此版本的弹窗
       const lastShownVersion = localStorage.getItem(
@@ -32426,20 +32601,24 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
  flex-shrink: 0;
  ">💡</div>
 
-             <!-- 消息内容 -->
-            <div style="
-            flex: 1;
-            font-size: 11px;
-            line-height: 1.4;
-            color: #000;
-            font-family: 'Fusion Pixel 10px P zh_hans', monospace;
-            ">
-            <div style="font-weight: bold; margin-bottom: 6px;">吃点羊提醒您：</div>
-            <div style="font-weight: bold; margin-bottom: 6px;">开启成年验证</div>
-            <div style="font-weight: bold; margin-bottom: 6px;">请点击X设置页面沙发按钮 直接跳转到审核邀请页面</div>
-            <div style="margin-bottom: 4px;">具体审核要求简述如下</div>
-            <div>限女  ＞17   基本-酒馆基础</div>
-            </div>
+ <!-- 消息内容 -->
+ <div style="
+ flex: 1;
+ font-size: 11px;
+ line-height: 1.4;
+ color: #000;
+ font-family: 'Fusion Pixel 10px P zh_hans', monospace;
+ ">
+ <div style="font-weight: bold; margin-bottom: 6px;">吃点羊提醒您：</div>
+            <div style="margin-bottom: 4px;">x修复bug 答疑页面所有问题已修复</div>
+            <div style="margin-bottom: 4px;">+未绑定角色在私信列表自动隐藏</div>
+            <div style="margin-bottom: 8px;">+刷新粉丝群入群申请</div>
+            <div style="font-weight: bold; margin-bottom: 4px;">!!重要通知必须看：</div>
+            <div style="margin-bottom: 4px;">由于该仿x软件的特殊性及敏感性 所以吃点羊决定增加通行验证 仅成年可用</div>
+            <div style="margin-bottom: 4px;">吃点羊将在明天关闭通知页面和私信页面功能 及以后所有新功能都必须通过验证后才能使用</div>
+            <div style="margin-bottom: 4px;">实在抱歉给各位宝宝带来困扰 这是我深思熟虑后的决定 因为使用群体无法保证具体年龄 我很担心会有年龄小的宝宝因此受到坏的影响。</div>
+            <div style="font-weight: bold;">所有验证明天下午开启 请及时备份 这个验证不会损伤任何现有数据 但还是请多多备份!!</div>
+ </div>
  </div>
 
  <!-- 按钮区域 -->
