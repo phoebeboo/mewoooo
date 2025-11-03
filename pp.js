@@ -12375,22 +12375,14 @@ ${npc.homepage || "暂无主页内容设置"}
 
   // 开关切换：世界运转大事件
   window.toggleWorldEvents = async function () {
-    console.log(
-      `🔄 [世界大事件] 切换前状态: ${worldEventsEnabled ? "开启" : "关闭"}`
-    );
-
     worldEventsEnabled = !worldEventsEnabled;
-    const targetState = worldEventsEnabled; // 🔧 锁定目标状态，防止异步过程中被修改
-
-    console.log(`🎯 [世界大事件] 目标状态: ${targetState ? "开启" : "关闭"}`);
-
     const toggle = document.getElementById("world-events-toggle");
     const circle = toggle.querySelector(".toggle-circle");
     const area = document.getElementById("world-events-area");
     const xDb = getXDB();
     const dataId = `worldEvents_${currentAccountId || "main"}`;
 
-    if (targetState) {
+    if (worldEventsEnabled) {
       // 开启
       toggle.style.backgroundColor = "var(--x-accent)";
       circle.style.left = "22px";
@@ -12429,7 +12421,7 @@ ${npc.homepage || "暂无主页内容设置"}
       if (existingData) {
         existingData.enabled = false;
         await xDb.xWorldEvents.put(existingData);
-        console.log("🔴 [世界大事件] 已在xWorldEvents表中标记为禁用");
+        console.log("🔴 [世界大事件] 已在数据库中标记为禁用");
       }
 
       toggle.style.backgroundColor = "#333";
@@ -12442,12 +12434,8 @@ ${npc.homepage || "暂无主页内容设置"}
       );
     }
 
-    // 🔧 关键修复：确保使用锁定的目标状态，并等待保存完成
-    console.log(`💾 [世界大事件] 准备保存状态到设置表: ${targetState}`);
-    await saveWorldEventsState(targetState);
-    console.log(
-      `✅ [世界大事件] 状态已完全保存: ${targetState ? "开启" : "关闭"}`
-    );
+    // 保存状态到设置表（双重保险）
+    await saveWorldEventsState(worldEventsEnabled);
   };
 
   // 保存开关状态到数据库
@@ -12455,97 +12443,47 @@ ${npc.homepage || "暂无主页内容设置"}
     try {
       const xDb = getXDB();
       const settingsId = `xSettings_${currentAccountId || "main"}`;
-      console.log(
-        `📤 [世界大事件保存] 开始保存到设置表，settingsId: ${settingsId}, enabled: ${enabled}`
-      );
-
       let settings = await xDb.xSettings.get(settingsId);
 
       if (!settings) {
-        console.log(`📝 [世界大事件保存] 未找到现有设置，创建新记录`);
         settings = {
           id: settingsId,
           worldEventsEnabled: enabled,
           updatedAt: new Date().toISOString(),
         };
       } else {
-        console.log(
-          `📝 [世界大事件保存] 找到现有设置，更新状态: ${settings.worldEventsEnabled} → ${enabled}`
-        );
         settings.worldEventsEnabled = enabled;
         settings.updatedAt = new Date().toISOString();
       }
 
       await xDb.xSettings.put(settings);
-      console.log(
-        `✅ [世界大事件保存] 状态已成功保存到数据库: ${
-          enabled ? "开启" : "关闭"
-        }`
-      );
-
-      // 🔧 验证保存结果
-      const verifySettings = await xDb.xSettings.get(settingsId);
-      console.log(
-        `🔍 [世界大事件保存] 验证保存结果: ${verifySettings?.worldEventsEnabled}`
-      );
-
-      if (verifySettings?.worldEventsEnabled !== enabled) {
-        console.error(
-          `❌ [世界大事件保存] 验证失败！期望: ${enabled}, 实际: ${verifySettings?.worldEventsEnabled}`
-        );
-      }
+      console.log(`💾 [世界大事件] 状态已保存: ${enabled ? "开启" : "关闭"}`);
     } catch (error) {
-      console.error("❌ [世界大事件保存] 保存失败:", error);
-      throw error; // 🔧 抛出错误，让调用方知道保存失败
+      console.error("保存世界大事件状态失败:", error);
     }
   }
 
   // 恢复开关状态（在初始化时调用）
   async function restoreWorldEventsState() {
     try {
-      console.log("═══════════════════════════════════════");
-      console.log("🔄 [世界大事件恢复] 开始恢复状态...");
-
       const xDb = getXDB();
       const settingsId = `xSettings_${currentAccountId || "main"}`;
-      console.log(`📥 [世界大事件恢复] 读取设置，settingsId: ${settingsId}`);
-
       const settings = await xDb.xSettings.get(settingsId);
-      console.log(`📋 [世界大事件恢复] 读取结果:`, settings);
 
-      if (settings) {
-        console.log(
-          `📊 [世界大事件恢复] worldEventsEnabled 值: ${
-            settings.worldEventsEnabled
-          } (类型: ${typeof settings.worldEventsEnabled})`
-        );
-      } else {
-        console.log(`⚠️ [世界大事件恢复] 未找到设置记录`);
-      }
-
-      if (settings && settings.worldEventsEnabled === true) {
-        console.log("✅ [世界大事件恢复] 检测到已保存的开启状态，正在恢复...");
+      if (settings && settings.worldEventsEnabled) {
+        console.log("🔄 [世界大事件] 检测到已保存的开启状态，正在恢复...");
         setTimeout(() => {
           const toggle = document.getElementById("world-events-toggle");
           if (toggle) {
-            console.log(
-              `🎯 [世界大事件恢复] 找到开关元素，当前全局状态: ${worldEventsEnabled}`
-            );
             worldEventsEnabled = false; // 先设为false，让toggle函数切换
-            console.log(
-              `🔄 [世界大事件恢复] 调用 toggleWorldEvents() 开启大事件`
-            );
             window.toggleWorldEvents();
-          } else {
-            console.warn(`⚠️ [世界大事件恢复] 未找到开关元素`);
           }
         }, 1000);
       } else {
-        console.log("ℹ️ [世界大事件恢复] 状态为关闭或未设置，保持关闭");
+        console.log("ℹ️ [世界大事件] 未检测到开启状态，保持关闭");
       }
-      console.log("═══════════════════════════════════════");
     } catch (error) {
-      console.error("❌ [世界大事件恢复] 恢复状态失败:", error);
+      console.error("恢复世界大事件状态失败:", error);
     }
   }
 
@@ -32500,7 +32438,32 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
         window.currentAccountId + ")"
       ); // 4. 加载用户资料（必须在初始化推文之前，因为推文渲染需要userProfileData）
       await loadUserProfile(); // 5. 初始化X设置（按账号加载）
-      await initializeXSettings(); // 6. 初始化推文数据（依赖userProfileData，必须在loadUserProfile之后）
+      await initializeXSettings();
+
+      // 🔧 强制重置：确保世界运转大事件默认关闭（仅允许用户手动开启）
+      try {
+        const xDb = getXDB();
+        const worldEventsDataId = `worldEvents_${currentAccountId || "main"}`;
+        const worldEventsData = await xDb.xWorldEvents.get(worldEventsDataId);
+        if (worldEventsData && worldEventsData.enabled) {
+          worldEventsData.enabled = false;
+          await xDb.xWorldEvents.put(worldEventsData);
+          console.log(
+            "🔴 [世界大事件] 已强制重置为关闭状态（仅允许用户手动开启）"
+          );
+        }
+        const settingsId = `xSettings_${currentAccountId || "main"}`;
+        let settings = await xDb.xSettings.get(settingsId);
+        if (settings && settings.worldEventsEnabled) {
+          settings.worldEventsEnabled = false;
+          await xDb.xSettings.put(settings);
+          console.log("🔴 [设置] 已强制重置世界大事件开关为关闭");
+        }
+      } catch (error) {
+        console.error("强制重置世界大事件状态失败:", error);
+      }
+
+      // 6. 初始化推文数据（依赖userProfileData，必须在loadUserProfile之后）
       await initializeTweets(); // 7. 绑定所有事件处理器
       bindEventHandlers(); // 8. 更新UI显示（确保用户资料正确显示）
       loadUserProfileToUI(); // 9. 加载主题偏好
@@ -32524,12 +32487,12 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
       // restoreChatHistoryDetectionState();
       // }, 120000);
 
-      // 14. 恢复世界运转大事件状态
-      setTimeout(() => {
-        if (typeof restoreWorldEventsState === "function") {
-          restoreWorldEventsState();
-        }
-      }, 1000); // 延迟1秒，确保UI已加载
+      // 14. 🔧 修复：已移除世界运转大事件状态的自动恢复功能（改为用户手动开启）
+      // setTimeout(() => {
+      //   if (typeof restoreWorldEventsState === "function") {
+      //     restoreWorldEventsState();
+      //   }
+      // }, 1000); // 延迟1秒，确保UI已加载
 
       // 15. 显示一次性欢迎弹窗
       await showWelcomePopup();
@@ -52012,4 +51975,3 @@ ${
 // 4. 需要的依赖:
 // - Dexie.js (数据库)
 // - 确保有 showScreen() 全局函数
-
