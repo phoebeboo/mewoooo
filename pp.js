@@ -9148,12 +9148,11 @@ ${
       : "var(--x-accent)";
 
     // 🔧 修复：先转义HTML特殊字符（防止XSS）
+    // 注意：单引号在普通文本中不需要转义，只转义真正危险的字符
     content = content
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
+      .replace(/>/g, "&gt;");
 
     // 🔧 修复：保留换行 - 将 \n 转换为 <br>
     content = content.replace(/\n/g, "<br>");
@@ -51975,3 +51974,4 @@ ${
 // 4. 需要的依赖:
 // - Dexie.js (数据库)
 // - 确保有 showScreen() 全局函数
+
