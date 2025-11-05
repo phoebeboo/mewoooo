@@ -9275,17 +9275,15 @@ ${
    tweet.quotedTweet.image
      ? `
  <div class="quoted-media" style="margin-top: 8px;">
-  ${
-    tweet.quotedTweet.image.type === "description"
-      ? `
-<div style="background-color: rgba(255,255,255,0.05); border: 1px solid #333; border-radius: 8px; padding: 8px;">
-<div style="color: #fff; font-size: 12px; line-height: 1.4;">${processContent(
-          tweet.quotedTweet.image.content
-        )}</div>
-</div>
-`
-      : ""
-  }
+ ${
+   tweet.quotedTweet.image.type === "description"
+     ? `
+ <div style="background-color: rgba(255,255,255,0.05); border: 1px solid #333; border-radius: 8px; padding: 8px;">
+ <div style="color: #fff; font-size: 12px; line-height: 1.4;">${tweet.quotedTweet.image.content}</div>
+ </div>
+ `
+     : ""
+ }
  ${
    tweet.quotedTweet.image.type === "upload"
      ? `
@@ -9323,10 +9321,10 @@ ${
  <div class="tweet-media-scrollable" style="width: 100%; max-height: 200px; padding: 16px; overflow-y: auto; box-sizing: border-box; ${
    tweet.media[0].sensitive ? "filter: blur(20px);" : ""
  }" id="content-${tweet.id}">
-<div style="font-size: 14px; line-height: 1.5; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word; width: 100%; box-sizing: border-box;">${processContent(
-         tweet.media[0].description
-       )}</div>
-</div>
+ <div style="font-size: 14px; line-height: 1.5; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word; width: 100%; box-sizing: border-box;">${
+   tweet.media[0].description
+ }</div>
+ </div>
  </div>
  </div>
  `
@@ -25332,9 +25330,7 @@ ${
       if (media.type === "description" && media.description) {
         return `
  <div style="margin-bottom: 16px; background-color:var(--x-bg-secondary); border: 1px solid var(--x-border-color); border-radius: 16px; padding: 16px;">
- <div style="color:var(--x-text-primary); font-size: 15px; line-height: 20px;">${processContent(
-   media.description
- )}</div>
+ <div style="color:var(--x-text-primary); font-size: 15px; line-height: 20px;">${media.description}</div>
  </div>
  `;
       } else if (media.type === "upload" && media.url) {
@@ -25350,9 +25346,7 @@ ${
     if (tweet.image.type === "description") {
       return `
  <div style="margin-bottom: 16px; background-color:var(--x-bg-secondary); border: 1px solid var(--x-border-color); border-radius: 12px; padding: 16px; box-sizing: border-box;">
- <div style="color:var(--x-text-primary); font-size: 15px; line-height: 1.4; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word; width: 100%; box-sizing: border-box;">${processContent(
-   tweet.image.content
- )}</div>
+ <div style="color:var(--x-text-primary); font-size: 15px; line-height: 1.4; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word; width: 100%; box-sizing: border-box;">${tweet.image.content}</div>
  </div>
  `;
     }
@@ -25469,14 +25463,14 @@ ${
  <span style="color:var(--x-text-secondary); font-size: 15px;">${
    quoted.user.handle
  }</span>
-     <span style="color:var(--x-text-secondary); font-size: 15px;">·${
-       quoted.time
-     }</span>
+ <span style="color:var(--x-text-secondary); font-size: 15px;">·${
+   quoted.time
+ }</span>
  </div>
  </div>
- <div style="color:var(--x-text-primary); font-size: 17px; line-height: 1.3; word-wrap: break-word;">${processContent(
+ <div style="color:var(--x-text-primary); font-size: 17px; line-height: 1.3; word-wrap: break-word;">${
    quoted.content
- )}</div>
+ }</div>
  ${renderQuotedTweetMedia(quoted)}
  <div style="color:var(--x-text-secondary); font-size: 13px; margin-top: 12px; font-style: italic;">引用${typeText}</div>
  </div>
@@ -25488,9 +25482,7 @@ ${
     if (quoted.image.type === "description") {
       return `
  <div style="margin-top: 8px; background-color:var(--x-bg-secondary); border: 1px solid var(--x-border-color); border-radius: 8px; padding: 8px; box-sizing: border-box;">
- <div style="color:var(--x-text-primary); font-size: 13px; line-height: 1.4; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word; width: 100%; box-sizing: border-box;">${processContent(
-   quoted.image.content
- )}</div>
+ <div style="color:var(--x-text-primary); font-size: 13px; line-height: 1.4; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word; width: 100%; box-sizing: border-box;">${quoted.image.content}</div>
  </div>
  `;
     } else if (quoted.image.type === "upload") {
