@@ -4415,6 +4415,27 @@ style="position: absolute; width: 5px; height: 5px; background-color: var(--x-ac
       xLikes: "&id, accountId, tweetId, likedAt",
       xWorldEvents: "&id, accountId, lastGenerated, lastProgressed",
     });
+    // 版本8：添加自定义礼物系统表（分类+礼物）
+    db.version(8).stores({
+      xTweetsData: "&id",
+      xSettings: "&id",
+      xPresets: "++id, name, createdAt",
+      xUserProfile: "&id",
+      xUserTweets: "&id",
+      xCharacterProfiles: "&characterId",
+      xActiveAccount: "&id",
+      xAccountList: "&accountId, name, createdAt",
+      xNPCs: "&id",
+      xAskbox: "&id",
+      xAccountProfiles: "&handle, name, updatedAt",
+      xAccountAskbox: "&id",
+      xCharacterRelationships: "&id, accountId, lastUpdated",
+      xBookmarks: "&id, accountId, tweetId, bookmarkedAt",
+      xLikes: "&id, accountId, tweetId, likedAt",
+      xWorldEvents: "&id, accountId, lastGenerated, lastProgressed",
+      xCustomGiftCategories: "&id, accountId, name, enabled, createdAt",
+      xCustomGifts: "&id, categoryId, accountId, name, points, createdAt",
+    });
     return db;
   }
   // 原有全局数据库配置函数 - 用于访问API配置和角色信息
@@ -9254,15 +9275,17 @@ ${
    tweet.quotedTweet.image
      ? `
  <div class="quoted-media" style="margin-top: 8px;">
- ${
-   tweet.quotedTweet.image.type === "description"
-     ? `
- <div style="background-color: rgba(255,255,255,0.05); border: 1px solid #333; border-radius: 8px; padding: 8px;">
- <div style="color: #fff; font-size: 12px; line-height: 1.4;">${tweet.quotedTweet.image.content}</div>
- </div>
- `
-     : ""
- }
+  ${
+    tweet.quotedTweet.image.type === "description"
+      ? `
+<div style="background-color: rgba(255,255,255,0.05); border: 1px solid #333; border-radius: 8px; padding: 8px;">
+<div style="color: #fff; font-size: 12px; line-height: 1.4;">${processContent(
+          tweet.quotedTweet.image.content
+        )}</div>
+</div>
+`
+      : ""
+  }
  ${
    tweet.quotedTweet.image.type === "upload"
      ? `
@@ -9300,10 +9323,10 @@ ${
  <div class="tweet-media-scrollable" style="width: 100%; max-height: 200px; padding: 16px; overflow-y: auto; box-sizing: border-box; ${
    tweet.media[0].sensitive ? "filter: blur(20px);" : ""
  }" id="content-${tweet.id}">
- <div style="font-size: 14px; line-height: 1.5; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word; width: 100%; box-sizing: border-box;">${
-   tweet.media[0].description
- }</div>
- </div>
+<div style="font-size: 14px; line-height: 1.5; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word; width: 100%; box-sizing: border-box;">${processContent(
+         tweet.media[0].description
+       )}</div>
+</div>
  </div>
  </div>
  `
@@ -15410,23 +15433,25 @@ accountLikes数组（3-5条，账户喜欢的推文）：
  <div style="color: #fff; font-size: 15px; line-height: 20px; word-wrap: break-word;">${processContent(
    reply.originalTweet.content
  )}</div>
- ${
-   reply.originalTweet.media && reply.originalTweet.media.length > 0
-     ? `
- <div style="background-color:var(--x-bg-secondary); border-radius: 16px; padding: 12px; margin-top: 12px; border: 1px solid var(--x-border-color);">
- <div style="color:var(--x-text-primary); font-size: 15px; line-height: 20px;">${reply.originalTweet.media[0].description}</div>
- </div>
- `
-     : ""
- }
- </div>
- </div>
+${
+  reply.originalTweet.media && reply.originalTweet.media.length > 0
+    ? `
+<div style="background-color:var(--x-bg-secondary); border-radius: 16px; padding: 12px; margin-top: 12px; border: 1px solid var(--x-border-color);">
+<div style="color:var(--x-text-primary); font-size: 15px; line-height: 20px;">${processContent(
+        reply.originalTweet.media[0].description
+      )}</div>
+</div>
+`
+    : ""
+}
+</div>
+</div>
 
- <div style="display: flex; gap: 12px;">
+<div style="display: flex; gap: 12px;">
 
- <div style="width: 40px; display: flex; justify-content: center; position: relative;">
- <div style="width: 2px; height: 100%; background-color: #2f3336;"></div>
- </div>
+<div style="width: 40px; display: flex; justify-content: center; position: relative;">
+<div style="width: 2px; height: 100%; background-color: #2f3336;"></div>
+</div>
  <div style="flex: 1;"></div>
  </div>
 
@@ -15553,22 +15578,24 @@ accountLikes数组（3-5条，账户喜欢的推文）：
  <div style="color: #fff; font-size: 15px; line-height: 20px; word-wrap: break-word;">${processContent(
    reply.originalTweet.content
  )}</div>
- ${
-   reply.originalTweet.media && reply.originalTweet.media.length > 0
-     ? `
- <div style="background-color:var(--x-bg-secondary); border-radius: 16px; padding: 12px; margin-top: 12px; border: 1px solid var(--x-border-color);">
- <div style="color:var(--x-text-primary); font-size: 15px; line-height: 20px;">${reply.originalTweet.media[0].description}</div>
- </div>
- `
-     : ""
- }
- </div>
- </div>
+${
+  reply.originalTweet.media && reply.originalTweet.media.length > 0
+    ? `
+<div style="background-color:var(--x-bg-secondary); border-radius: 16px; padding: 12px; margin-top: 12px; border: 1px solid var(--x-border-color);">
+<div style="color:var(--x-text-primary); font-size: 15px; line-height: 20px;">${processContent(
+        reply.originalTweet.media[0].description
+      )}</div>
+</div>
+`
+    : ""
+}
+</div>
+</div>
 
- <div style="display: flex; gap: 12px; margin-top: 8px;">
- <div style="width: 40px; display: flex; justify-content: center;">
- <div style="width: 2px; background-color: #2f3336; height: 100%;"></div>
- </div>
+<div style="display: flex; gap: 12px; margin-top: 8px;">
+<div style="width: 40px; display: flex; justify-content: center;">
+<div style="width: 2px; background-color: #2f3336; height: 100%;"></div>
+</div>
  <div style="flex: 1; padding-top: 4px;">
  <div style="display: flex; gap: 12px;">
  <img src="${
@@ -15728,19 +15755,21 @@ accountLikes数组（3-5条，账户喜欢的推文）：
  <div style="color:var(--x-text-primary); font-size: 15px; line-height: 20px; margin-bottom: 12px; word-wrap: break-word;">${processContent(
    tweet.content
  )}</div>
- ${
-   tweet.media && tweet.media.length > 0
-     ? `
- <div style="background-color:var(--x-bg-secondary); border-radius: 16px; padding: 12px; margin-bottom: 12px; border: 1px solid var(--x-border-color);">
- <div style="color:var(--x-text-primary); font-size: 15px; line-height: 20px;">${tweet.media[0].description}</div>
- </div>
- `
-     : ""
- }
- <div style="display: flex; justify-content: space-between; max-width: 425px; margin-top: 12px;">
- <div onclick="showLikedTweetDetail('${
-   tweet.id || Date.now()
- }')" style="display: flex; align-items: center; gap: 4px; color:var(--x-text-secondary); cursor: pointer; padding: 0;" onmouseover="this.style.color='var(--x-accent)'" onmouseout="this.style.color='var(--x-text-secondary)'">
+${
+  tweet.media && tweet.media.length > 0
+    ? `
+<div style="background-color:var(--x-bg-secondary); border-radius: 16px; padding: 12px; margin-bottom: 12px; border: 1px solid var(--x-border-color);">
+<div style="color:var(--x-text-primary); font-size: 15px; line-height: 20px;">${processContent(
+        tweet.media[0].description
+      )}</div>
+</div>
+`
+    : ""
+}
+<div style="display: flex; justify-content: space-between; max-width: 425px; margin-top: 12px;">
+<div onclick="showLikedTweetDetail('${
+      tweet.id || Date.now()
+    }')" style="display: flex; align-items: center; gap: 4px; color:var(--x-text-secondary); cursor: pointer; padding: 0;" onmouseover="this.style.color='var(--x-accent)'" onmouseout="this.style.color='var(--x-text-secondary)'">
  <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; fill: currentColor;"><g><path d="M1.751 10c0-4.42 3.584-8 8.005-8h4.366c4.49 0 8.129 3.64 8.129 8.13 0 2.96-1.607 5.68-4.196 7.11l-8.054 4.46v-3.69h-.067c-4.49.1-8.183-3.51-8.183-8.01zm8.005-6c-3.317 0-6.005 2.69-6.005 6 0 3.37 2.77 6.08 6.138 6.01l.351-.01h1.761v2.3l5.087-2.81c1.951-1.08 3.163-3.13 3.163-5.36 0-3.39-2.744-6.13-6.129-6.13H9.756z"></path></g></svg>
  <span style="font-size: 13px;">${DataUtils.formatNumber(
    tweet.stats.comments || 0
@@ -15841,19 +15870,21 @@ accountLikes数组（3-5条，账户喜欢的推文）：
  <div style="color: #fff; font-size: 15px; line-height: 20px; margin-bottom: 12px; word-wrap: break-word;">${processContent(
    tweet.content
  )}</div>
- ${
-   tweet.media && tweet.media.length > 0
-     ? `
- <div style="background-color:var(--x-bg-secondary); border-radius: 16px; padding: 12px; margin-bottom: 12px; border: 1px solid var(--x-border-color);">
- <div style="color:var(--x-text-primary); font-size: 15px; line-height: 20px;">${tweet.media[0].description}</div>
- </div>
- `
-     : ""
- }
- <div style="display: flex; justify-content: space-between; max-width: 425px; margin-top: 12px;">
- <div onclick="showAccountTweetDetail('${
-   tweet.id
- }')" style="display: flex; align-items: center; gap: 4px; color: #71767b; cursor: pointer; padding: 0;" onmouseover="this.style.color='var(--x-accent)'" onmouseout="this.style.color='#71767b'">
+${
+  tweet.media && tweet.media.length > 0
+    ? `
+<div style="background-color:var(--x-bg-secondary); border-radius: 16px; padding: 12px; margin-bottom: 12px; border: 1px solid var(--x-border-color);">
+<div style="color:var(--x-text-primary); font-size: 15px; line-height: 20px;">${processContent(
+        tweet.media[0].description
+      )}</div>
+</div>
+`
+    : ""
+}
+<div style="display: flex; justify-content: space-between; max-width: 425px; margin-top: 12px;">
+<div onclick="showAccountTweetDetail('${
+      tweet.id
+    }')" style="display: flex; align-items: center; gap: 4px; color: #71767b; cursor: pointer; padding: 0;" onmouseover="this.style.color='var(--x-accent)'" onmouseout="this.style.color='#71767b'">
  <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; fill: currentColor;"><g><path d="M1.751 10c0-4.42 3.584-8 8.005-8h4.366c4.49 0 8.129 3.64 8.129 8.13 0 2.96-1.607 5.68-4.196 7.11l-8.054 4.46v-3.69h-.067c-4.49.1-8.183-3.51-8.183-8.01zm8.005-6c-3.317 0-6.005 2.69-6.005 6 0 3.37 2.77 6.08 6.138 6.01l.351-.01h1.761v2.3l5.087-2.81c1.951-1.08 3.163-3.13 3.163-5.36 0-3.39-2.744-6.13-6.129-6.13H9.756z"></path></g></svg>
  <span style="font-size: 13px;">${DataUtils.formatNumber(
    tweet.stats.comments || 0
@@ -25301,7 +25332,9 @@ ${
       if (media.type === "description" && media.description) {
         return `
  <div style="margin-bottom: 16px; background-color:var(--x-bg-secondary); border: 1px solid var(--x-border-color); border-radius: 16px; padding: 16px;">
- <div style="color:var(--x-text-primary); font-size: 15px; line-height: 20px;">${media.description}</div>
+ <div style="color:var(--x-text-primary); font-size: 15px; line-height: 20px;">${processContent(
+   media.description
+ )}</div>
  </div>
  `;
       } else if (media.type === "upload" && media.url) {
@@ -25317,7 +25350,9 @@ ${
     if (tweet.image.type === "description") {
       return `
  <div style="margin-bottom: 16px; background-color:var(--x-bg-secondary); border: 1px solid var(--x-border-color); border-radius: 12px; padding: 16px; box-sizing: border-box;">
- <div style="color:var(--x-text-primary); font-size: 15px; line-height: 1.4; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word; width: 100%; box-sizing: border-box;">${tweet.image.content}</div>
+ <div style="color:var(--x-text-primary); font-size: 15px; line-height: 1.4; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word; width: 100%; box-sizing: border-box;">${processContent(
+   tweet.image.content
+ )}</div>
  </div>
  `;
     }
@@ -25434,14 +25469,14 @@ ${
  <span style="color:var(--x-text-secondary); font-size: 15px;">${
    quoted.user.handle
  }</span>
- <span style="color:var(--x-text-secondary); font-size: 15px;">·${
-   quoted.time
- }</span>
+     <span style="color:var(--x-text-secondary); font-size: 15px;">·${
+       quoted.time
+     }</span>
  </div>
  </div>
- <div style="color:var(--x-text-primary); font-size: 17px; line-height: 1.3; word-wrap: break-word;">${
+ <div style="color:var(--x-text-primary); font-size: 17px; line-height: 1.3; word-wrap: break-word;">${processContent(
    quoted.content
- }</div>
+ )}</div>
  ${renderQuotedTweetMedia(quoted)}
  <div style="color:var(--x-text-secondary); font-size: 13px; margin-top: 12px; font-style: italic;">引用${typeText}</div>
  </div>
@@ -25453,7 +25488,9 @@ ${
     if (quoted.image.type === "description") {
       return `
  <div style="margin-top: 8px; background-color:var(--x-bg-secondary); border: 1px solid var(--x-border-color); border-radius: 8px; padding: 8px; box-sizing: border-box;">
- <div style="color:var(--x-text-primary); font-size: 13px; line-height: 1.4; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word; width: 100%; box-sizing: border-box;">${quoted.image.content}</div>
+ <div style="color:var(--x-text-primary); font-size: 13px; line-height: 1.4; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word; width: 100%; box-sizing: border-box;">${processContent(
+   quoted.image.content
+ )}</div>
  </div>
  `;
     } else if (quoted.image.type === "upload") {
