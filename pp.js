@@ -4436,6 +4436,28 @@ style="position: absolute; width: 5px; height: 5px; background-color: var(--x-ac
       xCustomGiftCategories: "&id, accountId, name, enabled, createdAt",
       xCustomGifts: "&id, categoryId, accountId, name, points, createdAt",
     });
+    // 版本9：添加粉丝团表
+    db.version(9).stores({
+      xTweetsData: "&id",
+      xSettings: "&id",
+      xPresets: "++id, name, createdAt",
+      xUserProfile: "&id",
+      xUserTweets: "&id",
+      xCharacterProfiles: "&characterId",
+      xActiveAccount: "&id",
+      xAccountList: "&accountId, name, createdAt",
+      xNPCs: "&id",
+      xAskbox: "&id",
+      xAccountProfiles: "&handle, name, updatedAt",
+      xAccountAskbox: "&id",
+      xCharacterRelationships: "&id, accountId, lastUpdated",
+      xBookmarks: "&id, accountId, tweetId, bookmarkedAt",
+      xLikes: "&id, accountId, tweetId, likedAt",
+      xWorldEvents: "&id, accountId, lastGenerated, lastProgressed",
+      xCustomGiftCategories: "&id, accountId, name, enabled, createdAt",
+      xCustomGifts: "&id, categoryId, accountId, name, points, createdAt",
+      xFanClubs: "&handle, createdAt, updatedAt",
+    });
     return db;
   }
   // 原有全局数据库配置函数 - 用于访问API配置和角色信息
@@ -31378,7 +31400,10 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
             }
           }, 1200);
         } else {
-          showStatus(status, "密钥无效或已过期，请重试", "error");
+          // ✅ 显示服务器返回的详细错误信息
+          const errorMsg = result.error || "密钥无效或已过期，请重试";
+          console.error("❌ 验证失败:", errorMsg, result);
+          showStatus(status, errorMsg, "error");
           resetButton(btn);
           input.focus();
           input.select();
@@ -32017,7 +32042,10 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
             window.location.reload();
           }, 1200);
         } else {
-          showStatus(status, "密钥无效或已过期，请重试", "error");
+          // ✅ 显示服务器返回的详细错误信息
+          const errorMsg = result.error || "密钥无效或已过期，请重试";
+          console.error("❌ 社交功能验证失败:", errorMsg, result);
+          showStatus(status, errorMsg, "error");
           resetButton(btn);
           input.focus();
           input.select();
