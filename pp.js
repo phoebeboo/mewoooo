@@ -4458,6 +4458,13 @@ style="position: absolute; width: 5px; height: 5px; background-color: var(--x-ac
       xCustomGifts: "&id, categoryId, accountId, name, points, createdAt",
       xFanClubs: "&handle, createdAt, updatedAt",
     });
+
+    // Version 10: 粉丝团会员系统
+    db.version(10).stores({
+      xFanClubMemberships:
+        "&streamerHandle, joined, joinedAt, lastCheckinDate, points, level",
+    });
+
     return db;
   }
   // 原有全局数据库配置函数 - 用于访问API配置和角色信息
@@ -4930,9 +4937,53 @@ ${userXProfileInfo.bio ? `- 个人简介：${userXProfileInfo.bio}` : ""}
         if (!xProfile) return null; // 获取角色详细信息
         const allChats = await mainDB.chats.toArray();
         const character = allChats.find((c) => c.id === xProfile.characterId);
-        if (!character) return null; // 获取角色的推文
+        if (!character) return null; // 获取角色的推文和直播数据
         const accountProfile = await xDB.xAccountProfiles.get(cleanHandle);
-        const tweets = accountProfile?.tweets || []; // 🔧 检查该角色是否识别用户身份
+        const tweets = accountProfile?.tweets || [];
+
+        // 🆕 读取直播间数据（如果存在）
+        let liveRoomData = null;
+        if (accountProfile?.liveRoomData) {
+          liveRoomData = accountProfile.liveRoomData;
+          console.log(
+            `🎤 [直播数据] 角色 ${xProfile.xName}: 找到直播间数据 "${
+              liveRoomData.title || "无标题"
+            }"`
+          );
+        }
+
+        // 🆕 读取粉丝团配置和用户会员状态
+        let fanClubConfig = null;
+        let userFanClubMembership = null;
+        try {
+          // 读取粉丝团配置
+          const fanClubRecord = await xDB.xFanClubs.get(cleanHandle);
+          if (fanClubRecord && fanClubRecord.data) {
+            fanClubConfig = fanClubRecord.data;
+            console.log(
+              `🎖️ [粉丝团] 角色 ${xProfile.xName}: 找到粉丝团配置 "${
+                fanClubConfig.clubName || "无名称"
+              }"`
+            );
+          }
+
+          // 读取用户在该粉丝团的会员状态
+          userFanClubMembership = await xDB.xFanClubMemberships.get(
+            cleanHandle
+          );
+          if (userFanClubMembership) {
+            console.log(
+              `🎖️ [粉丝团] 用户在 ${xProfile.xName} 的粉丝团中: LV${userFanClubMembership.level} (${userFanClubMembership.points}积分)`
+            );
+          }
+        } catch (error) {
+          console.warn(
+            `⚠️ [粉丝团] 角色 ${xProfile.xName} 粉丝团数据读取失败:`,
+            error
+          );
+        }
+
+        // 🔧 检查该角色是否识别用户身份
         let knowsUserIdentity = false;
         if (userProfileInfo && userProfileInfo.knownIdentityCharacters) {
           knowsUserIdentity = userProfileInfo.knownIdentityCharacters.includes(
@@ -5015,6 +5066,11 @@ ${userXProfileInfo.bio ? `- 个人简介：${userXProfileInfo.bio}` : ""}
           tweets: tweets,
           // 关系数据
           relationships: xProfile.relationships || [],
+          // 🆕 直播数据
+          liveRoomData: liveRoomData,
+          // 🆕 粉丝团数据
+          fanClubConfig: fanClubConfig,
+          userFanClubMembership: userFanClubMembership,
           // 原始对象（保留用于兼容性）
           xProfile: xProfile,
           character: character,
@@ -5039,6 +5095,50 @@ ${userXProfileInfo.bio ? `- 个人简介：${userXProfileInfo.bio}` : ""}
         const xMessageHistory = await this._loadXMessageHistory(
           accountInfo.handle
         );
+
+        // 🆕 读取直播间数据（如果存在）
+        let liveRoomData = null;
+        if (accountProfile.liveRoomData) {
+          liveRoomData = accountProfile.liveRoomData;
+          console.log(
+            `🎤 [直播数据] 账户 ${accountInfo.name}: 找到直播间数据 "${
+              liveRoomData.title || "无标题"
+            }"`
+          );
+        }
+
+        // 🆕 读取粉丝团配置和用户会员状态
+        let fanClubConfig = null;
+        let userFanClubMembership = null;
+        try {
+          const xDB = getXDB();
+          // 读取粉丝团配置
+          const fanClubRecord = await xDB.xFanClubs.get(cleanHandle);
+          if (fanClubRecord && fanClubRecord.data) {
+            fanClubConfig = fanClubRecord.data;
+            console.log(
+              `🎖️ [粉丝团] 账户 ${accountInfo.name}: 找到粉丝团配置 "${
+                fanClubConfig.clubName || "无名称"
+              }"`
+            );
+          }
+
+          // 读取用户在该粉丝团的会员状态
+          userFanClubMembership = await xDB.xFanClubMemberships.get(
+            cleanHandle
+          );
+          if (userFanClubMembership) {
+            console.log(
+              `🎖️ [粉丝团] 用户在 ${accountInfo.name} 的粉丝团中: LV${userFanClubMembership.level} (${userFanClubMembership.points}积分)`
+            );
+          }
+        } catch (error) {
+          console.warn(
+            `⚠️ [粉丝团] 账户 ${accountInfo.name} 粉丝团数据读取失败:`,
+            error
+          );
+        }
+
         return {
           type: "account",
           // 基础信息
@@ -5082,6 +5182,11 @@ ${userXProfileInfo.bio ? `- 个人简介：${userXProfileInfo.bio}` : ""}
           tweets: accountProfile.tweets || [],
           // 关系数据（NPC账户可能有）
           relationships: accountProfile.relationships || [],
+          // 🆕 直播数据
+          liveRoomData: liveRoomData,
+          // 🆕 粉丝团数据
+          fanClubConfig: fanClubConfig,
+          userFanClubMembership: userFanClubMembership,
           // 元信息
           _source: "account",
           _accountHandle: cleanHandle,
@@ -5363,6 +5468,251 @@ ${userXProfileInfo.bio ? `- 个人简介：${userXProfileInfo.bio}` : ""}
         return `[${msg.type}消息]`;
       }
     },
+    // 🆕 内部辅助方法：格式化直播间数据为提示词文本
+    _formatLiveRoomData(liveRoomData, profileName, profileType = "character") {
+      if (!liveRoomData) {
+        return { text: "", tokenCount: 0 };
+      }
+
+      let promptText = `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎤 直播间信息（该${
+        profileType === "character" ? "角色" : "账户"
+      }的直播间上下文）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
+
+      // 基础直播间信息
+      if (liveRoomData.title) {
+        promptText += `直播间标题：${liveRoomData.title}\n`;
+      }
+      if (liveRoomData.description) {
+        promptText += `直播间简介：${liveRoomData.description}\n`;
+      }
+      if (liveRoomData.announcement) {
+        promptText += `直播公告：${liveRoomData.announcement}\n`;
+      }
+
+      // 直播间性格和主题
+      if (liveRoomData.streamerPersonality) {
+        promptText += `\n【主播性格】：${liveRoomData.streamerPersonality}\n`;
+      }
+      if (liveRoomData.contentTheme) {
+        promptText += `【直播内容主题】：${liveRoomData.contentTheme}\n`;
+      }
+      if (liveRoomData.targetAudience) {
+        promptText += `【目标观众】：${liveRoomData.targetAudience}\n`;
+      }
+
+      // 主播最近发言
+      if (
+        liveRoomData.danmakuMessages &&
+        liveRoomData.danmakuMessages.length > 0
+      ) {
+        const streamerMessages = liveRoomData.danmakuMessages
+          .filter((msg) => msg.isStreamer)
+          .slice(-30) // 最近30条主播发言
+          .reverse();
+
+        if (streamerMessages.length > 0) {
+          promptText += `\n【主播最近发言】（展现主播真实性格和表达方式）：\n`;
+          streamerMessages.slice(0, 20).forEach((msg, idx) => {
+            const content = msg.content || msg.message || "";
+            if (content) {
+              const displayContent =
+                content.length > 80
+                  ? `${content.substring(0, 80)}...`
+                  : content;
+              promptText += `${idx + 1}. ${displayContent}\n`;
+            }
+          });
+        }
+
+        // 弹幕互动记录
+        const recentDanmaku = liveRoomData.danmakuMessages.slice(-30).reverse();
+        if (recentDanmaku.length > 0) {
+          promptText += `\n【直播间最近互动】（主播与观众的互动氛围）：\n`;
+          recentDanmaku.slice(0, 15).forEach((msg) => {
+            const sender = msg.isStreamer ? profileName : msg.sender;
+            const content = msg.content || msg.message || "";
+            if (content && sender) {
+              const displayContent =
+                content.length > 60
+                  ? `${content.substring(0, 60)}...`
+                  : content;
+              promptText += `${sender}: ${displayContent}\n`;
+            }
+          });
+        }
+      }
+
+      promptText += `
+⚠️ 重要说明：
+- 以上是该${profileType === "character" ? "角色" : "账户"}的直播间上下文信息
+- 主播的发言和互动方式能准确反映其真实性格和表达习惯
+- 在生成私信、推文、账户主页等内容时，应保持与直播间表现的一致性
+- 不要在不合适的场景（如公开推文）中直接提及直播间内的具体互动细节
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
+
+      const tokenCount = TokenUtils.estimateTokens(promptText);
+      console.log(
+        `📊 [直播] ${profileType} ${profileName}: ~${tokenCount} tokens`
+      );
+      return { text: promptText, tokenCount };
+    },
+    // 🆕 内部辅助方法：格式化粉丝团数据为提示词文本
+    _formatFanClubData(
+      fanClubConfig,
+      userMembership,
+      profileName,
+      profileType = "character"
+    ) {
+      if (!fanClubConfig) {
+        return { text: "", tokenCount: 0 };
+      }
+
+      let promptText = `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎖️ 粉丝团信息（该${profileType === "character" ? "角色" : "账户"}的粉丝团系统）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
+
+      // 粉丝团基本信息
+      promptText += `
+📋 粉丝团基本信息：
+- 粉丝团名称：${fanClubConfig.clubName || "未设置"}
+- 粉丝团简介：${
+        fanClubConfig.clubDescription || fanClubConfig.description || "无简介"
+      }
+`;
+
+      // 粉丝团等级系统
+      if (
+        fanClubConfig.levelSystem &&
+        Array.isArray(fanClubConfig.levelSystem)
+      ) {
+        promptText += `
+🏆 粉丝团等级系统（共 ${fanClubConfig.levelSystem.length} 个等级）：
+`;
+        // 显示前5级和后5级，中间省略
+        const showLevels = [];
+        if (fanClubConfig.levelSystem.length <= 10) {
+          showLevels.push(...fanClubConfig.levelSystem);
+        } else {
+          showLevels.push(...fanClubConfig.levelSystem.slice(0, 5));
+          showLevels.push({
+            level: "...",
+            levelName: "...",
+            requiredPoints: "...",
+            benefit: "（省略中间等级）",
+          });
+          showLevels.push(...fanClubConfig.levelSystem.slice(-5));
+        }
+
+        showLevels.forEach((level) => {
+          if (level.level === "...") {
+            promptText += `${level.benefit}\n`;
+          } else {
+            promptText += `LV${level.level} ${level.levelName}：需要${
+              level.requiredPoints
+            }积分 - ${level.benefit || level.description || "无描述"}\n`;
+          }
+        });
+      }
+
+      // 用户在该粉丝团的会员状态
+      if (userMembership) {
+        promptText += `
+👤 用户在该粉丝团的会员状态：
+- ✅ 用户已加入该粉丝团
+- 当前等级：LV${userMembership.level || 1}
+- 当前积分：${userMembership.points || 0}
+- 连续签到：${userMembership.consecutiveDays || 0}天
+- 加入时间：${userMembership.joinedAt || "未知"}
+- 最后签到：${userMembership.lastCheckIn || "未签到"}
+`;
+
+        // 根据用户等级显示对应的等级名称和福利
+        if (
+          fanClubConfig.levelSystem &&
+          Array.isArray(fanClubConfig.levelSystem)
+        ) {
+          const userLevelData = fanClubConfig.levelSystem.find(
+            (l) => l.level === userMembership.level
+          );
+          if (userLevelData) {
+            promptText += `- 等级称号：${userLevelData.levelName}\n`;
+            promptText += `- 当前福利：${
+              userLevelData.benefit || userLevelData.description || "无描述"
+            }\n`;
+          }
+
+          // 显示下一等级信息
+          const nextLevel = fanClubConfig.levelSystem.find(
+            (l) => l.level === userMembership.level + 1
+          );
+          if (nextLevel) {
+            const pointsNeeded =
+              nextLevel.requiredPoints - (userMembership.points || 0);
+            promptText += `- 距离下一级（LV${nextLevel.level} ${nextLevel.levelName}）还需：${pointsNeeded}积分\n`;
+          } else {
+            promptText += `- 🎉 已达到最高等级！\n`;
+          }
+        }
+      } else {
+        promptText += `
+👤 用户在该粉丝团的会员状态：
+- ❌ 用户尚未加入该粉丝团
+- 用户可以通过签到、送礼、互动等方式加入并升级
+`;
+      }
+
+      // 主播私联配置（如果存在）
+      if (fanClubConfig.fanClubContactConfig) {
+        const contactConfig = fanClubConfig.fanClubContactConfig;
+        promptText += `
+💬 主播粉丝团私联规则：
+- 主播是否会主动私联高等级粉丝：${
+          contactConfig.willContactPrivately ? "是" : "否"
+        }
+`;
+        if (contactConfig.willContactPrivately) {
+          promptText += `- 触发私联的等级门槛：LV${contactConfig.contactLevelThreshold}及以上\n`;
+          promptText += `- 被拒绝后是否持续私联：${
+            contactConfig.persistAfterRejection ? "是" : "否"
+          }\n`;
+
+          if (
+            userMembership &&
+            userMembership.level >= contactConfig.contactLevelThreshold
+          ) {
+            promptText += `⚠️ 用户当前等级（LV${userMembership.level}）已达到私联门槛，主播可能会主动私信用户\n`;
+          }
+        }
+      }
+
+      promptText += `
+⚠️ 重要说明：
+- 粉丝团等级反映了用户对该${
+        profileType === "character" ? "角色" : "账户"
+      }的支持程度
+- 等级越高，说明用户对该${
+        profileType === "character" ? "角色" : "账户"
+      }的投入越多（时间、金钱、互动）
+- 在生成${
+        profileType === "character" ? "角色" : "账户"
+      }的回复时，应根据用户的粉丝团等级调整亲密度和态度
+- 高等级粉丝通常会获得更热情、更特殊的对待
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
+
+      const tokenCount = TokenUtils.estimateTokens(promptText);
+      console.log(
+        `📊 [粉丝团] ${profileType} ${profileName}: ~${tokenCount} tokens`
+      );
+      return { text: promptText, tokenCount };
+    },
     // 🆕 内部辅助方法：格式化X平台私信记忆为提示词文本
     _formatXMessageHistory(
       xMessageHistory,
@@ -5524,6 +5874,28 @@ ${cd.userPersona}
           );
           promptText += xMessageResult.text;
         }
+
+        // 🆕 直播间数据（如果存在）
+        if (profile.liveRoomData) {
+          const liveRoomResult = this._formatLiveRoomData(
+            profile.liveRoomData,
+            profile.name,
+            "character"
+          );
+          promptText += liveRoomResult.text;
+        }
+
+        // 🆕 粉丝团数据（如果存在）
+        if (profile.fanClubConfig) {
+          const fanClubResult = this._formatFanClubData(
+            profile.fanClubConfig,
+            profile.userFanClubMembership,
+            profile.name,
+            "character"
+          );
+          promptText += fanClubResult.text;
+        }
+
         // 记忆信息（只有知道用户身份且有专属人设时才显示）
         if (
           profile.knowsUserIdentity &&
@@ -5587,6 +5959,27 @@ ${ad.followersCount ? `关注者：${ad.followersCount}` : ""}
             "account"
           );
           promptText += xMessageResult.text;
+        }
+
+        // 🆕 直播间数据（如果存在）
+        if (profile.liveRoomData) {
+          const liveRoomResult = this._formatLiveRoomData(
+            profile.liveRoomData,
+            profile.name,
+            "account"
+          );
+          promptText += liveRoomResult.text;
+        }
+
+        // 🆕 粉丝团数据（如果存在）
+        if (profile.fanClubConfig) {
+          const fanClubResult = this._formatFanClubData(
+            profile.fanClubConfig,
+            profile.userFanClubMembership,
+            profile.name,
+            "account"
+          );
+          promptText += fanClubResult.text;
         }
       }
       // 绑定NPC特有信息
@@ -13408,6 +13801,16 @@ ${
           喜欢数: savedProfile.accountLikes?.length || 0,
           私信数: savedProfile.xMessageHistory?.length || 0,
         });
+
+        // 💎 【关键修复】附加 sourceContext（包括 liveUserData）
+        if (sourceContext && Object.keys(sourceContext).length > 0) {
+          savedProfile.sourceContext = sourceContext;
+          console.log(
+            "💎 [账户主页] 附加来源上下文到已保存的数据",
+            sourceContext
+          );
+        }
+
         currentViewingAccount = savedProfile;
         renderAccountProfile(savedProfile);
         return;
@@ -13426,7 +13829,7 @@ ${
       // 保存当前查看的账户（附加来源上下文）
       currentViewingAccount = { ...accountData, sourceContext }; // 如果有完整的主页数据，直接显示
       if (accountData.tweets && accountData.tweets.length > 0) {
-        renderAccountProfile(accountData);
+        renderAccountProfile({ ...accountData, sourceContext });
         return;
       }
       // 否则，调用AI生成账户主页内容
@@ -13435,8 +13838,12 @@ ${
         sourceContext,
       });
       if (profileData) {
-        // 更新账户数据
-        currentViewingAccount = { ...accountData, ...profileData };
+        // 更新账户数据（保留sourceContext）
+        currentViewingAccount = {
+          ...accountData,
+          ...profileData,
+          sourceContext,
+        };
         console.log("📊 [账户主页] 新生成数据统计:", {
           推文数: profileData.tweets?.length || 0,
           回复数: profileData.accountReplies?.length || 0,
@@ -14079,6 +14486,57 @@ ${
               ? "特别注意：生成的账户主页必须与上述私信对话中展现的性格、兴趣、话题完全一致"
               : "确保账户形象真实可信，符合其在私信中展现的特点"
           }`;
+        } else if (sourceContext.source === "live") {
+          // 🎤 来自直播间
+          const liveCtx = sourceContext.liveContext || {};
+          systemPrompt += `来源：直播间
+该账户正在进行直播：
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+【直播信息】
+- 直播主题：${liveCtx.liveTitle || "直播中"}
+${
+  liveCtx.liveSubtitle ? `- 副标题：${liveCtx.liveSubtitle}\n` : ""
+}- 在线观众：${liveCtx.onlineViewers || 0}人
+- 直播时长：${Math.floor((liveCtx.liveDuration || 0) / 60)}分钟
+${
+  liveCtx.liveTags && liveCtx.liveTags.length > 0
+    ? `- 标签：${liveCtx.liveTags.join(", ")}\n`
+    : ""
+}${liveCtx.liveDescription ? `- 直播描述：${liveCtx.liveDescription}\n` : ""}${
+            liveCtx.liveNotice ? `- 直播公告：${liveCtx.liveNotice}\n` : ""
+          }
+【主播发言记录】（最近${(liveCtx.streamerSpeeches || []).length}条）
+`;
+          if (liveCtx.streamerSpeeches && liveCtx.streamerSpeeches.length > 0) {
+            liveCtx.streamerSpeeches.forEach((speech, index) => {
+              systemPrompt += `${index + 1}. "${speech.content}"\n`;
+            });
+          } else {
+            systemPrompt += `（暂无主播发言记录）\n`;
+          }
+
+          systemPrompt += `
+【直播间弹幕】（最近${(liveCtx.danmakuMessages || []).length}条）
+`;
+          if (liveCtx.danmakuMessages && liveCtx.danmakuMessages.length > 0) {
+            liveCtx.danmakuMessages.forEach((dm, index) => {
+              systemPrompt += `${index + 1}. ${dm.userId}: "${dm.content}"\n`;
+            });
+          } else {
+            systemPrompt += `（暂无弹幕记录）\n`;
+          }
+
+          systemPrompt += `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**生成要求**：
+- 该账户正在直播中，需要在头像旁显示"直播中"光晕效果
+- 基于直播间的主播发言、弹幕互动、直播主题，推断账户的内容风格和话题偏好
+- 生成的主页推文应该与直播内容主题相关，体现主播的发言风格和兴趣点
+- 可以生成一些与直播话题相关的推文（如预告直播、分享直播感想等）
+- 推文内容要与主播在直播中展现的性格、语言风格保持一致
+- 如果直播有特定标签，推文可以涉及这些话题领域
+- 评论区可能有观众提及他们在直播间的互动或话题
+- 保持账户形象与直播间主播形象高度一致`;
         }
         systemPrompt += `
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -15281,8 +15739,19 @@ accountLikes数组（3-5条，账户喜欢的推文）：
       accountData.cover ||
       "https://i.postimg.cc/tT8Rfsf1/mmexport1759603246385.jpg"
     }')`; // 设置头像
-    document.getElementById("account-avatar-image").src =
-      accountInfo.avatar || accountData.avatar; // 设置名称
+    const avatarImg = document.getElementById("account-avatar-image");
+    avatarImg.src = accountInfo.avatar || accountData.avatar;
+
+    // 🎤 如果是从直播间进入，记录直播状态（不添加视觉效果）
+    if (
+      accountData.sourceContext &&
+      accountData.sourceContext.isLiveStreaming
+    ) {
+      console.log("🎤 [账户主页] 检测到正在直播");
+      // 已移除直播光晕效果
+    }
+
+    // 设置名称
     document.getElementById("account-display-name").textContent =
       accountInfo.name || accountData.name; // 设置认证徽章（根据认证类型显示不同图标）
     const verifiedBadge = document.getElementById("account-verified-badge");
@@ -16112,6 +16581,21 @@ ${
         console.log("📝 [统一ID] 使用账户ID格式:", accountId);
       }
 
+      // 💎 检查是否从直播间进入，如果是，提取 liveUserData
+      let liveUserData = null;
+      if (
+        currentViewingAccount &&
+        currentViewingAccount.sourceContext &&
+        currentViewingAccount.sourceContext.source === "live" &&
+        currentViewingAccount.sourceContext.liveUserData
+      ) {
+        liveUserData = currentViewingAccount.sourceContext.liveUserData;
+        console.log(
+          "💎 [私信] 检测到从直播间进入，携带用户直播间数据",
+          liveUserData
+        );
+      }
+
       // 构建私信数据（messageData格式）
       const messageData = {
         id: accountId,
@@ -16128,6 +16612,7 @@ ${
         timestamp: new Date().toISOString(),
         unread: false,
         _fromAccountProfile: true, // 🔧 标记来自账户主页
+        _liveUserData: liveUserData, // 💎 添加直播间用户数据
       }; // 构建账户资料数据
       const profileData = {
         name: accountInfo.name,
@@ -16145,6 +16630,21 @@ ${
       console.log("✅ 已打开私信详情页（来自账户主页）");
     } catch (error) {
       console.error("❌ [统一ID] 查找角色失败:", error);
+      // 💎 检查是否从直播间进入（错误处理分支）
+      let liveUserData = null;
+      if (
+        currentViewingAccount &&
+        currentViewingAccount.sourceContext &&
+        currentViewingAccount.sourceContext.source === "live" &&
+        currentViewingAccount.sourceContext.liveUserData
+      ) {
+        liveUserData = currentViewingAccount.sourceContext.liveUserData;
+        console.log(
+          "💎 [私信] 检测到从直播间进入，携带用户直播间数据",
+          liveUserData
+        );
+      }
+
       // 出错时使用默认的账户ID格式
       const accountId = `msg_account_${cleanHandle}`;
       const messageData = {
@@ -16162,6 +16662,7 @@ ${
         timestamp: new Date().toISOString(),
         unread: false,
         _fromAccountProfile: true, // 🔧 标记来自账户主页
+        _liveUserData: liveUserData, // 💎 添加直播间用户数据
       };
       const profileData = {
         name: accountInfo.name,
@@ -16324,6 +16825,17 @@ ${
         accountLikes: accountData.accountLikes || [], // 添加喜欢数据
         updatedAt: new Date().toISOString(),
       };
+
+      // 🆕 保存直播间数据（如果存在）
+      if (accountData.liveRoomData) {
+        profileToSave.liveRoomData = accountData.liveRoomData;
+        console.log(
+          `🎤 [保存账户] 保存直播间数据: "${
+            accountData.liveRoomData.title || "无标题"
+          }"`
+        );
+      }
+
       await xDB.xAccountProfiles.put(profileToSave);
       console.log(
         "✅ 账户主页数据已保存:",
@@ -32569,16 +33081,12 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
   async function showWelcomePopup() {
     try {
       // 🆕 定义当前弹窗内容版本（内容变化时修改此版本号）
-      const currentPopupVersion = "v2.2"; // 修改版本号以触发重新显示
-      const currentPopupContent = `x修复bug 答疑页面所有问题已修复
-+未绑定角色在私信列表自动隐藏
-+刷新粉丝群入群申请
-
-!!重要通知必须看：
-由于该仿x软件的特殊性及敏感性 所以吃点羊决定增加通行验证 仅成年可用
-吃点羊将在明天关闭通知页面和私信页面功能 及以后所有新功能都必须通过验证后才能使用
-实在抱歉给各位宝宝带来困扰 这是我深思熟虑后的决定 因为使用群体无法保证具体年龄 我很担心会有年龄小的宝宝因此受到坏的影响。
-所有验证明天下午开启 请及时备份 这个验证不会损伤任何现有数据 但还是请多多备份!!`;
+      const currentPopupVersion = "v2.3"; // 修改版本号以触发重新显示
+      const currentPopupContent = `直播更新
++粉丝团
++主播私联（当刷的积分超多和达到相应粉丝等级时将触发 主播主动私联）
++点击头像进入账户主页
++一些小彩蛋`;
 
       // 检查是否已经显示过此版本的弹窗
       const lastShownVersion = localStorage.getItem(
@@ -32691,14 +33199,11 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
  font-family: 'Fusion Pixel 10px P zh_hans', monospace;
  ">
  <div style="font-weight: bold; margin-bottom: 6px;">吃点羊提醒您：</div>
-            <div style="margin-bottom: 4px;">x修复bug 答疑页面所有问题已修复</div>
-            <div style="margin-bottom: 4px;">+未绑定角色在私信列表自动隐藏</div>
-            <div style="margin-bottom: 8px;">+刷新粉丝群入群申请</div>
-            <div style="font-weight: bold; margin-bottom: 4px;">!!重要通知必须看：</div>
-            <div style="margin-bottom: 4px;">由于该仿x软件的特殊性及敏感性 所以吃点羊决定增加通行验证 仅成年可用</div>
-            <div style="margin-bottom: 4px;">吃点羊将在明天关闭通知页面和私信页面功能 及以后所有新功能都必须通过验证后才能使用</div>
-            <div style="margin-bottom: 4px;">实在抱歉给各位宝宝带来困扰 这是我深思熟虑后的决定 因为使用群体无法保证具体年龄 我很担心会有年龄小的宝宝因此受到坏的影响。</div>
-            <div style="font-weight: bold;">所有验证明天下午开启 请及时备份 这个验证不会损伤任何现有数据 但还是请多多备份!!</div>
+            <div style="font-weight: bold; margin-bottom: 8px;">直播更新</div>
+            <div style="margin-bottom: 4px;">+粉丝团</div>
+            <div style="margin-bottom: 4px;">+主播私联（当刷的积分超多和达到相应粉丝等级时将触发 主播主动私联）</div>
+            <div style="margin-bottom: 4px;">+点击头像进入账户主页</div>
+            <div>+一些小彩蛋</div>
  </div>
  </div>
 
@@ -34672,7 +35177,7 @@ ${index + 1}. "${tweet.content}"
     options = {}
   ) {
     try {
-      // options可以包含：isAutoMessage（自动发消息模式）、timeSinceLastMessage（距离上次消息的秒数）、isAskboxViewed（提问箱查看模式）、askboxContent（提问箱内容）、businessTaskEvaluation（商业任务评估）、isUnblockRequest（拉黑解除请求）、unblockContext（拉黑解除上下文）
+      // options可以包含：isAutoMessage（自动发消息模式）、timeSinceLastMessage（距离上次消息的秒数）、isAskboxViewed（提问箱查看模式）、askboxContent（提问箱内容）、businessTaskEvaluation（商业任务评估）、isUnblockRequest（拉黑解除请求）、unblockContext（拉黑解除上下文）、liveUserData（从直播间进入的用户数据）、isStreamerContact（主播主动私联模式）、streamerContactData（主播私联上下文数据）
       const isAutoMessage = options.isAutoMessage || false;
       const timeSinceLastMessage = options.timeSinceLastMessage || 0;
       const isAskboxViewed = options.isAskboxViewed || false;
@@ -34680,6 +35185,9 @@ ${index + 1}. "${tweet.content}"
       const businessTaskEvaluation = options.businessTaskEvaluation || null;
       const isUnblockRequest = options.isUnblockRequest || false;
       const unblockContext = options.unblockContext || null;
+      const liveUserData = options.liveUserData || null; // 💎 直播间用户数据
+      const isStreamerContact = options.isStreamerContact || false; // 🎤 主播主动私联模式
+      const streamerContactData = options.streamerContactData || null; // 🎤 主播私联上下文
       // 🔧 使用统一的API配置加载工具
       const { apiConfig, xSettings, xDb } =
         await APIUtils.loadConfigAndSettings();
@@ -35150,6 +35658,200 @@ ${
 - 2-3条：详细回应（解释为什么原谅、提出要求等）
 ⚠️ 如果决定继续拉黑，返回空数组[]即可，不需要任何消息
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
+          } else if (isStreamerContact) {
+            // 🎤 主播主动私联模式
+            const contactTrigger = streamerContactData?.trigger || "unknown"; // "giftRank" | "fanClub"
+            const triggerDetails = streamerContactData?.details || {};
+
+            // 📡 获取直播间详细资料信息（标题、简介、公告、互动历史）
+            let liveRoomContext = "";
+            if (typeof window !== "undefined" && window.currentLiveRoomData) {
+              const liveData = window.currentLiveRoomData;
+              const details = liveData.details || {};
+
+              liveRoomContext = `
+
+📺 **你的直播间资料**：
+- 直播标题：${details.title || "未设置"}
+- 直播简介：${details.description || "未设置"}
+- 直播公告：${details.announcement || "无公告"}
+- 直播状态：${liveData.isLive ? "正在直播" : "未直播"}
+${details.streamType ? `- 直播分类：${details.streamType}` : ""}
+
+🎭 **你的主播人设信息**：
+${
+  details.streamerPersonality
+    ? `- 性格特点：${details.streamerPersonality}`
+    : ""
+}
+${details.contentTheme ? `- 内容主题：${details.contentTheme}` : ""}
+${details.targetAudience ? `- 目标观众：${details.targetAudience}` : ""}
+
+💬 **你在直播间的最近发言**（最近50条，体现你的说话风格和当前状态）：
+`;
+
+              // 获取主播最近50条发言
+              if (
+                liveData.danmakuMessages &&
+                liveData.danmakuMessages.length > 0
+              ) {
+                const streamerMessages = liveData.danmakuMessages
+                  .filter((msg) => msg.isStreamer)
+                  .slice(-50)
+                  .reverse(); // 最新的在前
+
+                if (streamerMessages.length > 0) {
+                  streamerMessages.forEach((msg, index) => {
+                    liveRoomContext += `  ${index + 1}. "${msg.text}"\n`;
+                  });
+                } else {
+                  liveRoomContext += `  （暂无发言记录）\n`;
+                }
+              } else {
+                liveRoomContext += `  （暂无发言记录）\n`;
+              }
+
+              liveRoomContext += `
+💭 **直播间最近互动**（最近50条弹幕，了解直播间氛围）：
+`;
+
+              // 获取最近50条弹幕（包括用户和其他观众）
+              if (
+                liveData.danmakuMessages &&
+                liveData.danmakuMessages.length > 0
+              ) {
+                const recentDanmaku = liveData.danmakuMessages
+                  .slice(-50)
+                  .reverse(); // 最新的在前
+
+                recentDanmaku.forEach((msg, index) => {
+                  const prefix = msg.isStreamer
+                    ? "[你]"
+                    : `[${msg.username || "观众"}]`;
+                  liveRoomContext += `  ${index + 1}. ${prefix}: "${
+                    msg.text
+                  }"\n`;
+                });
+              } else {
+                liveRoomContext += `  （暂无弹幕记录）\n`;
+              }
+
+              liveRoomContext += `
+⚠️ **重要提示**：
+- 以上是你在直播间的真实表现和说话风格，请在私信中保持一致
+- 你可以参考自己最近说过的话来确定当前的心情、状态和话题
+- 观察直播间氛围和观众互动，了解当前直播的情况
+- 私信回复应该符合你在直播间展现的性格和状态
+- **你主动私联是有目的的**：维护与高消费用户的关系，根据你的性格决定如何表达
+`;
+            }
+
+            systemPrompt += `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎤 核心任务说明（主播主动私联模式 - 角色私信）🎤
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+你是X社交平台的私信对话生成器。主播因为用户的特殊贡献，主动发起私信维护关系。
+
+**对话场景**：
+- 📱 这是X社交平台（类似Twitter/X）的私信功能
+- 🎤 主播${messageData.user.name}主动联系用户，想要维护金钱关系
+- ${
+              contactTrigger === "giftRank"
+                ? `💰 **触发原因：礼物榜排名**
+  - 用户在直播间礼物榜排名第 ${triggerDetails.rank || "?"} 名
+  - 累计送礼积分：${triggerDetails.totalPoints || 0}P
+  - 主播注意到了这位土豪用户的慷慨支持`
+                : `🌟 **触发原因：粉丝团等级**
+  - 用户粉丝团等级：LV${triggerDetails.level || "?"} ${
+                    triggerDetails.levelName || ""
+                  }
+  - 累计粉丝团积分：${triggerDetails.totalPoints || 0}P
+  - 主播注意到了这位高等级粉丝的忠诚支持`
+            }
+${liveRoomContext}
+
+**角色信息**：
+- 角色名：${messageData.user.name}
+- 角色句柄：${messageData.user.handle}
+- 这是一个主播账户，在直播间与用户有互动历史
+
+**重要规则**：
+- 🚨 只生成主播${messageData.user.name}的主动私信消息，不要生成用户的消息
+- ⚠️ **这是X平台的私信对话，不是手机短信或其他聊天软件**
+- 💰 **这是主播主动私联，目的是维护与高消费用户的关系**
+- 🎭 **主播的态度取决于其性格**：
+  * 势利型：直白地表达感谢，暗示希望继续支持
+  * 温柔型：真诚感谢，关心用户，建立情感连接
+  * 高冷型：可能只是礼貌性问候，不会过于热情
+  * 商业型：可能提及专属福利、私下优惠等
+  * 傲娇型：表面不在意但实际很重视，委婉表达感激
+
+**用户在直播间的行为数据**：
+${
+  contactTrigger === "giftRank" && triggerDetails.giftHistory
+    ? `
+💰 **送礼历史**（最近送的礼物）：
+${triggerDetails.giftHistory
+  .slice(0, 10)
+  .map(
+    (gift, i) =>
+      `  ${i + 1}. 「${gift.name}」- ${gift.price}积分${
+        gift.description ? ` (${gift.description})` : ""
+      }`
+  )
+  .join("\n")}
+${
+  triggerDetails.giftHistory.length > 10
+    ? `  ...还有${triggerDetails.giftHistory.length - 10}个礼物`
+    : ""
+}
+`
+    : ""
+}
+${
+  triggerDetails.fanClubData
+    ? `
+🌟 **粉丝团状态**：
+- ${
+        triggerDetails.fanClubData.joined
+          ? `✅ 已加入粉丝团 LV${triggerDetails.fanClubData.level} (${triggerDetails.fanClubData.points}积分)`
+          : "❌ 未加入粉丝团"
+      }
+`
+    : ""
+}
+${
+  triggerDetails.danmakuHistory && triggerDetails.danmakuHistory.length > 0
+    ? `
+💬 **用户发送的弹幕**（最近${Math.min(
+        triggerDetails.danmakuHistory.length,
+        10
+      )}条）：
+${triggerDetails.danmakuHistory
+  .slice(0, 10)
+  .map((dm, i) => `  ${i + 1}. "${dm}"`)
+  .join("\n")}
+`
+    : ""
+}
+
+**回复内容建议**：
+- 生成1-5条符合主播性格的主动私信
+- 可以包含：
+  * 感谢用户的支持（必须）
+  * 提及用户送的某个特别的礼物（如果有送礼历史）
+  * 询问用户的直播体验
+  * 提供专属福利或优惠
+  * 建立私下联系（如私人号码、其他平台账号）
+  * 分享一些不在直播间说的话
+  * 邀请参加线下活动（如果合适）
+  * 可以回应用户发的某条有趣的弹幕（如果有弹幕历史）
+- 消息类型包括：文本、图片、表情包、语音、链接、转发推文、转发主页
+- ⚠️ 注意：主播主动私联是有目的的行为，回复应体现出对高消费用户的重视
+- ⚠️ 不要编造或猜测没有提到的信息，只基于上述提供的数据
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
           } else {
             // 普通回复模式
             systemPrompt += `
@@ -35275,6 +35977,293 @@ ${
 - 账户名：${messageData.user.name}
 - 账户句柄：${messageData.user.handle}
 - 这是一个已生成的账户，有完整的主页资料、推文和背景信息
+`;
+
+          // 💎 如果用户是从直播间进入的，添加直播间上下文信息
+          if (liveUserData) {
+            console.log("💎 [私信生成器] 检测到直播间用户数据，添加上下文");
+            console.log("💎 [私信生成器] liveUserData 完整内容:", {
+              hasFanClub: !!liveUserData.fanClub,
+              fanClubJoined: liveUserData.fanClub?.joined,
+              giftContribution: liveUserData.giftContribution,
+              giftsCount: liveUserData.gifts?.length || 0,
+              gifts: liveUserData.gifts,
+              danmakuCount: liveUserData.userDanmaku?.length || 0,
+              streamerFollowers: liveUserData.streamerFollowers,
+            });
+
+            // ⚠️ 关键验证：只在有真实互动数据时才添加直播间上下文
+            const hasInteractionData =
+              liveUserData.giftContribution > 0 ||
+              (liveUserData.fanClub && liveUserData.fanClub.joined) ||
+              (liveUserData.userDanmaku && liveUserData.userDanmaku.length > 0);
+
+            if (hasInteractionData) {
+              // 📡 获取直播间详细资料信息（标题、简介、公告、互动历史）
+              let liveRoomContext = "";
+              if (typeof window !== "undefined" && window.currentLiveRoomData) {
+                const liveData = window.currentLiveRoomData;
+                const details = liveData.details || {};
+
+                liveRoomContext = `
+📺 **你的直播间资料**：
+- 直播标题：${details.title || "未设置"}
+- 直播简介：${details.description || "未设置"}
+- 直播公告：${details.announcement || "无公告"}
+- 直播状态：${liveData.isLive ? "正在直播" : "未直播"}
+${details.streamType ? `- 直播分类：${details.streamType}` : ""}
+
+🎭 **你的主播人设信息**：
+${
+  details.streamerPersonality
+    ? `- 性格特点：${details.streamerPersonality}`
+    : ""
+}
+${details.contentTheme ? `- 内容主题：${details.contentTheme}` : ""}
+${details.targetAudience ? `- 目标观众：${details.targetAudience}` : ""}
+
+💬 **你在直播间的最近发言**（最近50条，体现你的说话风格和当前状态）：
+`;
+
+                // 获取主播最近50条发言
+                if (
+                  liveData.danmakuMessages &&
+                  liveData.danmakuMessages.length > 0
+                ) {
+                  const streamerMessages = liveData.danmakuMessages
+                    .filter((msg) => msg.isStreamer)
+                    .slice(-50)
+                    .reverse(); // 最新的在前
+
+                  if (streamerMessages.length > 0) {
+                    streamerMessages.forEach((msg, index) => {
+                      liveRoomContext += `  ${index + 1}. "${msg.text}"\n`;
+                    });
+                  } else {
+                    liveRoomContext += `  （暂无发言记录）\n`;
+                  }
+                } else {
+                  liveRoomContext += `  （暂无发言记录）\n`;
+                }
+
+                liveRoomContext += `
+💭 **直播间最近互动**（最近50条弹幕，了解直播间氛围）：
+`;
+
+                // 获取最近50条弹幕（包括用户和其他观众）
+                if (
+                  liveData.danmakuMessages &&
+                  liveData.danmakuMessages.length > 0
+                ) {
+                  const recentDanmaku = liveData.danmakuMessages
+                    .slice(-50)
+                    .reverse(); // 最新的在前
+
+                  recentDanmaku.forEach((msg, index) => {
+                    const prefix = msg.isStreamer
+                      ? "[你]"
+                      : `[${msg.username || "观众"}]`;
+                    liveRoomContext += `  ${index + 1}. ${prefix}: "${
+                      msg.text
+                    }"\n`;
+                  });
+                } else {
+                  liveRoomContext += `  （暂无弹幕记录）\n`;
+                }
+
+                liveRoomContext += `
+⚠️ **重要提示**：
+- 以上是你在直播间的真实表现和说话风格，请在私信中保持一致
+- 你可以参考自己最近说过的话来确定当前的心情、状态和话题
+- 观察直播间氛围和观众互动，了解当前直播的情况
+- 私信回复应该符合你在直播间展现的性格和状态
+`;
+              }
+
+              systemPrompt += `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎤 直播间上下文（用户来自直播间）🎤
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**重要**：用户是从你的直播间点击头像进入私信的，你们之间有直播互动的背景。
+
+${liveRoomContext}
+
+**用户在直播间的行为数据**：
+`;
+
+              // 粉丝团数据
+              if (liveUserData.fanClub && liveUserData.fanClub.joined) {
+                systemPrompt += `
+📊 **粉丝团状态**：
+- ✅ 用户已加入你的粉丝团
+- 等级：LV${liveUserData.fanClub.level}
+- 累计积分：${liveUserData.fanClub.points}P
+- 连续签到：${liveUserData.fanClub.checkinDays}天
+`;
+              } else {
+                systemPrompt += `
+📊 **粉丝团状态**：
+- ❌ 用户未加入你的粉丝团
+`;
+              }
+
+              // 礼物贡献数据
+              // ⚠️ 关键修复：只有在有具体礼物列表时才提及礼物，避免AI编造
+              if (
+                liveUserData.gifts &&
+                liveUserData.gifts.length > 0 &&
+                liveUserData.giftContribution > 0
+              ) {
+                systemPrompt += `
+💰 **礼物贡献**：
+- 用户在你的直播间送了总共 ${liveUserData.giftContribution} 积分的礼物
+- 这是真金白银的支持！
+
+🎁 **用户送的礼物详情**（共${liveUserData.gifts.length}个）：
+`;
+                liveUserData.gifts.forEach((gift, index) => {
+                  systemPrompt += `  ${index + 1}. 「${gift.name}」（${
+                    gift.code
+                  }）- ${gift.price}积分\n`;
+                  if (gift.description) {
+                    systemPrompt += `     描述：${gift.description}\n`;
+                  }
+                  if (gift.isCustom) {
+                    systemPrompt += `     ⭐ 这是用户自定义的礼物（特别用心）\n`;
+                  }
+                });
+                systemPrompt += `
+⚠️ **重要提示**：
+- 你可以根据礼物的名称、价值、数量来判断用户的支持程度
+- 自定义礼物代表用户花了额外心思，可能更值得重视
+- 你可以自然地提到某个礼物（例如："我记得你送的那个XXX"）
+- 🚨 **只回复你看到的礼物信息，不要编造或猜测没有提到的礼物**
+`;
+              } else if (liveUserData.giftContribution > 0) {
+                // 有积分但没有礼物详情列表的情况（旧数据或数据不完整）
+                systemPrompt += `
+💰 **礼物贡献**：
+- 用户在你的直播间送了总共 ${liveUserData.giftContribution} 积分的礼物
+- ⚠️ 具体礼物记录未保存，不要猜测或编造具体送了什么礼物
+`;
+              } else {
+                systemPrompt += `
+💰 **礼物贡献**：
+- 用户在直播间未送过礼物（0积分）
+`;
+              }
+
+              // 用户弹幕数据
+              if (
+                liveUserData.userDanmaku &&
+                liveUserData.userDanmaku.length > 0
+              ) {
+                systemPrompt += `
+💬 **用户发送的弹幕**（共${liveUserData.userDanmaku.length}条）：
+`;
+                liveUserData.userDanmaku.forEach((danmaku, index) => {
+                  systemPrompt += `  ${index + 1}. "${danmaku}"\n`;
+                });
+              } else {
+                systemPrompt += `
+💬 **用户发送的弹幕**：
+- 用户在直播间未发送弹幕（只是默默观看）
+`;
+              }
+
+              // 主播追随者数量（用于判断大小主播）
+              systemPrompt += `
+👥 **你的追随者数量**：${liveUserData.streamerFollowers || 0} 人
+- 这个数据可以帮助你判断自己的影响力和粉丝规模
+`;
+
+              systemPrompt += `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎭 基于直播间数据的回复策略 🎭
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+**多样化、真实感、生动性是核心要求！**
+
+根据上述数据，你可以选择不同的回复策略（随机选择，保持多样性）：
+
+1️⃣ **势利眼主播**（粉丝多，看重礼物）：
+   - 如果用户没刷礼物或刷得少：可能不回复、冷淡回复、或暗示"你是谁？"
+   - 如果用户刷了很多礼物：热情回复、记得用户、特殊对待
+   - 典型回复：
+     * "？"（如果没刷礼物）
+     * "嗯，有事吗"（冷淡）
+     * "哦，谢谢支持~"（敷衍）
+     * "哇！是你啊！我记得你！谢谢一直支持！"（刷了很多礼物）
+
+ 2️⃣ **耍大牌主播**（粉丝少，但装高冷）：
+    - 即使粉丝少，也可能装腔作势
+    - 可能不回复、晾着用户、或说"忙着呢"
+    - 典型回复：
+      * （不回复，特殊消息格式：{ "isBlocked": true }）
+      * "最近比较忙，有事直说"
+      * "？啥事"（不耐烦）
+
+3️⃣ **平易近人主播**（粉丝多，但很亲切）：
+   - 无论用户是否刷礼物，都会热情回复
+   - 可能记得用户在直播间的弹幕内容
+   - 可能感谢用户的支持（即使只是看直播）
+   - 典型回复：
+     * "嗨！刚才直播看到你了！有什么想聊的吗？"
+     * "谢谢你一直在直播间支持我！"
+     * "哈哈，我记得你发的那条弹幕！"
+
+4️⃣ **懒得在意主播**（忘记用户行为）：
+   - 不记得用户是否刷过礼物
+   - 不在意粉丝团等级
+   - 随意回复，把用户当普通粉丝
+   - 典型回复：
+     * "嗨，有什么事吗？"
+     * "欸？你是……？"
+     * "啊，谢谢支持！"（即使用户没刷礼物）
+
+5️⃣ **记忆力好主播**（记得用户的弹幕）：
+   - 可能提到用户在直播间发的弹幕内容
+   - 可能回应用户的问题或评论
+   - 典型回复：
+     * "哈哈，你刚才说的XXX，我看到了！"
+     * "你问的那个问题，我来回答你……"
+     * "谢谢你一直在弹幕里支持我！"
+
+6️⃣ **商业主播**（看重数据和收益）：
+   - 可能提到粉丝团等级，鼓励升级
+   - 可能暗示或明示希望用户刷礼物
+   - 典型回复：
+     * "你还不是粉丝团成员啊？要不要加入？"
+     * "你等级还挺高的！继续支持哦~"
+     * "下次直播记得来哦，有福利的！"
+
+7️⃣ **佛系主播**（不在意数据，随缘互动）：
+   - 不提礼物、粉丝团等
+   - 把用户当朋友聊天
+   - 典型回复：
+     * "嗨，有什么想聊的吗？"
+     * "直播还好玩吗？"
+     * "欢迎随时来直播间玩~"
+
+**重要规则**：
+  - 🎲 **随机性**：每次私信不要总是同一种风格，根据主播性格随机选择策略
+  - 🎭 **真实感**：有些主播可能势利，有些可能健忘，有些可能平易近人
+  - 🚫 **不回复机制**：如果主播是势利眼或耍大牌，且用户没刷礼物/等级低，可以选择不回复（输出特殊消息格式：{ "isBlocked": true, "reason": "The user hasn't responded yet. They might be busy or not interested in chatting." }）
+  - 📊 **数据利用**：灵活运用用户的粉丝团、礼物、弹幕数据，不要生硬套用
+  - 💬 **弹幕引用**：如果用户发了弹幕，可以自然地提到，但不是必须
+  - 🎤 **直播背景**：可以提到直播间的事，但不要过度强调，保持自然
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
+            } else {
+              // 有 liveUserData 但没有任何互动数据
+              console.log(
+                "💎 [私信生成器] 用户来自直播间，但没有互动数据（未送礼、未加粉丝团、未发弹幕），跳过直播间上下文"
+              );
+            }
+          }
+
+          systemPrompt += `
 **重要规则**：
 - 🚨 只生成账户${messageData.user.name}的回复消息，不要生成用户的消息
 - 根据用户最近发送的消息内容，生成1-10条符合该账户特点的自然回复
@@ -36035,7 +37024,43 @@ AI应该根据这些完整的上下文信息来理解用户分享的内容并给
         "JSON格式要求",
         formatSection,
         tokenCount
-      ); // 构建用户消息内容（支持图片识图）
+      );
+
+      // 💎 检查是否有直播间礼物图片（用于识图）
+      let giftImages = [];
+      console.log("💎 [私信生成器] 检查礼物图片数据:", {
+        hasLiveUserData: !!liveUserData,
+        hasGifts: !!(liveUserData && liveUserData.gifts),
+        giftsLength: liveUserData?.gifts?.length || 0,
+        gifts: liveUserData?.gifts,
+      });
+
+      if (liveUserData && liveUserData.gifts && liveUserData.gifts.length > 0) {
+        giftImages = liveUserData.gifts.filter(
+          (gift) => gift.useLocalImage && gift.imageLocal
+        );
+        console.log(
+          `💎 [私信生成器] 礼物过滤结果: 总共${liveUserData.gifts.length}个礼物，其中${giftImages.length}个包含本地图片`
+        );
+        if (giftImages.length > 0) {
+          console.log(
+            `📸 [私信生成器] 检测到${giftImages.length}个礼物包含本地图片，将使用多模态识图`
+          );
+          giftImages.forEach((gift, i) => {
+            console.log(
+              `📸 [私信生成器] 礼物 ${i + 1}: ${gift.name}, useLocalImage=${
+                gift.useLocalImage
+              }, imageLocal=${gift.imageLocal?.substring(0, 50)}...`
+            );
+          });
+        } else {
+          console.log("💎 [私信生成器] 没有礼物包含本地图片");
+        }
+      } else {
+        console.log("💎 [私信生成器] 没有礼物数据");
+      }
+
+      // 构建用户消息内容（支持图片识图）
       let userMessageContent;
       const userMessages = options.userMessages || [];
       if (isAskboxViewed) {
@@ -36046,7 +37071,10 @@ AI应该根据这些完整的上下文信息来理解用户分享的内容并给
         const hasRealImages = userMessages.some(
           (msg) => msg.type === "image" && msg.imageData
         );
-        if (hasRealImages) {
+        // 🆕 或者有直播间礼物图片
+        const hasGiftImages = giftImages.length > 0;
+
+        if (hasRealImages || hasGiftImages) {
           // 有真实图片：构建多模态内容数组
           userMessageContent = []; // 添加文字说明
           const textMessages = userMessages.filter(
@@ -36092,6 +37120,25 @@ AI应该根据这些完整的上下文信息来理解用户分享的内容并给
           if (realImageMessages.length > 0) {
             contentText += `\n用户还发送了${realImageMessages.length}张真实图片，请识别图片内容并结合图片内容给出回复。`;
           }
+
+          // 🆕 添加礼物图片说明
+          if (hasGiftImages) {
+            contentText += `\n\n📸 用户在直播间送的礼物图片识别（共${giftImages.length}个）：`;
+            giftImages.forEach((gift, index) => {
+              contentText += `\n  ${index + 1}. 礼物「${gift.name}」（${
+                gift.price
+              }积分）`;
+              if (gift.description) {
+                contentText += ` - ${gift.description}`;
+              }
+              contentText += `\n     图片：[第${
+                index + 1
+              }张图片是该礼物的样式/外观]`;
+            });
+            contentText += `\n\n⚠️ 重要：请识别这些礼物图片的实际样子（颜色、形状、设计、风格等），在回复中可以自然地评价礼物的外观。`;
+            contentText += `\n例如："我记得你送的那个礼物，设计很特别！" 或 "那个礼物的图案我很喜欢"等。`;
+          }
+
           userMessageContent.push({ type: "text", text: contentText }); // 添加真实图片（用于识图）
           realImageMessages.forEach((img) => {
             if (img.imageData) {
@@ -36101,6 +37148,25 @@ AI应该根据这些完整的上下文信息来理解用户分享的内容并给
               });
             }
           });
+
+          // 🆕 添加礼物图片（用于识图）
+          giftImages.forEach((gift) => {
+            if (gift.imageLocal) {
+              userMessageContent.push({
+                type: "image_url",
+                image_url: { url: gift.imageLocal },
+              });
+              console.log(
+                `📸 [私信生成器] 添加礼物图片: ${
+                  gift.name
+                } (${gift.imageLocal.substring(0, 50)}...)`
+              );
+            }
+          });
+
+          console.log(
+            `✅ [私信生成器] 构建多模态消息: ${realImageMessages.length}张用户图片 + ${giftImages.length}张礼物图片`
+          );
         } else {
           // 无真实图片：纯文本、表情包、语音和文字图片
           const textMessages = userMessages.filter(
@@ -36144,7 +37210,50 @@ AI应该根据这些完整的上下文信息来理解用户分享的内容并给
         }
       } else {
         // 初始模式
-        userMessageContent = "请生成完整的私信对话详情";
+        // 🆕 如果有礼物图片，构建多模态消息
+        if (giftImages.length > 0) {
+          console.log(
+            `📸 [私信生成器-初始模式] 构建多模态消息，包含${giftImages.length}个礼物图片`
+          );
+
+          userMessageContent = [];
+
+          // 构建文本说明
+          let textContent = "请生成完整的私信对话详情。";
+          textContent += `\n\n📸 用户在直播间送的礼物图片识别（共${giftImages.length}个）：`;
+          giftImages.forEach((gift, index) => {
+            textContent += `\n  ${index + 1}. 礼物「${gift.name}」（${
+              gift.price
+            }积分）`;
+            if (gift.description) {
+              textContent += ` - ${gift.description}`;
+            }
+            textContent += `\n     图片：[第${
+              index + 1
+            }张图片是该礼物的样式/外观]`;
+          });
+          textContent += `\n\n⚠️ 重要：请识别这些礼物图片的实际样子（颜色、形状、设计、风格等），在回复中可以自然地评价礼物的外观。`;
+          textContent += `\n例如："我记得你送的那个礼物，设计很特别！" 或 "那个礼物的图案我很喜欢"等。`;
+
+          userMessageContent.push({ type: "text", text: textContent });
+
+          // 添加礼物图片
+          giftImages.forEach((gift) => {
+            if (gift.imageLocal) {
+              userMessageContent.push({
+                type: "image_url",
+                image_url: { url: gift.imageLocal },
+              });
+              console.log(
+                `📸 [私信生成器-初始模式] 添加礼物图片: ${
+                  gift.name
+                } (${gift.imageLocal.substring(0, 50)}...)`
+              );
+            }
+          });
+        } else {
+          userMessageContent = "请生成完整的私信对话详情";
+        }
       }
       const messages = [{ role: "user", content: userMessageContent }]; // 最终统计
       const contentForLog = Array.isArray(userMessageContent)
@@ -40524,7 +41633,18 @@ ${getTransferStatusIcon(message.status, isLightMode)}
         savedConversation.data.messages.length > 0
       ) {
         // 已有对话记录，渲染消息
-        console.log("✅ 加载已有对话记录"); // 渲染日期分隔符
+        console.log("✅ 加载已有对话记录");
+
+        // 💎 恢复 liveUserData 到 currentMessageConversation（如果存在）
+        if (savedConversation._liveUserData && !messageData._liveUserData) {
+          messageData._liveUserData = savedConversation._liveUserData;
+          currentMessageConversation._liveUserData =
+            savedConversation._liveUserData;
+          console.log(
+            "💎 [加载对话] 从数据库恢复直播间用户数据",
+            savedConversation._liveUserData
+          );
+        } // 渲染日期分隔符
         const today = new Date();
         const dateStr =
           currentLanguage === "en"
@@ -42619,9 +43739,26 @@ ${getTransferStatusIcon(message.status, isLightMode)}
       } else {
         // 调用AI生成回复（续写模式，传递用户消息队列用于识图）
         console.log("📤 [AI回复] 开始请求AI生成回复（普通私信）");
-        aiMessages = await generateMessageConversation(conversationRef, true, {
+
+        // 💎 构建 options，如果有 liveUserData，也传递给生成器
+        const options = {
           userMessages: userMessageQueue,
-        });
+        };
+
+        // 检查是否有直播间用户数据
+        if (conversationRef._liveUserData) {
+          options.liveUserData = conversationRef._liveUserData;
+          console.log(
+            "💎 [AI回复] 检测到直播间用户数据，传递给生成器",
+            options.liveUserData
+          );
+        }
+
+        aiMessages = await generateMessageConversation(
+          conversationRef,
+          true,
+          options
+        );
       }
       console.log("📥 [AI回复] AI回复已返回"); // 隐藏"正在输入中"气泡
       hideTypingIndicator(); // 🔍 检查特殊系统提示
@@ -43074,7 +44211,15 @@ ${getTransferStatusIcon(message.status, isLightMode)}
             msg.timestamp = new Date().toISOString();
           }
         });
-        savedConversation.data.messages.push(...aiMessages); // 更新数据库
+        savedConversation.data.messages.push(...aiMessages);
+
+        // 💎 保存 liveUserData（如果存在）
+        if (conversation._liveUserData && !savedConversation._liveUserData) {
+          savedConversation._liveUserData = conversation._liveUserData;
+          console.log("💎 [保存对话] 保存直播间用户数据到数据库");
+        }
+
+        // 更新数据库
         savedConversation.updatedAt = new Date().toISOString();
         await xDb.xAccountProfiles.put(savedConversation);
         console.log("✅ AI回复已保存到数据库");
