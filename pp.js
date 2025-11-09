@@ -31010,7 +31010,7 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
       )
     ) {
       // 用户确认，跳转到Discord审核页面
-      window.open("https://discord.gg/eyE5hn4K", "_blank");
+      window.open("https://discord.gg/xjHRdsVJ", "_blank");
       console.log("✅ 已打开审核页面");
     } else {
       console.log("❌ 用户取消跳转审核页面");
