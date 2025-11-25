@@ -1635,6 +1635,13 @@ color: #ffffff !important; }
  </svg>
  </button>
  <div class="search-box">
+ <button onclick="openMapPage()" style="display: flex; align-items: center; justify-content: center; background: none; border: none; padding: 4px; cursor: pointer; border-radius: 50%; transition: background-color 0.2s; flex-shrink: 0; " onmouseover="this.style.backgroundColor='rgba(29,155,240,0.1)'"
+ onmouseout="this.style.backgroundColor='transparent'" title="地图">
+  <svg viewBox="0 0 32 32" style="width: 20px; height: 20px; stroke: #71767b; fill: none; stroke-width: 1.5;">
+   <path d="M16 2C11.5817 2 8 5.58172 8 10C8 15.5 16 26 16 26C16 26 24 15.5 24 10C24 5.58172 20.4183 2 16 2Z"/>
+   <circle cx="16" cy="10" r="3"/>
+  </svg>
+ </button>
  <svg viewBox="0 0 24 24" aria-hidden="true">
  <g><path d="M10.25 3.75c-3.59 0-6.5 2.91-6.5 6.5s2.91 6.5 6.5 6.5c1.795 0 3.419-.726 4.596-1.904 1.178-1.177 1.904-2.801 1.904-4.596 0-3.59-2.91-6.5-6.5-6.5zm-8.5 6.5c0-4.694 3.806-8.5 8.5-8.5s8.5 3.806 8.5 8.5c0 1.986-.682 3.815-1.824 5.262l4.781 4.781-1.414 1.414-4.781-4.781c-1.447 1.142-3.276 1.824-5.262 1.824-4.694 0-8.5-3.806-8.5-8.5z"></path></g>
  </svg>
@@ -4463,6 +4470,86 @@ style="position: absolute; width: 5px; height: 5px; background-color: var(--x-ac
     db.version(10).stores({
       xFanClubMemberships:
         "&streamerHandle, joined, joinedAt, lastCheckinDate, points, level",
+    });
+
+    // Version 11: 地图约会数据表（第十五个情景）
+    db.version(11).stores({
+      xTweetsData: "&id",
+      xSettings: "&id",
+      xPresets: "++id, name, createdAt",
+      xUserProfile: "&id",
+      xUserTweets: "&id",
+      xCharacterProfiles: "&characterId",
+      xActiveAccount: "&id",
+      xAccountList: "&accountId, name, createdAt",
+      xNPCs: "&id",
+      xAskbox: "&id",
+      xAccountProfiles: "&handle, name, updatedAt",
+      xAccountAskbox: "&id",
+      xCharacterRelationships: "&id, accountId, lastUpdated",
+      xBookmarks: "&id, accountId, tweetId, bookmarkedAt",
+      xLikes: "&id, accountId, tweetId, likedAt",
+      xWorldEvents: "&id, accountId, lastGenerated, lastProgressed",
+      xCustomGiftCategories: "&id, accountId, name, enabled, createdAt",
+      xCustomGifts: "&id, categoryId, accountId, name, points, createdAt",
+      xFanClubs: "&handle, createdAt, updatedAt",
+      xFanClubMemberships:
+        "&streamerHandle, joined, joinedAt, lastCheckinDate, points, level",
+      xMapDatingData: "&id, accountId, lastGenerated, lastUpdated",
+    });
+
+    // Version 12: 用户地图约会个人资料表
+    db.version(12).stores({
+      xTweetsData: "&id",
+      xSettings: "&id",
+      xPresets: "++id, name, createdAt",
+      xUserProfile: "&id",
+      xUserTweets: "&id",
+      xCharacterProfiles: "&characterId",
+      xActiveAccount: "&id",
+      xAccountList: "&accountId, name, createdAt",
+      xNPCs: "&id",
+      xAskbox: "&id",
+      xAccountProfiles: "&handle, name, updatedAt",
+      xAccountAskbox: "&id",
+      xCharacterRelationships: "&id, accountId, lastUpdated",
+      xBookmarks: "&id, accountId, tweetId, bookmarkedAt",
+      xLikes: "&id, accountId, tweetId, likedAt",
+      xWorldEvents: "&id, accountId, lastGenerated, lastProgressed",
+      xCustomGiftCategories: "&id, accountId, name, enabled, createdAt",
+      xCustomGifts: "&id, categoryId, accountId, name, points, createdAt",
+      xFanClubs: "&handle, createdAt, updatedAt",
+      xFanClubMemberships:
+        "&streamerHandle, joined, joinedAt, lastCheckinDate, points, level",
+      xMapDatingData: "&id, accountId, lastGenerated, lastUpdated",
+      xMapUserProfile: "&id, lastUpdated",
+    });
+    // 版本13：添加地图约会聊天记录表
+    db.version(13).stores({
+      xTweetsData: "&id",
+      xSettings: "&id",
+      xPresets: "++id, name, createdAt",
+      xUserProfile: "&id",
+      xUserTweets: "&id",
+      xCharacterProfiles: "&characterId",
+      xActiveAccount: "&id",
+      xAccountList: "&accountId, name, createdAt",
+      xNPCs: "&id",
+      xAskbox: "&id",
+      xAccountProfiles: "&handle, name, updatedAt",
+      xAccountAskbox: "&id",
+      xCharacterRelationships: "&id, accountId, lastUpdated",
+      xBookmarks: "&id, accountId, tweetId, bookmarkedAt",
+      xLikes: "&id, accountId, tweetId, likedAt",
+      xWorldEvents: "&id, accountId, lastGenerated, lastProgressed",
+      xCustomGiftCategories: "&id, accountId, name, enabled, createdAt",
+      xCustomGifts: "&id, categoryId, accountId, name, points, createdAt",
+      xFanClubs: "&handle, createdAt, updatedAt",
+      xFanClubMemberships:
+        "&streamerHandle, joined, joinedAt, lastCheckinDate, points, level",
+      xMapDatingData: "&id, accountId, lastGenerated, lastUpdated",
+      xMapUserProfile: "&id, lastUpdated",
+      xMapChats: "&id, accountId, userId, lastUpdated",
     });
 
     return db;
@@ -11982,7 +12069,7 @@ ${
     toast.style.cssText = `
  position: fixed; top: 80px; left: 50%; transform: translateX(-50%); background-color: ${
    type === "success" ? "#1d9bf0" : "#f4212e"
- }; color: #fff; padding: 12px 20px; border-radius: 20px; font-size: 15px; font-weight: 600; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.3); animation: fadeInOut 3s ease-in-out forwards; `;
+ }; color: #fff; padding: 12px 20px; border-radius: 20px; font-size: 15px; font-weight: 600; z-index: 100000; box-shadow: 0 4px 12px rgba(0,0,0,0.3); animation: fadeInOut 3s ease-in-out forwards; `;
     toast.textContent = message; // 添加淡入淡出动画
     const style = document.createElement("style");
     style.textContent = `
@@ -17704,24 +17791,18 @@ ${
         updatedAt: new Date().toISOString(),
       }); // 应用主题到所有动态元素
       applyThemeToElements(newTheme); // 重新渲染关系图画布（如果当前打开）
-      const relationshipModal = document.getElementById(
-        "character-relationship-graph-modal"
-      );
-      if (relationshipModal && relationshipModal.style.display !== "none") {
+      const relationshipModal = document.getElementById('character-relationship-graph-modal');
+      if (relationshipModal && relationshipModal.style.display !== 'none') {
         renderRelationshipGraph();
       }
       // 重新渲染关系预览画布（如果关系册已开启）
-      const relationshipArea = document.getElementById(
-        "relationship-binding-area"
-      );
-      if (relationshipArea && relationshipArea.style.display !== "none") {
+      const relationshipArea = document.getElementById('relationship-binding-area');
+      if (relationshipArea && relationshipArea.style.display !== 'none') {
         setTimeout(() => {
           updateRelationshipPreview();
         }, 100);
       }
-      console.log(
-        `🎨 主题已切换为: ${newTheme === "light" ? "日间模式" : "夜间模式"}`
-      );
+      console.log(`🎨 主题已切换为: ${newTheme === 'light' ? '日间模式' : '夜间模式'}`);
       const config = languageConfig[currentLanguage] || languageConfig.zh;
       showXToast(
         newTheme === "light" ? config.toastThemeLight : config.toastThemeDark,
@@ -19591,9 +19672,17 @@ ${
         xBookmarks: await xDb.xBookmarks.toArray(),
         // 角色关系册数据（所有账户）
         xCharacterRelationships: await xDb.xCharacterRelationships.toArray(),
+        // 地图约会数据（所有账户）
+        xMapDatingData: await xDb.xMapDatingData.toArray(),
+        // 地图用户个人资料
+        xMapUserProfile: await xDb.xMapUserProfile.toArray(),
+        // 地图聊天数据
+        xMapChats: await xDb.xMapChats.toArray(),
+        // localStorage中的聊天列表
+        xMapSavedChats: localStorage.getItem("xMapSavedChats") || "[]",
         // 元数据
         exportTime: new Date().toISOString(),
-        version: "2.1",
+        version: "2.2",
         dataType: "x-social-full-backup",
       };
       const dataStr = JSON.stringify(exportData, null, 2);
@@ -19620,6 +19709,10 @@ ${
         账户提问箱数: exportData.xAccountAskbox.length,
         书签数: exportData.xBookmarks.length,
         关系册数: exportData.xCharacterRelationships.length,
+        地图约会数据数: exportData.xMapDatingData.length,
+        地图用户资料数: exportData.xMapUserProfile.length,
+        地图聊天数据数: exportData.xMapChats.length,
+        保存的聊天列表数: JSON.parse(exportData.xMapSavedChats).length,
       });
     } catch (error) {
       console.error("❌ 导出数据失败:", error);
@@ -19665,6 +19758,10 @@ ${
           await xDb.xAccountAskbox.clear();
           await xDb.xBookmarks.clear();
           await xDb.xCharacterRelationships.clear();
+          await xDb.xMapDatingData.clear();
+          await xDb.xMapUserProfile.clear();
+          await xDb.xMapChats.clear();
+          localStorage.removeItem("xMapSavedChats");
           console.log("✅ 已清空旧数据"); // 导入新数据
           if (importData.xSettings && importData.xSettings.length > 0) {
             await xDb.xSettings.bulkAdd(importData.xSettings);
@@ -19725,6 +19822,18 @@ ${
               importData.xCharacterRelationships
             );
           }
+          if (importData.xMapDatingData && importData.xMapDatingData.length > 0) {
+            await xDb.xMapDatingData.bulkAdd(importData.xMapDatingData);
+          }
+          if (importData.xMapUserProfile && importData.xMapUserProfile.length > 0) {
+            await xDb.xMapUserProfile.bulkAdd(importData.xMapUserProfile);
+          }
+          if (importData.xMapChats && importData.xMapChats.length > 0) {
+            await xDb.xMapChats.bulkAdd(importData.xMapChats);
+          }
+          if (importData.xMapSavedChats) {
+            localStorage.setItem("xMapSavedChats", importData.xMapSavedChats);
+          }
           console.log("✅ X数据导入成功，包含:", {
             设置数: importData.xSettings?.length || 0,
             用户资料数: importData.xUserProfile?.length || 0,
@@ -19740,6 +19849,10 @@ ${
             账户提问箱数: importData.xAccountAskbox?.length || 0,
             书签数: importData.xBookmarks?.length || 0,
             关系册数: importData.xCharacterRelationships?.length || 0,
+            地图约会数据数: importData.xMapDatingData?.length || 0,
+            地图用户资料数: importData.xMapUserProfile?.length || 0,
+            地图聊天数据数: importData.xMapChats?.length || 0,
+            保存的聊天列表数: importData.xMapSavedChats ? JSON.parse(importData.xMapSavedChats).length : 0,
           });
           showXToast("数据导入成功！页面即将刷新...", "success"); // 延迟刷新，让用户看到成功提示
           setTimeout(() => {
@@ -31059,6 +31172,9 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
 
     // LocalStorage键名（社交功能：通知+私信）
     SOCIAL_STORAGE_KEY: "x_social_access_token",
+
+    // LocalStorage键名（地图功能：地图探索）
+    MAP_STORAGE_KEY: "x_map_access_token",
   };
 
   // ========== 辅助函数 ==========
@@ -31257,6 +31373,75 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
       return true;
     } catch (error) {
       console.error("社交功能 Token 验证失败:", error);
+      return true;
+    }
+  }
+
+  /**
+   * 检查是否有地图功能访问权限
+   */
+  function checkMapAccess() {
+    const token = localStorage.getItem(CONFIG.MAP_STORAGE_KEY);
+    if (!token) return false;
+
+    try {
+      const data = JSON.parse(safeBase64Decode(token));
+      // 检查token是否过期
+      if (Date.now() > data.exp) {
+        localStorage.removeItem(CONFIG.MAP_STORAGE_KEY);
+        return false;
+      }
+      return true;
+    } catch (error) {
+      console.warn("地图功能Token验证失败:", error);
+      localStorage.removeItem(CONFIG.MAP_STORAGE_KEY);
+      return false;
+    }
+  }
+
+  /**
+   * 实时验证地图 Token 是否仍然有效
+   */
+  async function validateMapTokenWithServer() {
+    const token = localStorage.getItem(CONFIG.MAP_STORAGE_KEY);
+    if (!token) return false;
+
+    try {
+      const data = JSON.parse(safeBase64Decode(token));
+      const deviceId = getDeviceId();
+
+      const response = await fetch(CONFIG.WORKER_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          key: data.key,
+          deviceId,
+          featureType: "map",
+          action: "validateToken",
+        }),
+        signal: AbortSignal.timeout(5000),
+      });
+
+      if (!response.ok) return false;
+
+      const result = await response.json();
+
+      if (!result.valid) {
+        console.warn("⚠️ 地图功能 Token 已失效:", result.error);
+        localStorage.removeItem(CONFIG.MAP_STORAGE_KEY);
+
+        if (result.blacklisted) {
+          alert("❌ 您的地图功能访问权限已被撤销");
+        } else if (result.tokenInvalidated) {
+          alert("⚠️ 地图功能密钥已过期，请重新验证");
+        }
+
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error("地图功能 Token 验证失败:", error);
       return true;
     }
   }
@@ -32579,6 +32764,620 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
   }
 
   /**
+   * 显示地图功能密钥输入弹窗
+   */
+  function requestMapAccess() {
+    // 避免重复弹窗
+    if (document.getElementById("map-auth-modal")) return;
+
+    const modal = document.createElement("div");
+    modal.id = "map-auth-modal";
+    modal.className = "live-auth-container"; // 复用直播功能的样式
+    modal.innerHTML = `
+      <div class="auth-overlay"></div>
+      <div class="auth-cassette-box">
+        <!-- 磁带纹理 -->
+        <div class="cassette-texture"></div>
+
+        <!-- 头部：唱片图标 + 标题 -->
+        <div class="auth-header">
+          <div class="vinyl-lock-icon">
+            <svg class="vinyl-disc-svg" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="45" fill="url(#vinylGradient)"/>
+              <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/>
+              <circle cx="50" cy="50" r="30" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/>
+              <circle cx="50" cy="50" r="20" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/>
+              <circle cx="50" cy="50" r="8" fill="#0a0a0a"/>
+              <defs>
+                <radialGradient id="vinylGradient">
+                  <stop offset="0%" style="stop-color:#2a2a2a"/>
+                  <stop offset="50%" style="stop-color:#1a1a1a"/>
+                  <stop offset="100%" style="stop-color:#0a0a0a"/>
+                </radialGradient>
+              </defs>
+            </svg>
+            <div class="lock-overlay">
+              <svg viewBox="0 0 24 24" width="24" height="24" stroke="#fff" fill="none" stroke-width="2">
+                <rect x="5" y="11" width="14" height="10" rx="2"/>
+                <path d="M12 15v2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+            </div>
+          </div>
+
+          <div class="auth-title-section">
+            <h3 class="auth-title">ACCESS REQUIRED</h3>
+            <p class="auth-subtitle">请输入管理员提供的地图功能密钥</p>
+            <p class="auth-hint">验证成功后7天内有效</p>
+          </div>
+        </div>
+
+        <!-- 刷新提示 -->
+        <div class="auth-warning-box">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+          </svg>
+          <span>验证成功后将自动刷新页面，请确保已保存数据</span>
+        </div>
+
+        <!-- 输入区域 -->
+        <div class="auth-input-section">
+          <div class="input-label">
+            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2">
+              <rect x="5" y="11" width="14" height="10" rx="2"/>
+              <path d="M12 15v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+            <span>PASS KEY</span>
+          </div>
+          <div class="input-wrapper">
+            <input
+              id="map-key-input"
+              type="password"
+              placeholder="••••••••••••"
+              class="auth-input"
+              onkeypress="if(event.key==='Enter')document.getElementById('verify-map-key').click()"
+            />
+            <div class="input-underline"></div>
+          </div>
+        </div>
+
+        <!-- 按钮组 -->
+        <div class="auth-buttons">
+          <button class="auth-btn auth-btn-cancel" onclick="document.getElementById('map-auth-modal').remove()">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2.5">
+              <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+            <span>CANCEL</span>
+          </button>
+          <button id="verify-map-key" class="auth-btn auth-btn-verify">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2.5">
+              <polyline points="20 6 9 17 4 12"/>
+          </svg>
+            <span>VERIFY</span>
+          </button>
+        </div>
+
+        <!-- 状态提示 -->
+        <div id="map-verify-status" class="auth-status"></div>
+      </div>
+
+      <style>
+        .live-auth-container {
+        position: fixed;
+        inset: 0;
+          z-index: 99999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+          opacity: 0;
+          animation: authFadeIn 0.4s ease forwards;
+        }
+
+        @keyframes authFadeIn {
+          to { opacity: 1; }
+        }
+
+        .auth-overlay {
+          position: fixed;
+          inset: 0;
+          background: rgba(0, 0, 0, 0.85);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+        }
+
+        .auth-cassette-box {
+        position: relative;
+          width: 90%;
+          max-width: 340px;
+        background: linear-gradient(
+          135deg,
+            rgba(25, 25, 25, 0.98) 0%,
+            rgba(20, 20, 20, 0.98) 50%,
+            rgba(15, 15, 15, 0.98) 100%
+        );
+        backdrop-filter: blur(40px) saturate(150%);
+          -webkit-backdrop-filter: blur(40px) saturate(150%);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+          border-radius: 20px;
+          box-shadow:
+            0 20px 60px rgba(0, 0, 0, 0.6),
+            0 0 1px rgba(255, 255, 255, 0.2),
+            inset 0 1px 1px rgba(255, 255, 255, 0.1);
+          overflow: hidden;
+          padding: 24px 20px;
+          transform: translateY(40px) scale(0.9);
+          opacity: 0;
+          animation: authSlideUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s forwards;
+          z-index: 1;
+        }
+
+        @keyframes authSlideUp {
+          to {
+          transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+      }
+
+        .cassette-texture {
+        position: absolute;
+        inset: 0;
+        background: repeating-linear-gradient(
+          90deg,
+          transparent,
+            transparent 2px,
+            rgba(255, 255, 255, 0.01) 2px,
+            rgba(255, 255, 255, 0.01) 4px
+        );
+        pointer-events: none;
+      }
+
+        .auth-header {
+        display: flex;
+          flex-direction: column;
+        align-items: center;
+          margin-bottom: 22px;
+        position: relative;
+      }
+
+        .vinyl-lock-icon {
+          width: 64px;
+          height: 64px;
+        position: relative;
+          margin-bottom: 12px;
+          animation: vinylSpin 8s linear infinite;
+        }
+
+        @keyframes vinylSpin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+
+        .vinyl-disc-svg {
+        width: 100%;
+        height: 100%;
+          filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.6));
+        }
+
+        .lock-overlay {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+          animation: lockPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes lockPulse {
+          0%, 100% { opacity: 0.9; transform: scale(1); }
+          50% { opacity: 1; transform: scale(1.05); }
+        }
+
+        .auth-title-section {
+        text-align: center;
+        }
+
+        .auth-title {
+          margin: 0 0 6px 0;
+        font-size: 13px;
+        font-weight: 800;
+          letter-spacing: 2.5px;
+        text-transform: uppercase;
+        font-family: "Courier New", monospace;
+        color: rgba(255, 255, 255, 0.95);
+          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+      }
+
+        .auth-subtitle {
+          margin: 0 0 3px 0;
+        font-size: 12px;
+          color: rgba(255, 255, 255, 0.7);
+          line-height: 1.4;
+        }
+
+        .auth-hint {
+          margin: 0;
+        font-size: 10px;
+          color: rgba(255, 255, 255, 0.45);
+        font-family: "Courier New", monospace;
+        }
+
+        .auth-input-section {
+          margin-bottom: 20px;
+        }
+
+        .input-label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 8px;
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+        font-family: "Courier New", monospace;
+          color: rgba(255, 255, 255, 0.6);
+        }
+
+        .input-wrapper {
+        position: relative;
+      }
+
+        .auth-input {
+          width: 100%;
+          padding: 12px 14px;
+          background: rgba(10, 10, 10, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+          border-radius: 10px;
+          color: #fff;
+          font-size: 14px;
+          font-family: "Courier New", monospace;
+          letter-spacing: 1.5px;
+          box-sizing: border-box;
+          outline: none;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .auth-input:focus {
+          border-color: rgba(255, 255, 255, 0.3);
+          background: rgba(15, 15, 15, 0.8);
+          box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05);
+        }
+
+        .auth-input::placeholder {
+          color: rgba(255, 255, 255, 0.3);
+          letter-spacing: 4px;
+        }
+
+        .input-underline {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+          height: 2px;
+          background: linear-gradient(90deg,
+          transparent,
+            rgba(255, 255, 255, 0.3),
+          transparent
+        );
+          transform: scaleX(0);
+          transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        pointer-events: none;
+      }
+
+        .auth-input:focus + .input-underline {
+          transform: scaleX(1);
+        }
+
+        .auth-buttons {
+        display: flex;
+          gap: 10px;
+          margin-bottom: 14px;
+        }
+
+        .auth-btn {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+          gap: 6px;
+          padding: 12px 16px;
+          border-radius: 10px;
+        font-size: 11px;
+        font-weight: 800;
+          letter-spacing: 1.2px;
+        font-family: "Courier New", monospace;
+        cursor: pointer;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+          border: none;
+          outline: none;
+        }
+
+        .auth-btn-cancel {
+          background: rgba(255, 255, 255, 0.06);
+          color: rgba(255, 255, 255, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .auth-btn-cancel:hover {
+          background: rgba(255, 255, 255, 0.1);
+          transform: translateY(-2px);
+        }
+
+        .auth-btn-cancel:active {
+          transform: scale(0.95);
+        }
+
+        .auth-btn-verify {
+          flex: 1.5;
+          background: linear-gradient(135deg,
+          rgba(255, 255, 255, 0.15),
+          rgba(255, 255, 255, 0.08)
+        );
+          color: #fff;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .auth-btn-verify:hover {
+          background: linear-gradient(135deg,
+          rgba(255, 255, 255, 0.22),
+          rgba(255, 255, 255, 0.12)
+        );
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .auth-btn-verify:active {
+          transform: scale(0.95);
+        }
+
+        .auth-btn:disabled {
+          opacity: 0.5;
+        cursor: not-allowed;
+          transform: none !important;
+        }
+
+        .auth-status {
+          min-height: 20px;
+        text-align: center;
+        font-size: 11px;
+          font-weight: 600;
+          padding: 6px 10px;
+          border-radius: 6px;
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid transparent;
+          transition: all 0.3s ease;
+        }
+
+        .auth-status:empty {
+          opacity: 0;
+        }
+
+        .auth-status.warning {
+          color: #f59e0b;
+          border-color: rgba(245, 158, 11, 0.2);
+          background: rgba(245, 158, 11, 0.05);
+        }
+
+        .auth-status.loading {
+        color: rgba(255, 255, 255, 0.8);
+        border-color: rgba(255, 255, 255, 0.15);
+          background: rgba(255, 255, 255, 0.05);
+        }
+
+        .auth-status.success {
+          color: #00ba7c;
+          border-color: rgba(0, 186, 124, 0.2);
+          background: rgba(0, 186, 124, 0.05);
+        }
+
+        .auth-status.error {
+          color: #f91880;
+          border-color: rgba(249, 24, 128, 0.2);
+          background: rgba(249, 24, 128, 0.05);
+        }
+
+        .auth-warning-box {
+        display: flex;
+        align-items: center;
+          gap: 6px;
+          margin-top: 10px;
+        font-size: 10px;
+          color: rgba(255, 255, 255, 0.6);
+        font-family: "Courier New", monospace;
+        }
+
+        .auth-warning-box svg {
+          width: 14px;
+          height: 14px;
+          animation: warningPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes warningPulse {
+          0%, 100% { opacity: 0.9; transform: scale(1); }
+          50% { opacity: 1; transform: scale(1.05); }
+        }
+
+        @media (max-width: 480px) {
+          .auth-cassette-box {
+            padding: 20px 18px;
+            max-width: 320px;
+          }
+
+          .vinyl-lock-icon {
+            width: 56px;
+            height: 56px;
+          }
+
+          .lock-overlay svg {
+            width: 20px;
+            height: 20px;
+          }
+
+          .auth-header {
+            margin-bottom: 18px;
+          }
+
+          .auth-title {
+          font-size: 12px;
+            letter-spacing: 2px;
+          }
+
+          .auth-subtitle {
+          font-size: 11px;
+        }
+
+          .auth-hint {
+          font-size: 9px;
+          }
+
+          .auth-input {
+          padding: 10px 12px;
+            font-size: 13px;
+          }
+
+          .auth-btn {
+            padding: 10px 14px;
+            font-size: 10px;
+            gap: 5px;
+          }
+
+          .auth-btn svg {
+        width: 14px;
+        height: 14px;
+          }
+
+          .auth-status {
+        font-size: 10px;
+            padding: 5px 8px;
+          }
+        }
+      </style>
+    `;
+
+    document.body.appendChild(modal);
+
+    // 自动聚焦输入框
+    setTimeout(() => {
+      const input = document.getElementById("map-key-input");
+      if (input) input.focus();
+    }, 600);
+
+    // 绑定验证按钮事件
+    setupMapVerificationButton();
+  }
+
+  /**
+   * 设置地图功能验证按钮
+   */
+  function setupMapVerificationButton() {
+    const btn = document.getElementById("verify-map-key");
+    if (!btn) return;
+
+    btn.onclick = async () => {
+      const input = document.getElementById("map-key-input");
+      const status = document.getElementById("map-verify-status");
+      const key = input.value.trim();
+
+      // 验证输入
+      if (!key) {
+        showStatus(status, "请输入通行密钥", "warning");
+        input.focus();
+        return;
+      }
+
+      // 显示加载状态
+      btn.innerHTML = `
+        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2.5" style="animation: spin 1s linear infinite;">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 2 A10 10 0 0 1 22 12"/>
+        </svg>
+        <span>VERIFYING...</span>
+        <style>
+          @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+          }
+        </style>
+      `;
+      btn.disabled = true;
+      showStatus(status, "正在验证密钥，请稍候...", "loading");
+
+      try {
+        // 调用验证API（使用 featureType 参数区分功能类型）
+        const deviceId = getDeviceId();
+        const response = await fetch(CONFIG.WORKER_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            key,
+            deviceId,
+            featureType: "map", // 标识为地图功能
+          }),
+          signal: AbortSignal.timeout(10000),
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        const result = await response.json();
+
+        if (result.valid) {
+          // 验证成功，生成token
+          const token = safeBase64Encode(
+            JSON.stringify({
+              exp: Date.now() + CONFIG.TOKEN_EXPIRY,
+              user: result.user || "用户",
+              timestamp: Date.now(),
+              key: key,
+            })
+          );
+
+          localStorage.setItem(CONFIG.MAP_STORAGE_KEY, token);
+
+          showStatus(
+            status,
+            `验证成功！欢迎 ${result.user || "用户"}`,
+            "success"
+          );
+
+          // 延迟关闭弹窗并刷新
+          setTimeout(() => {
+            document.getElementById("map-auth-modal")?.remove();
+
+            console.log("✅ 地图功能已解锁");
+
+            // 刷新当前页面
+            window.location.reload();
+          }, 1200);
+        } else {
+          // ✅ 显示服务器返回的详细错误信息
+          const errorMsg = result.error || "密钥无效或已过期，请重试";
+          console.error("❌ 地图功能验证失败:", errorMsg, result);
+          showStatus(status, errorMsg, "error");
+          resetButton(btn);
+          input.focus();
+          input.select();
+        }
+      } catch (error) {
+        console.error("地图功能验证失败:", error);
+
+        let errorMsg = "验证失败，请重试";
+        if (error.name === "AbortError") {
+          errorMsg = "请求超时，请检查网络连接";
+        } else if (!navigator.onLine) {
+          errorMsg = "网络未连接，请检查后重试";
+        }
+
+        showStatus(status, errorMsg, "error");
+        resetButton(btn);
+      }
+    };
+  }
+
+  /**
    * 包装需要权限的函数
    */
   function protectFunction(funcName) {
@@ -32973,11 +33772,17337 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
     },
   };
 
+  // ============================================
+  // 第四部分: 导出地图功能验证API（供其他模块使用）
+  // ============================================
+  window.xMapAuth = {
+    // 检查权限状态
+    checkStatus: () => {
+      const hasAccess = checkMapAccess();
+      const token = localStorage.getItem(CONFIG.MAP_STORAGE_KEY);
+
+      if (!hasAccess) {
+        console.log("❌ 地图功能未授权");
+        return { authorized: false };
+      }
+
+      try {
+        const data = JSON.parse(safeBase64Decode(token));
+        const remainingDays = Math.ceil(
+          (data.exp - Date.now()) / (24 * 60 * 60 * 1000)
+        );
+        console.log("✅ 地图功能已授权");
+        console.log("用户:", data.user);
+        console.log("剩余有效期:", remainingDays, "天");
+        return {
+          authorized: true,
+          user: data.user,
+          remainingDays,
+        };
+      } catch {
+        return { authorized: false };
+      }
+    },
+
+    // 手动清除授权
+    clearAuth: () => {
+      localStorage.removeItem(CONFIG.MAP_STORAGE_KEY);
+      console.log("✅ 已清除地图功能授权，下次访问需要重新验证");
+    },
+
+    // 手动触发验证
+    verify: () => {
+      requestMapAccess();
+    },
+
+    // 检查是否有权限（供其他模块调用）
+    hasAccess: () => {
+      return checkMapAccess();
+    },
+
+    // 请求权限（供其他模块调用）
+    requestAccess: () => {
+      requestMapAccess();
+    },
+
+    // 🔍 实时验证 Token（异步，返回 Promise）
+    validateToken: () => {
+      return validateMapTokenWithServer();
+    },
+  };
+
   console.log("🔐 X Live 权限保护模块已加载");
   console.log("🔐 X Social 权限保护模块已加载");
+  console.log("🔐 X Map 权限保护模块已加载");
   console.log(
     "💡 调试命令: xSocialAuth.checkStatus() / xSocialAuth.clearAuth()"
   );
+  console.log(
+    "💡 调试命令: xMapAuth.checkStatus() / xMapAuth.clearAuth()"
+  );
+
+  // 第一部分：CSS样式注入
+  // ==========================================
+
+  function injectMapStyles() {
+    // 检查是否已注入，避免重复注入这个SB操作
+    if (document.getElementById("x-map-styles")) return;
+
+    const styleEl = document.createElement("style");
+    styleEl.id = "x-map-styles";
+    styleEl.textContent = `
+     /* ==================== 地图约会主题变量 ==================== */
+      :root {
+        /* 暗色主题（默认） */
+        --map-bg-primary: #2a2a2a;
+        --map-bg-secondary: #1a1a1a;
+        --map-road-main: #3a3a3a;
+        --map-road-secondary: #404040;
+        --map-building: #353535;
+        --map-building-alt: #2f2f2f;
+        --map-park: rgba(100,150,100,0.2);
+        --map-park-alt: rgba(100,150,100,0.15);
+        --map-line: rgba(255,255,255,0.1);
+        --map-shadow: rgba(0,0,0,0.3);
+        /* 侧边栏主题 */
+        --sidebar-bg: #1a1a1a;
+        --sidebar-border: #2f3336;
+        --sidebar-input-bg: #202327;
+        --sidebar-text-primary: #fff;
+        --sidebar-text-secondary: #71767b;
+        --sidebar-hover: rgba(255,255,255,0.03);
+      }
+      /* 亮色主题支持 */
+      #x-map-container.light-theme {
+        --map-bg-primary: #e8e8e8;
+        --map-bg-secondary: #f5f5f5;
+        --map-road-main: #d0d0d0;
+        --map-road-secondary: #e0e0e0;
+        --map-building: #fff;
+        --map-building-alt: #fafafa;
+        --map-park: rgba(180,220,180,0.3);
+        --map-park-alt: rgba(180,220,180,0.2);
+        --map-line: rgba(255,255,255,0.4);
+        --map-shadow: rgba(0,0,0,0.05);
+        --sidebar-bg: #fff;
+        --sidebar-border: #e0e0e0;
+        --sidebar-input-bg: #f5f5f5;
+        --sidebar-text-primary: #000;
+        --sidebar-text-secondary: #666;
+        --sidebar-hover: rgba(0,0,0,0.05);
+      }
+        
+      /* ==================== 左侧边栏 ==================== */
+      .map-sidebar {
+        width: 85%;
+        max-width: 360px;
+        background: var(--sidebar-bg);
+        display: flex;
+        flex-direction: column;
+        border-right: 1px solid var(--sidebar-border);
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        z-index: 100;
+        transform: translateX(-100%);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 2px 0 8px rgba(0,0,0,0.3);
+      }
+
+      .map-sidebar.show {
+        transform: translateX(0);
+      }
+
+      .map-header {
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--sidebar-border);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .map-header h2 {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--sidebar-text-primary);
+        flex: 1;
+      }
+
+      .map-back-btn {
+        background: none;
+        border: none;
+        padding: 8px;
+        cursor: pointer;
+        border-radius: 50%;
+        transition: background-color 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .map-back-btn:hover {
+        background-color: rgba(239,243,244,0.1);
+      }
+
+      .map-back-btn svg {
+        width: 20px;
+        height: 20px;
+        fill: var(--sidebar-text-primary);
+      }
+
+      .map-search-box {
+        padding: 12px 16px;
+        background: var(--sidebar-bg);
+      }
+
+      .map-search-box input {
+        width: 100%;
+        background: var(--sidebar-input-bg);
+        border: none;
+        border-radius: 20px;
+        padding: 10px 16px;
+        color: var(--sidebar-text-primary);
+        font-size: 15px;
+        outline: none;
+      }
+
+      .map-search-box input::placeholder {
+        color: var(--sidebar-text-secondary);
+      }
+
+      .map-filters {
+        padding: 12px 16px;
+        display: flex;
+        gap: 8px;
+        border-bottom: 1px solid var(--sidebar-border);
+      }
+
+      .filter-group {
+        display: flex;
+        gap: 8px;
+        flex: 1;
+      }
+
+      .filter-select {
+        flex: 1;
+        background: var(--sidebar-input-bg);
+        border: none;
+        border-radius: 6px;
+        padding: 8px 12px;
+        color: var(--sidebar-text-primary);
+        font-size: 13px;
+        cursor: pointer;
+        outline: none;
+      }
+
+      .filter-btn {
+        background: #1d9bf0;
+        border: none;
+        border-radius: 6px;
+        padding: 8px 16px;
+        color: #fff;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
+
+      .filter-btn:hover {
+        background: #1a8cd8;
+      }
+
+      .map-user-list {
+        flex: 1;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding: 8px 0;
+        min-height: 0;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .map-user-list::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .map-user-list::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      .map-user-list::-webkit-scrollbar-thumb {
+        background: #3a3a3a;
+        border-radius: 3px;
+      }
+
+      .map-user-item {
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        position: relative;
+      }
+
+      .map-user-item:hover {
+        background: var(--sidebar-hover);
+      }
+
+      .map-user-item.active {
+        background: rgba(29,155,240,0.1);
+        border-left: 3px solid #1d9bf0;
+      }
+
+      .map-user-avatar-container {
+        position: relative;
+        flex-shrink: 0;
+      }
+
+      .map-user-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+
+      .map-online-indicator {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 14px;
+        height: 14px;
+        background: #00ba7c;
+        border: 2px solid var(--sidebar-bg);
+        border-radius: 50%;
+      }
+
+      .map-user-info {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .map-user-name {
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--sidebar-text-primary);
+        margin-bottom: 2px;
+      }
+
+      .map-user-meta {
+        font-size: 13px;
+        color: var(--sidebar-text-secondary);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .map-distance {
+        display: flex;
+        align-items: center;
+        gap: 3px;
+      }
+
+      .map-distance svg {
+        width: 12px;
+        height: 12px;
+        fill: var(--sidebar-text-secondary);
+      }
+
+      .map-view-icon {
+        width: 20px;
+        height: 20px;
+        fill: var(--sidebar-text-secondary);
+        transition: fill 0.2s;
+      }
+
+      .map-user-item:hover .map-view-icon {
+        fill: #1d9bf0;
+      }
+
+      /* 侧边栏遮罩 */
+      .map-sidebar-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        z-index: 99;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s, visibility 0.3s;
+      }
+
+      .map-sidebar-overlay.show {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      /* ==================== 右侧地图区域 ==================== */
+      .map-area {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        background: var(--map-bg-primary);
+        overflow: hidden;
+      }
+
+      /* 关闭按钮 - ins风格简洁设计 */
+      .map-close-btn {
+        position: absolute;
+        top: 60px;
+        left: 20px;
+        z-index: 10;
+        width: 32px;
+        height: 32px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 0.2s;
+        padding: 0;
+      }
+
+      .map-close-btn:hover {
+        opacity: 0.6;
+      }
+
+      .map-close-btn svg {
+        width: 24px;
+        height: 24px;
+        stroke: #fff;
+        fill: none;
+        stroke-width: 2;
+        filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));
+      }
+
+      /* 刷新按钮 - 在关闭按钮下方 */
+      .map-refresh-btn {
+        position: absolute;
+        top: 102px; /* 60 + 32 + 10 = 关闭按钮top + 关闭按钮高度 + 间距 */
+        left: 20px;
+        z-index: 10;
+        width: 32px;
+        height: 32px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 0.2s;
+        padding: 0;
+      }
+
+      .map-refresh-btn:hover {
+        opacity: 0.6;
+      }
+
+      .map-refresh-btn.refreshing {
+        pointer-events: none;
+        opacity: 0.5;
+      }
+
+      .map-refresh-btn.refreshing svg {
+        animation: map-refresh-rotate 1s linear infinite;
+      }
+
+      @keyframes map-refresh-rotate {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .map-refresh-btn svg {
+        width: 24px;
+        height: 24px;
+        fill: #fff;
+        filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));
+      }
+
+      /* 聊天列表按钮样式 */
+      .map-chats-btn {
+        position: absolute;
+        top: 144px; /* 102 + 32 + 10 = 刷新按钮top + 刷新按钮高度 + 间距 */
+        left: 20px;
+        z-index: 10;
+        width: 32px;
+        height: 32px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 0.2s;
+        padding: 0;
+      }
+
+      .map-chats-btn:hover {
+        opacity: 0.6;
+      }
+
+      .map-chats-btn svg {
+        width: 24px;
+        height: 24px;
+        stroke: #fff;
+        filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));
+      }
+
+      /* ==================== 提醒功能 - 黑白灰简约ins风格 ==================== */
+      /* 提醒按钮 - 简约设计 */
+      .map-notifications-btn {
+        position: absolute;
+        top: 186px;
+        left: 20px;
+        z-index: 10;
+        width: 32px;
+        height: 32px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 0.15s ease;
+        padding: 0;
+      }
+
+      .map-notifications-btn:hover {
+        opacity: 0.7;
+      }
+
+      .map-notifications-btn:active {
+        transform: scale(0.95);
+      }
+
+      .map-notifications-btn svg {
+        width: 24px;
+        height: 24px;
+        stroke: #fff;
+        fill: none;
+        stroke-width: 2;
+        filter: drop-shadow(0 1px 3px rgba(0,0,0,0.4));
+      }
+
+      /* 未读徽章 - 黑色圆点 */
+      .map-notifications-badge {
+        position: absolute;
+        top: -2px;
+        right: -2px;
+        min-width: 18px;
+        height: 18px;
+        background: #000;
+        border-radius: 9px;
+        border: 2px solid rgba(42, 42, 42, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: 700;
+        color: #fff;
+        padding: 0 4px;
+        box-sizing: border-box;
+      }
+
+      .map-notifications-badge.hidden {
+        display: none;
+      }
+
+      /* ==================== 应用设置按钮 - 简约设计 ==================== */
+      .map-app-settings-btn {
+        position: absolute;
+        top: 228px; /* 186 + 32 + 10 = 提醒按钮top + 提醒按钮高度 + 间距 */
+        left: 20px;
+        z-index: 10;
+        width: 32px;
+        height: 32px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 0.15s ease, transform 0.2s ease;
+        padding: 0;
+      }
+
+      .map-app-settings-btn:hover {
+        opacity: 0.7;
+      }
+
+      .map-app-settings-btn:active {
+        transform: scale(0.95);
+      }
+
+      .map-app-settings-btn svg {
+        width: 24px;
+        height: 24px;
+        stroke: #fff;
+        fill: none;
+        stroke-width: 2;
+        filter: drop-shadow(0 1px 3px rgba(0,0,0,0.4));
+      }
+
+      /* 提醒列表弹窗 - Instagram风格 */
+      .map-notifications-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.65);
+        z-index: 299;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .map-notifications-overlay.show {
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      .map-notifications-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: transparent;
+        z-index: 300;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .map-notifications-modal.show {
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      /* 提醒内容容器 - 全新设计 */
+      .map-notifications-content {
+        width: calc(100% - 40px);
+        max-width: 480px;
+        max-height: calc(100vh - 80px);
+        background: #000;
+        border-radius: 24px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+        animation: modalSlideUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      @keyframes modalSlideUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px) scale(0.9);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      /* 弹窗头部 - 极简设计 */
+      .map-notifications-header {
+        padding: 24px 20px 16px;
+        background: #000;
+        border-bottom: none;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        flex-shrink: 0;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .map-notifications-header-top {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .map-notifications-title {
+        font-size: 28px;
+        font-weight: 700;
+        color: #fff;
+        letter-spacing: -0.5px;
+      }
+
+      .map-notifications-close-btn {
+        width: 36px;
+        height: 36px;
+        background: #1a1a1a;
+        border: none;
+        border-radius: 18px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        padding: 0;
+      }
+
+      .map-notifications-close-btn:hover {
+        background: #2a2a2a;
+        transform: scale(1.05);
+      }
+
+      .map-notifications-close-btn:active {
+        background: #1a1a1a;
+        transform: scale(0.95);
+      }
+
+      .map-notifications-close-btn svg {
+        width: 20px;
+        height: 20px;
+        stroke: #fff;
+        fill: none;
+        stroke-width: 2;
+        stroke-linecap: round;
+      }
+
+      /* 统计卡片 */
+      .map-notifications-stats {
+        width: 100%;
+        background: #1a1a1a;
+        border-radius: 14px;
+        padding: 14px 18px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        box-sizing: border-box;
+      }
+
+      .map-notifications-stats-icon {
+        width: 48px;
+        height: 48px;
+        background: #fff;
+        border-radius: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .map-notifications-stats-icon svg {
+        width: 24px;
+        height: 24px;
+        stroke: #000;
+        fill: none;
+        stroke-width: 2;
+      }
+
+      .map-notifications-stats-info {
+        flex: 1;
+      }
+
+      .map-notifications-stats-label {
+        font-size: 13px;
+        color: #8e8e8e;
+        font-weight: 500;
+        margin-bottom: 4px;
+      }
+
+      .map-notifications-stats-count {
+        font-size: 24px;
+        font-weight: 700;
+        color: #fff;
+        letter-spacing: -0.5px;
+      }
+
+      /* 分类Tab */
+      .map-notifications-tabs {
+        width: 100%;
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .map-notifications-tabs::-webkit-scrollbar {
+        display: none;
+      }
+
+      .map-notifications-tab {
+        padding: 8px 16px;
+        background: transparent;
+        border: 1.5px solid #2a2a2a;
+        border-radius: 20px;
+        color: #8e8e8e;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+        flex-shrink: 0;
+        box-sizing: border-box;
+      }
+
+      .map-notifications-tab:hover {
+        border-color: #3a3a3a;
+        color: #b0b0b0;
+      }
+
+      .map-notifications-tab.active {
+        background: #fff;
+        border-color: #fff;
+        color: #000;
+      }
+
+      /* 提醒列表容器 - Toast风格 */
+      .map-notifications-list-container {
+        flex: 1;
+        overflow-y: auto;
+        overflow-x: hidden;
+        min-height: 0;
+        background: #000;
+        padding: 8px 16px 16px;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .map-notifications-list-container::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .map-notifications-list-container::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      .map-notifications-list-container::-webkit-scrollbar-thumb {
+        background: #2a2a2a;
+        border-radius: 3px;
+      }
+
+      .map-notifications-list-container::-webkit-scrollbar-thumb:hover {
+        background: #3a3a3a;
+      }
+
+      /* 提醒卡片 - Toast简约风格 */
+      .map-notification-item {
+        margin-bottom: 8px;
+        padding: 14px 16px;
+        background: #0a0a0a;
+        border: 1px solid #1a1a1a;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        box-sizing: border-box;
+      }
+
+      .map-notification-item:hover {
+        background: #141414;
+        border-color: #2a2a2a;
+      }
+
+      .map-notification-item:active {
+        background: #0a0a0a;
+        transform: scale(0.98);
+      }
+
+      /* 未读标识 - 左侧色条 */
+      .map-notification-item.unread {
+        border-left: 3px solid #fff;
+        padding-left: 13px;
+      }
+
+      /* 通知图标 */
+      .map-notification-icon {
+        width: 40px;
+        height: 40px;
+        background: #1a1a1a;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .map-notification-icon svg {
+        width: 20px;
+        height: 20px;
+        stroke: #fff;
+        fill: none;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      /* 提醒信息区域 */
+      .map-notification-info {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      /* 顶部：标题 + 时间 */
+      .map-notification-header {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .map-notification-title {
+        font-size: 15px;
+        font-weight: 600;
+        color: #fff;
+        letter-spacing: -0.2px;
+      }
+
+      .map-notification-time {
+        font-size: 12px;
+        color: #666;
+        font-weight: 500;
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+
+      /* 内容文本 */
+      .map-notification-content {
+        font-size: 14px;
+        color: #999;
+        line-height: 1.4;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        word-wrap: break-word;
+      }
+
+      /* 空状态 - 极简设计 */
+      .map-notifications-empty {
+        text-align: center;
+        padding: 80px 32px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        background: #000;
+      }
+
+      .map-notifications-empty-icon {
+        width: 64px;
+        height: 64px;
+        margin-bottom: 16px;
+        background: #0a0a0a;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .map-notifications-empty-icon svg {
+        width: 32px;
+        height: 32px;
+        stroke: #333;
+        fill: none;
+        stroke-width: 2;
+      }
+
+      .map-notifications-empty-text {
+        font-size: 14px;
+        color: #666;
+        line-height: 1.5;
+        font-weight: 500;
+      }
+
+      /* ==================== 移动端适配：提醒弹窗 ==================== */
+      @media (max-width: 480px) {
+        .map-notifications-content {
+          width: calc(100% - 20px);
+          max-width: 100%;
+          border-radius: 20px;
+        }
+
+        .map-notifications-header {
+          padding: 20px 16px 16px;
+          gap: 12px;
+        }
+
+        .map-notifications-title {
+          font-size: 24px;
+        }
+
+        .map-notifications-close-btn {
+          width: 32px;
+          height: 32px;
+        }
+
+        .map-notifications-stats {
+          padding: 12px 16px;
+          gap: 12px;
+          border-radius: 12px;
+        }
+
+        .map-notifications-stats-icon {
+          width: 40px;
+          height: 40px;
+          border-radius: 20px;
+        }
+
+        .map-notifications-stats-icon svg {
+          width: 20px;
+          height: 20px;
+        }
+
+        .map-notifications-stats-label {
+          font-size: 12px;
+        }
+
+        .map-notifications-stats-count {
+          font-size: 20px;
+        }
+
+        .map-notifications-tabs {
+          gap: 6px;
+        }
+
+        .map-notifications-tab {
+          padding: 6px 14px;
+          font-size: 13px;
+          border-radius: 16px;
+        }
+
+        .map-notifications-list-container {
+          padding: 8px 12px 12px;
+        }
+
+        .map-notification-item {
+          padding: 12px 14px;
+          gap: 12px;
+          border-radius: 10px;
+        }
+
+        .map-notification-icon {
+          width: 36px;
+          height: 36px;
+          border-radius: 9px;
+        }
+
+        .map-notification-icon svg {
+          width: 18px;
+          height: 18px;
+        }
+
+        .map-notification-title {
+          font-size: 14px;
+        }
+
+        .map-notification-content {
+          font-size: 13px;
+        }
+
+        .map-notification-time {
+          font-size: 11px;
+        }
+
+        .map-notifications-empty {
+          padding: 60px 24px;
+        }
+
+        .map-notifications-empty-icon {
+          width: 56px;
+          height: 56px;
+          border-radius: 14px;
+        }
+
+        .map-notifications-empty-icon svg {
+          width: 28px;
+          height: 28px;
+        }
+
+        .map-notifications-empty-text {
+          font-size: 13px;
+        }
+      }
+
+      /* ==================== 接收私信确认弹窗 - 极简黑白灰 ==================== */
+      .map-accept-message-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 399;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .map-accept-message-overlay.show {
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      .map-accept-message-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: transparent;
+        z-index: 400;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .map-accept-message-modal.show {
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      /* 确认弹窗内容容器 */
+      .map-accept-message-content {
+        width: calc(100% - 32px);
+        max-width: 380px;
+        background: #1a1a1a;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 12px 48px rgba(0, 0, 0, 0.6);
+        animation: confirmModalZoom 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+      }
+
+      @keyframes confirmModalZoom {
+        from {
+          opacity: 0;
+          transform: scale(0.88);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      /* 确认弹窗内容区 */
+      .map-accept-message-header {
+        padding: 24px 20px;
+        background: #1a1a1a;
+      }
+
+      .map-accept-message-user {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+
+      .map-accept-message-avatar {
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 1.5px solid #333333;
+        flex-shrink: 0;
+      }
+
+      .map-accept-message-user-info h3 {
+        font-size: 16px;
+        font-weight: 600;
+        color: #e5e5e5;
+        margin: 0 0 4px 0;
+        letter-spacing: -0.2px;
+      }
+
+      .map-accept-message-user-info p {
+        font-size: 13px;
+        color: #8e8e8e;
+        margin: 0;
+      }
+
+      .map-accept-message-title {
+        font-size: 13px;
+        color: #8e8e8e;
+        margin: 0 0 10px 0;
+        font-weight: 500;
+      }
+
+      /* 私信内容预览框 */
+      .map-accept-message-text {
+        background: #262626;
+        border-radius: 14px;
+        padding: 14px 16px;
+        font-size: 15px;
+        color: #e5e5e5;
+        line-height: 1.5;
+        max-height: 180px;
+        overflow-y: auto;
+        border: 1px solid #333333;
+      }
+
+      .map-accept-message-text::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .map-accept-message-text::-webkit-scrollbar-thumb {
+        background: #444444;
+        border-radius: 3px;
+      }
+
+      /* 确认弹窗按钮 */
+      .map-accept-message-actions {
+        padding: 20px;
+        background: #1a1a1a;
+        display: flex;
+        gap: 12px;
+        border-top: 1px solid #333333;
+      }
+
+      .map-accept-btn,
+      .map-decline-btn {
+        flex: 1;
+        padding: 13px 20px;
+        border: none;
+        border-radius: 12px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .map-accept-btn {
+        background: #fff;
+        color: #000;
+      }
+
+      .map-accept-btn:hover {
+        background: #e5e5e5;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15);
+      }
+
+      .map-accept-btn:active {
+        background: #d0d0d0;
+        transform: translateY(0);
+      }
+
+      .map-decline-btn {
+        background: #2a2a2a;
+        color: #e5e5e5;
+        border: 1.5px solid #444444;
+      }
+
+      .map-decline-btn:hover {
+        background: #333333;
+        border-color: #555555;
+      }
+
+      .map-decline-btn:active {
+        background: #282828;
+      }
+
+      /* ==================== 🚨 举报弹窗 - 简约ins风格 ==================== */
+      .map-report-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.75);
+        z-index: 499;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .map-report-overlay.show {
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      .map-report-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: transparent;
+        z-index: 500;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        padding: 20px;
+        box-sizing: border-box;
+      }
+
+      .map-report-modal.show {
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      .map-report-content {
+        width: 100%;
+        max-width: 420px;
+        max-height: 85vh;
+        background: #1a1a1a;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 16px 56px rgba(0, 0, 0, 0.7);
+        animation: reportModalSlide 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+        display: flex;
+        flex-direction: column;
+      }
+
+      @keyframes reportModalSlide {
+        from {
+          opacity: 0;
+          transform: scale(0.92) translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1) translateY(0);
+        }
+      }
+
+      /* 举报弹窗头部 */
+      .map-report-header {
+        padding: 20px 20px 18px;
+        background: #1a1a1a;
+        border-bottom: 1px solid #2a2a2a;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-shrink: 0;
+      }
+
+      .map-report-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #e5e5e5;
+        margin: 0;
+        letter-spacing: -0.3px;
+      }
+
+      .map-report-close-btn {
+        width: 32px;
+        height: 32px;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: background 0.2s ease;
+        padding: 0;
+        flex-shrink: 0;
+      }
+
+      .map-report-close-btn svg {
+        width: 20px;
+        height: 20px;
+        stroke: #8e8e8e;
+        stroke-width: 2.5;
+        stroke-linecap: round;
+      }
+
+      .map-report-close-btn:hover {
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      .map-report-close-btn:hover svg {
+        stroke: #e5e5e5;
+      }
+
+      .map-report-close-btn:active {
+        background: rgba(255, 255, 255, 0.12);
+      }
+
+      /* 举报弹窗主体 */
+      .map-report-body {
+        padding: 20px;
+        background: #1a1a1a;
+        overflow-y: auto;
+        overflow-x: hidden;
+        flex: 1;
+      }
+
+      .map-report-body::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .map-report-body::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      .map-report-body::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 3px;
+      }
+
+      .map-report-body::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.25);
+      }
+
+      /* 被举报用户信息 */
+      .map-report-user-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 16px;
+        background: #242424;
+        border-radius: 14px;
+        margin-bottom: 24px;
+        border: 1px solid #2a2a2a;
+      }
+
+      .map-report-user-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 1.5px solid #333333;
+        flex-shrink: 0;
+      }
+
+      .map-report-user-details h4 {
+        font-size: 15px;
+        font-weight: 600;
+        color: #e5e5e5;
+        margin: 0 0 4px 0;
+        letter-spacing: -0.2px;
+      }
+
+      .map-report-user-details p {
+        font-size: 13px;
+        color: #8e8e8e;
+        margin: 0;
+      }
+
+      /* 举报表单区块 */
+      .map-report-section {
+        margin-bottom: 24px;
+      }
+
+      .map-report-section:last-child {
+        margin-bottom: 0;
+      }
+
+      .map-report-section-label {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        color: #e5e5e5;
+        margin-bottom: 12px;
+        letter-spacing: -0.1px;
+      }
+
+      /* 举报理由列表 */
+      .map-report-reasons {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .map-report-reason-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 16px;
+        background: #242424;
+        border: 1.5px solid #2a2a2a;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        user-select: none;
+      }
+
+      .map-report-reason-item:hover {
+        background: #2a2a2a;
+        border-color: #3a3a3a;
+      }
+
+      .map-report-reason-item input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+        margin: 0;
+        flex-shrink: 0;
+        appearance: none;
+        -webkit-appearance: none;
+        background: #1a1a1a;
+        border: 2px solid #444444;
+        border-radius: 6px;
+        position: relative;
+        transition: all 0.2s ease;
+      }
+
+      .map-report-reason-item input[type="checkbox"]:checked {
+        background: #fff;
+        border-color: #fff;
+      }
+
+      .map-report-reason-item input[type="checkbox"]:checked::after {
+        content: '';
+        position: absolute;
+        left: 5px;
+        top: 2px;
+        width: 6px;
+        height: 10px;
+        border: solid #000;
+        border-width: 0 2.5px 2.5px 0;
+        transform: rotate(45deg);
+      }
+
+      .map-report-reason-item input[type="checkbox"]:hover {
+        border-color: #666666;
+      }
+
+      .map-report-reason-text {
+        font-size: 14px;
+        color: #e5e5e5;
+        font-weight: 500;
+        letter-spacing: -0.1px;
+      }
+
+      /* 举报描述输入框 */
+      .map-report-textarea {
+        width: 100%;
+        padding: 14px 16px;
+        background: #242424;
+        border: 1.5px solid #2a2a2a;
+        border-radius: 12px;
+        color: #e5e5e5;
+        font-size: 14px;
+        font-family: inherit;
+        line-height: 1.5;
+        resize: vertical;
+        min-height: 100px;
+        transition: all 0.2s ease;
+        box-sizing: border-box;
+      }
+
+      .map-report-textarea::placeholder {
+        color: #666666;
+      }
+
+      .map-report-textarea:focus {
+        outline: none;
+        border-color: #3a3a3a;
+        background: #2a2a2a;
+      }
+
+      .map-report-textarea::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .map-report-textarea::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 3px;
+      }
+
+      /* 举报弹窗底部按钮 */
+      .map-report-actions {
+        padding: 16px 20px;
+        background: #1a1a1a;
+        border-top: 1px solid #2a2a2a;
+        display: flex;
+        gap: 12px;
+        flex-shrink: 0;
+      }
+
+      .map-report-cancel-btn,
+      .map-report-submit-btn {
+        flex: 1;
+        padding: 13px 20px;
+        border: none;
+        border-radius: 12px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .map-report-cancel-btn {
+        background: #2a2a2a;
+        color: #e5e5e5;
+        border: 1.5px solid #3a3a3a;
+      }
+
+      .map-report-cancel-btn:hover {
+        background: #333333;
+        border-color: #444444;
+      }
+
+      .map-report-cancel-btn:active {
+        background: #282828;
+      }
+
+      .map-report-submit-btn {
+        background: #fff;
+        color: #000;
+      }
+
+      .map-report-submit-btn:hover {
+        background: #e5e5e5;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+      }
+
+      .map-report-submit-btn:active {
+        background: #d0d0d0;
+        transform: translateY(0);
+      }
+
+      .map-report-submit-btn:disabled {
+        background: #3a3a3a;
+        color: #666666;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
+
+      /* ==================== 举报详情弹窗 - ins简约风格 ==================== */
+      /* 举报详情遮罩 */
+      .map-report-detail-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 499;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .map-report-detail-overlay.show {
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      /* 举报详情弹窗容器 */
+      .map-report-detail-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: transparent;
+        z-index: 500;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        padding: 20px;
+        box-sizing: border-box;
+      }
+
+      .map-report-detail-modal.show {
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      /* 举报详情内容 */
+      .map-report-detail-content {
+        width: 100%;
+        max-width: 480px;
+        max-height: 90vh;
+        background: #1a1a1a;
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+        animation: reportDetailSlide 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+        display: flex;
+        flex-direction: column;
+      }
+
+      @keyframes reportDetailSlide {
+        from {
+          opacity: 0;
+          transform: scale(0.94) translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1) translateY(0);
+        }
+      }
+
+      /* 举报详情头部 */
+      .map-report-detail-header {
+        padding: 24px 24px 20px;
+        background: #1a1a1a;
+        border-bottom: 1px solid #2a2a2a;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-shrink: 0;
+      }
+
+      .map-report-detail-title {
+        font-size: 20px;
+        font-weight: 700;
+        color: #e5e5e5;
+        margin: 0;
+        letter-spacing: -0.4px;
+      }
+
+      .map-report-detail-close-btn {
+        width: 36px;
+        height: 36px;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: background 0.2s ease;
+        padding: 0;
+        flex-shrink: 0;
+      }
+
+      .map-report-detail-close-btn svg {
+        width: 22px;
+        height: 22px;
+        stroke: #8e8e8e;
+        stroke-width: 2.5;
+        stroke-linecap: round;
+      }
+
+      .map-report-detail-close-btn:hover {
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      .map-report-detail-close-btn:hover svg {
+        stroke: #e5e5e5;
+      }
+
+      .map-report-detail-close-btn:active {
+        background: rgba(255, 255, 255, 0.12);
+      }
+
+      /* 判定结果徽章容器 */
+      .map-report-detail-badge-container {
+        padding: 24px 24px 20px;
+        background: #1a1a1a;
+        display: flex;
+        justify-content: center;
+      }
+
+      .map-report-detail-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 24px;
+        border-radius: 20px;
+        border: 2px solid;
+        animation: badgePulse 0.5s ease;
+      }
+
+      @keyframes badgePulse {
+        0% { transform: scale(0.9); opacity: 0; }
+        60% { transform: scale(1.05); }
+        100% { transform: scale(1); opacity: 1; }
+      }
+
+      .map-report-detail-badge.approved {
+        border-color: #4a4a4a;
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      .map-report-detail-badge.declined {
+        border-color: #4a4a4a;
+        background: rgba(0, 0, 0, 0.1);
+      }
+
+      .map-report-detail-badge-icon {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+      }
+
+      .map-report-detail-badge.approved .map-report-detail-badge-icon::before {
+        content: '';
+        position: absolute;
+        width: 8px;
+        height: 14px;
+        border: solid #e5e5e5;
+        border-width: 0 2.5px 2.5px 0;
+        transform: rotate(45deg);
+        margin-top: -3px;
+      }
+
+      .map-report-detail-badge.declined .map-report-detail-badge-icon::before {
+        content: '';
+        position: absolute;
+        width: 16px;
+        height: 2.5px;
+        background: #e5e5e5;
+        transform: rotate(45deg);
+      }
+
+      .map-report-detail-badge.declined .map-report-detail-badge-icon::after {
+        content: '';
+        position: absolute;
+        width: 16px;
+        height: 2.5px;
+        background: #e5e5e5;
+        transform: rotate(-45deg);
+      }
+
+      .map-report-detail-badge-text {
+        font-size: 16px;
+        font-weight: 700;
+        color: #e5e5e5;
+        letter-spacing: -0.2px;
+      }
+
+      /* 举报详情主体 */
+      .map-report-detail-body {
+        padding: 20px 24px;
+        background: #1a1a1a;
+        overflow-y: auto;
+        overflow-x: hidden;
+        flex: 1;
+      }
+
+      .map-report-detail-body::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .map-report-detail-body::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      .map-report-detail-body::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 3px;
+      }
+
+      .map-report-detail-body::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.25);
+      }
+
+      /* 详情区块 */
+      .map-report-detail-section {
+        margin-bottom: 24px;
+      }
+
+      .map-report-detail-section:last-child {
+        margin-bottom: 0;
+      }
+
+      .map-report-detail-section-label {
+        display: block;
+        font-size: 12px;
+        font-weight: 700;
+        color: #8e8e8e;
+        margin-bottom: 10px;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+      }
+
+      /* 用户卡片 */
+      .map-report-detail-user-card {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 16px;
+        background: #242424;
+        border-radius: 16px;
+        border: 1px solid #2a2a2a;
+      }
+
+      .map-report-detail-user-avatar {
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #333333;
+        flex-shrink: 0;
+      }
+
+      .map-report-detail-user-nickname {
+        font-size: 16px;
+        font-weight: 600;
+        color: #e5e5e5;
+        margin-bottom: 4px;
+        letter-spacing: -0.2px;
+      }
+
+      .map-report-detail-user-handle {
+        font-size: 14px;
+        color: #8e8e8e;
+      }
+
+      /* 举报理由标签 */
+      .map-report-detail-reasons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .map-report-detail-reason-tag {
+        display: inline-flex;
+        align-items: center;
+        padding: 8px 16px;
+        background: #242424;
+        border: 1px solid #3a3a3a;
+        border-radius: 14px;
+        font-size: 13px;
+        font-weight: 500;
+        color: #e5e5e5;
+        letter-spacing: -0.1px;
+      }
+
+      /* 举报描述 */
+      .map-report-detail-description {
+        padding: 16px;
+        background: #242424;
+        border-radius: 16px;
+        border: 1px solid #2a2a2a;
+        font-size: 14px;
+        line-height: 1.6;
+        color: #c0c0c0;
+        letter-spacing: -0.1px;
+      }
+
+      /* AI判定原因 */
+      .map-report-detail-reason {
+        padding: 18px;
+        background: #242424;
+        border-radius: 16px;
+        border: 1px solid #2a2a2a;
+        font-size: 14px;
+        line-height: 1.7;
+        color: #e5e5e5;
+        letter-spacing: -0.1px;
+      }
+
+      /* 举报时间 */
+      .map-report-detail-time {
+        padding: 14px 16px;
+        background: #242424;
+        border-radius: 14px;
+        border: 1px solid #2a2a2a;
+        font-size: 14px;
+        color: #8e8e8e;
+        font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
+      }
+
+      /* 底部按钮 */
+      .map-report-detail-actions {
+        padding: 20px 24px;
+        background: #1a1a1a;
+        border-top: 1px solid #2a2a2a;
+        flex-shrink: 0;
+      }
+
+      .map-report-detail-acknowledge-btn {
+        width: 100%;
+        padding: 15px 24px;
+        border: none;
+        border-radius: 16px;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        background: #fff;
+        color: #000;
+        letter-spacing: -0.2px;
+      }
+
+      .map-report-detail-acknowledge-btn:hover {
+        background: #e5e5e5;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(255, 255, 255, 0.25);
+      }
+
+      .map-report-detail-acknowledge-btn:active {
+        background: #d0d0d0;
+        transform: translateY(0);
+      }
+
+      /* 亮色模式适配 */
+      @media (prefers-color-scheme: light) {
+        .map-report-detail-content,
+        .map-report-detail-header,
+        .map-report-detail-body {
+          background: #ffffff;
+        }
+
+        .map-report-detail-header {
+          border-bottom-color: #e5e5e5;
+        }
+
+        .map-report-detail-title,
+        .map-report-detail-user-nickname,
+        .map-report-detail-badge-text,
+        .map-report-detail-reason {
+          color: #1a1a1a;
+        }
+
+        .map-report-detail-close-btn svg {
+          stroke: #666666;
+        }
+
+        .map-report-detail-close-btn:hover {
+          background: rgba(0, 0, 0, 0.05);
+        }
+
+        .map-report-detail-close-btn:hover svg {
+          stroke: #1a1a1a;
+        }
+
+        .map-report-detail-badge.approved,
+        .map-report-detail-badge.declined {
+          border-color: #d0d0d0;
+          background: #f8f8f8;
+        }
+
+        .map-report-detail-badge.approved .map-report-detail-badge-icon::before {
+          border-color: #1a1a1a;
+        }
+
+        .map-report-detail-badge.declined .map-report-detail-badge-icon::before,
+        .map-report-detail-badge.declined .map-report-detail-badge-icon::after {
+          background: #1a1a1a;
+        }
+
+        .map-report-detail-section-label {
+          color: #666666;
+        }
+
+        .map-report-detail-user-card,
+        .map-report-detail-description,
+        .map-report-detail-reason,
+        .map-report-detail-time {
+          background: #f8f8f8;
+          border-color: #e5e5e5;
+        }
+
+        .map-report-detail-user-avatar {
+          border-color: #d0d0d0;
+        }
+
+        .map-report-detail-user-handle {
+          color: #666666;
+        }
+
+        .map-report-detail-reason-tag {
+          background: #f0f0f0;
+          border-color: #d0d0d0;
+          color: #1a1a1a;
+        }
+
+        .map-report-detail-description {
+          color: #4a4a4a;
+        }
+
+        .map-report-detail-time {
+          color: #666666;
+        }
+
+        .map-report-detail-actions {
+          background: #ffffff;
+          border-top-color: #e5e5e5;
+        }
+
+        .map-report-detail-acknowledge-btn {
+          background: #1a1a1a;
+          color: #ffffff;
+        }
+
+        .map-report-detail-acknowledge-btn:hover {
+          background: #2a2a2a;
+          box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .map-report-detail-acknowledge-btn:active {
+          background: #1a1a1a;
+        }
+      }
+
+      /* ==================== 应用设置弹窗 - 黑白灰简约ins风格 ==================== */
+      /* 应用设置弹窗遮罩 */
+      .map-app-settings-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 399;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .map-app-settings-overlay.show {
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      /* 应用设置弹窗主容器 */
+      .map-app-settings-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: transparent;
+        z-index: 400;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .map-app-settings-modal.show {
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      /* 应用设置内容卡片 - ins风格 */
+      .map-app-settings-content {
+        width: calc(100% - 40px);
+        max-width: 380px;
+        background: #1a1a1a;
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 16px 64px rgba(0, 0, 0, 0.5);
+        animation: appSettingsSlideIn 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+      }
+
+      @keyframes appSettingsSlideIn {
+        from {
+          opacity: 0;
+          transform: scale(0.92) translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1) translateY(0);
+        }
+      }
+
+      /* 应用设置弹窗头部 */
+      .map-app-settings-header {
+        padding: 20px 24px;
+        background: #1a1a1a;
+        border-bottom: 1px solid #2a2a2a;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .map-app-settings-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #e5e5e5;
+        letter-spacing: -0.3px;
+      }
+
+      .map-app-settings-close-btn {
+        width: 32px;
+        height: 32px;
+        background: transparent;
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.15s ease;
+        padding: 0;
+      }
+
+      .map-app-settings-close-btn:hover {
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      .map-app-settings-close-btn:active {
+        background: rgba(255, 255, 255, 0.12);
+      }
+
+      .map-app-settings-close-btn svg {
+        width: 20px;
+        height: 20px;
+        stroke: #e5e5e5;
+        fill: none;
+        stroke-width: 2.5;
+        stroke-linecap: round;
+      }
+
+      /* 应用设置弹窗主体 */
+      .map-app-settings-body {
+        padding: 24px;
+        background: #1a1a1a;
+        max-height: 70vh;
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
+
+      /* 滚动条样式 - 设置弹窗 */
+      .map-app-settings-body::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .map-app-settings-body::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      .map-app-settings-body::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 3px;
+      }
+
+      .map-app-settings-body::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+
+      /* 应用设置项 */
+      .map-app-setting-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 0;
+        border-bottom: 1px solid #2a2a2a;
+      }
+
+      .map-app-setting-item:last-child {
+        border-bottom: none;
+      }
+
+      .map-app-setting-label {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .map-app-setting-label-text {
+        font-size: 16px;
+        font-weight: 600;
+        color: #e5e5e5;
+        letter-spacing: -0.2px;
+      }
+
+      .map-app-setting-label-desc {
+        font-size: 13px;
+        color: #8e8e8e;
+        line-height: 1.4;
+      }
+
+      /* 主题切换开关 - 滑动开关设计 */
+      .map-theme-toggle {
+        position: relative;
+        width: 64px;
+        height: 32px;
+        background: #2a2a2a;
+        border-radius: 16px;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 2px solid #3a3a3a;
+        overflow: hidden;
+      }
+
+      .map-theme-toggle:hover {
+        border-color: #4a4a4a;
+      }
+
+      .map-theme-toggle.light {
+        background: #e5e5e5;
+        border-color: #d0d0d0;
+      }
+
+      .map-theme-toggle.light:hover {
+        border-color: #c0c0c0;
+      }
+
+      /* 滑动圆圈 */
+      .map-theme-toggle-circle {
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 24px;
+        height: 24px;
+        background: #fff;
+        border-radius: 50%;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      }
+
+      .map-theme-toggle.light .map-theme-toggle-circle {
+        left: 34px;
+        background: #000;
+      }
+
+      /* 月亮/太阳图标 */
+      .map-theme-toggle-icon {
+        width: 16px;
+        height: 16px;
+        display: block;
+        flex-shrink: 0;
+      }
+
+      /* 暗色模式：月亮图标（填充） */
+      .map-theme-toggle-icon {
+        fill: #000;
+        stroke: none;
+      }
+
+      /* 亮色模式：太阳图标（描边） */
+      .map-theme-toggle.light .map-theme-toggle-icon {
+        fill: none;
+        stroke: #fff;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      /* ==================== 自定义头像管理 ==================== */
+      .map-app-setting-section {
+        padding: 24px 0 0;
+        border-top: 1px solid #2a2a2a;
+        margin-top: 16px;
+      }
+
+      .map-app-setting-section-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #e5e5e5;
+        letter-spacing: -0.2px;
+        margin-bottom: 4px;
+      }
+
+      .map-app-setting-section-desc {
+        font-size: 13px;
+        color: #8e8e8e;
+        line-height: 1.4;
+        margin-bottom: 16px;
+      }
+
+      .map-avatar-add-form {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .map-avatar-url-input {
+        width: 100%;
+        padding: 12px 16px;
+        background: #0a0a0a;
+        border: 1px solid #2a2a2a;
+        border-radius: 10px;
+        color: #e5e5e5;
+        font-size: 14px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        transition: all 0.2s ease;
+        box-sizing: border-box;
+      }
+
+      .map-avatar-url-input:focus {
+        outline: none;
+        border-color: #4a4a4a;
+        background: #0f0f0f;
+      }
+
+      .map-avatar-url-input::placeholder {
+        color: #666;
+      }
+
+      .map-avatar-category-selector {
+        display: flex;
+        gap: 8px;
+      }
+
+      .map-avatar-category-option {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 16px;
+        background: #0a0a0a;
+        border: 1.5px solid #2a2a2a;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        position: relative;
+      }
+
+      .map-avatar-category-option:hover {
+        border-color: #3a3a3a;
+        background: #0f0f0f;
+      }
+
+      .map-avatar-category-option input[type="radio"] {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .map-avatar-category-option input[type="radio"]:checked + .map-avatar-category-label {
+        color: #000;
+      }
+
+      .map-avatar-category-option:has(input[type="radio"]:checked) {
+        background: #fff;
+        border-color: #fff;
+      }
+
+      .map-avatar-category-label {
+        font-size: 14px;
+        font-weight: 600;
+        color: #8e8e8e;
+        transition: color 0.2s ease;
+      }
+
+      .map-avatar-add-btn {
+        width: 100%;
+        padding: 12px;
+        background: #fff;
+        border: none;
+        border-radius: 10px;
+        color: #000;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .map-avatar-add-btn:hover {
+        background: #f0f0f0;
+        transform: translateY(-1px);
+      }
+
+      .map-avatar-add-btn:active {
+        background: #e0e0e0;
+        transform: translateY(0);
+      }
+
+      .map-avatar-list {
+        margin-top: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        max-height: 300px;
+        overflow-y: auto;
+      }
+
+      .map-avatar-list::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .map-avatar-list::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      .map-avatar-list::-webkit-scrollbar-thumb {
+        background: #2a2a2a;
+        border-radius: 3px;
+      }
+
+      .map-avatar-list::-webkit-scrollbar-thumb:hover {
+        background: #3a3a3a;
+      }
+
+      .map-avatar-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 12px;
+        background: #0a0a0a;
+        border: 1px solid #1a1a1a;
+        border-radius: 10px;
+        transition: all 0.2s ease;
+      }
+
+      .map-avatar-item:hover {
+        background: #0f0f0f;
+        border-color: #2a2a2a;
+      }
+
+      .map-avatar-thumb {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        object-fit: cover;
+        border: 1px solid #2a2a2a;
+        flex-shrink: 0;
+      }
+
+      .map-avatar-info {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .map-avatar-url {
+        font-size: 13px;
+        color: #8e8e8e;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .map-avatar-category-badge {
+        display: inline-block;
+        padding: 2px 8px;
+        background: #1a1a1a;
+        border: 1px solid #2a2a2a;
+        border-radius: 6px;
+        font-size: 11px;
+        font-weight: 600;
+        color: #8e8e8e;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        width: fit-content;
+      }
+
+      .map-avatar-delete-btn {
+        width: 32px;
+        height: 32px;
+        background: transparent;
+        border: 1px solid #2a2a2a;
+        border-radius: 8px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        flex-shrink: 0;
+      }
+
+      .map-avatar-delete-btn:hover {
+        background: #1a1a1a;
+        border-color: #3a3a3a;
+      }
+
+      .map-avatar-delete-btn:active {
+        background: #0a0a0a;
+        transform: scale(0.95);
+      }
+
+      .map-avatar-delete-btn svg {
+        width: 16px;
+        height: 16px;
+        stroke: #e5e5e5;
+        fill: none;
+        stroke-width: 2;
+        stroke-linecap: round;
+      }
+
+      /* 亮色主题覆盖 */
+      #x-map-container.light-theme {
+        /* CSS变量会自动切换 */
+      }
+
+      #x-map-container.light-theme .map-app-settings-content {
+        background: #fff;
+        box-shadow: 0 16px 64px rgba(0, 0, 0, 0.2);
+      }
+
+      #x-map-container.light-theme .map-app-settings-header {
+        background: #fff;
+        border-bottom-color: #efefef;
+      }
+
+      #x-map-container.light-theme .map-app-settings-title {
+        color: #262626;
+      }
+
+      #x-map-container.light-theme .map-app-settings-close-btn svg {
+        stroke: #262626;
+      }
+
+      #x-map-container.light-theme .map-app-settings-close-btn:hover {
+        background: rgba(0, 0, 0, 0.05);
+      }
+
+      #x-map-container.light-theme .map-app-settings-close-btn:active {
+        background: rgba(0, 0, 0, 0.08);
+      }
+
+      #x-map-container.light-theme .map-app-settings-body {
+        background: #fff;
+      }
+
+      /* 滚动条样式 - 日间模式 */
+      #x-map-container.light-theme .map-app-settings-body::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.15);
+      }
+
+      #x-map-container.light-theme .map-app-settings-body::-webkit-scrollbar-thumb:hover {
+        background: rgba(0, 0, 0, 0.25);
+      }
+
+      #x-map-container.light-theme .map-app-setting-item {
+        border-bottom-color: #efefef;
+      }
+
+      #x-map-container.light-theme .map-app-setting-label-text {
+        color: #262626;
+      }
+
+      #x-map-container.light-theme .map-app-setting-label-desc {
+        color: #8e8e8e;
+      }
+
+      /* 亮色主题：自定义头像管理 */
+      #x-map-container.light-theme .map-app-setting-section {
+        border-top-color: #efefef;
+      }
+
+      #x-map-container.light-theme .map-app-setting-section-title {
+        color: #262626;
+      }
+
+      #x-map-container.light-theme .map-avatar-url-input {
+        background: #f5f5f5;
+        border-color: #e0e0e0;
+        color: #262626;
+      }
+
+      #x-map-container.light-theme .map-avatar-url-input:focus {
+        border-color: #c0c0c0;
+        background: #efefef;
+      }
+
+      #x-map-container.light-theme .map-avatar-category-option {
+        background: #f5f5f5;
+        border-color: #e0e0e0;
+      }
+
+      #x-map-container.light-theme .map-avatar-category-option:hover {
+        border-color: #c0c0c0;
+        background: #efefef;
+      }
+
+      #x-map-container.light-theme .map-avatar-category-option:has(input[type="radio"]:checked) {
+        background: #000;
+        border-color: #000;
+      }
+
+      #x-map-container.light-theme .map-avatar-category-option input[type="radio"]:checked + .map-avatar-category-label {
+        color: #fff;
+      }
+
+      #x-map-container.light-theme .map-avatar-add-btn {
+        background: #000;
+        color: #fff;
+      }
+
+      #x-map-container.light-theme .map-avatar-add-btn:hover {
+        background: #262626;
+      }
+
+      #x-map-container.light-theme .map-avatar-add-btn:active {
+        background: #1a1a1a;
+      }
+
+      #x-map-container.light-theme .map-avatar-list::-webkit-scrollbar-thumb {
+        background: #d0d0d0;
+      }
+
+      #x-map-container.light-theme .map-avatar-list::-webkit-scrollbar-thumb:hover {
+        background: #b0b0b0;
+      }
+
+      #x-map-container.light-theme .map-avatar-item {
+        background: #f5f5f5;
+        border-color: #e8e8e8;
+      }
+
+      #x-map-container.light-theme .map-avatar-item:hover {
+        background: #efefef;
+        border-color: #d0d0d0;
+      }
+
+      #x-map-container.light-theme .map-avatar-thumb {
+        border-color: #e0e0e0;
+      }
+
+      #x-map-container.light-theme .map-avatar-url {
+        color: #666;
+      }
+
+      #x-map-container.light-theme .map-avatar-category-badge {
+        background: #e8e8e8;
+        border-color: #d0d0d0;
+        color: #666;
+      }
+
+      #x-map-container.light-theme .map-avatar-delete-btn {
+        border-color: #d0d0d0;
+      }
+
+      #x-map-container.light-theme .map-avatar-delete-btn:hover {
+        background: #e8e8e8;
+        border-color: #c0c0c0;
+      }
+
+      #x-map-container.light-theme .map-avatar-delete-btn:active {
+        background: #d8d8d8;
+      }
+
+      #x-map-container.light-theme .map-avatar-delete-btn svg {
+        stroke: #262626;
+      }
+
+      /* ==================== 亮色主题：提醒功能 - Toast风格 ==================== */
+      #x-map-container.light-theme .map-notifications-badge {
+        background: #000;
+      }
+
+      #x-map-container.light-theme .map-notifications-content {
+        background: #fff;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+      }
+
+      #x-map-container.light-theme .map-notifications-header {
+        background: #fff;
+      }
+
+      #x-map-container.light-theme .map-notifications-title {
+        color: #000;
+      }
+
+      #x-map-container.light-theme .map-notifications-close-btn {
+        background: #f5f5f5;
+      }
+
+      #x-map-container.light-theme .map-notifications-close-btn svg {
+        stroke: #000;
+      }
+
+      #x-map-container.light-theme .map-notifications-close-btn:hover {
+        background: #e8e8e8;
+      }
+
+      #x-map-container.light-theme .map-notifications-close-btn:active {
+        background: #d8d8d8;
+      }
+
+      /* 统计卡片 - 亮色 */
+      #x-map-container.light-theme .map-notifications-stats {
+        background: #f5f5f5;
+      }
+
+      #x-map-container.light-theme .map-notifications-stats-icon {
+        background: #000;
+      }
+
+      #x-map-container.light-theme .map-notifications-stats-icon svg {
+        stroke: #fff;
+      }
+
+      #x-map-container.light-theme .map-notifications-stats-label {
+        color: #666;
+      }
+
+      #x-map-container.light-theme .map-notifications-stats-count {
+        color: #000;
+      }
+
+      /* 分类Tabs - 亮色 */
+      #x-map-container.light-theme .map-notifications-tab {
+        border-color: #e0e0e0;
+        color: #999;
+      }
+
+      #x-map-container.light-theme .map-notifications-tab.active {
+        background: #000;
+        border-color: #000;
+        color: #fff;
+      }
+
+      /* 列表容器 - 亮色 */
+      #x-map-container.light-theme .map-notifications-list-container {
+        background: #fff;
+      }
+
+      #x-map-container.light-theme .map-notifications-list-container::-webkit-scrollbar-thumb {
+        background: #d0d0d0;
+      }
+
+      #x-map-container.light-theme .map-notifications-list-container::-webkit-scrollbar-thumb:hover {
+        background: #b0b0b0;
+      }
+
+      /* 通知项 - 亮色 Toast风格 */
+      #x-map-container.light-theme .map-notification-item {
+        background: #fafafa;
+        border-color: #e8e8e8;
+      }
+
+      #x-map-container.light-theme .map-notification-item:hover {
+        background: #f5f5f5;
+        border-color: #d0d0d0;
+      }
+
+      #x-map-container.light-theme .map-notification-item:active {
+        background: #fafafa;
+      }
+
+      /* 未读标识 - 亮色 */
+      #x-map-container.light-theme .map-notification-item.unread {
+        border-left-color: #000;
+      }
+
+      /* 通知图标 - 亮色 */
+      #x-map-container.light-theme .map-notification-icon {
+        background: #f0f0f0;
+      }
+
+      #x-map-container.light-theme .map-notification-icon svg {
+        stroke: #000;
+      }
+
+      /* 通知文本 - 亮色 */
+      #x-map-container.light-theme .map-notification-title {
+        color: #000;
+      }
+
+      #x-map-container.light-theme .map-notification-time {
+        color: #999;
+      }
+
+      #x-map-container.light-theme .map-notification-content {
+        color: #666;
+      }
+
+      /* 空状态 - 亮色 */
+      #x-map-container.light-theme .map-notifications-empty {
+        background: #fff;
+      }
+
+      #x-map-container.light-theme .map-notifications-empty-icon {
+        background: #f5f5f5;
+      }
+
+      #x-map-container.light-theme .map-notifications-empty-icon svg {
+        stroke: #ccc;
+      }
+
+      #x-map-container.light-theme .map-notifications-empty-text {
+        color: #999;
+      }
+
+      /* ==================== 亮色主题：接收私信确认弹窗 ==================== */
+      #x-map-container.light-theme .map-accept-message-content {
+        background: #fff;
+        box-shadow: 0 12px 48px rgba(0, 0, 0, 0.3);
+      }
+
+      #x-map-container.light-theme .map-accept-message-header {
+        background: #fff;
+      }
+
+      #x-map-container.light-theme .map-accept-message-avatar {
+        border-color: #dbdbdb;
+      }
+
+      #x-map-container.light-theme .map-accept-message-user-info h3 {
+        color: #262626;
+      }
+
+      #x-map-container.light-theme .map-accept-message-text {
+        background: #f5f5f5;
+        color: #262626;
+        border-color: #ebebeb;
+      }
+
+      #x-map-container.light-theme .map-accept-message-text::-webkit-scrollbar-thumb {
+        background: #dbdbdb;
+      }
+
+      #x-map-container.light-theme .map-accept-message-actions {
+        background: #fff;
+        border-top-color: #efefef;
+      }
+
+      #x-map-container.light-theme .map-accept-btn {
+        background: #000;
+        color: #fff;
+      }
+
+      #x-map-container.light-theme .map-accept-btn:hover {
+        background: #1a1a1a;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+      }
+
+      #x-map-container.light-theme .map-accept-btn:active {
+        background: #0a0a0a;
+      }
+
+      #x-map-container.light-theme .map-decline-btn {
+        background: #fff;
+        color: #262626;
+        border-color: #dbdbdb;
+      }
+
+      #x-map-container.light-theme .map-decline-btn:hover {
+        background: #f5f5f5;
+        border-color: #c0c0c0;
+      }
+
+      #x-map-container.light-theme .map-decline-btn:active {
+        background: #ebebeb;
+      }
+
+      /* ==================== 亮色主题：举报弹窗 ==================== */
+      #x-map-container.light-theme .map-report-content {
+        background: #fff;
+        box-shadow: 0 16px 56px rgba(0, 0, 0, 0.25);
+      }
+
+      #x-map-container.light-theme .map-report-header {
+        background: #fff;
+        border-bottom-color: #efefef;
+      }
+
+      #x-map-container.light-theme .map-report-title {
+        color: #262626;
+      }
+
+      #x-map-container.light-theme .map-report-close-btn:hover {
+        background: rgba(0, 0, 0, 0.05);
+      }
+
+      #x-map-container.light-theme .map-report-close-btn:hover svg {
+        stroke: #262626;
+      }
+
+      #x-map-container.light-theme .map-report-close-btn:active {
+        background: rgba(0, 0, 0, 0.08);
+      }
+
+      #x-map-container.light-theme .map-report-body {
+        background: #fff;
+      }
+
+      #x-map-container.light-theme .map-report-body::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.15);
+      }
+
+      #x-map-container.light-theme .map-report-body::-webkit-scrollbar-thumb:hover {
+        background: rgba(0, 0, 0, 0.25);
+      }
+
+      #x-map-container.light-theme .map-report-user-info {
+        background: #f9f9f9;
+        border-color: #efefef;
+      }
+
+      #x-map-container.light-theme .map-report-user-avatar {
+        border-color: #dbdbdb;
+      }
+
+      #x-map-container.light-theme .map-report-user-details h4 {
+        color: #262626;
+      }
+
+      #x-map-container.light-theme .map-report-section-label {
+        color: #262626;
+      }
+
+      #x-map-container.light-theme .map-report-reason-item {
+        background: #f9f9f9;
+        border-color: #efefef;
+      }
+
+      #x-map-container.light-theme .map-report-reason-item:hover {
+        background: #f5f5f5;
+        border-color: #e0e0e0;
+      }
+
+      #x-map-container.light-theme .map-report-reason-item input[type="checkbox"] {
+        background: #fff;
+        border-color: #c0c0c0;
+      }
+
+      #x-map-container.light-theme .map-report-reason-item input[type="checkbox"]:checked {
+        background: #000;
+        border-color: #000;
+      }
+
+      #x-map-container.light-theme .map-report-reason-item input[type="checkbox"]:checked::after {
+        border-color: #fff;
+      }
+
+      #x-map-container.light-theme .map-report-reason-item input[type="checkbox"]:hover {
+        border-color: #8e8e8e;
+      }
+
+      #x-map-container.light-theme .map-report-reason-text {
+        color: #262626;
+      }
+
+      #x-map-container.light-theme .map-report-textarea {
+        background: #f9f9f9;
+        border-color: #efefef;
+        color: #262626;
+      }
+
+      #x-map-container.light-theme .map-report-textarea::placeholder {
+        color: #8e8e8e;
+      }
+
+      #x-map-container.light-theme .map-report-textarea:focus {
+        border-color: #e0e0e0;
+        background: #f5f5f5;
+      }
+
+      #x-map-container.light-theme .map-report-textarea::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.15);
+      }
+
+      #x-map-container.light-theme .map-report-actions {
+        background: #fff;
+        border-top-color: #efefef;
+      }
+
+      #x-map-container.light-theme .map-report-cancel-btn {
+        background: #fff;
+        color: #262626;
+        border-color: #dbdbdb;
+      }
+
+      #x-map-container.light-theme .map-report-cancel-btn:hover {
+        background: #f5f5f5;
+        border-color: #c0c0c0;
+      }
+
+      #x-map-container.light-theme .map-report-cancel-btn:active {
+        background: #ebebeb;
+      }
+
+      #x-map-container.light-theme .map-report-submit-btn {
+        background: #000;
+        color: #fff;
+      }
+
+      #x-map-container.light-theme .map-report-submit-btn:hover {
+        background: #1a1a1a;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      }
+
+      #x-map-container.light-theme .map-report-submit-btn:active {
+        background: #0a0a0a;
+      }
+
+      #x-map-container.light-theme .map-report-submit-btn:disabled {
+        background: #dbdbdb;
+        color: #8e8e8e;
+      }
+
+      /* ==================== 亮色主题：侧边栏 ==================== */
+      #x-map-container.light-theme .map-sidebar {
+        box-shadow: 2px 0 8px rgba(0,0,0,0.15);
+      }
+
+      #x-map-container.light-theme .map-user-list::-webkit-scrollbar-thumb {
+        background: #d0d0d0;
+      }
+
+      #x-map-container.light-theme .map-user-list::-webkit-scrollbar-thumb:hover {
+        background: #b0b0b0;
+      }
+
+      /* 亮色主题下的按钮颜色调整 */
+      #x-map-container.light-theme .map-app-settings-btn svg,
+      #x-map-container.light-theme .map-notifications-btn svg,
+      #x-map-container.light-theme .map-chats-btn svg,
+      #x-map-container.light-theme .map-close-btn svg {
+        stroke: #000;
+        filter: drop-shadow(0 1px 3px rgba(255,255,255,0.6));
+      }
+
+      #x-map-container.light-theme .map-refresh-btn svg {
+        fill: #000;
+        filter: drop-shadow(0 1px 3px rgba(255,255,255,0.6));
+      }
+
+      #x-map-container.light-theme .map-notifications-badge {
+        background: #fff;
+        color: #000;
+        border: 2px solid rgba(255, 255, 255, 0.8);
+      }
+
+      /* ==================== 亮色主题：地图控制和标记 ==================== */
+      #x-map-container.light-theme .map-control-btn {
+        background: #fff;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      }
+
+      #x-map-container.light-theme .map-control-btn:active {
+        background: #e8e8e8;
+      }
+
+      #x-map-container.light-theme .map-control-btn svg {
+        fill: #000;
+      }
+
+      #x-map-container.light-theme .map-weather-info {
+        background: #fff;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      }
+
+      #x-map-container.light-theme .landmark-label {
+        background: rgba(0, 0, 0, 0.15);
+        color: #000;
+        border: 1px solid rgba(0, 0, 0, 0.3);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15),
+                    0 2px 8px rgba(0, 0, 0, 0.1),
+                    inset 0 1px 0 rgba(0, 0, 0, 0.1),
+                    inset 0 -1px 0 rgba(255, 255, 255, 0.3);
+      }
+
+      #x-map-container.light-theme .landmark-label::after {
+        border-top: 5px solid rgba(0, 0, 0, 0.15);
+      }
+
+      #x-map-container.light-theme .marker-status-bubble {
+        background: #fff;
+        color: #000;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      }
+
+      #x-map-container.light-theme .marker-status-bubble::after {
+        border-top: 5px solid #fff;
+      }
+
+      #x-map-container.light-theme .map-swipe-hint {
+        background: rgba(255,255,255,0.9);
+        color: #000;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      }
+
+      #x-map-container.light-theme .marker-avatar {
+        border: 3px solid #000;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15), inset 0 -2px 4px rgba(0,0,0,0.1);
+      }
+
+      #x-map-container.light-theme .map-marker:hover .marker-avatar {
+        box-shadow: 0 6px 20px rgba(29,155,240,0.6), inset 0 -2px 4px rgba(0,0,0,0.1);
+      }
+
+      #x-map-container.light-theme .marker-container::after {
+        background: radial-gradient(ellipse at center, rgba(0,0,0,0.15) 0%, transparent 70%);
+      }
+
+      /* ==================== 亮色主题：用户详情卡片 ==================== */
+      #x-map-container.light-theme .map-user-detail-card {
+        background: #fff;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+      }
+
+      #x-map-container.light-theme .card-header {
+        background: #fff;
+      }
+
+      #x-map-container.light-theme .card-back-btn svg {
+        stroke: #000;
+      }
+
+      #x-map-container.light-theme .card-header-nickname {
+        color: #000;
+      }
+
+      #x-map-container.light-theme .card-action-btn svg {
+        stroke: #000;
+      }
+
+      #x-map-container.light-theme .card-avatar-section {
+        background: #fff;
+      }
+
+      #x-map-container.light-theme .card-avatar {
+        border: 3px solid #e0e0e0;
+      }
+
+      #x-map-container.light-theme .card-avatar-bubble {
+        background: #a0a0a0;
+      }
+
+      #x-map-container.light-theme .card-user-info {
+        color: #000;
+      }
+
+      #x-map-container.light-theme .card-handle {
+        color: #666;
+      }
+
+      #x-map-container.light-theme .card-stat-item::after {
+        background: #e0e0e0;
+      }
+
+      #x-map-container.light-theme .card-stat-value {
+        color: #000;
+      }
+
+      #x-map-container.light-theme .card-stat-label {
+        color: #666;
+      }
+
+      #x-map-container.light-theme .card-btn-message {
+        background: #f0f0f0;
+        color: #000;
+      }
+
+      #x-map-container.light-theme .card-btn-message:hover {
+        background: #e0e0e0;
+      }
+
+      #x-map-container.light-theme .card-btn-secondary {
+        background: #f0f0f0;
+        color: #000;
+      }
+
+      #x-map-container.light-theme .card-btn-secondary:hover {
+        background: #e0e0e0;
+      }
+
+      #x-map-container.light-theme .card-bio-section {
+        background: #fff;
+      }
+
+      #x-map-container.light-theme .card-bio {
+        color: #000;
+      }
+
+      #x-map-container.light-theme .card-tag {
+        background: #f0f0f0;
+        color: #000;
+        border: 1px solid #d0d0d0;
+      }
+
+      #x-map-container.light-theme .card-distance-info {
+        color: #666;
+      }
+
+      #x-map-container.light-theme .card-distance-info svg {
+        stroke: #666;
+      }
+
+      /* ==================== 亮色主题：评价/留言区 ==================== */
+      #x-map-container.light-theme .card-reviews-section {
+        background: #fff;
+      }
+
+      #x-map-container.light-theme .reviews-header {
+        background: #fff;
+      }
+
+      #x-map-container.light-theme .reviews-back-btn svg {
+        stroke: #000;
+      }
+
+      #x-map-container.light-theme .reviews-title {
+        color: #000;
+      }
+
+      #x-map-container.light-theme .reviews-summary {
+        background: #f5f5f5;
+      }
+
+      #x-map-container.light-theme .reviews-rating-number {
+        color: #000;
+      }
+
+      #x-map-container.light-theme .reviews-rating-max {
+        color: #999;
+      }
+
+      #x-map-container.light-theme .reviews-count {
+        color: #666;
+      }
+
+      #x-map-container.light-theme .review-item {
+        background: #f5f5f5;
+      }
+
+      #x-map-container.light-theme .review-name {
+        color: #000;
+      }
+
+      #x-map-container.light-theme .review-rating {
+        background: #e0e0e0;
+      }
+
+      #x-map-container.light-theme .review-time {
+        color: #999;
+      }
+
+      #x-map-container.light-theme .review-content {
+        color: #333;
+      }
+
+      #x-map-container.light-theme .review-reply-icon {
+        color: #999;
+      }
+
+      #x-map-container.light-theme .review-reply-label {
+        color: #000;
+      }
+
+      #x-map-container.light-theme .review-reply-content {
+        color: #666;
+      }
+
+      #x-map-container.light-theme .review-action-btn {
+        color: #999;
+      }
+
+      #x-map-container.light-theme .reviews-empty-text {
+        color: #999;
+      }
+
+      /* ==================== 亮色主题：地图设置弹窗 ==================== */
+      #x-map-container.light-theme .map-settings-modal {
+        background: rgba(0, 0, 0, 0.4);
+      }
+
+      #x-map-container.light-theme .map-settings-content {
+        background: #fff;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      }
+
+      #x-map-container.light-theme .map-settings-header {
+        background: #fff;
+        border-bottom: 1px solid #e0e0e0;
+      }
+
+      #x-map-container.light-theme .map-settings-back-btn:hover {
+        background: rgba(0, 0, 0, 0.05);
+      }
+
+      #x-map-container.light-theme .map-settings-back-btn svg {
+        stroke: #000;
+      }
+
+      #x-map-container.light-theme .map-settings-title {
+        color: #000;
+      }
+
+      #x-map-container.light-theme .map-settings-body::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.2);
+      }
+
+      #x-map-container.light-theme .map-settings-section-title {
+        color: rgba(0, 0, 0, 0.6);
+      }
+
+      #x-map-container.light-theme .map-settings-item {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      }
+
+      #x-map-container.light-theme .map-settings-item-label {
+        color: #000;
+      }
+
+      #x-map-container.light-theme .map-settings-item-desc {
+        color: rgba(0, 0, 0, 0.5);
+      }
+
+      #x-map-container.light-theme .map-settings-toggle-label {
+        background: rgba(0, 0, 0, 0.15);
+      }
+
+      #x-map-container.light-theme .map-settings-toggle-label::after {
+        background: #000;
+      }
+
+      #x-map-container.light-theme .map-settings-input {
+        background: rgba(0, 0, 0, 0.05);
+        border: 1px solid rgba(0, 0, 0, 0.15);
+        color: #000;
+      }
+
+      #x-map-container.light-theme .map-settings-input::placeholder {
+        color: rgba(0, 0, 0, 0.4);
+      }
+
+      #x-map-container.light-theme .map-settings-input:focus {
+        background: rgba(0, 0, 0, 0.08);
+      }
+
+      #x-map-container.light-theme .map-settings-tags-container {
+        background: rgba(0, 0, 0, 0.03);
+      }
+
+      #x-map-container.light-theme .map-settings-add-tag-btn {
+        background: rgba(0, 0, 0, 0.05);
+        border: 1px dashed rgba(0, 0, 0, 0.25);
+        color: rgba(0, 0, 0, 0.7);
+      }
+
+      #x-map-container.light-theme .map-settings-add-tag-btn:hover {
+        background: rgba(0, 0, 0, 0.08);
+        border-color: rgba(0, 0, 0, 0.4);
+        color: #000;
+      }
+
+      /* ==================== 亮色主题：社交圈弹窗 ==================== */
+      #x-map-container.light-theme .map-social-circle-modal {
+        background: rgba(0, 0, 0, 0.4);
+      }
+
+      #x-map-container.light-theme .map-social-circle-content {
+        background: #fff;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      }
+
+      #x-map-container.light-theme .map-social-circle-header {
+        border-bottom: 1px solid #e0e0e0;
+      }
+
+      #x-map-container.light-theme .map-social-circle-back-btn {
+        background: rgba(0, 0, 0, 0.05);
+      }
+
+      #x-map-container.light-theme .map-social-circle-back-btn:hover {
+        background: rgba(0, 0, 0, 0.1);
+      }
+
+      #x-map-container.light-theme .map-social-circle-back-btn svg {
+        stroke: #000;
+      }
+
+      #x-map-container.light-theme .map-social-circle-title {
+        color: #000;
+      }
+
+      #x-map-container.light-theme .map-social-circle-body::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.2);
+      }
+
+      #x-map-container.light-theme .map-social-circle-empty svg {
+        color: rgba(0, 0, 0, 0.3);
+      }
+
+      #x-map-container.light-theme .map-social-circle-empty-text {
+        color: rgba(0, 0, 0, 0.8);
+      }
+
+      #x-map-container.light-theme .map-social-circle-empty-desc {
+        color: rgba(0, 0, 0, 0.5);
+      }
+
+      #x-map-container.light-theme .map-social-circle-friend-card {
+        background: rgba(0, 0, 0, 0.03);
+        border: 1px solid rgba(0, 0, 0, 0.1);
+      }
+
+      #x-map-container.light-theme .map-social-circle-friend-card:hover {
+        background: rgba(0, 0, 0, 0.05);
+        border-color: rgba(0, 0, 0, 0.15);
+      }
+
+      #x-map-container.light-theme .map-social-circle-friend-name {
+        color: #000;
+      }
+
+      #x-map-container.light-theme .map-social-circle-friend-handle {
+        color: rgba(0, 0, 0, 0.5);
+      }
+
+      #x-map-container.light-theme .map-social-circle-friend-relationship {
+        background: rgba(0, 0, 0, 0.08);
+        color: rgba(0, 0, 0, 0.8);
+      }
+
+      #x-map-container.light-theme .map-social-circle-friend-bio {
+        color: rgba(0, 0, 0, 0.7);
+      }
+
+      #x-map-container.light-theme .map-social-circle-friend-stat {
+        color: rgba(0, 0, 0, 0.5);
+      }
+
+      #x-map-container.light-theme .map-social-circle-friend-stat-value {
+        color: rgba(0, 0, 0, 0.8);
+      }
+
+      /* ==================== 亮色主题：聊天弹窗 ==================== */
+      #x-map-container.light-theme .map-chat-modal {
+        background: #fff;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      }
+
+      #x-map-container.light-theme .map-chat-header {
+        background: #fff;
+        border-bottom: 1px solid #e0e0e0;
+      }
+
+      #x-map-container.light-theme .map-chat-back-btn svg {
+        stroke: #000;
+      }
+
+      #x-map-container.light-theme .map-chat-user-name {
+        color: #000;
+      }
+
+      #x-map-container.light-theme .map-chat-more-btn svg {
+        fill: #000;
+      }
+
+      #x-map-container.light-theme .map-chat-more-menu {
+        background: #fff;
+        border: 1px solid #e0e0e0;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+      }
+
+      #x-map-container.light-theme .map-chat-more-menu-item {
+        color: #333;
+      }
+
+      #x-map-container.light-theme .map-chat-more-menu-item:hover {
+        background: #f5f5f5;
+      }
+
+      #x-map-container.light-theme .map-chat-messages {
+        background: #fff;
+      }
+
+      #x-map-container.light-theme .map-chat-messages::-webkit-scrollbar-thumb {
+        background: #d0d0d0;
+      }
+
+      #x-map-container.light-theme .map-chat-timestamp {
+        color: #999;
+      }
+
+      #x-map-container.light-theme .map-chat-message-row.received .map-chat-bubble {
+        background: #fff;
+        border: 1px solid #000;
+        color: #000;
+      }
+
+      #x-map-container.light-theme .map-chat-message-row.sent .map-chat-bubble {
+        background: #e0e0e0;
+        color: #000;
+      }
+
+      /* 表情包样式 - light theme（保持一致，无需额外样式） */
+
+      /* 图片消息卡片 - light theme */
+      #x-map-container.light-theme .map-chat-image-card {
+        background: #fff;
+        border: 1px solid #d0d0d0;
+      }
+
+      #x-map-container.light-theme .map-chat-image-card:hover {
+        border-color: #b0b0b0;
+      }
+
+      #x-map-container.light-theme .map-chat-message-row.sent .map-chat-image-card {
+        background: #f5f5f5;
+        border: 1px solid #d0d0d0;
+      }
+
+      /* 图片占位符 - light theme */
+      #x-map-container.light-theme .map-chat-image-placeholder {
+        background: linear-gradient(135deg, #f8f8f8 0%, #e8e8e8 100%);
+      }
+
+      #x-map-container.light-theme .map-chat-image-card:hover .map-chat-image-placeholder {
+        background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
+      }
+
+      /* 图片图标 - light theme */
+      #x-map-container.light-theme .map-chat-image-icon {
+        fill: #aaa;
+      }
+
+      #x-map-container.light-theme .map-chat-image-card:hover .map-chat-image-icon {
+        fill: #888;
+      }
+
+      /* 图片描述文字 - light theme */
+      #x-map-container.light-theme .map-chat-image-desc {
+        color: #666;
+      }
+
+      #x-map-container.light-theme .map-chat-image-card:hover .map-chat-image-desc {
+        color: #444;
+      }
+
+      /* 配图文字 - light theme */
+      #x-map-container.light-theme .map-chat-image-caption {
+        color: #000;
+        background: rgba(0, 0, 0, 0.02);
+        border-top: 1px solid rgba(0, 0, 0, 0.08);
+      }
+
+      /* 🚨 系统消息 - light theme */
+      #x-map-container.light-theme .map-chat-system-message {
+        background: rgba(0, 0, 0, 0.03);
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-left-color: #000;
+      }
+
+      #x-map-container.light-theme .map-chat-system-message-icon {
+        color: #000;
+      }
+
+      #x-map-container.light-theme .map-chat-system-message-text {
+        color: #262626;
+      }
+
+      #x-map-container.light-theme .map-chat-footer {
+        background: #fff;
+        border-top: 1px solid #e0e0e0;
+      }
+
+      #x-map-container.light-theme .map-chat-add-btn svg {
+        stroke: #000;
+      }
+
+      #x-map-container.light-theme .map-chat-add-btn:hover {
+        background: rgba(0, 0, 0, 0.05);
+      }
+
+      #x-map-container.light-theme .map-chat-input {
+        background: #f5f5f5;
+        border: 1px solid #d0d0d0;
+        color: #000;
+      }
+
+      #x-map-container.light-theme .map-chat-input:focus {
+        border-color: #aaa;
+      }
+
+      #x-map-container.light-theme .map-chat-input::placeholder {
+        color: #999;
+      }
+
+      #x-map-container.light-theme .map-chat-like-btn svg {
+        fill: #000;
+      }
+
+      #x-map-container.light-theme .map-chat-like-btn:hover {
+        background: rgba(0, 0, 0, 0.05);
+      }
+
+      #x-map-container.light-theme .map-chat-overlay {
+        background: rgba(0, 0, 0, 0.5);
+      }
+
+      #x-map-container.light-theme .map-chat-function-item {
+        background: #f0f0f0;
+        border: 1px solid #d0d0d0;
+        color: #666;
+      }
+
+      #x-map-container.light-theme .map-chat-function-item:hover {
+        background: #e0e0e0;
+      }
+
+      /* ==================== 亮色主题：笔记弹窗 ==================== */
+      #x-map-container.light-theme .map-notes-overlay {
+        background: rgba(0, 0, 0, 0.5);
+      }
+
+      #x-map-container.light-theme .map-notes-modal {
+        background: #fff;
+        border: 1px solid #d0d0d0;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      }
+
+      #x-map-container.light-theme .map-notes-header {
+        border-bottom: 1px solid #e0e0e0;
+      }
+
+      #x-map-container.light-theme .map-notes-main-tabs {
+        background: #f0f0f0;
+      }
+
+      #x-map-container.light-theme .map-notes-main-tab {
+        color: #666;
+      }
+
+      #x-map-container.light-theme .map-notes-main-tab:hover {
+        color: #333;
+      }
+
+      #x-map-container.light-theme .map-notes-main-tab.active {
+        background: #fff;
+        color: #000;
+      }
+
+      #x-map-container.light-theme .map-notes-close {
+        color: #666;
+      }
+
+      #x-map-container.light-theme .map-notes-close:hover {
+        background: #f0f0f0;
+        color: #000;
+      }
+
+      #x-map-container.light-theme .map-notes-tabs {
+        border-bottom: 1px solid #e0e0e0;
+      }
+
+      #x-map-container.light-theme .map-notes-tab {
+        border: 1px solid #d0d0d0;
+        color: #666;
+      }
+
+      #x-map-container.light-theme .map-notes-empty {
+        color: #999;
+      }
+
+      #x-map-container.light-theme .map-notes-empty svg {
+        color: #d0d0d0;
+      }
+
+      #x-map-container.light-theme .map-notes-empty p {
+        color: #666;
+      }
+
+      #x-map-container.light-theme .map-notes-empty span {
+        color: #999;
+      }
+
+      #x-map-container.light-theme .map-notes-item {
+        border-bottom: 1px solid #e0e0e0;
+      }
+
+      #x-map-container.light-theme .map-notes-item-category {
+        color: #000;
+      }
+
+      #x-map-container.light-theme .map-notes-item-time {
+        color: #999;
+      }
+
+      #x-map-container.light-theme .map-notes-item-text {
+        color: #333;
+      }
+
+      #x-map-container.light-theme .map-notes-item-action {
+        border: 1px solid #d0d0d0;
+        color: #666;
+      }
+
+      #x-map-container.light-theme .map-notes-picker-overlay {
+        background: rgba(0, 0, 0, 0.3);
+      }
+
+      #x-map-container.light-theme .map-notes-picker {
+        background: #fff;
+        border: 1px solid #d0d0d0;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      }
+
+      #x-map-container.light-theme .map-notes-picker-header {
+        border-bottom: 1px solid #d0d0d0;
+        color: #000;
+      }
+
+      #x-map-container.light-theme .map-notes-picker-item {
+        border-bottom: 1px solid #e0e0e0;
+        color: #333;
+      }
+
+      #x-map-container.light-theme .map-notes-picker-item:hover {
+        background: #f5f5f5;
+      }
+
+      /* ==================== 亮色主题：聊天列表弹窗 ==================== */
+      #x-map-container.light-theme .map-chats-list-overlay {
+        background: rgba(0, 0, 0, 0.5);
+      }
+
+      #x-map-container.light-theme .map-chats-list-modal {
+        background: #fff;
+        border: 1px solid #d0d0d0;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      }
+
+      #x-map-container.light-theme .map-chats-list-header {
+        border-bottom: 1px solid #e0e0e0;
+      }
+
+      #x-map-container.light-theme .map-chats-list-title {
+        color: #000;
+      }
+
+      #x-map-container.light-theme .map-chats-list-close {
+        color: #666;
+      }
+
+      #x-map-container.light-theme .map-chats-list-close:hover {
+        background: #f0f0f0;
+        color: #000;
+      }
+
+      #x-map-container.light-theme .map-chats-list-content::-webkit-scrollbar-thumb {
+        background: #d0d0d0;
+      }
+
+      #x-map-container.light-theme .map-chats-list-empty {
+        color: #999;
+      }
+
+      #x-map-container.light-theme .map-chats-list-empty svg {
+        color: #d0d0d0;
+      }
+
+      #x-map-container.light-theme .map-chats-list-empty p {
+        color: #666;
+      }
+
+      #x-map-container.light-theme .map-chats-list-empty span {
+        color: #999;
+      }
+
+      #x-map-container.light-theme .map-chats-list-item {
+        background: #f5f5f5;
+        border: 1px solid #d0d0d0;
+      }
+
+      #x-map-container.light-theme .map-chats-list-item:hover {
+        background: #ebebeb;
+      }
+
+      #x-map-container.light-theme .map-chats-list-item-avatar {
+        background: #d0d0d0;
+      }
+
+      #x-map-container.light-theme .map-chats-list-item-name {
+        color: #000;
+      }
+
+      #x-map-container.light-theme .map-chats-list-item-preview {
+        color: #666;
+      }
+
+      #x-map-container.light-theme .map-chats-list-item-delete {
+        color: #999;
+      }
+
+      /* ==================== 亮色主题：指定筛选弹窗 ==================== */
+      #x-map-container.light-theme .map-advanced-filter-overlay {
+        background: rgba(0, 0, 0, 0.4);
+      }
+
+      #x-map-container.light-theme .map-advanced-filter-modal {
+        background: #fff;
+        border: 1px solid #d0d0d0;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+      }
+
+      #x-map-container.light-theme .map-advanced-filter-header {
+        border-bottom: 1px solid #e0e0e0;
+      }
+
+      #x-map-container.light-theme .map-advanced-filter-title {
+        color: #000;
+      }
+
+      #x-map-container.light-theme .map-advanced-filter-close {
+        color: #666;
+      }
+
+      #x-map-container.light-theme .map-advanced-filter-close:hover {
+        background: #f0f0f0;
+        color: #000;
+      }
+
+      #x-map-container.light-theme .map-filter-label {
+        color: #333;
+      }
+
+      #x-map-container.light-theme .map-filter-radio input[type="radio"] {
+        border: 2px solid #d0d0d0;
+      }
+
+      #x-map-container.light-theme .map-filter-radio span {
+        color: #000;
+      }
+
+      #x-map-container.light-theme .map-filter-input {
+        background: #f5f5f5;
+        border: 1px solid #d0d0d0;
+        color: #000;
+      }
+
+      #x-map-container.light-theme .map-filter-input:focus {
+        background: #fff;
+      }
+
+      #x-map-container.light-theme .map-filter-separator {
+        color: #666;
+      }
+
+      #x-map-container.light-theme .map-filter-textarea {
+        background: #f5f5f5;
+        border: 1px solid #d0d0d0;
+        color: #000;
+      }
+
+      #x-map-container.light-theme .map-filter-textarea:focus {
+        background: #fff;
+      }
+
+      #x-map-container.light-theme .map-filter-textarea::placeholder,
+      #x-map-container.light-theme .map-filter-input::placeholder {
+        color: #999;
+      }
+
+      #x-map-container.light-theme .map-advanced-filter-footer {
+        border-top: 1px solid #e0e0e0;
+      }
+
+      #x-map-container.light-theme .map-advanced-filter-btn-cancel {
+        color: #666;
+        border: 1px solid #d0d0d0;
+      }
+
+      #x-map-container.light-theme .map-advanced-filter-btn-cancel:hover {
+        background: #f0f0f0;
+        color: #333;
+      }
+
+      #x-map-container.light-theme .map-advanced-filter-btn-clear {
+        background: #f0f0f0;
+        color: #000;
+      }
+
+      #x-map-container.light-theme .map-advanced-filter-btn-clear:hover {
+        background: #e0e0e0;
+      }
+
+      .map-controls {
+        position: absolute;
+        top: 80px;
+        right: 20px;
+        z-index: 10;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .map-control-btn {
+        width: 40px;
+        height: 40px;
+        background: #1a1a1a;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        transition: all 0.2s;
+        position: relative;
+      }
+
+      .map-control-btn:active {
+        transform: scale(0.95);
+        background: #2a2a2a;
+      }
+
+      .map-control-btn:hover::after {
+        content: attr(title);
+        position: absolute;
+        right: calc(100% + 8px);
+        background: rgba(0,0,0,0.8);
+        color: #fff;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        white-space: nowrap;
+        pointer-events: none;
+      }
+
+      .map-control-btn svg {
+        width: 20px;
+        height: 20px;
+        fill: #e5e5e5;
+        transition: fill 0.2s;
+      }
+
+      .map-control-btn:active svg {
+        fill: #1d9bf0;
+      }
+
+      .map-canvas {
+        position: absolute;
+        width: 300%;
+        height: 300%;
+        top: 0;
+        left: 0;
+        background: var(--map-bg-primary);
+        cursor: grab;
+        transition: none;
+        will-change: transform;
+        transform-origin: 0 0;
+      }
+
+      .map-canvas:active {
+        cursor: grabbing;
+      }
+
+      #mapCanvasBg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+      }
+
+      /* ==================== 地标标签 ==================== */
+      .landmark-label {
+        position: absolute;
+        /* 液态玻璃磨砂效果 - ins风格 */
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        color: #ffffff;
+        padding: 6px 14px;
+        border-radius: 18px;
+        font-size: 12px;
+        font-weight: 600;
+        white-space: nowrap;
+        pointer-events: none;
+        transform: translate(-50%, -100%);
+        margin-top: -10px;
+        /* 玻璃质感阴影：外阴影 + 内阴影 */
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2),
+                    0 2px 8px rgba(0, 0, 0, 0.15),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+                    inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        opacity: 0;
+        transform: translate(-50%, -100%) scale(0.85);
+        transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                    transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      .landmark-label.visible {
+        opacity: 1;
+        transform: translate(-50%, -100%) scale(1);
+      }
+
+      .landmark-label-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 16px;
+        height: 16px;
+        margin-right: 6px;
+        flex-shrink: 0;
+      }
+
+      .landmark-label-icon svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+
+      .landmark-label::after {
+        content: '';
+        position: absolute;
+        bottom: -5px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 0;
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-top: 5px solid rgba(255, 255, 255, 0.15);
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+      }
+
+      .map-marker {
+        position: absolute;
+        cursor: pointer;
+        transition: opacity 0.3s, transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 5;
+        transform-origin: center center;
+        pointer-events: auto;
+      }
+
+      .map-marker:active {
+        transform: scale(0.95);
+        z-index: 6;
+      }
+
+      .marker-container {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+      }
+
+      .marker-avatar {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        border: 3px solid #fff;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3), inset 0 -2px 4px rgba(0,0,0,0.2);
+        object-fit: cover;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        z-index: 2;
+      }
+
+      .map-marker:hover .marker-avatar {
+        border-color: #1d9bf0;
+        box-shadow: 0 6px 20px rgba(29,155,240,0.6), inset 0 -2px 4px rgba(0,0,0,0.2);
+        transform: scale(1.05);
+      }
+
+      .marker-container::after {
+        content: '';
+        position: absolute;
+        bottom: -6px;
+        width: 50px;
+        height: 12px;
+        background: radial-gradient(ellipse at center, rgba(0,0,0,0.4) 0%, transparent 70%);
+        border-radius: 50%;
+        z-index: 1;
+        transition: all 0.3s;
+      }
+
+      .map-marker:hover .marker-container::after {
+        transform: scale(1.2);
+        opacity: 0.6;
+      }
+
+      .marker-pulse {
+        position: absolute;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: rgba(29,155,240,0.3);
+        animation: mapPulse 2s infinite;
+        z-index: 1;
+      }
+
+      @keyframes mapPulse {
+        0% { transform: scale(1); opacity: 0.6; }
+        50% { transform: scale(1.5); opacity: 0.2; }
+        100% { transform: scale(1); opacity: 0.6; }
+      }
+
+      /* 用户自己的标记 - 简洁设计 */
+      .map-marker.current-user {
+        z-index: 10;
+      }
+
+      .map-marker.current-user .marker-avatar {
+        width: 44px;
+        height: 44px;
+        /* border颜色通过内联样式动态设置（使用主题色） */
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3), inset 0 -2px 4px rgba(0,0,0,0.2);
+      }
+
+      /* ==================== 气泡状态设计 ==================== */
+      .marker-status-bubble {
+        position: absolute;
+        top: -35px;
+        left: 50%;
+        transform: translateX(-50%) scale(0);
+        background: #1a1a1a;
+        color: #e5e5e5;
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+        white-space: nowrap;
+        pointer-events: none;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        opacity: 0;
+        transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                    transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        z-index: 3;
+      }
+
+      .marker-status-bubble::after {
+        content: '';
+        position: absolute;
+        bottom: -4px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 0;
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-top: 5px solid #1a1a1a;
+      }
+
+      .marker-status-bubble.visible {
+        opacity: 1;
+        transform: translateX(-50%) scale(1);
+      }
+
+      /* ==================== 用户详情卡片 - TikTok风格 ==================== */
+      .map-user-detail-card {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: calc(100% - 40px);
+        max-width: 420px;
+        max-height: calc(100% - 60px);
+        background: #000;
+        border-radius: 0;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+        overflow-y: auto;
+        z-index: 350; /* 修正：提高层级，在聊天弹窗(300)之上，确认弹窗(400)之下 */
+        animation: mapCardZoomIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        -webkit-overflow-scrolling: touch;
+        display: none;
+      }
+
+      .map-user-detail-card.active {
+        display: block;
+      }
+
+      @keyframes mapCardZoomIn {
+        from { transform: translate(-50%, -50%) scale(0.95); opacity: 0; }
+        to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+      }
+
+      /* TikTok风格顶部Header区域 */
+      .card-header {
+        position: relative;
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #000;
+      }
+
+      /* 返回按钮 - 左侧，有实际功能 */
+      .card-back-btn {
+        width: 72px;
+        height: 32px;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        transition: opacity 0.2s;
+        padding: 0;
+      }
+
+      .card-back-btn:hover {
+        opacity: 0.6;
+      }
+
+      .card-back-btn svg {
+        width: 24px;
+        height: 24px;
+        stroke: #fff;
+        fill: none;
+        stroke-width: 2;
+      }
+
+      /* 中间昵称区域 */
+      .card-header-center {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+      }
+
+      .card-header-nickname {
+        font-size: 16px;
+        font-weight: 700;
+        color: #fff;
+      }
+
+      .card-header-verified {
+        width: 16px;
+        height: 16px;
+        color: #0095f6;
+        flex-shrink: 0;
+      }
+
+      /* 右侧装饰按钮组 */
+      .card-header-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .card-action-btn {
+        width: 32px;
+        height: 32px;
+        background: transparent;
+        border: none;
+        cursor: default;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+      }
+
+      .card-action-btn svg {
+        width: 22px;
+        height: 22px;
+        stroke: #fff;
+        fill: none;
+        stroke-width: 2;
+      }
+
+      /* 头像区域 - 简化padding */
+      .card-avatar-section {
+        padding: 12px 20px 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background: #000;
+      }
+
+      .card-avatar-wrapper {
+        position: relative;
+        margin-bottom: 16px;
+      }
+
+      .card-avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #262626;
+      }
+
+      /* 头像气泡 - 思考气泡风格（参考meme图，右上角，深灰色背景） */
+      .card-avatar-bubble {
+        position: absolute;
+        top: -8px;
+        right: -24px;
+        min-width: 56px;
+        height: 40px;
+        padding: 0 12px;
+        background: #6a6a6a;
+        border: none;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        color: #fff;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        z-index: 1;
+      }
+
+      /* 思考气泡小尾巴 - 连接到头像左下方 */
+      .card-avatar-bubble::before {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 8px;
+        width: 10px;
+        height: 10px;
+        background: #6a6a6a;
+        border: none;
+        border-radius: 50%;
+      }
+
+      .card-avatar-bubble::after {
+        content: '';
+        position: absolute;
+        bottom: -18px;
+        left: 4px;
+        width: 6px;
+        height: 6px;
+        background: #6a6a6a;
+        border: none;
+        border-radius: 50%;
+      }
+
+      /* 用户信息 - 移除昵称（已移至header） */
+      .card-user-info {
+        text-align: center;
+        color: #fff;
+        margin-bottom: 16px;
+      }
+
+      .card-handle {
+        font-size: 14px;
+        color: #a8a8a8;
+      }
+
+      /* 统计数据 */
+      .card-stats {
+        display: flex;
+        justify-content: center;
+        gap: 0;
+        padding: 12px 0 20px;
+        margin-bottom: 0;
+      }
+
+      .card-stat-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+        padding: 0 24px;
+        position: relative;
+      }
+
+      /* 竖线分隔符 - 在第2和第3项之间 */
+      .card-stat-item:not(:last-child)::after {
+        content: '';
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 1px;
+        height: 20px;
+        background: #262626;
+      }
+
+      .card-stat-value {
+        font-size: 18px;
+        font-weight: 600;
+        color: #fff;
+      }
+
+      .card-stat-label {
+        font-size: 13px;
+        color: #a8a8a8;
+      }
+
+      /* 按钮组 */
+      .card-buttons {
+        display: flex;
+        gap: 8px;
+        padding: 0 16px 20px;
+      }
+
+      .card-btn {
+        padding: 10px 16px;
+        border: none;
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        transition: all 0.2s;
+      }
+
+      .card-btn-message {
+        flex: 1;
+        background: #363636;
+        color: #fff;
+      }
+
+      .card-btn-message:hover {
+        background: #404040;
+      }
+
+      .card-btn-secondary {
+        background: #363636;
+        color: #fff;
+        padding: 10px 14px;
+        flex: 0 0 auto;
+        min-width: 44px;
+      }
+
+      .card-btn-secondary:hover {
+        background: #404040;
+      }
+
+      .card-btn svg {
+        width: 18px;
+        height: 18px;
+      }
+
+      .card-btn-message svg {
+        width: 18px;
+        height: 18px;
+        stroke-width: 2;
+        transform: rotate(-30deg);
+      }
+
+      /* 简介部分 */
+      .card-bio-section {
+        padding: 16px 20px;
+        background: #000;
+      }
+
+      .card-bio {
+        color: #fff;
+        font-size: 14px;
+        line-height: 1.6;
+        text-align: center;
+        margin-bottom: 16px;
+        white-space: pre-line; /* 支持换行 */
+      }
+
+      /* 标签 */
+      .card-tags {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+
+      .card-tag {
+        background: #1a1a1a;
+        color: #fff;
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 500;
+        border: 1px solid #262626;
+      }
+
+      /* 距离信息 */
+      .card-distance-info {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        color: #a8a8a8;
+        font-size: 14px;
+      }
+
+      .card-distance-info svg {
+        width: 16px;
+        height: 16px;
+        stroke: #a8a8a8;
+        fill: none;
+      }
+
+      /* ==================== 评价/留言弹窗 ==================== */
+      .card-reviews-section {
+        display: none;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #000;
+        overflow-y: auto;
+        z-index: 2;
+      }
+
+      .card-reviews-section.active {
+        display: block;
+      }
+
+      /* 评价顶部header */
+      .reviews-header {
+        padding: 16px;
+        background: #000;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+
+      .reviews-header-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 16px;
+      }
+
+      .reviews-back-btn {
+        width: 32px;
+        height: 32px;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+      }
+
+      .reviews-back-btn svg {
+        width: 24px;
+        height: 24px;
+        stroke: #fff;
+        fill: none;
+        stroke-width: 2;
+      }
+
+      .reviews-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #fff;
+        flex: 1;
+        text-align: center;
+      }
+
+      .reviews-placeholder {
+        width: 32px;
+      }
+
+      /* 总评分区域 */
+      .reviews-summary {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 24px;
+        padding: 16px;
+        background: #1a1a1a;
+        border-radius: 12px;
+      }
+
+      .reviews-rating-big {
+        text-align: center;
+      }
+
+      .reviews-rating-number {
+        font-size: 48px;
+        font-weight: 700;
+        color: #fff;
+        line-height: 1;
+      }
+
+      .reviews-rating-max {
+        font-size: 16px;
+        color: #666;
+      }
+
+      .reviews-stars {
+        display: flex;
+        gap: 4px;
+        margin-top: 8px;
+        justify-content: center;
+      }
+
+      .reviews-stars svg {
+        width: 16px;
+        height: 16px;
+        fill: #ffd700;
+      }
+
+      .reviews-count {
+        font-size: 13px;
+        color: #a8a8a8;
+        margin-top: 4px;
+      }
+
+      /* 评价列表 */
+      .reviews-list {
+        padding: 16px;
+      }
+
+      .review-item {
+        background: #1a1a1a;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 12px;
+      }
+
+      .review-header {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+
+      .review-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        flex-shrink: 0;
+      }
+
+      .review-info {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .review-name-line {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 4px;
+      }
+
+      .review-name {
+        font-size: 14px;
+        font-weight: 600;
+        color: #fff;
+      }
+
+      .review-rating {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        background: #262626;
+        padding: 2px 8px;
+        border-radius: 12px;
+      }
+
+      .review-rating-number {
+        font-size: 13px;
+        font-weight: 600;
+        color: #ffd700;
+      }
+
+      .review-rating svg {
+        width: 12px;
+        height: 12px;
+        fill: #ffd700;
+      }
+
+      .review-time {
+        font-size: 12px;
+        color: #666;
+      }
+
+      .review-content {
+        color: #e0e0e0;
+        font-size: 14px;
+        line-height: 1.6;
+        margin-bottom: 12px;
+      }
+
+      .review-reply {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        margin-top: 10px;
+        padding-left: 8px;
+      }
+
+      .review-reply-icon {
+        width: 14px;
+        height: 14px;
+        color: #666;
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
+
+      .review-reply-body {
+        flex: 1;
+        line-height: 1.4;
+      }
+
+      .review-reply-label {
+        font-size: 13px;
+        color: #fff;
+        font-weight: 600;
+      }
+
+      .review-reply-content {
+        font-size: 13px;
+        color: #a8a8a8;
+        margin-left: 6px;
+      }
+
+      .review-actions {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .review-action-btn {
+        background: none;
+        border: none;
+        color: #666;
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+        transition: color 0.2s;
+        padding: 0;
+      }
+
+      .review-action-btn:hover {
+        color: #1d9bf0;
+      }
+
+      .review-action-btn svg {
+        width: 16px;
+        height: 16px;
+        fill: currentColor;
+      }
+
+      /* 空状态 */
+      .reviews-empty {
+        text-align: center;
+        padding: 60px 20px;
+      }
+
+      .reviews-empty-icon {
+        font-size: 48px;
+        margin-bottom: 16px;
+      }
+
+      .reviews-empty-text {
+        font-size: 15px;
+        color: #666;
+        line-height: 1.6;
+      }
+
+      /* ==================== 触摸滑动提示 ==================== */
+      .map-swipe-hint {
+        position: absolute;
+        top: 50%;
+        left: 20px;
+        transform: translateY(-50%);
+        background: rgba(26,26,26,0.9);
+        color: #e5e5e5;
+        padding: 12px 16px;
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: 500;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        animation: swipeHintAnim 2s infinite;
+        z-index: 5;
+        pointer-events: none;
+      }
+
+      .map-swipe-hint.hidden {
+        display: none;
+      }
+
+      @keyframes swipeHintAnim {
+        0%, 100% { transform: translateY(-50%) translateX(0); opacity: 1; }
+        50% { transform: translateY(-50%) translateX(10px); opacity: 0.7; }
+      }
+
+      /* ==================== 天气特效系统 ==================== */
+      .map-weather-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 3;
+        overflow: hidden;
+      }
+
+      /* 晴天 - 阳光射线效果 */
+      .weather-sunny {
+        background: radial-gradient(circle at 15% 15%, rgba(255,200,50,0.15) 0%, transparent 50%);
+      }
+
+      .weather-sunny::before {
+        content: '';
+        position: absolute;
+        top: 5%;
+        left: 10%;
+        width: 80px;
+        height: 80px;
+        background: radial-gradient(circle, rgba(255,220,100,0.6) 0%, rgba(255,180,50,0.3) 40%, transparent 70%);
+        border-radius: 50%;
+        animation: sunPulse 4s ease-in-out infinite;
+      }
+
+      @keyframes sunPulse {
+        0%, 100% { transform: scale(1); opacity: 0.8; }
+        50% { transform: scale(1.1); opacity: 1; }
+      }
+
+      /* 多云 - 全屏幕飘动的云层 */
+      .weather-cloudy {
+        background: linear-gradient(180deg, rgba(150,150,150,0.08) 0%, transparent 30%);
+      }
+
+      .weather-cloudy .cloud {
+        position: absolute;
+        background: rgba(200,200,200,0.25);
+        border-radius: 50%;
+        filter: blur(25px);
+        animation: cloudFloat linear infinite;
+        opacity: 0.8;
+      }
+
+      @keyframes cloudFloat {
+        0% { transform: translateX(0); opacity: 0; }
+        10% { opacity: 0.8; }
+        90% { opacity: 0.8; }
+        100% { transform: translateX(calc(100vw + 300px)); opacity: 0; }
+      }
+
+      /* 小雨 - 稀疏雨滴 */
+      .weather-rain {
+        background: linear-gradient(180deg, rgba(100,120,140,0.2) 0%, transparent 50%);
+      }
+
+      .weather-rain .rain-drop {
+        position: absolute;
+        width: 2px;
+        height: 15px;
+        background: linear-gradient(180deg, transparent, rgba(174,194,224,0.6));
+        animation: rainFall 1s linear infinite;
+      }
+
+      @keyframes rainFall {
+        0% { transform: translateY(-20px); opacity: 0; }
+        10% { opacity: 1; }
+        90% { opacity: 1; }
+        100% { transform: translateY(100vh); opacity: 0; }
+      }
+
+      /* 大雨 - 密集雨滴 + 涟漪 */
+      .weather-heavy-rain {
+        background: linear-gradient(180deg, rgba(60,80,100,0.35) 0%, rgba(80,100,120,0.15) 50%, transparent 100%);
+      }
+
+      .weather-heavy-rain .rain-drop {
+        position: absolute;
+        width: 3px;
+        height: 25px;
+        background: linear-gradient(180deg, transparent, rgba(150,180,220,0.7));
+        animation: heavyRainFall 0.6s linear infinite;
+      }
+
+      @keyframes heavyRainFall {
+        0% { transform: translateY(-30px) rotate(15deg); opacity: 0; }
+        10% { opacity: 1; }
+        90% { opacity: 0.8; }
+        100% { transform: translateY(100vh) rotate(15deg); opacity: 0; }
+      }
+
+      .weather-heavy-rain .ripple {
+        position: absolute;
+        bottom: 10%;
+        width: 20px;
+        height: 10px;
+        border: 1px solid rgba(150,180,220,0.5);
+        border-radius: 50%;
+        animation: rippleExpand 1.5s ease-out infinite;
+      }
+
+      @keyframes rippleExpand {
+        0% { transform: scale(0); opacity: 1; }
+        100% { transform: scale(3); opacity: 0; }
+      }
+
+      /* 雷暴 - 闪电 + 大雨 */
+      .weather-thunder {
+        background: linear-gradient(180deg, rgba(40,50,70,0.4) 0%, rgba(60,70,90,0.2) 50%, transparent 100%);
+      }
+
+      .weather-thunder .rain-drop {
+        position: absolute;
+        width: 3px;
+        height: 30px;
+        background: linear-gradient(180deg, transparent, rgba(130,160,200,0.8));
+        animation: heavyRainFall 0.5s linear infinite;
+      }
+
+      .weather-thunder .lightning {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        width: 100%;
+        height: 100%;
+        background: rgba(255,255,255,0);
+        animation: lightningFlash 8s ease-in-out infinite;
+      }
+
+      @keyframes lightningFlash {
+        0%, 89%, 91%, 93%, 100% { background: rgba(255,255,255,0); }
+        90% { background: rgba(255,255,255,0.3); }
+        92% { background: rgba(255,255,255,0.5); }
+      }
+
+      /* 雪 - 飘落雪花 */
+      .weather-snow {
+        background: linear-gradient(180deg, rgba(200,210,230,0.15) 0%, transparent 40%);
+      }
+
+      .weather-snow .snowflake {
+        position: absolute;
+        color: rgba(255,255,255,0.9);
+        font-size: 12px;
+        animation: snowFall 8s linear infinite;
+        text-shadow: 0 0 3px rgba(255,255,255,0.5);
+      }
+
+      @keyframes snowFall {
+        0% { transform: translateY(-20px) rotate(0deg); opacity: 0; }
+        10% { opacity: 1; }
+        90% { opacity: 0.8; }
+        100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+      }
+
+      /* 雾 - 弥漫雾气 */
+      .weather-fog {
+        background: linear-gradient(180deg, rgba(180,180,190,0.4) 0%, rgba(160,160,170,0.3) 50%, rgba(150,150,160,0.2) 100%);
+      }
+
+      .weather-fog::before,
+      .weather-fog::after {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(200,200,210,0.3), transparent);
+        animation: fogDrift 20s ease-in-out infinite;
+      }
+
+      .weather-fog::after {
+        animation-delay: -10s;
+        animation-direction: reverse;
+      }
+
+      @keyframes fogDrift {
+        0%, 100% { transform: translateX(-20%); opacity: 0.6; }
+        50% { transform: translateX(20%); opacity: 0.8; }
+      }
+
+      /* 沙尘 - 黄沙飞舞 */
+      .weather-dust {
+        background: linear-gradient(180deg, rgba(180,150,100,0.35) 0%, rgba(160,130,80,0.2) 50%, transparent 100%);
+      }
+
+      .weather-dust .dust-particle {
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        background: rgba(180,150,100,0.6);
+        border-radius: 50%;
+        animation: dustBlow 3s linear infinite;
+      }
+
+      @keyframes dustBlow {
+        0% { transform: translate(0, 0) rotate(0deg); opacity: 0; }
+        20% { opacity: 0.8; }
+        80% { opacity: 0.6; }
+        100% { transform: translate(100vw, 30vh) rotate(720deg); opacity: 0; }
+      }
+
+      /* 开发者测试按钮 */
+      .map-weather-test-btn {
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
+        z-index: 15;
+        background: rgba(255,100,100,0.9);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 8px 12px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        transition: all 0.2s;
+      }
+
+      .map-weather-test-btn:hover {
+        background: rgba(255,80,80,1);
+        transform: translateY(-2px);
+      }
+
+      .map-weather-test-btn::before {
+        content: '🔧';
+      }
+
+      /* 天气信息显示 - 圆形按钮样式，垂直排列 */
+      .map-weather-info {
+        /* 移除position定位，作为flex子元素自动垂直排列 */
+        width: 40px;
+        height: 40px;
+        background: #1a1a1a;
+        border: none;
+        border-radius: 8px;
+        cursor: default;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        transition: all 0.2s;
+        position: relative; /* 保留relative以支持::after定位 */
+      }
+
+      .map-weather-info:hover::after {
+        content: attr(data-weather-name);
+        position: absolute;
+        right: calc(100% + 8px);
+        background: rgba(0,0,0,0.8);
+        color: #fff;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        white-space: nowrap;
+        pointer-events: none;
+      }
+
+      .map-weather-icon {
+        font-size: 20px;
+      }
+
+      /* ==================== 地图设置弹窗样式 - Instagram风格 ==================== */
+      .map-settings-modal {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(10px);
+        z-index: 1001;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: map-settings-fade-in 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      @keyframes map-settings-fade-in {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      .map-settings-content {
+        width: 90%;
+        max-width: 500px;
+        max-height: 65vh;
+        background: #000;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        animation: map-settings-slide-up 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        flex-direction: column;
+      }
+
+      @keyframes map-settings-slide-up {
+        from {
+          transform: translateY(50px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      .map-settings-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        background: #000;
+        flex-shrink: 0;
+      }
+
+      .map-settings-back-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 8px;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: all 0.2s;
+      }
+
+      .map-settings-back-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      .map-settings-back-btn svg {
+        width: 24px;
+        height: 24px;
+        stroke: #fff;
+        stroke-width: 2;
+        fill: none;
+      }
+
+      .map-settings-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #fff;
+        flex: 1;
+        text-align: center;
+      }
+
+      .map-settings-save-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 8px 12px;
+        color: #1d9bf0;
+        font-size: 15px;
+        font-weight: 600;
+        border-radius: 8px;
+        transition: all 0.2s;
+      }
+
+      .map-settings-save-btn:hover {
+        background: rgba(29, 155, 240, 0.1);
+      }
+
+      .map-settings-body {
+        flex: 1;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding: 20px;
+        min-height: 0;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .map-settings-body::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .map-settings-body::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      .map-settings-body::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 3px;
+      }
+
+      .map-settings-section {
+        margin-bottom: 32px;
+      }
+
+      .map-settings-section:last-child {
+        margin-bottom: 0;
+      }
+
+      .map-settings-section-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.6);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 16px;
+      }
+
+      .map-settings-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .map-settings-item:last-child {
+        border-bottom: none;
+      }
+
+      .map-settings-item-left {
+        flex: 1;
+      }
+
+      .map-settings-item-label {
+        font-size: 15px;
+        font-weight: 500;
+        color: #fff;
+        margin-bottom: 4px;
+      }
+
+      .map-settings-item-desc {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.5);
+      }
+
+      /* Instagram风格的Toggle开关 */
+      .map-settings-toggle {
+        position: relative;
+      }
+
+      .map-settings-toggle-input {
+        display: none;
+      }
+
+      .map-settings-toggle-label {
+        display: block;
+        width: 50px;
+        height: 30px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 15px;
+        cursor: pointer;
+        position: relative;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .map-settings-toggle-label::after {
+        content: "";
+        position: absolute;
+        width: 26px;
+        height: 26px;
+        background: #fff;
+        border-radius: 50%;
+        top: 2px;
+        left: 2px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      }
+
+      .map-settings-toggle-input:checked + .map-settings-toggle-label {
+        background: #1d9bf0;
+      }
+
+      .map-settings-toggle-input:checked + .map-settings-toggle-label::after {
+        left: 22px;
+      }
+
+      /* 输入框样式 */
+      .map-settings-input-wrapper {
+        width: 180px;
+      }
+
+      .map-settings-input {
+        width: 100%;
+        padding: 10px 14px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 10px;
+        color: #fff;
+        font-size: 14px;
+        outline: none;
+        transition: all 0.2s;
+      }
+
+      .map-settings-input::placeholder {
+        color: rgba(255, 255, 255, 0.4);
+      }
+
+      .map-settings-input:focus {
+        background: rgba(255, 255, 255, 0.15);
+        border-color: #1d9bf0;
+      }
+
+      /* 标签管理样式 */
+      .map-settings-tags-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 16px;
+        min-height: 40px;
+        padding: 12px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+      }
+
+      .map-settings-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 12px;
+        background: rgba(29, 155, 240, 0.15);
+        border: 1px solid rgba(29, 155, 240, 0.3);
+        border-radius: 20px;
+        color: #1d9bf0;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .map-settings-tag:hover {
+        background: rgba(29, 155, 240, 0.25);
+        border-color: rgba(29, 155, 240, 0.5);
+      }
+
+      .map-settings-tag-remove {
+        width: 16px;
+        height: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        transition: all 0.2s;
+      }
+
+      .map-settings-tag-remove:hover {
+        background: rgba(255, 255, 255, 0.4);
+      }
+
+      .map-settings-tag-remove svg {
+        width: 10px;
+        height: 10px;
+        stroke: currentColor;
+        stroke-width: 2;
+      }
+
+      .map-settings-add-tag-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 10px 16px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px dashed rgba(255, 255, 255, 0.3);
+        border-radius: 10px;
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .map-settings-add-tag-btn:hover {
+        background: rgba(255, 255, 255, 0.15);
+        border-color: rgba(255, 255, 255, 0.5);
+        color: #fff;
+      }
+
+      .map-settings-add-tag-btn svg {
+        width: 18px;
+        height: 18px;
+      }
+
+      /* ==================== 社交圈弹窗样式 - Instagram风格 ==================== */
+      .map-social-circle-modal {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 105;
+        animation: fadeIn 0.2s ease;
+      }
+
+      .map-social-circle-content {
+        width: 90%;
+        max-width: 500px;
+        max-height: 80%;
+        background: #1a1a1a;
+        border-radius: 24px;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        animation: slideUp 0.3s ease;
+      }
+
+      .map-social-circle-header {
+        display: flex;
+        align-items: center;
+        padding: 20px 24px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .map-social-circle-back-btn {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.1);
+        border: none;
+        border-radius: 50%;
+        color: #fff;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .map-social-circle-back-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      .map-social-circle-back-btn svg {
+        width: 18px;
+        height: 18px;
+      }
+
+      .map-social-circle-title {
+        flex: 1;
+        text-align: center;
+        font-size: 18px;
+        font-weight: 700;
+        color: #fff;
+        letter-spacing: -0.5px;
+      }
+
+      .map-social-circle-placeholder {
+        width: 32px;
+      }
+
+      .map-social-circle-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: 16px;
+      }
+
+      .map-social-circle-body::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .map-social-circle-body::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      .map-social-circle-body::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 3px;
+      }
+
+      /* Empty State */
+      .map-social-circle-empty {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 60px 32px;
+        text-align: center;
+      }
+
+      .map-social-circle-empty svg {
+        width: 64px;
+        height: 64px;
+        color: rgba(255, 255, 255, 0.3);
+        margin-bottom: 20px;
+      }
+
+      .map-social-circle-empty-text {
+        font-size: 18px;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.8);
+        margin-bottom: 8px;
+      }
+
+      .map-social-circle-empty-desc {
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.5);
+        line-height: 1.5;
+      }
+
+      /* 社交圈好友列表 */
+      .map-social-circle-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      /* 好友卡片 */
+      .map-social-circle-friend-card {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 16px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .map-social-circle-friend-card:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+      }
+
+      .map-social-circle-friend-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+
+      .map-social-circle-friend-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+
+      .map-social-circle-friend-info {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .map-social-circle-friend-name {
+        font-size: 16px;
+        font-weight: 600;
+        color: #fff;
+        margin-bottom: 4px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .map-social-circle-friend-handle {
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.5);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .map-social-circle-friend-relationship {
+        padding: 4px 12px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.8);
+        white-space: nowrap;
+      }
+
+      .map-social-circle-friend-bio {
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.7);
+        line-height: 1.5;
+        margin-bottom: 12px;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+      }
+
+      .map-social-circle-friend-stats {
+        display: flex;
+        gap: 16px;
+      }
+
+      .map-social-circle-friend-stat {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.5);
+      }
+
+      .map-social-circle-friend-stat-value {
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.8);
+      }
+
+      /* ==================== 聊天弹窗样式 ==================== */
+      .map-chat-modal {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 90%;
+        max-width: 480px;
+        height: 80%;
+        max-height: 700px;
+        background: #000;
+        border-radius: 20px;
+        z-index: 300;
+        display: none;
+        flex-direction: column;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        overflow: hidden;
+      }
+
+      .map-chat-modal.show {
+        display: flex;
+      }
+
+      /* 聊天顶栏 */
+      .map-chat-header {
+        display: flex;
+        align-items: center;
+        padding: 16px 20px;
+        border-bottom: 1px solid #2f2f2f;
+        background: #000;
+      }
+
+      .map-chat-back-btn {
+        background: none;
+        border: none;
+        padding: 8px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 12px;
+      }
+
+      .map-chat-back-btn svg {
+        width: 24px;
+        height: 24px;
+        stroke: #fff;
+        stroke-width: 2;
+        fill: none;
+      }
+
+      .map-chat-user-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex: 1;
+      }
+
+      .map-chat-user-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        object-fit: cover;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .map-chat-user-avatar:hover {
+        transform: scale(1.08);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      }
+
+      .map-chat-user-avatar:active {
+        transform: scale(0.98);
+      }
+
+      .map-chat-user-name {
+        font-size: 16px;
+        font-weight: 600;
+        color: #fff;
+      }
+
+      .map-chat-more-btn {
+        background: none;
+        border: none;
+        padding: 8px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .map-chat-more-btn svg {
+        width: 20px;
+        height: 20px;
+        fill: #fff;
+      }
+
+      /* More options下拉菜单 */
+      .map-chat-more-menu {
+        position: absolute;
+        top: 56px;
+        right: 12px;
+        background: #2a2a2a;
+        border: 1px solid #3a3a3a;
+        border-radius: 8px;
+        min-width: 180px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(-10px);
+        transition: all 0.2s ease;
+        z-index: 50;
+      }
+
+      .map-chat-more-menu.show {
+        opacity: 1;
+        pointer-events: all;
+        transform: translateY(0);
+      }
+
+      .map-chat-more-menu-item {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        background: transparent;
+        border: none;
+        color: #e0e0e0;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-align: left;
+      }
+
+      .map-chat-more-menu-item:hover {
+        background: #333;
+      }
+
+      .map-chat-more-menu-item svg {
+        stroke: #4a9eff;
+        flex-shrink: 0;
+      }
+
+      /* 消息列表区域 */
+      .map-chat-messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        background: #000;
+      }
+
+      .map-chat-messages::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .map-chat-messages::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      .map-chat-messages::-webkit-scrollbar-thumb {
+        background: #3a3a3a;
+        border-radius: 3px;
+      }
+
+      /* 时间戳 */
+      .map-chat-timestamp {
+        text-align: center;
+        font-size: 12px;
+        color: #71767b;
+        margin: 12px 0;
+      }
+
+      /* 消息组（同一发送者的连续消息） */
+      .map-chat-message-group {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        margin-bottom: 12px;
+      }
+
+      .map-chat-message-group.sent {
+        align-items: flex-end;
+      }
+
+      .map-chat-message-group.received {
+        align-items: flex-start;
+      }
+
+      /* 消息行（包含头像和气泡） */
+      .map-chat-message-row {
+        display: flex;
+        align-items: flex-end;
+        gap: 8px;
+        max-width: 80%;
+      }
+
+      .map-chat-message-row.sent {
+        flex-direction: row-reverse;
+        margin-left: auto;
+      }
+
+      .map-chat-message-row.received {
+        flex-direction: row;
+        margin-right: auto;
+      }
+
+      /* 头像占位（隐藏时保持布局） */
+      .map-chat-message-avatar-placeholder {
+        width: 36px;
+        height: 36px;
+        flex-shrink: 0;
+        visibility: hidden;
+      }
+
+      .map-chat-message-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        object-fit: cover;
+        flex-shrink: 0;
+      }
+
+      /* 消息气泡 */
+      .map-chat-bubble {
+        padding: 12px 16px;
+        font-size: 15px;
+        line-height: 1.4;
+        word-wrap: break-word;
+        position: relative;
+      }
+
+      /* 接收的消息（左侧，黑色边框气泡） */
+      .map-chat-message-row.received .map-chat-bubble {
+        background: #000;
+        border: 1px solid #3a3a3a;
+        border-radius: 18px;
+        border-top-left-radius: 4px;
+        color: #fff;
+      }
+
+      /* 接收消息组中非最后一条的圆角 */
+      .map-chat-message-group.received .map-chat-message-row:not(:last-child) .map-chat-bubble {
+        border-radius: 18px;
+      }
+
+      /* 发送的消息（右侧，灰色气泡） */
+      .map-chat-message-row.sent .map-chat-bubble {
+        background: #3a3a3a;
+        border-radius: 18px;
+        border-top-right-radius: 4px;
+        color: #fff;
+      }
+
+      /* 发送消息组中非最后一条的圆角 */
+      .map-chat-message-group.sent .map-chat-message-row:not(:last-child) .map-chat-bubble {
+        border-radius: 18px;
+      }
+
+      /* 表情包样式 - 不要气泡，直接显示图片 */
+      .map-chat-sticker {
+        max-width: 180px;
+        max-height: 180px;
+        width: auto;
+        height: auto;
+        border-radius: 12px;
+        object-fit: contain;
+        user-select: none;
+        cursor: default;
+        display: block;
+      }
+
+      /* 图片消息卡片 */
+      .map-chat-image-card {
+        max-width: 280px;
+        border-radius: 16px;
+        overflow: hidden;
+        background: #000;
+        border: 1px solid #3a3a3a;
+        cursor: default;
+        transition: all 0.2s ease;
+      }
+
+      .map-chat-image-card:hover {
+        border-color: #555;
+      }
+
+      .map-chat-message-row.sent .map-chat-image-card {
+        background: #1a1a1a;
+        border: 1px solid #3a3a3a;
+      }
+
+      /* 图片占位符 */
+      .map-chat-image-placeholder {
+        aspect-ratio: 4/3;
+        background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        padding: 24px;
+        position: relative;
+        transition: background 0.2s ease;
+      }
+
+      .map-chat-image-card:hover .map-chat-image-placeholder {
+        background: linear-gradient(135deg, #202020 0%, #303030 100%);
+      }
+
+      /* 图片图标 */
+      .map-chat-image-icon {
+        width: 48px;
+        height: 48px;
+        fill: #666;
+        opacity: 0.6;
+        transition: all 0.2s ease;
+      }
+
+      .map-chat-image-card:hover .map-chat-image-icon {
+        fill: #888;
+        opacity: 0.8;
+      }
+
+      /* 图片描述文字 */
+      .map-chat-image-desc {
+        font-size: 13px;
+        color: #888;
+        text-align: center;
+        line-height: 1.4;
+        max-width: 100%;
+        word-wrap: break-word;
+        transition: color 0.2s ease;
+      }
+
+      .map-chat-image-card:hover .map-chat-image-desc {
+        color: #aaa;
+      }
+
+      /* 配图文字（在图片下方） */
+      .map-chat-image-caption {
+        padding: 12px 14px;
+        font-size: 14px;
+        color: #fff;
+        line-height: 1.4;
+        background: rgba(0, 0, 0, 0.3);
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      /* 🚨 系统消息样式 */
+      .map-chat-system-message {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 16px;
+        margin: 16px 0;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 14px;
+        border-left: 3px solid #fff;
+      }
+
+      .map-chat-system-message-icon {
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .map-chat-system-message-icon svg {
+        width: 100%;
+        height: 100%;
+      }
+
+      .map-chat-system-message-text {
+        flex: 1;
+        font-size: 14px;
+        line-height: 1.5;
+        color: #e5e5e5;
+        font-weight: 500;
+      }
+
+      /* 聊天底栏 */
+      .map-chat-footer {
+        display: flex;
+        align-items: center;
+        padding: 12px 16px;
+        border-top: 1px solid #2f2f2f;
+        background: #000;
+        gap: 12px;
+      }
+
+      .map-chat-add-btn {
+        background: none;
+        border: none;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        flex-shrink: 0;
+        transition: background 0.2s;
+      }
+
+      .map-chat-add-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      .map-chat-add-btn svg {
+        width: 24px;
+        height: 24px;
+        stroke: #fff;
+        stroke-width: 2;
+        fill: none;
+      }
+
+      .map-chat-input-wrapper {
+        flex: 1;
+        position: relative;
+      }
+
+      .map-chat-input {
+        width: 100%;
+        background: #1a1a1a;
+        border: 1px solid #3a3a3a;
+        border-radius: 20px;
+        padding: 10px 16px;
+        color: #fff;
+        font-size: 15px;
+        outline: none;
+        transition: border-color 0.2s;
+      }
+
+      .map-chat-input:focus {
+        border-color: #555;
+      }
+
+      .map-chat-input::placeholder {
+        color: #71767b;
+      }
+
+      .map-chat-like-btn {
+        background: none;
+        border: none;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        flex-shrink: 0;
+        transition: background 0.2s;
+      }
+
+      .map-chat-like-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      .map-chat-like-btn svg {
+        width: 24px;
+        height: 24px;
+        fill: #fff;
+      }
+
+      /* 聊天遮罩 */
+      .map-chat-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 299;
+        display: none;
+      }
+
+      .map-chat-overlay.show {
+        display: block;
+      }
+
+      /* ==================== 📌 功能收纳菜单样式（简约暗色） ==================== */
+      .map-chat-function-menu-wrapper {
+        position: relative;
+      }
+
+      .map-chat-function-menu {
+        position: absolute;
+        bottom: 100%;
+        left: 0;
+        margin-bottom: 10px;
+        opacity: 0;
+        transform: translateY(10px);
+        transition: all 0.2s ease;
+        pointer-events: none;
+      }
+
+      .map-chat-function-menu.show {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: all;
+      }
+
+      .map-chat-function-item {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        background: #2a2a2a;
+        border: 1px solid #3a3a3a;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        color: #888;
+      }
+
+      .map-chat-function-item:hover {
+        background: #333;
+        color: #4a9eff;
+        border-color: #4a9eff;
+      }
+
+      .map-chat-function-item svg {
+        width: 20px;
+        height: 20px;
+      }
+
+      /* ==================== 📌 笔记弹窗样式（简约暗色） ==================== */
+      .map-notes-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 399;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s ease;
+      }
+
+      .map-notes-overlay.show {
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      .map-notes-modal {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.95);
+        width: min(480px, 90vw);
+        max-height: 70vh;
+        background: #1a1a1a;
+        border: 1px solid #3a3a3a;
+        border-radius: 12px;
+        z-index: 400;
+        opacity: 0;
+        pointer-events: none;
+        transition: all 0.2s ease;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      }
+
+      .map-notes-modal.show {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+        pointer-events: all;
+      }
+
+      .map-notes-container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+      }
+
+      /* 头部 */
+      .map-notes-header {
+        padding: 16px 20px;
+        border-bottom: 1px solid #2a2a2a;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .map-notes-main-tabs {
+        display: flex;
+        gap: 4px;
+        background: #2a2a2a;
+        padding: 3px;
+        border-radius: 8px;
+      }
+
+      .map-notes-main-tab {
+        padding: 6px 16px;
+        background: transparent;
+        border: none;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 500;
+        color: #888;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+      }
+
+      .map-notes-main-tab:hover {
+        color: #b0b0b0;
+      }
+
+      .map-notes-main-tab.active {
+        background: #1a1a1a;
+        color: #e0e0e0;
+      }
+
+      .map-notes-close {
+        width: 32px;
+        height: 32px;
+        background: transparent;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #888;
+        transition: all 0.2s ease;
+      }
+
+      .map-notes-close:hover {
+        background: #2a2a2a;
+        color: #e0e0e0;
+      }
+
+      /* Tabs过滤 */
+      .map-notes-tabs {
+        padding: 12px 20px;
+        border-bottom: 1px solid #2a2a2a;
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+
+      .map-notes-tabs::-webkit-scrollbar {
+        display: none;
+      }
+
+      .map-notes-tab {
+        padding: 6px 14px;
+        background: transparent;
+        border: 1px solid #3a3a3a;
+        border-radius: 6px;
+        color: #888;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+
+      .map-notes-tab:hover {
+        border-color: #4a9eff;
+        color: #4a9eff;
+      }
+
+      .map-notes-tab.active {
+        background: #4a9eff;
+        border-color: #4a9eff;
+        color: #fff;
+      }
+
+      /* 笔记列表（时间线式） */
+      .map-notes-list {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px;
+      }
+
+      /* 空状态 */
+      .map-notes-empty {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 20px;
+        text-align: center;
+        color: #666;
+      }
+
+      .map-notes-empty svg {
+        color: #3a3a3a;
+        margin-bottom: 16px;
+      }
+
+      .map-notes-empty p {
+        font-size: 15px;
+        font-weight: 500;
+        color: #888;
+        margin: 0 0 8px 0;
+      }
+
+      .map-notes-empty span {
+        font-size: 13px;
+        color: #666;
+      }
+
+      /* 笔记项（时间线式） */
+      .map-notes-item {
+        display: flex;
+        gap: 12px;
+        padding: 16px 0;
+        border-bottom: 1px solid #2a2a2a;
+        animation: noteItemIn 0.3s ease;
+      }
+
+      .map-notes-item:last-child {
+        border-bottom: none;
+      }
+
+      .map-notes-item-icon {
+        width: 36px;
+        height: 36px;
+        flex-shrink: 0;
+        background: #4a9eff;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+      }
+
+      .map-notes-item-icon svg {
+        width: 18px;
+        height: 18px;
+      }
+
+      .map-notes-item-content {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .map-notes-item-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 6px;
+      }
+
+      .map-notes-item-category {
+        font-size: 13px;
+        font-weight: 500;
+        color: #e0e0e0;
+      }
+
+      .map-notes-item-time {
+        font-size: 12px;
+        color: #666;
+      }
+
+      .map-notes-item-text {
+        font-size: 14px;
+        line-height: 1.5;
+        color: #b0b0b0;
+        word-break: break-word;
+      }
+
+      .map-notes-item-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 10px;
+      }
+
+      .map-notes-item-action {
+        padding: 5px 12px;
+        background: transparent;
+        border: 1px solid #3a3a3a;
+        border-radius: 5px;
+        color: #888;
+        font-size: 12px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .map-notes-item-action:hover {
+        border-color: #4a9eff;
+        color: #4a9eff;
+      }
+
+      .map-notes-item-action svg {
+        width: 14px;
+        height: 14px;
+      }
+
+      @keyframes noteItemIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* ==================== 📌 分类选择菜单（简洁列表） ==================== */
+      .map-notes-picker-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 498;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s ease;
+      }
+
+      .map-notes-picker-overlay.show {
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      .map-notes-picker {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.95);
+        width: min(280px, 85vw);
+        background: #2a2a2a;
+        border: 1px solid #3a3a3a;
+        border-radius: 8px;
+        z-index: 499;
+        opacity: 0;
+        pointer-events: none;
+        transition: all 0.2s ease;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+      }
+
+      .map-notes-picker.show {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+        pointer-events: all;
+      }
+
+      .map-notes-picker-header {
+        padding: 14px 16px;
+        border-bottom: 1px solid #3a3a3a;
+        font-size: 14px;
+        font-weight: 600;
+        color: #e0e0e0;
+      }
+
+      .map-notes-picker-list {
+        max-height: 400px;
+        overflow-y: auto;
+      }
+
+      .map-notes-picker-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border-bottom: 1px solid #2a2a2a;
+        color: #b0b0b0;
+      }
+
+      .map-notes-picker-item:last-child {
+        border-bottom: none;
+      }
+
+      .map-notes-picker-item:hover {
+        background: #333;
+      }
+
+      .map-notes-picker-item svg {
+        width: 18px;
+        height: 18px;
+        color: #4a9eff;
+      }
+
+      /* 消息标记高亮效果（简约灰色边框） */
+      .map-chat-bubble.marking {
+        border: 2px solid #4a9eff !important;
+        background: rgba(74, 158, 255, 0.1) !important;
+      }
+
+      /* 聊天列表弹窗样式 */
+      .map-chats-list-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 399;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s ease;
+      }
+
+      .map-chats-list-overlay.show {
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      .map-chats-list-modal {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.95);
+        width: min(420px, 90vw);
+        max-height: 70vh;
+        background: #1a1a1a;
+        border: 1px solid #3a3a3a;
+        border-radius: 12px;
+        z-index: 400;
+        opacity: 0;
+        pointer-events: none;
+        transition: all 0.2s ease;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      }
+
+      .map-chats-list-modal.show {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+        pointer-events: all;
+      }
+
+      .map-chats-list-container {
+        display: flex;
+        flex-direction: column;
+        max-height: 70vh;
+        height: 100%;
+      }
+
+      /* 头部 */
+      .map-chats-list-header {
+        padding: 16px 20px;
+        border-bottom: 1px solid #2a2a2a;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-shrink: 0;
+      }
+
+      .map-chats-list-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #e0e0e0;
+        margin: 0;
+      }
+
+      .map-chats-list-close {
+        width: 32px;
+        height: 32px;
+        background: transparent;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #888;
+        transition: all 0.2s ease;
+      }
+
+      .map-chats-list-close:hover {
+        background: #2a2a2a;
+        color: #e0e0e0;
+      }
+
+      /* 聊天列表内容 */
+      .map-chats-list-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 12px;
+        min-height: 0;
+      }
+
+      .map-chats-list-content::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .map-chats-list-content::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      .map-chats-list-content::-webkit-scrollbar-thumb {
+        background: #3a3a3a;
+        border-radius: 3px;
+      }
+
+      .map-chats-list-content::-webkit-scrollbar-thumb:hover {
+        background: #4a4a4a;
+      }
+
+      /* 空状态 */
+      .map-chats-list-empty {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 20px;
+        text-align: center;
+        color: #666;
+      }
+
+      .map-chats-list-empty svg {
+        color: #3a3a3a;
+        margin-bottom: 16px;
+      }
+
+      .map-chats-list-empty p {
+        font-size: 15px;
+        font-weight: 500;
+        color: #888;
+        margin: 0 0 8px 0;
+      }
+
+      .map-chats-list-empty span {
+        font-size: 13px;
+        color: #666;
+      }
+
+      /* 聊天项 */
+      .map-chats-list-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        background: #2a2a2a;
+        border: 1px solid #3a3a3a;
+        border-radius: 10px;
+        margin-bottom: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        animation: chatItemIn 0.3s ease;
+      }
+
+      .map-chats-list-item:hover {
+        background: #333;
+        border-color: #4a9eff;
+      }
+
+      .map-chats-list-item:last-child {
+        margin-bottom: 0;
+      }
+
+      @keyframes chatItemIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .map-chats-list-item-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        object-fit: cover;
+        background: #3a3a3a;
+      }
+
+      .map-chats-list-item-info {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .map-chats-list-item-name {
+        font-size: 14px;
+        font-weight: 500;
+        color: #e0e0e0;
+        margin: 0 0 4px 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .map-chats-list-item-preview {
+        font-size: 13px;
+        color: #888;
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .map-chats-list-item-delete {
+        width: 32px;
+        height: 32px;
+        background: transparent;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #666;
+        transition: all 0.2s ease;
+        flex-shrink: 0;
+      }
+
+      .map-chats-list-item-delete:hover {
+        background: #ff4444;
+        color: #fff;
+      }
+
+      .map-chats-list-item-delete svg {
+        width: 18px;
+        height: 18px;
+      }
+
+      /* 🎯 指定筛选弹窗样式（简约暗色风格） */
+      .map-advanced-filter-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 498;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+      }
+
+      .map-advanced-filter-overlay.show {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .map-advanced-filter-modal {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.95);
+        width: min(420px, 90vw);
+        max-height: 80vh;
+        background: #1a1a1a;
+        border: 1px solid #3a3a3a;
+        border-radius: 12px;
+        z-index: 499;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+        display: flex;
+        flex-direction: column;
+      }
+
+      .map-advanced-filter-modal.show {
+        opacity: 1;
+        visibility: visible;
+        transform: translate(-50%, -50%) scale(1);
+      }
+
+      .map-advanced-filter-container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        overflow: hidden;
+      }
+
+      .map-advanced-filter-header {
+        padding: 16px 20px;
+        border-bottom: 1px solid #2a2a2a;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-shrink: 0;
+      }
+
+      .map-advanced-filter-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #e0e0e0;
+        margin: 0;
+      }
+
+      .map-advanced-filter-close {
+        width: 32px;
+        height: 32px;
+        background: transparent;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #888;
+        transition: all 0.2s ease;
+      }
+
+      .map-advanced-filter-close:hover {
+        background: #2a2a2a;
+        color: #e0e0e0;
+      }
+
+      .map-advanced-filter-form {
+        padding: 20px;
+        overflow-y: auto;
+        flex: 1;
+      }
+
+      .map-filter-field {
+        margin-bottom: 20px;
+      }
+
+      .map-filter-field:last-child {
+        margin-bottom: 0;
+      }
+
+      .map-filter-label {
+        display: block;
+        font-size: 13px;
+        font-weight: 500;
+        color: #b0b0b0;
+        margin-bottom: 8px;
+      }
+
+      .map-filter-radio-group {
+        display: flex;
+        gap: 12px;
+      }
+
+      .map-filter-radio {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        user-select: none;
+      }
+
+      .map-filter-radio input[type="radio"] {
+        appearance: none;
+        width: 18px;
+        height: 18px;
+        border: 2px solid #3a3a3a;
+        border-radius: 50%;
+        margin-right: 8px;
+        position: relative;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .map-filter-radio input[type="radio"]:checked {
+        border-color: #4a9eff;
+      }
+
+      .map-filter-radio input[type="radio"]:checked::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 8px;
+        height: 8px;
+        background: #4a9eff;
+        border-radius: 50%;
+      }
+
+      .map-filter-radio span {
+        font-size: 14px;
+        color: #e0e0e0;
+      }
+
+      .map-filter-range {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .map-filter-input {
+        flex: 1;
+        background: #2a2a2a;
+        border: 1px solid #3a3a3a;
+        border-radius: 6px;
+        padding: 10px 12px;
+        color: #e0e0e0;
+        font-size: 14px;
+        outline: none;
+        transition: all 0.2s ease;
+      }
+
+      .map-filter-input:focus {
+        border-color: #4a9eff;
+        background: #252525;
+      }
+
+      .map-filter-separator {
+        color: #888;
+        font-size: 14px;
+      }
+
+      .map-filter-textarea {
+        width: 100%;
+        background: #2a2a2a;
+        border: 1px solid #3a3a3a;
+        border-radius: 6px;
+        padding: 10px 12px;
+        color: #e0e0e0;
+        font-size: 14px;
+        outline: none;
+        resize: none;
+        transition: all 0.2s ease;
+      }
+
+      .map-filter-textarea:focus {
+        border-color: #4a9eff;
+        background: #252525;
+      }
+
+      .map-filter-textarea-multi {
+        resize: vertical;
+      }
+
+      .map-filter-textarea::placeholder,
+      .map-filter-input::placeholder {
+        color: #666;
+      }
+
+      .map-advanced-filter-footer {
+        padding: 16px 20px;
+        border-top: 1px solid #2a2a2a;
+        display: flex;
+        gap: 12px;
+        flex-shrink: 0;
+      }
+
+      .map-advanced-filter-btn {
+        flex: 1;
+        padding: 10px 16px;
+        border: none;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .map-advanced-filter-btn-cancel {
+        background: transparent;
+        color: #888;
+        border: 1px solid #3a3a3a;
+      }
+
+      .map-advanced-filter-btn-cancel:hover {
+        background: #2a2a2a;
+        color: #b0b0b0;
+      }
+
+      .map-advanced-filter-btn-clear {
+        background: #2a2a2a;
+        color: #e0e0e0;
+      }
+
+      .map-advanced-filter-btn-clear:hover {
+        background: #333;
+      }
+
+      .map-advanced-filter-btn-apply {
+        background: #4a9eff;
+        color: #fff;
+      }
+
+      .map-advanced-filter-btn-apply:hover {
+        background: #3a8eef;
+      }
+
+      /* 指定筛选按钮样式 */
+      .filter-btn-advanced {
+        margin-left: 4px;
+      }
+
+      .filter-btn-advanced svg {
+        width: 18px;
+        height: 18px;
+      }
+    `;
+
+    document.head.appendChild(styleEl);
+  }
+
+  // ==========================================
+  // 第二部分：HTML动态生成
+  // ==========================================
+
+  // SVG图标集合，别问老王为什么要集中管理，因为DRY原则
+  const MapIcons = {
+    back: '<svg viewBox="0 0 24 24"><g><path d="M7.414 13l5.043 5.04-1.414 1.42L3.586 12l7.457-7.46 1.414 1.42L7.414 11H21v2H7.414z"></path></g></svg>',
+    close: '<svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>',
+    refresh: '<svg viewBox="0 0 24 24"><g><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"></path></g></svg>',
+    location: '<svg viewBox="0 0 24 24"><g><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"></path></g></svg>',
+    center: '<svg viewBox="0 0 24 24"><g><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"></path></g></svg>',
+    zoomIn: '<svg viewBox="0 0 24 24"><g><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path></g></svg>',
+    zoomOut: '<svg viewBox="0 0 24 24"><g><path d="M19 13H5v-2h14v2z"></path></g></svg>',
+    filter: '<svg viewBox="0 0 24 24" style="width: 14px; height: 14px; fill: currentColor;"><g><path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"></path></g></svg>',
+    message: '<svg viewBox="0 0 24 24" style="fill: currentColor;"><g><path d="M1.998 5.5c0-1.381 1.119-2.5 2.5-2.5h15c1.381 0 2.5 1.119 2.5 2.5v13c0 1.381-1.119 2.5-2.5 2.5h-15c-1.381 0-2.5-1.119-2.5-2.5v-13zm2.5-.5c-.276 0-.5.224-.5.5v.511l8 3.999 8-3.999V5.5c0-.276-.224-.5-.5-.5h-15zm15.5 5.097l-8 3.999-8-3.999V18.5c0 .276.224.5.5.5h15c.276 0 .5-.224.5-.5v-8.403z"></path></g></svg>',
+    profile: '<svg viewBox="0 0 24 24" style="fill: currentColor;"><g><path d="M12 11.816c1.355 0 2.872-.15 3.84-1.256.814-.93 1.078-2.368.806-4.392-.38-2.825-2.117-4.512-4.646-4.512S7.734 3.343 7.354 6.17c-.272 2.022-.008 3.46.806 4.39.968 1.107 2.485 1.256 3.84 1.256zM8.84 6.368c.162-1.2.787-3.212 3.16-3.212s2.998 2.013 3.16 3.212c.207 1.55.057 2.627-.45 3.205-.455.52-1.266.743-2.71.743s-2.255-.223-2.71-.743c-.507-.578-.657-1.656-.45-3.205zm11.44 12.868c-.877-3.526-4.282-5.99-8.28-5.99s-7.403 2.464-8.28 5.99c-.172.692-.028 1.4.395 1.94.408.52 1.04.82 1.733.82h12.304c.693 0 1.325-.3 1.733-.82.424-.54.567-1.247.394-1.94zm-1.576 1.016c-.126.16-.316.246-.552.246H5.848c-.235 0-.426-.085-.552-.246-.137-.174-.18-.412-.12-.654.71-2.855 3.517-4.85 6.824-4.85s6.114 1.994 6.824 4.85c.06.242.017.48-.12.654z"></path></g></svg>',
+    chart: '<svg viewBox="0 0 24 24"><g><path d="M8.75 21V3h2v18h-2zM18 21V8.5h2V21h-2zM4 21l.004-10h2L6 21H4zm9.248 0v-7h2v7h-2z"></path></g></svg>',
+    plus: '<svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>',
+    heart: '<svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>',
+    moreVertical: '<svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="2"></circle><circle cx="12" cy="12" r="2"></circle><circle cx="12" cy="19" r="2"></circle></svg>',
+    arrowLeft: '<svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>'
+  };
+
+  // 生成地图约会页面的HTML结构
+  function generateMapHTML() {
+    return `
+      <div id="map-dating-container">
+        <!-- 侧边栏遮罩 -->
+        <div class="map-sidebar-overlay" id="mapSidebarOverlay"></div>
+
+        <!-- 左侧边栏 -->
+        <div class="map-sidebar" id="mapSidebar">
+          <div class="map-header">
+            <button class="map-back-btn" id="mapBackBtn">
+              ${MapIcons.back}
+            </button>
+            <h2>附近的人</h2>
+          </div>
+
+          <div class="map-search-box">
+            <input type="text" placeholder="搜索..." id="mapSearchInput">
+          </div>
+
+          <div class="map-filters">
+            <div class="filter-group">
+              <select class="filter-select" id="mapDistanceFilter">
+                <option value="all">全部距离</option>
+                <option value="1">1km内</option>
+                <option value="3">3km内</option>
+                <option value="5">5km内</option>
+              </select>
+              <select class="filter-select" id="mapGenderFilter">
+                <option value="all">不限性别</option>
+                <option value="male">男性</option>
+                <option value="female">女性</option>
+              </select>
+            </div>
+            <button class="filter-btn" id="mapApplyFilterBtn">
+              ${MapIcons.filter}
+            </button>
+            <button class="filter-btn filter-btn-advanced" id="mapAdvancedFilterBtn" title="指定筛选">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="4" y1="21" x2="4" y2="14"></line>
+                <line x1="4" y1="10" x2="4" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12" y2="3"></line>
+                <line x1="20" y1="21" x2="20" y2="16"></line>
+                <line x1="20" y1="12" x2="20" y2="3"></line>
+                <line x1="1" y1="14" x2="7" y2="14"></line>
+                <line x1="9" y1="8" x2="15" y2="8"></line>
+                <line x1="17" y1="16" x2="23" y2="16"></line>
+              </svg>
+            </button>
+          </div>
+
+          <div class="map-user-list" id="mapUserList">
+            <!-- 动态生成用户列表 -->
+          </div>
+        </div>
+
+        <!-- 右侧地图区域 -->
+        <div class="map-area" id="mapArea">
+          <!-- 关闭按钮 -->
+          <button class="map-close-btn" id="mapCloseBtn">
+            ${MapIcons.close}
+          </button>
+
+          <!-- 刷新按钮 -->
+          <button class="map-refresh-btn" id="mapRefreshBtn" title="刷新附近的人">
+            ${MapIcons.refresh}
+          </button>
+
+          <!-- 聊天列表按钮 -->
+          <button class="map-chats-btn" id="mapChatsBtn" title="Saved Chats">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+          </button>
+
+          <!-- 提醒按钮 -->
+          <button class="map-notifications-btn" id="mapNotificationsBtn" title="Notifications">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+            <div class="map-notifications-badge hidden" id="mapNotificationsBadge">0</div>
+          </button>
+
+          <!-- 应用设置按钮 -->
+          <button class="map-app-settings-btn" id="mapAppSettingsBtn" title="Settings">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+          </button>
+
+          <!-- 滑动提示 -->
+          <div class="map-swipe-hint" id="mapSwipeHint">
+            👈 向右滑动查看附近的人
+          </div>
+
+          <div class="map-controls">
+            <!-- 天气信息显示 - 放在我的位置上方 -->
+            <div class="map-weather-info map-control-btn" id="mapWeatherInfo" style="display: none;" data-weather-name="晴天">
+              <span class="map-weather-icon" id="mapWeatherIcon">☀️</span>
+            </div>
+
+            <button class="map-control-btn" title="我的位置" id="mapCenterBtn">
+              ${MapIcons.center}
+            </button>
+            <button class="map-control-btn" title="放大" id="mapZoomInBtn">
+              ${MapIcons.zoomIn}
+            </button>
+            <button class="map-control-btn" title="缩小" id="mapZoomOutBtn">
+              ${MapIcons.zoomOut}
+            </button>
+          </div>
+
+          <!-- 天气特效容器 -->
+          <div class="map-weather-container" id="mapWeatherContainer"></div>
+
+          <div class="map-canvas" id="mapCanvas">
+            <!-- Canvas地图背景 -->
+            <canvas id="mapCanvasBg"></canvas>
+            <!-- 动态生成地图标记 -->
+          </div>
+
+          <!-- 用户详情卡片 - TikTok风格 -->
+          <div class="map-user-detail-card" id="mapUserDetailCard" style="display: none;">
+            <!-- TikTok风格顶部Header -->
+            <div class="card-header">
+              <!-- 左侧返回按钮（有功能） -->
+              <button class="card-back-btn" id="mapCardCloseBtn">
+                <svg viewBox="0 0 24 24">
+                  <line x1="19" y1="12" x2="5" y2="12"></line>
+                  <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+              </button>
+
+              <!-- 中间昵称（居中显示，无认证标志） -->
+              <div class="card-header-center">
+                <span class="card-header-nickname" id="mapCardNickname">昵称</span>
+              </div>
+
+              <!-- 右侧装饰按钮（铃铛和分享） -->
+              <div class="card-header-actions">
+                <button class="card-action-btn" id="mapCardReviewsBtn">
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
+                  </svg>
+                </button>
+                <button class="card-action-btn" id="mapCardSettingsBtn">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- 头像区域 -->
+            <div class="card-avatar-section">
+              <div class="card-avatar-wrapper">
+                <img class="card-avatar" id="mapCardAvatar" src="" alt="">
+                <div class="card-avatar-bubble" id="mapCardAvatarBubble">😊</div>
+              </div>
+
+              <div class="card-user-info">
+                <div class="card-handle">
+                  <span id="mapCardHandle">@handle</span>
+                  <svg class="card-header-verified" viewBox="0 0 24 24" fill="currentColor" style="display: inline-block; vertical-align: middle; margin-left: 4px;">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                  </svg>
+                </div>
+              </div>
+
+              <!-- 统计数据 -->
+              <div class="card-stats">
+                <div class="card-stat-item">
+                  <span class="card-stat-value">0</span>
+                  <span class="card-stat-label">Following</span>
+                </div>
+                <div class="card-stat-item">
+                  <span class="card-stat-value" id="mapCardFollowers">0</span>
+                  <span class="card-stat-label">Followers</span>
+                </div>
+                <div class="card-stat-item">
+                  <span class="card-stat-value" id="mapCardLikes">0</span>
+                  <span class="card-stat-label">Likes</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 按钮组 - TikTok风格3个按钮 -->
+            <div class="card-buttons">
+              <button class="card-btn card-btn-message" id="mapSendMsgBtn">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                </svg>
+                Message
+              </button>
+              <button class="card-btn card-btn-secondary" id="mapSocialCircleBtn">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+                </svg>
+              </button>
+              <button class="card-btn card-btn-secondary" id="mapViewProfileBtn">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M7 10l5 5 5-5z"/>
+                </svg>
+              </button>
+            </div>
+
+            <!-- 简介部分 -->
+            <div class="card-bio-section">
+              <div class="card-bio" id="mapCardBio">个人简介...</div>
+
+              <div class="card-tags" id="mapCardTags">
+                <!-- 动态生成标签 -->
+              </div>
+
+              <div class="card-distance-info" id="mapCardDistanceInfo">
+                <svg viewBox="0 0 24 24"><path d="M10 9l-3 3l3 3"/><path d="M14 9l3 3l-3 3"/></svg>
+                <span id="mapCardDistance">1.2km</span>
+              </div>
+            </div>
+
+            <!-- 评价/留言弹窗 -->
+            <div class="card-reviews-section" id="mapCardReviewsSection">
+              <div class="reviews-header">
+                <div class="reviews-header-top">
+                  <button class="reviews-back-btn" id="mapReviewsBackBtn">
+                    <svg viewBox="0 0 24 24">
+                      <line x1="19" y1="12" x2="5" y2="12"></line>
+                      <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                  </button>
+                  <div class="reviews-title">评价</div>
+                  <div class="reviews-placeholder"></div>
+                </div>
+
+                <div class="reviews-summary" id="mapReviewsSummary">
+                  <div class="reviews-rating-big">
+                    <div>
+                      <span class="reviews-rating-number" id="mapReviewsAvgRating">4.8</span>
+                      <span class="reviews-rating-max">/5</span>
+                    </div>
+                    <div class="reviews-stars" id="mapReviewsStars">
+                      <!-- 动态生成星星 -->
+                    </div>
+                    <div class="reviews-count" id="mapReviewsCount">0条评价</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="reviews-list" id="mapReviewsList">
+                <!-- 动态生成评价列表 -->
+              </div>
+            </div>
+
+            <!-- 地图设置弹窗 - Instagram风格 -->
+            <div class="map-settings-modal" id="mapSettingsModal" style="display: none;">
+              <div class="map-settings-content">
+                <!-- 顶部Header -->
+                <div class="map-settings-header">
+                  <button class="map-settings-back-btn" id="mapSettingsBackBtn">
+                    <svg viewBox="0 0 24 24">
+                      <line x1="19" y1="12" x2="5" y2="12"></line>
+                      <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                  </button>
+                  <div class="map-settings-title">地图资料设置</div>
+                  <button class="map-settings-save-btn" id="mapSettingsSaveBtn">完成</button>
+                </div>
+
+                <!-- 设置表单内容 -->
+                <div class="map-settings-body">
+                  <!-- 基本资料编辑 -->
+                  <div class="map-settings-section">
+                    <div class="map-settings-section-title">基本资料</div>
+
+                    <div class="map-settings-item">
+                      <div class="map-settings-item-left">
+                        <div class="map-settings-item-label">昵称</div>
+                        <div class="map-settings-item-desc">你的显示名称</div>
+                      </div>
+                      <div class="map-settings-input-wrapper">
+                        <input type="text" id="mapSettingsNickname" class="map-settings-input" placeholder="输入昵称" maxlength="20">
+                      </div>
+                    </div>
+
+                    <div class="map-settings-item">
+                      <div class="map-settings-item-left">
+                        <div class="map-settings-item-label">句柄</div>
+                        <div class="map-settings-item-desc">@用户名（纯英文小写+数字+下划线）</div>
+                      </div>
+                      <div class="map-settings-input-wrapper">
+                        <input type="text" id="mapSettingsHandle" class="map-settings-input" placeholder="username_123" maxlength="15">
+                      </div>
+                    </div>
+
+                    <div class="map-settings-item">
+                      <div class="map-settings-item-left">
+                        <div class="map-settings-item-label">粉丝数</div>
+                        <div class="map-settings-item-desc">followers数量（100-50000）</div>
+                      </div>
+                      <div class="map-settings-input-wrapper">
+                        <input type="number" id="mapSettingsFollowers" class="map-settings-input" placeholder="1000" min="100" max="50000">
+                      </div>
+                    </div>
+
+                    <div class="map-settings-item">
+                      <div class="map-settings-item-left">
+                        <div class="map-settings-item-label">获赞数</div>
+                        <div class="map-settings-item-desc">likes数量（粉丝数的10-50倍）</div>
+                      </div>
+                      <div class="map-settings-input-wrapper">
+                        <input type="number" id="mapSettingsLikes" class="map-settings-input" placeholder="15000" min="1000" max="2500000">
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- 头像气泡设置 -->
+                  <div class="map-settings-section">
+                    <div class="map-settings-section-title">头像气泡</div>
+
+                    <div class="map-settings-item">
+                      <div class="map-settings-item-left">
+                        <div class="map-settings-item-label">启用头像气泡</div>
+                        <div class="map-settings-item-desc">在地图标记上显示气泡</div>
+                      </div>
+                      <div class="map-settings-toggle">
+                        <input type="checkbox" id="mapSettingsAvatarBubbleEnabled" class="map-settings-toggle-input">
+                        <label for="mapSettingsAvatarBubbleEnabled" class="map-settings-toggle-label"></label>
+                      </div>
+                    </div>
+
+                    <div class="map-settings-item" id="mapSettingsAvatarBubbleTextSection">
+                      <div class="map-settings-item-left">
+                        <div class="map-settings-item-label">气泡内容</div>
+                        <div class="map-settings-item-desc">单个emoji或1-2个颜文字</div>
+                      </div>
+                      <div class="map-settings-input-wrapper">
+                        <input type="text" id="mapSettingsAvatarBubbleText" class="map-settings-input" placeholder="👋" maxlength="4">
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- 状态气泡设置 -->
+                  <div class="map-settings-section">
+                    <div class="map-settings-section-title">状态气泡</div>
+
+                    <div class="map-settings-item">
+                      <div class="map-settings-item-left">
+                        <div class="map-settings-item-label">启用状态气泡</div>
+                        <div class="map-settings-item-desc">在地图标记上显示状态</div>
+                      </div>
+                      <div class="map-settings-toggle">
+                        <input type="checkbox" id="mapSettingsStatusEnabled" class="map-settings-toggle-input">
+                        <label for="mapSettingsStatusEnabled" class="map-settings-toggle-label"></label>
+                      </div>
+                    </div>
+
+                    <div class="map-settings-item" id="mapSettingsStatusTextSection">
+                      <div class="map-settings-item-left">
+                        <div class="map-settings-item-label">状态内容</div>
+                        <div class="map-settings-item-desc">显示你的当前状态</div>
+                      </div>
+                      <div class="map-settings-input-wrapper">
+                        <input type="text" id="mapSettingsStatusText" class="map-settings-input" placeholder="探索中..." maxlength="20">
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- 标签管理 -->
+                  <div class="map-settings-section">
+                    <div class="map-settings-section-title">个人标签</div>
+                    <div class="map-settings-tags-container" id="mapSettingsTagsContainer">
+                      <!-- 动态生成标签 -->
+                    </div>
+                    <button class="map-settings-add-tag-btn" id="mapSettingsAddTagBtn">
+                      <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                      </svg>
+                      添加标签
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 社交圈弹窗 - Instagram风格 -->
+            <div class="map-social-circle-modal" id="mapSocialCircleModal" style="display: none;">
+              <div class="map-social-circle-content">
+                <!-- 顶部Header -->
+                <div class="map-social-circle-header">
+                  <button class="map-social-circle-back-btn" id="mapSocialCircleBackBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <line x1="19" y1="12" x2="5" y2="12"></line>
+                      <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                  </button>
+                  <div class="map-social-circle-title">Social Circle</div>
+                  <div class="map-social-circle-placeholder"></div>
+                </div>
+
+                <!-- 社交圈好友列表 -->
+                <div class="map-social-circle-body" id="mapSocialCircleBody">
+                  <!-- Empty state -->
+                  <div class="map-social-circle-empty" id="mapSocialCircleEmpty">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                      <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+                    </svg>
+                    <div class="map-social-circle-empty-text">No friends in social circle yet</div>
+                    <div class="map-social-circle-empty-desc">Friends will appear here as you chat</div>
+                  </div>
+
+                  <!-- 社交圈列表 -->
+                  <div class="map-social-circle-list" id="mapSocialCircleList">
+                    <!-- 动态生成好友卡片 -->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 聊天弹窗遮罩 -->
+      <div class="map-chat-overlay" id="mapChatOverlay"></div>
+
+      <!-- 聊天弹窗 -->
+      <div class="map-chat-modal" id="mapChatModal">
+        <!-- 聊天顶栏 -->
+        <div class="map-chat-header">
+          <button class="map-chat-back-btn" id="mapChatBackBtn">
+            ${MapIcons.arrowLeft}
+          </button>
+          <div class="map-chat-user-info">
+            <img class="map-chat-user-avatar" id="mapChatUserAvatar" src="" alt="Avatar">
+            <span class="map-chat-user-name" id="mapChatUserName">User Name</span>
+          </div>
+          <button class="map-chat-more-btn" id="mapChatMoreBtn">
+            ${MapIcons.moreVertical}
+          </button>
+          <!-- More options下拉菜单 -->
+          <div class="map-chat-more-menu" id="mapChatMoreMenu">
+            <button class="map-chat-more-menu-item" id="mapChatAddToListBtn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              <span>Add to Chats</span>
+            </button>
+            <button class="map-chat-more-menu-item" id="mapChatReportBtn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                <line x1="12" y1="9" x2="12" y2="13"></line>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+              <span>Report User</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 消息列表 -->
+        <div class="map-chat-messages" id="mapChatMessages">
+          <!-- 消息将动态生成 -->
+        </div>
+
+        <!-- 聊天底栏 -->
+        <div class="map-chat-footer">
+          <!-- 功能收纳按钮（原加号） -->
+          <div class="map-chat-function-menu-wrapper">
+            <button class="map-chat-add-btn" id="mapChatAddBtn">
+              ${MapIcons.plus}
+            </button>
+            <!-- 功能菜单（圆形放射状） -->
+            <div class="map-chat-function-menu" id="mapChatFunctionMenu">
+              <button class="map-chat-function-item" id="mapChatNotesBtn" data-function="notes">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M6 4h12a2 2 0 0 1 2 2v7h-5a2 2 0 0 0 -2 2v5h-7a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2z" />
+                  <path d="M20 13v.172a2 2 0 0 1 -.586 1.414l-4.828 4.828a2 2 0 0 1 -1.414 .586h-.172" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="map-chat-input-wrapper">
+            <input
+              type="text"
+              class="map-chat-input"
+              id="mapChatInput"
+              placeholder="Type a message..."
+            >
+          </div>
+          <button class="map-chat-like-btn" id="mapChatLikeBtn">
+            ${MapIcons.heart}
+          </button>
+        </div>
+      </div>
+
+      <!-- 📌 用户笔记弹窗（简约暗色风格） -->
+      <div class="map-notes-overlay" id="mapNotesOverlay"></div>
+      <div class="map-notes-modal" id="mapNotesModal">
+        <div class="map-notes-container">
+          <!-- 头部 -->
+          <div class="map-notes-header">
+            <div class="map-notes-main-tabs">
+              <button class="map-notes-main-tab active" id="mapNotesMainTabMine" data-tab="mine">我的笔记</button>
+              <button class="map-notes-main-tab" id="mapNotesMainTabTheirs" data-tab="theirs">TA的笔记</button>
+            </div>
+            <button class="map-notes-close" id="mapNotesCloseBtn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+
+          <!-- 分类过滤tabs -->
+          <div class="map-notes-tabs" id="mapNotesTabs">
+            <button class="map-notes-tab active" data-category="all">All</button>
+          </div>
+
+          <!-- 笔记列表（时间线式） -->
+          <div class="map-notes-list" id="mapNotesList">
+            <!-- 空状态 -->
+            <div class="map-notes-empty" id="mapNotesEmpty">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="12" y1="11" x2="12" y2="17"></line>
+                <line x1="9" y1="14" x2="15" y2="14"></line>
+              </svg>
+              <p>No notes yet</p>
+              <span>Double-tap messages to add notes</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 📌 分类选择菜单（简洁列表） -->
+      <div class="map-notes-picker-overlay" id="mapNotesPickerOverlay"></div>
+      <div class="map-notes-picker" id="mapNotesPicker">
+        <div class="map-notes-picker-header">Select Category</div>
+        <div class="map-notes-picker-list" id="mapNotesPickerList"></div>
+      </div>
+
+      <!-- 📌 聊天列表弹窗 -->
+      <div class="map-chats-list-overlay" id="mapChatsListOverlay"></div>
+      <div class="map-chats-list-modal" id="mapChatsListModal">
+        <div class="map-chats-list-container">
+          <!-- 头部 -->
+          <div class="map-chats-list-header">
+            <h3 class="map-chats-list-title">Saved Chats</h3>
+            <button class="map-chats-list-close" id="mapChatsListCloseBtn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+
+          <!-- 聊天列表 -->
+          <div class="map-chats-list-content" id="mapChatsListContent">
+            <!-- 空状态 -->
+            <div class="map-chats-list-empty" id="mapChatsListEmpty">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+              </svg>
+              <p>No saved chats</p>
+              <span>Add chats via More options in chat window</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 🎯 指定筛选弹窗（简约暗色风格） -->
+      <div class="map-advanced-filter-overlay" id="mapAdvancedFilterOverlay"></div>
+      <div class="map-advanced-filter-modal" id="mapAdvancedFilterModal">
+        <div class="map-advanced-filter-container">
+          <!-- 头部 -->
+          <div class="map-advanced-filter-header">
+            <h3 class="map-advanced-filter-title">Advanced Filter</h3>
+            <button class="map-advanced-filter-close" id="mapAdvancedFilterCloseBtn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+
+          <!-- 筛选表单 -->
+          <div class="map-advanced-filter-form">
+            <!-- 性别 -->
+            <div class="map-filter-field">
+              <label class="map-filter-label">Gender</label>
+              <div class="map-filter-radio-group">
+                <label class="map-filter-radio">
+                  <input type="radio" name="advGender" value="all" checked>
+                  <span>All</span>
+                </label>
+                <label class="map-filter-radio">
+                  <input type="radio" name="advGender" value="male">
+                  <span>Male</span>
+                </label>
+                <label class="map-filter-radio">
+                  <input type="radio" name="advGender" value="female">
+                  <span>Female</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- 年龄区间 -->
+            <div class="map-filter-field">
+              <label class="map-filter-label">Age Range</label>
+              <div class="map-filter-range">
+                <input type="number" class="map-filter-input" id="advAgeMin" placeholder="Min" min="18" max="99" value="18">
+                <span class="map-filter-separator">-</span>
+                <input type="number" class="map-filter-input" id="advAgeMax" placeholder="Max" min="18" max="99" value="50">
+              </div>
+            </div>
+
+            <!-- 性格 -->
+            <div class="map-filter-field">
+              <label class="map-filter-label">Personality</label>
+              <input type="text" class="map-filter-textarea" id="advPersonality" placeholder="e.g., outgoing, shy, funny...">
+            </div>
+
+            <!-- 标签 -->
+            <div class="map-filter-field">
+              <label class="map-filter-label">Tags</label>
+              <input type="text" class="map-filter-textarea" id="advTags" placeholder="e.g., music, sports, travel...">
+            </div>
+
+            <!-- 类型（自由输入） -->
+            <div class="map-filter-field">
+              <label class="map-filter-label">Type / Other</label>
+              <textarea class="map-filter-textarea map-filter-textarea-multi" id="advType" placeholder="Any other requirements..." rows="3"></textarea>
+            </div>
+          </div>
+
+          <!-- 底部按钮 -->
+          <div class="map-advanced-filter-footer">
+            <button class="map-advanced-filter-btn map-advanced-filter-btn-cancel" id="mapAdvancedFilterCancelBtn">Cancel</button>
+            <button class="map-advanced-filter-btn map-advanced-filter-btn-clear" id="mapAdvancedFilterClearBtn">Clear</button>
+            <button class="map-advanced-filter-btn map-advanced-filter-btn-apply" id="mapAdvancedFilterApplyBtn">Apply</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 🔔 提醒弹窗 - Toast风格极简设计 -->
+      <div class="map-notifications-overlay" id="mapNotificationsOverlay"></div>
+      <div class="map-notifications-modal" id="mapNotificationsModal">
+        <div class="map-notifications-content">
+          <!-- 头部 -->
+          <div class="map-notifications-header">
+            <!-- 顶部：标题 + 关闭按钮 -->
+            <div class="map-notifications-header-top">
+              <h3 class="map-notifications-title">Notifications</h3>
+              <button class="map-notifications-close-btn" id="mapNotificationsCloseBtn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
+
+            <!-- 统计卡片 -->
+            <div class="map-notifications-stats">
+              <div class="map-notifications-stats-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                  <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+              </div>
+              <div class="map-notifications-stats-info">
+                <div class="map-notifications-stats-label">Unread</div>
+                <div class="map-notifications-stats-count" id="mapNotificationsUnreadCount">0</div>
+              </div>
+            </div>
+
+            <!-- 分类Tabs -->
+            <div class="map-notifications-tabs" id="mapNotificationsTabs">
+              <button class="map-notifications-tab active" data-filter="all">All</button>
+              <button class="map-notifications-tab" data-filter="likes">Likes</button>
+              <button class="map-notifications-tab" data-filter="messages">Messages</button>
+              <button class="map-notifications-tab" data-filter="follows">Follows</button>
+              <button class="map-notifications-tab" data-filter="reports">Reports</button>
+            </div>
+          </div>
+
+          <!-- 提醒列表 -->
+          <div class="map-notifications-list-container" id="mapNotificationsListContainer">
+            <!-- 空状态 -->
+            <div class="map-notifications-empty" id="mapNotificationsEmpty">
+              <div class="map-notifications-empty-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                  <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+              </div>
+              <p class="map-notifications-empty-text">No notifications yet</p>
+            </div>
+
+            <!-- 提醒列表（动态生成） -->
+            <div id="mapNotificationsList"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 💬 接收私信确认弹窗 - 简约设计 -->
+      <div class="map-accept-message-overlay" id="mapAcceptMessageOverlay"></div>
+      <div class="map-accept-message-modal" id="mapAcceptMessageModal">
+        <div class="map-accept-message-content">
+          <!-- 头部 -->
+          <div class="map-accept-message-header">
+            <div class="map-accept-message-user">
+              <img class="map-accept-message-avatar" id="mapAcceptMsgAvatar" src="" alt="">
+              <div class="map-accept-message-user-info">
+                <h3 id="mapAcceptMsgNickname">User</h3>
+                <p id="mapAcceptMsgHandle">@handle</p>
+              </div>
+            </div>
+            <p class="map-accept-message-title">Sent you a message:</p>
+            <div class="map-accept-message-text" id="mapAcceptMsgText">
+              Message content...
+            </div>
+          </div>
+
+          <!-- 按钮 -->
+          <div class="map-accept-message-actions">
+            <button class="map-decline-btn" id="mapDeclineMessageBtn">Decline</button>
+            <button class="map-accept-btn" id="mapAcceptMessageBtn">Accept</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 🚨 举报用户弹窗 - 简约设计 -->
+      <div class="map-report-overlay" id="mapReportOverlay"></div>
+      <div class="map-report-modal" id="mapReportModal">
+        <div class="map-report-content">
+          <!-- 头部 -->
+          <div class="map-report-header">
+            <h3 class="map-report-title">Report User</h3>
+            <button class="map-report-close-btn" id="mapReportCloseBtn">
+              <svg viewBox="0 0 24 24">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+
+          <!-- 举报表单 -->
+          <div class="map-report-body">
+            <!-- 被举报用户信息 -->
+            <div class="map-report-user-info">
+              <img class="map-report-user-avatar" id="mapReportUserAvatar" src="" alt="">
+              <div class="map-report-user-details">
+                <h4 id="mapReportUserNickname">User</h4>
+                <p id="mapReportUserHandle">@handle</p>
+              </div>
+            </div>
+
+            <!-- 举报理由 -->
+            <div class="map-report-section">
+              <label class="map-report-section-label">Reason for report</label>
+              <div class="map-report-reasons">
+                <label class="map-report-reason-item">
+                  <input type="checkbox" name="reportReason" value="inappropriate_content" />
+                  <span class="map-report-reason-text">Inappropriate Content</span>
+                </label>
+                <label class="map-report-reason-item">
+                  <input type="checkbox" name="reportReason" value="harassment" />
+                  <span class="map-report-reason-text">Harassment</span>
+                </label>
+                <label class="map-report-reason-item">
+                  <input type="checkbox" name="reportReason" value="abuse" />
+                  <span class="map-report-reason-text">Verbal Abuse</span>
+                </label>
+                <label class="map-report-reason-item">
+                  <input type="checkbox" name="reportReason" value="spam" />
+                  <span class="map-report-reason-text">Spam</span>
+                </label>
+                <label class="map-report-reason-item">
+                  <input type="checkbox" name="reportReason" value="other" />
+                  <span class="map-report-reason-text">Other</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- 举报描述 -->
+            <div class="map-report-section">
+              <label class="map-report-section-label" for="mapReportDescription">Additional details (optional)</label>
+              <textarea
+                class="map-report-textarea"
+                id="mapReportDescription"
+                placeholder="Provide more information about the issue..."
+                rows="4"
+              ></textarea>
+            </div>
+          </div>
+
+          <!-- 底部按钮 -->
+          <div class="map-report-actions">
+            <button class="map-report-cancel-btn" id="mapReportCancelBtn">Cancel</button>
+            <button class="map-report-submit-btn" id="mapReportSubmitBtn">Submit Report</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 📋 举报详情弹窗 - ins简约风格 -->
+      <div class="map-report-detail-overlay" id="mapReportDetailOverlay"></div>
+      <div class="map-report-detail-modal" id="mapReportDetailModal">
+        <div class="map-report-detail-content">
+          <!-- 头部 -->
+          <div class="map-report-detail-header">
+            <h3 class="map-report-detail-title">Report Result</h3>
+            <button class="map-report-detail-close-btn" id="mapReportDetailCloseBtn">
+              <svg viewBox="0 0 24 24">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+
+          <!-- 判定结果徽章 -->
+          <div class="map-report-detail-badge-container">
+            <div class="map-report-detail-badge" id="mapReportDetailBadge">
+              <div class="map-report-detail-badge-icon" id="mapReportDetailBadgeIcon"></div>
+              <div class="map-report-detail-badge-text" id="mapReportDetailBadgeText"></div>
+            </div>
+          </div>
+
+          <!-- 详情主体 -->
+          <div class="map-report-detail-body">
+            <!-- 被举报用户 -->
+            <div class="map-report-detail-section">
+              <div class="map-report-detail-section-label">Reported User</div>
+              <div class="map-report-detail-user-card">
+                <img class="map-report-detail-user-avatar" id="mapReportDetailUserAvatar" src="" alt="">
+                <div class="map-report-detail-user-info">
+                  <div class="map-report-detail-user-nickname" id="mapReportDetailUserNickname"></div>
+                  <div class="map-report-detail-user-handle" id="mapReportDetailUserHandle"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 举报理由 -->
+            <div class="map-report-detail-section">
+              <div class="map-report-detail-section-label">Report Reasons</div>
+              <div class="map-report-detail-reasons" id="mapReportDetailReasons"></div>
+            </div>
+
+            <!-- 举报描述 -->
+            <div class="map-report-detail-section" id="mapReportDetailDescSection">
+              <div class="map-report-detail-section-label">Additional Details</div>
+              <div class="map-report-detail-description" id="mapReportDetailDescription"></div>
+            </div>
+
+            <!-- AI判定原因 -->
+            <div class="map-report-detail-section">
+              <div class="map-report-detail-section-label">Review Result</div>
+              <div class="map-report-detail-reason" id="mapReportDetailReason"></div>
+            </div>
+
+            <!-- 举报时间 -->
+            <div class="map-report-detail-section">
+              <div class="map-report-detail-section-label">Report Time</div>
+              <div class="map-report-detail-time" id="mapReportDetailTime"></div>
+            </div>
+          </div>
+
+          <!-- 底部按钮 -->
+          <div class="map-report-detail-actions">
+            <button class="map-report-detail-acknowledge-btn" id="mapReportDetailAcknowledgeBtn">Acknowledge</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ⚙️ 应用设置弹窗 - ins风格 -->
+      <div class="map-app-settings-overlay" id="mapAppSettingsOverlay"></div>
+      <div class="map-app-settings-modal" id="mapAppSettingsModal">
+        <div class="map-app-settings-content">
+          <!-- 头部 -->
+          <div class="map-app-settings-header">
+            <h3 class="map-app-settings-title">Settings</h3>
+            <button class="map-app-settings-close-btn" id="mapAppSettingsCloseBtn">
+              <svg viewBox="0 0 24 24">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+
+          <!-- 设置主体 -->
+          <div class="map-app-settings-body">
+            <!-- 主题切换 -->
+            <div class="map-app-setting-item">
+              <div class="map-app-setting-label">
+                <div class="map-app-setting-label-text">Appearance</div>
+                <div class="map-app-setting-label-desc">Switch between light and dark theme</div>
+              </div>
+              <div class="map-theme-toggle" id="mapThemeToggle">
+                <div class="map-theme-toggle-circle">
+                  <svg class="map-theme-toggle-icon" viewBox="0 0 24 24">
+                    <!-- 月亮图标（暗色模式） -->
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- 自定义头像管理 -->
+            <div class="map-app-setting-section">
+              <div class="map-app-setting-section-title">Custom Avatars</div>
+              <div class="map-app-setting-section-desc">Add your own avatar URLs to the library</div>
+
+              <!-- 添加头像表单 -->
+              <div class="map-avatar-add-form">
+                <input
+                  type="text"
+                  class="map-avatar-url-input"
+                  id="mapAvatarUrlInput"
+                  placeholder="Enter URL(s), separate with commas for batch upload"
+                />
+
+                <div class="map-avatar-category-selector">
+                  <label class="map-avatar-category-option">
+                    <input type="radio" name="avatarCategory" value="unisex" checked />
+                    <span class="map-avatar-category-label">Unisex</span>
+                  </label>
+                  <label class="map-avatar-category-option">
+                    <input type="radio" name="avatarCategory" value="male" />
+                    <span class="map-avatar-category-label">Male</span>
+                  </label>
+                  <label class="map-avatar-category-option">
+                    <input type="radio" name="avatarCategory" value="female" />
+                    <span class="map-avatar-category-label">Female</span>
+                  </label>
+                </div>
+
+                <button class="map-avatar-add-btn" id="mapAvatarAddBtn">Add Avatar</button>
+              </div>
+
+              <!-- 已添加头像列表 -->
+              <div class="map-avatar-list" id="mapCustomAvatarList">
+                <!-- 动态生成 -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  // ==========================================
+  // 第三部分：程序化地图生成器
+  // ==========================================
+
+  const MapGenerator = {
+    // 暗色主题颜色（默认）
+    darkColors: {
+      background: "#1a1a1a",
+      water: "#1a2a3a",
+      waterLight: "#243444",
+      land: "#252525",
+      park: "#1e3025",
+      parkLight: "#253530",
+      building: "#2a2a2a",
+      buildingLight: "#303030",
+      buildingDark: "#222222",
+      roadMain: "#3a3a3a",
+      roadSecondary: "#333333",
+      roadLine: "rgba(255,255,255,0.08)",
+      roadCenter: "rgba(255,200,50,0.15)",
+    },
+
+    // 亮色主题颜色
+    lightColors: {
+      background: "#f5f5f5",
+      water: "#a8d8ea",
+      waterLight: "#c1e7f4",
+      land: "#e8e8e8",
+      park: "#b8e6b8",
+      parkLight: "#d0f0d0",
+      building: "#fff",
+      buildingLight: "#fafafa",
+      buildingDark: "#f0f0f0",
+      roadMain: "#d0d0d0",
+      roadSecondary: "#e0e0e0",
+      roadLine: "rgba(0,0,0,0.08)",
+      roadCenter: "rgba(255,200,50,0.3)",
+    },
+
+    // 当前使用的颜色（默认暗色）
+    colors: null,
+
+    landmarkTypes: [
+      {
+        type: "restaurant",
+        color: "#ff6b6b",
+        names: ["海底捞火锅", "必胜客", "肯德基", "星巴克咖啡", "麦当劳", "外婆家", "绿茶餐厅", "西贝莜面村"],
+        icon: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.1 13.34l2.83-2.83L3.91 3.5c-1.56 1.56-1.56 4.09 0 5.66l4.19 4.18zm6.78-1.81c1.53.71 3.68.21 5.27-1.38 1.91-1.91 2.28-4.65.81-6.12-1.46-1.46-4.2-1.1-6.12.81-1.59 1.59-2.09 3.74-1.38 5.27L3.7 19.87l1.41 1.41L12 14.41l6.88 6.88 1.41-1.41L13.41 13l1.47-1.47z"/></svg>',
+      },
+      {
+        type: "cafe",
+        color: "#8b6f47",
+        names: ["星巴克", "Costa咖啡", "瑞幸咖啡", "Manner咖啡", "太平洋咖啡", "猫的天空之城"],
+        icon: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 21h18v-2H2v2zm15.5-6c1.38 0 2.5-1.12 2.5-2.5V4H3v8.5c0 1.38 1.12 2.5 2.5 2.5h12zM5 6h12v6.5c0 .28-.22.5-.5.5h-11c-.28 0-.5-.22-.5-.5V6zm15-.5c.28 0 .5.22.5.5v3c0 .28-.22.5-.5.5s-.5-.22-.5-.5V6c0-.28.22-.5.5-.5z"/></svg>',
+      },
+      {
+        type: "park",
+        color: "#51cf66",
+        names: ["中央公园", "人民公园", "森林公园", "滨江公园", "城市绿地", "儿童乐园"],
+        icon: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M17 8C17 5.24 14.76 3 12 3S7 5.24 7 8c0 2.85 2.92 7.21 5 9.88 2.11-2.69 5-7 5-9.88zM12 11c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm-7 9c0-3.87 3.13-7 7-7s7 3.13 7 7H5z"/></svg>',
+      },
+      {
+        type: "mall",
+        color: "#cc5de8",
+        names: ["万达广场", "银泰百货", "大悦城", "龙湖天街", "万象城", "来福士广场"],
+        icon: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>',
+      },
+      {
+        type: "hospital",
+        color: "#ff6b6b",
+        names: ["人民医院", "中医院", "第一医院", "儿童医院", "口腔医院", "社区诊所"],
+        icon: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-1.99.9-1.99 2L3 19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-1 11h-4v4h-4v-4H6v-4h4V6h4v4h4v4z"/></svg>',
+      },
+      {
+        type: "school",
+        color: "#339af0",
+        names: ["实验小学", "第一中学", "外国语学校", "职业学院", "大学城", "幼儿园"],
+        icon: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z"/></svg>',
+      },
+      {
+        type: "metro",
+        color: "#748ffc",
+        names: ["地铁站", "火车站", "公交总站", "客运中心"],
+        icon: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c-4 0-8 .5-8 4v9.5C4 17.43 5.57 19 7.5 19L6 20.5v.5h2l2-2h4l2 2h2v-.5L16.5 19c1.93 0 3.5-1.57 3.5-3.5V6c0-3.5-4-4-8-4zm0 2c3.51 0 4.96.48 5.57 1H6.43c.61-.52 2.06-1 5.57-1zM6 7h5v3H6V7zm12 8.5c0 .83-.67 1.5-1.5 1.5h-9c-.83 0-1.5-.67-1.5-1.5V12h12v3.5zm0-5.5h-5V7h5v3zM7.5 16c.83 0 1.5.67 1.5 1.5S8.33 19 7.5 19 6 18.33 6 17.5 6.67 16 7.5 16zm9 0c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5z"/></svg>',
+      },
+      {
+        type: "scenic",
+        color: "#ffd43b",
+        names: ["博物馆", "图书馆", "剧院", "体育馆", "美术馆", "科技馆", "音乐厅"],
+        icon: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>',
+      },
+    ],
+
+    landmarks: [],
+    seed: 12345,
+
+    // 地图配置（可由AI动态调整）
+    config: {
+      waterRatio: 0.15,        // 湖水比例（默认15%）
+      buildingDensity: 0.6,    // 建筑密度（默认60%）
+      parkCount: 4,            // 公园数量（默认4个）
+      roadWidth: 18,           // 道路宽度（默认18px）
+    },
+
+    random() {
+      this.seed = (this.seed * 9301 + 49297) % 233280;
+      return this.seed / 233280;
+    },
+
+    randomRange(min, max) {
+      return min + this.random() * (max - min);
+    },
+
+    randomInt(min, max) {
+      return Math.floor(this.randomRange(min, max + 1));
+    },
+
+    // 设置主题颜色
+    setTheme(isLight) {
+      this.colors = isLight ? this.lightColors : this.darkColors;
+      console.log(`🎨 [地图主题] 已切换到${isLight ? "亮色" : "暗色"}主题`);
+    },
+
+    // 重新绘制地图
+    redraw() {
+      if (!this.ctx || !this.width || !this.height) {
+        console.warn("⚠️ [地图重绘] 地图未初始化，跳过重绘");
+        return;
+      }
+
+      // 清空画布
+      this.ctx.clearRect(0, 0, this.width, this.height);
+
+      // 重置随机种子以保持地图一致
+      this.seed = 12345;
+
+      // 重新绘制所有图层
+      this.drawBackground();
+      this.drawWaterAreas();
+      this.drawParks();
+      this.drawBlocks();
+      this.drawMainRoads();
+      this.drawSecondaryRoads();
+      this.drawBuildings();
+      this.drawRoadDetails();
+      this.drawLandmarks();
+
+      console.log("✅ [地图重绘] 地图已重新绘制");
+    },
+
+    init(canvasId) {
+      const canvas = document.getElementById(canvasId);
+      if (!canvas) return;
+
+      const mapCanvas = document.getElementById("mapCanvas");
+      const width = mapCanvas.offsetWidth;
+      const height = mapCanvas.offsetHeight;
+
+      canvas.width = width;
+      canvas.height = height;
+
+      const ctx = canvas.getContext("2d");
+      this.ctx = ctx;
+      this.width = width;
+      this.height = height;
+
+      this.seed = 12345;
+
+      // 根据当前主题设置颜色
+      const container = document.getElementById("x-map-container");
+      const isLight = container?.classList.contains("light-theme") || false;
+      this.setTheme(isLight);
+
+      this.drawBackground();
+      this.drawWaterAreas();
+      this.drawParks();
+      this.drawBlocks();
+      this.drawMainRoads();
+      this.drawSecondaryRoads();
+      this.drawBuildings();
+      this.drawRoadDetails();
+      this.generateLandmarks();
+      this.drawLandmarks();
+    },
+
+    generateLandmarks() {
+      // 如果已经有AI生成的地标数据，不再重新生成
+      if (this.landmarks && this.landmarks.length > 0) {
+        console.log("📍 [地图生成] 使用AI生成的地标数据，共", this.landmarks.length, "个");
+        return;
+      }
+
+      // 使用默认随机生成
+      this.landmarks = [];
+      const { width, height } = this;
+      const landmarkCount = this.randomInt(30, 50);
+
+      for (let i = 0; i < landmarkCount; i++) {
+        const typeIndex = this.randomInt(0, this.landmarkTypes.length - 1);
+        const landmarkType = this.landmarkTypes[typeIndex];
+        const nameIndex = this.randomInt(0, landmarkType.names.length - 1);
+        const name = landmarkType.names[nameIndex];
+        const x = this.randomRange(50, width - 50);
+        const y = this.randomRange(50, height - 50);
+
+        this.landmarks.push({
+          id: `landmark-${i}`,
+          x,
+          y,
+          name,
+          type: landmarkType.type,
+          icon: landmarkType.icon,
+          color: landmarkType.color,
+        });
+      }
+      console.log("📍 [地图生成] 使用默认随机地标数据，共", this.landmarks.length, "个");
+    },
+
+    drawLandmarks() {
+      const { ctx, landmarks, colors } = this;
+
+      // 根据主题选择描边颜色
+      const strokeColor = colors === this.lightColors ? "#000" : "#fff";
+      const highlightColor = colors === this.lightColors ? "rgba(0,0,0,0.3)" : "rgba(255,255,255,0.5)";
+
+      landmarks.forEach((landmark) => {
+        ctx.beginPath();
+        ctx.arc(landmark.x, landmark.y, 8, 0, Math.PI * 2);
+        ctx.fillStyle = landmark.color + "20";
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(landmark.x, landmark.y, 5, 0, Math.PI * 2);
+        ctx.fillStyle = landmark.color;
+        ctx.fill();
+
+        ctx.strokeStyle = strokeColor;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(landmark.x - 1, landmark.y - 1, 2, 0, Math.PI * 2);
+        ctx.fillStyle = highlightColor;
+        ctx.fill();
+      });
+    },
+
+    drawBackground() {
+      const { ctx, width, height, colors } = this;
+      ctx.fillStyle = colors.background;
+      ctx.fillRect(0, 0, width, height);
+    },
+
+    drawWaterAreas() {
+      const { ctx, width, height, colors } = this;
+
+      ctx.beginPath();
+      ctx.moveTo(0, height * 0.3);
+
+      const riverWidth = this.randomRange(80, 150);
+      let y = height * 0.3;
+
+      for (let x = 0; x < width; x += 100) {
+        y += this.randomRange(-50, 50);
+        y = Math.max(height * 0.1, Math.min(height * 0.5, y));
+        ctx.lineTo(x, y);
+      }
+
+      ctx.lineTo(width, y);
+      ctx.lineTo(width, y + riverWidth);
+
+      y = y + riverWidth;
+      for (let x = width; x >= 0; x -= 100) {
+        y += this.randomRange(-30, 30);
+        ctx.lineTo(x, y);
+      }
+
+      ctx.closePath();
+
+      const gradient = ctx.createLinearGradient(0, 0, width, 0);
+      gradient.addColorStop(0, colors.water);
+      gradient.addColorStop(0.5, colors.waterLight);
+      gradient.addColorStop(1, colors.water);
+      ctx.fillStyle = gradient;
+      ctx.fill();
+
+      ctx.beginPath();
+      const lakeX = width * 0.7;
+      const lakeY = height * 0.75;
+      const lakeRx = this.randomRange(100, 180);
+      const lakeRy = this.randomRange(60, 100);
+      ctx.ellipse(lakeX, lakeY, lakeRx, lakeRy, 0.2, 0, Math.PI * 2);
+      ctx.fillStyle = colors.water;
+      ctx.fill();
+    },
+
+    drawParks() {
+      const { ctx, width, height, colors } = this;
+      const parkCount = this.randomInt(4, 8);
+
+      for (let i = 0; i < parkCount; i++) {
+        const x = this.randomRange(50, width - 50);
+        const y = this.randomRange(50, height - 50);
+        const w = this.randomRange(80, 200);
+        const h = this.randomRange(60, 150);
+
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+
+        const points = this.randomInt(5, 8);
+        for (let j = 0; j < points; j++) {
+          const angle = (j / points) * Math.PI * 2;
+          const radius = (j % 2 === 0 ? w : h) * this.randomRange(0.3, 0.6);
+          const px = x + Math.cos(angle) * radius;
+          const py = y + Math.sin(angle) * radius;
+          ctx.lineTo(px, py);
+        }
+
+        ctx.closePath();
+        ctx.fillStyle = i % 2 === 0 ? colors.park : colors.parkLight;
+        ctx.fill();
+      }
+    },
+
+    drawBlocks() {
+      const { ctx, width, height, colors } = this;
+      const blockSize = 200;
+      const cols = Math.ceil(width / blockSize);
+      const rows = Math.ceil(height / blockSize);
+
+      for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < cols; col++) {
+          const x = col * blockSize + this.randomRange(5, 15);
+          const y = row * blockSize + this.randomRange(5, 15);
+          const w = blockSize - this.randomRange(20, 40);
+          const h = blockSize - this.randomRange(20, 40);
+
+          const colorChoice = this.random();
+          if (colorChoice < 0.6) {
+            ctx.fillStyle = colors.land;
+          } else if (colorChoice < 0.8) {
+            ctx.fillStyle = colors.building;
+          } else {
+            ctx.fillStyle = colors.buildingLight;
+          }
+
+          this.roundRect(x, y, w, h, 5);
+          ctx.fill();
+        }
+      }
+    },
+
+    drawMainRoads() {
+      const { ctx, width, height, colors } = this;
+      const roadWidth = 24;
+
+      ctx.strokeStyle = colors.roadMain;
+      ctx.lineWidth = roadWidth;
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+
+      const hRoadCount = this.randomInt(3, 5);
+      for (let i = 0; i < hRoadCount; i++) {
+        const y = (height / (hRoadCount + 1)) * (i + 1) + this.randomRange(-30, 30);
+
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+
+        for (let x = 0; x <= width; x += width / 4) {
+          const offsetY = this.randomRange(-20, 20);
+          ctx.lineTo(x, y + offsetY);
+        }
+
+        ctx.stroke();
+      }
+
+      const vRoadCount = this.randomInt(3, 5);
+      for (let i = 0; i < vRoadCount; i++) {
+        const x = (width / (vRoadCount + 1)) * (i + 1) + this.randomRange(-30, 30);
+
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+
+        for (let y = 0; y <= height; y += height / 4) {
+          const offsetX = this.randomRange(-20, 20);
+          ctx.lineTo(x + offsetX, y);
+        }
+
+        ctx.stroke();
+      }
+    },
+
+    drawSecondaryRoads() {
+      const { ctx, width, height, colors } = this;
+      const roadWidth = 12;
+
+      ctx.strokeStyle = colors.roadSecondary;
+      ctx.lineWidth = roadWidth;
+
+      const roadCount = this.randomInt(15, 25);
+
+      for (let i = 0; i < roadCount; i++) {
+        const isHorizontal = this.random() > 0.5;
+
+        ctx.beginPath();
+
+        if (isHorizontal) {
+          const y = this.randomRange(50, height - 50);
+          const startX = this.randomRange(0, width * 0.3);
+          const endX = this.randomRange(width * 0.7, width);
+
+          ctx.moveTo(startX, y);
+          ctx.lineTo(endX, y + this.randomRange(-30, 30));
+        } else {
+          const x = this.randomRange(50, width - 50);
+          const startY = this.randomRange(0, height * 0.3);
+          const endY = this.randomRange(height * 0.7, height);
+
+          ctx.moveTo(x, startY);
+          ctx.lineTo(x + this.randomRange(-30, 30), endY);
+        }
+
+        ctx.stroke();
+      }
+    },
+
+    drawBuildings() {
+      const { ctx, width, height, colors } = this;
+      const buildingCount = this.randomInt(200, 350);
+
+      for (let i = 0; i < buildingCount; i++) {
+        const x = this.randomRange(0, width);
+        const y = this.randomRange(0, height);
+        const w = this.randomRange(15, 50);
+        const h = this.randomRange(15, 50);
+
+        const colorChoice = this.random();
+        if (colorChoice < 0.4) {
+          ctx.fillStyle = colors.building;
+        } else if (colorChoice < 0.7) {
+          ctx.fillStyle = colors.buildingLight;
+        } else {
+          ctx.fillStyle = colors.buildingDark;
+        }
+
+        ctx.fillRect(x, y, w, h);
+
+        ctx.strokeStyle = "rgba(0,0,0,0.3)";
+        ctx.lineWidth = 1;
+        ctx.strokeRect(x, y, w, h);
+      }
+    },
+
+    drawRoadDetails() {
+      const { ctx, width, height, colors } = this;
+
+      ctx.setLineDash([15, 10]);
+      ctx.strokeStyle = colors.roadLine;
+      ctx.lineWidth = 1;
+
+      for (let y = 100; y < height; y += 150 + this.randomRange(-20, 20)) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(width, y);
+        ctx.stroke();
+      }
+
+      for (let x = 100; x < width; x += 150 + this.randomRange(-20, 20)) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, height);
+        ctx.stroke();
+      }
+
+      ctx.setLineDash([]);
+
+      ctx.setLineDash([20, 15]);
+      ctx.strokeStyle = colors.roadCenter;
+      ctx.lineWidth = 2;
+
+      for (let y = 200; y < height; y += 300) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(width, y);
+        ctx.stroke();
+      }
+
+      for (let x = 200; x < width; x += 300) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, height);
+        ctx.stroke();
+      }
+
+      ctx.setLineDash([]);
+    },
+
+    roundRect(x, y, w, h, r) {
+      const { ctx } = this;
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+      ctx.lineTo(x + w, y + h - r);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      ctx.lineTo(x + r, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+      ctx.lineTo(x, y + r);
+      ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.closePath();
+    },
+  };
+
+  // ==========================================
+  // 第四部分：地图约会控制器
+  // ==========================================
+
+  const MapDatingController = {
+    // ==================== 头像库 ====================
+    avatarLibrary: {
+      // 共用头像 - 无论男女
+      unisex: [
+        'https://i.postimg.cc/nzYhv1dF/25f610139f457dbb334fa669033e710d.jpg',
+        'https://i.postimg.cc/rFpwrxxB/8a0c2ef08661efe92a45bdac2522e0e5.jpg',
+        'https://i.postimg.cc/Sx2QZ4ZB/d3e487bf5b4dcb930aa4710bddace460.jpg',
+        'https://i.postimg.cc/kGgqWP6S/47625239f04329daf2f0a5cb857fab17.jpg',
+        'https://i.postimg.cc/WbKTqK2b/3597240784be5b8a5e20c48444522ac0.jpg',
+        'https://i.postimg.cc/TwR6Xv9G/𝐴𝑣𝑎𝑡𝑎𝑟.jpg',
+        'https://i.postimg.cc/yYJzKPFR/0906e30095fe9c7d755f9878c6e9b231.jpg',
+      ],
+      // 女用头像
+      female: [
+        'https://i.postimg.cc/CK0yjp9Z/2a8ebd43a59bbb20d1d8b8e058b2d8f8.jpg',
+        'https://i.postimg.cc/vTkkTJWV/68f698a3ec805053ecc57d4ccb24bb88.jpg',
+        'https://i.postimg.cc/ZYM1wd1n/dca1d391113e16471670428ff246a797.jpg',
+      ],
+      // 男用头像
+      male: [
+        'https://i.postimg.cc/K8nwcs4Z/2b5d7cc132d92c7539f72a271d3bb2bb.jpg',
+        'https://i.postimg.cc/wBgP1cs2/2f3ad4ca3491f004f0985f7f94987e63.jpg',
+        'https://i.postimg.cc/wx16xgzd/8a371ffd7747316ca6a20a73e9213d83.jpg',
+        'https://i.postimg.cc/vZsMvnVy/16602df49663ddff9f7affe386ca828d.jpg',
+        'https://e3f49eaa46b57.cdn.sohucs.com/2025/11/23/19/53/MTAwMTE0XzE3NjM4OTg4MDMxNjA=.jpg',
+      ],
+    },
+
+    // 自定义头像库（用户添加的）
+    customAvatars: {
+      unisex: [],
+      male: [],
+      female: [],
+    },
+
+    // 从头像库中随机选择头像（包含自定义头像）
+    getRandomAvatar(gender = 'unisex') {
+      // 合并内置头像和自定义头像
+      const builtInAvatars =
+        gender === 'male'
+          ? [...this.avatarLibrary.male, ...this.avatarLibrary.unisex]
+          : gender === 'female'
+          ? [...this.avatarLibrary.female, ...this.avatarLibrary.unisex]
+          : this.avatarLibrary.unisex;
+
+      const customAvatarsForGender =
+        gender === 'male'
+          ? [...this.customAvatars.male, ...this.customAvatars.unisex]
+          : gender === 'female'
+          ? [...this.customAvatars.female, ...this.customAvatars.unisex]
+          : this.customAvatars.unisex;
+
+      const pool = [...builtInAvatars, ...customAvatarsForGender];
+
+      return pool[Math.floor(Math.random() * pool.length)];
+    },
+
+    // ==================== 聊天系统数据 ====================
+    chatMessages: {}, // 存储每个用户的聊天记录 { userId: [{type: 'sent'|'received', text: '...', timestamp: '...'}] }
+    chatAffectionData: {}, // 存储好感度数据 { userId: {affection: 0, threshold: 50, growthRate: 1.0} }
+    chatNotes: {}, // 📝 AI自动记录的人设笔记（不可见） { userId: {work: '...', hobbies: [], ...} }
+    userMarkedNotes: {}, // 📌 用户手动标记的笔记（可视化展示） { userId: [{id, category, content, messageIndex, timestamp}] }
+    npcNotesAboutUser: {}, // 💭 NPC对用户的笔记记录（每个NPC独立） { userId: [{id, category, content, timestamp}] }
+    chatContext: {}, // 🎯 聊天发起上下文 { userId: 'normal'|'interested_then_message'|'message_accepted' }
+    detailCardOpenSource: 'map', // 🔧 记录资料卡打开来源 'map'|'interested' (用于区分聊天上下文)
+    currentChatUser: null, // 当前聊天对象
+    userMessageQueue: [], // 用户发送的消息队列（等待AI回复）
+
+    // ==================== 真实度系统 ====================
+    // 真实度：隐藏分数，初始100，范围0-200
+    // 举报成功增加，举报失败（恶意举报）扣除
+    // AI会根据真实度决定是否拒绝聊天
+    authenticityScore: 100,
+
+    // 当前打开的举报详情notification（用于"已知晓"按钮结算）
+    currentReportNotification: null,
+
+    // ==================== 被举报计数和封禁系统 ====================
+    // 被举报次数（累计）
+    userReportedCount: 0,
+    // 封禁开始时间（null表示未封禁）
+    mapBanStartTime: null,
+    // 封禁时长（毫秒）12小时
+    mapBanDuration: 12 * 60 * 60 * 1000,
+
+    // 初始化真实度
+    initAuthenticityScore() {
+      const saved = localStorage.getItem('xUserAuthenticityScore');
+      if (saved !== null) {
+        this.authenticityScore = parseFloat(saved);
+        console.log(`🎯 [真实度系统] 加载真实度: ${this.authenticityScore}`);
+      } else {
+        this.authenticityScore = 100;
+        localStorage.setItem('xUserAuthenticityScore', '100');
+        console.log(`🎯 [真实度系统] 初始化真实度: 100`);
+      }
+    },
+
+    // 获取当前真实度
+    getAuthenticityScore() {
+      return this.authenticityScore;
+    },
+
+    // 增加真实度
+    addAuthenticityScore(amount, reason = '') {
+      const oldScore = this.authenticityScore;
+      this.authenticityScore = Math.min(200, this.authenticityScore + amount);
+      localStorage.setItem('xUserAuthenticityScore', this.authenticityScore.toString());
+      console.log(
+        `✅ [真实度系统] ${reason || '增加真实度'}: ${oldScore.toFixed(1)} → ${this.authenticityScore.toFixed(
+          1,
+        )} (+${amount})`,
+      );
+      return this.authenticityScore;
+    },
+
+    // 扣除真实度
+    subtractAuthenticityScore(amount, reason = '') {
+      const oldScore = this.authenticityScore;
+      this.authenticityScore = Math.max(0, this.authenticityScore - amount);
+      localStorage.setItem('xUserAuthenticityScore', this.authenticityScore.toString());
+      console.log(
+        `⚠️ [真实度系统] ${reason || '扣除真实度'}: ${oldScore.toFixed(1)} → ${this.authenticityScore.toFixed(
+          1,
+        )} (-${amount})`,
+      );
+      return this.authenticityScore;
+    },
+
+    // 初始化被举报计数系统
+    initReportedCountSystem() {
+      // 加载被举报次数
+      const savedCount = localStorage.getItem('xUserReportedCount');
+      if (savedCount !== null) {
+        this.userReportedCount = parseInt(savedCount);
+        console.log(`🚨 [被举报计数] 加载被举报次数: ${this.userReportedCount}`);
+      } else {
+        this.userReportedCount = 0;
+        localStorage.setItem('xUserReportedCount', '0');
+        console.log(`🚨 [被举报计数] 初始化被举报次数: 0`);
+      }
+
+      // 加载封禁状态
+      const savedBanTime = localStorage.getItem('xMapBanStartTime');
+      if (savedBanTime) {
+        this.mapBanStartTime = parseInt(savedBanTime);
+        console.log(`🚫 [封禁系统] 加载封禁时间: ${new Date(this.mapBanStartTime).toLocaleString()}`);
+      } else {
+        this.mapBanStartTime = null;
+      }
+    },
+
+    // 增加被举报次数
+    incrementReportedCount() {
+      this.userReportedCount++;
+      localStorage.setItem('xUserReportedCount', this.userReportedCount.toString());
+      console.log(`🚨 [被举报计数] 被举报次数增加: ${this.userReportedCount}`);
+
+      // 如果达到5次，触发封禁
+      if (this.userReportedCount >= 5) {
+        this.banMapAccess();
+      }
+
+      return this.userReportedCount;
+    },
+
+    // 封禁地图访问
+    banMapAccess() {
+      this.mapBanStartTime = Date.now();
+      localStorage.setItem('xMapBanStartTime', this.mapBanStartTime.toString());
+      console.log(`🚫 [封禁系统] 地图功能已被封禁12小时，开始时间: ${new Date(this.mapBanStartTime).toLocaleString()}`);
+
+      // 重置被举报次数
+      this.userReportedCount = 0;
+      localStorage.setItem('xUserReportedCount', '0');
+    },
+
+    // 检查是否被封禁
+    checkMapBanStatus() {
+      if (!this.mapBanStartTime) {
+        return { isBanned: false };
+      }
+
+      const now = Date.now();
+      const elapsed = now - this.mapBanStartTime;
+
+      if (elapsed >= this.mapBanDuration) {
+        // 封禁时间已过，解除封禁
+        this.mapBanStartTime = null;
+        localStorage.removeItem('xMapBanStartTime');
+        console.log(`✅ [封禁系统] 封禁时间已过，已自动解除`);
+        return { isBanned: false };
+      } else {
+        // 仍在封禁中
+        const remaining = this.mapBanDuration - elapsed;
+        const remainingHours = Math.floor(remaining / (60 * 60 * 1000));
+        const remainingMinutes = Math.floor((remaining % (60 * 60 * 1000)) / (60 * 1000));
+        console.log(`🚫 [封禁系统] 仍在封禁中，剩余时间: ${remainingHours}小时${remainingMinutes}分钟`);
+        return {
+          isBanned: true,
+          remainingTime: remaining,
+          remainingHours: remainingHours,
+          remainingMinutes: remainingMinutes,
+        };
+      }
+    },
+
+    // 显示封禁提示UI
+    showMapBanNotice(banStatus) {
+      const container = document.getElementById('x-map-container');
+      if (!container) return;
+
+      // 清空容器
+      container.innerHTML = '';
+
+      // 创建封禁提示UI（纯黑白灰ins风格）
+      const banNotice = document.createElement('div');
+      banNotice.style.cssText = `
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #000;
+        padding: 24px;
+      `;
+
+      banNotice.innerHTML = `
+        <div style="
+          max-width: 400px;
+          background: #1a1a1a;
+          border-radius: 24px;
+          padding: 40px 32px;
+          text-align: center;
+          border: 1px solid #2a2a2a;
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+        ">
+          <!-- 警告图标 -->
+          <div style="
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 28px;
+            background: #2a2a2a;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #3a3a3a;
+          ">
+            <svg viewBox="0 0 24 24" style="width: 36px; height: 36px; fill: #9ca3af;">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+            </svg>
+          </div>
+
+          <!-- 标题 -->
+          <h2 style="
+            color: #fff;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+          ">Account Suspended</h2>
+
+          <!-- 副标题 -->
+          <div style="
+            color: #6b7280;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+          ">Temporary Restriction</div>
+
+          <!-- 描述 -->
+          <p style="
+            color: #9ca3af;
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 28px;
+          ">Your access to Map Dating has been temporarily suspended due to multiple community guideline violations.</p>
+
+          <!-- 违规次数指示器 -->
+          <div style="
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 24px;
+          ">
+            <div style="width: 12px; height: 12px; border-radius: 50%; background: #fff; border: 2px solid #fff;"></div>
+            <div style="width: 12px; height: 12px; border-radius: 50%; background: #fff; border: 2px solid #fff;"></div>
+            <div style="width: 12px; height: 12px; border-radius: 50%; background: #fff; border: 2px solid #fff;"></div>
+            <div style="width: 12px; height: 12px; border-radius: 50%; background: #fff; border: 2px solid #fff;"></div>
+            <div style="width: 12px; height: 12px; border-radius: 50%; background: #fff; border: 2px solid #fff;"></div>
+          </div>
+
+          <!-- 分隔线 -->
+          <div style="
+            height: 1px;
+            background: #2a2a2a;
+            margin: 24px 0;
+          "></div>
+
+          <!-- 剩余时间卡片 -->
+          <div style="
+            background: #0a0a0a;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 28px;
+            border: 1px solid #2a2a2a;
+          ">
+            <div style="
+              color: #6b7280;
+              font-size: 12px;
+              margin-bottom: 10px;
+              text-transform: uppercase;
+              letter-spacing: 1.5px;
+              font-weight: 600;
+            ">Time Remaining</div>
+            <div style="
+              color: #fff;
+              font-size: 32px;
+              font-weight: 700;
+              font-family: 'Courier New', monospace;
+              letter-spacing: 2px;
+            ">${banStatus.remainingHours}h ${banStatus.remainingMinutes}m</div>
+          </div>
+
+          <!-- 提示文本 -->
+          <p style="
+            color: #6b7280;
+            font-size: 13px;
+            line-height: 1.6;
+            margin-bottom: 28px;
+            padding: 0 8px;
+          ">Access will be automatically restored after the suspension period. Please review our community guidelines to avoid future violations.</p>
+
+          <!-- 关闭按钮 -->
+          <button onclick="document.getElementById('x-map-container').style.display='none'" style="
+            width: 100%;
+            background: #fff;
+            color: #000;
+            border: none;
+            border-radius: 16px;
+            padding: 16px 24px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            letter-spacing: -0.2px;
+          " onmouseover="this.style.background='#e5e5e5'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(255, 255, 255, 0.15)'" onmouseout="this.style.background='#fff'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+            Close
+          </button>
+        </div>
+      `;
+
+      container.appendChild(banNotice);
+
+      console.log(`🚫 [封禁系统] 已显示封禁提示UI`);
+    },
+
+    // 📌 用户笔记分类定义（简约暗色风格）
+    noteCategories: [
+      { id: 'work', name: '工作', iconType: 'briefcase' },
+      { id: 'hobby', name: '兴趣', iconType: 'heart' },
+      { id: 'family', name: '家庭', iconType: 'users' },
+      { id: 'personality', name: '性格', iconType: 'user' },
+      { id: 'appearance', name: '外貌', iconType: 'eye' },
+      { id: 'food', name: '饮食', iconType: 'coffee' },
+      { id: 'location', name: '地点', iconType: 'map-pin' },
+      { id: 'dream', name: '梦想', iconType: 'star' },
+      { id: 'habit', name: '习惯', iconType: 'repeat' },
+      { id: 'friend', name: '朋友', iconType: 'user-plus' },
+      { id: 'other', name: '其他', iconType: 'file-text' },
+    ],
+
+    // ==================== 天气系统方法 ====================
+
+    // 从天气描述文本中解析天气类型
+    parseWeatherFromText(weatherText) {
+      if (!weatherText) return 'sunny'; // 默认晴天
+
+      const text = weatherText.toLowerCase();
+
+      // 按优先级匹配天气关键词（雷暴 > 大雨 > 小雨等）
+      const priorityOrder = ['thunder', 'heavy-rain', 'snow', 'dust', 'fog', 'rain', 'cloudy', 'sunny'];
+
+      for (const weatherType of priorityOrder) {
+        const keywords = this.weatherKeywords[weatherType];
+        if (keywords && keywords.some(kw => text.includes(kw))) {
+          return weatherType;
+        }
+      }
+
+      return 'sunny'; // 匹配不到默认晴天
+    },
+
+    // 随机选择天气（如果没有全局大事件）
+    getRandomWeather() {
+      const weatherList = Object.keys(this.weatherTypes);
+      // 增加晴天和多云的权重，减少极端天气
+      const weightedList = [
+        'sunny',
+        'sunny',
+        'sunny', // 30%
+        'cloudy',
+        'cloudy', // 20%
+        'rain',
+        'rain', // 20%
+        'heavy-rain', // 10%
+        'thunder', // 5%
+        'snow', // 5%
+        'fog', // 5%
+        'dust', // 5%
+      ];
+      return weightedList[Math.floor(Math.random() * weightedList.length)];
+    },
+
+    // 渲染天气特效
+    renderWeatherEffect(weatherType) {
+      const container = document.getElementById('mapWeatherContainer');
+      const weatherInfo = document.getElementById('mapWeatherInfo');
+      const weatherIcon = document.getElementById('mapWeatherIcon');
+
+      if (!container) {
+        console.warn('⚠️ [天气系统] 找不到天气容器');
+        return;
+      }
+
+      // 清空容器
+      container.innerHTML = '';
+      container.className = 'map-weather-container';
+
+      const weather = this.weatherTypes[weatherType];
+      if (!weather) {
+        console.warn(`⚠️ [天气系统] 未知天气类型: ${weatherType}`);
+        return;
+      }
+
+      // 添加天气CSS类
+      container.classList.add(weather.cssClass);
+
+      // 更新天气信息显示（只显示图标，悬停显示名称）
+      if (weatherInfo && weatherIcon) {
+        weatherInfo.style.display = 'flex';
+        weatherInfo.setAttribute('data-weather-name', weather.name);
+        weatherIcon.textContent = weather.icon;
+      }
+
+      // 添加粒子效果（雨滴、雪花、沙尘等）
+      const particleCount = weather.particles;
+      if (particleCount > 0) {
+        this.createWeatherParticles(container, weatherType, particleCount);
+      }
+
+      // 多云特效：全屏幕随机云层
+      if (weatherType === 'cloudy') {
+        // 生成8-12个云层，全屏幕随机分布
+        const cloudCount = 8 + Math.floor(Math.random() * 5);
+        for (let i = 0; i < cloudCount; i++) {
+          const cloud = document.createElement('div');
+          cloud.className = 'cloud';
+
+          // 随机大小 (100-250px宽，30-80px高)
+          const width = 100 + Math.random() * 150;
+          const height = 30 + Math.random() * 50;
+          cloud.style.width = `${width}px`;
+          cloud.style.height = `${height}px`;
+
+          // 随机起始位置（在屏幕左侧外）
+          cloud.style.left = `-${width}px`;
+
+          // 随机垂直位置（5%-95%）
+          cloud.style.top = `${5 + Math.random() * 90}%`;
+
+          // 随机动画时长 (20-50秒)
+          cloud.style.animationDuration = `${20 + Math.random() * 30}s`;
+
+          // 随机延迟启动 (0-30秒)
+          cloud.style.animationDelay = `${Math.random() * 30}s`;
+
+          container.appendChild(cloud);
+        }
+      }
+
+      // 雷暴特效额外添加闪电层
+      if (weatherType === 'thunder') {
+        const lightning = document.createElement('div');
+        lightning.className = 'lightning';
+        container.appendChild(lightning);
+      }
+
+      // 大雨特效额外添加涟漪
+      if (weatherType === 'heavy-rain') {
+        for (let i = 0; i < 8; i++) {
+          const ripple = document.createElement('div');
+          ripple.className = 'ripple';
+          ripple.style.left = `${Math.random() * 90 + 5}%`;
+          ripple.style.animationDelay = `${Math.random() * 1.5}s`;
+          container.appendChild(ripple);
+        }
+      }
+
+      this.currentWeather = weatherType;
+      console.log(`🌤️ [天气系统] 已应用天气特效: ${weather.name}`);
+    },
+
+    // 创建天气粒子效果
+    createWeatherParticles(container, weatherType, count) {
+      for (let i = 0; i < count; i++) {
+        const particle = document.createElement('div');
+
+        switch (weatherType) {
+          case 'rain':
+          case 'heavy-rain':
+          case 'thunder':
+            particle.className = 'rain-drop';
+            particle.style.left = `${Math.random() * 100}%`;
+            particle.style.animationDelay = `${Math.random() * 2}s`;
+            particle.style.animationDuration = `${0.5 + Math.random() * 0.5}s`;
+            break;
+
+          case 'snow':
+            particle.className = 'snowflake';
+            particle.textContent = ['❄', '❅', '❆', '✻', '✼'][Math.floor(Math.random() * 5)];
+            particle.style.left = `${Math.random() * 100}%`;
+            particle.style.animationDelay = `${Math.random() * 8}s`;
+            particle.style.animationDuration = `${6 + Math.random() * 4}s`;
+            particle.style.fontSize = `${8 + Math.random() * 10}px`;
+            break;
+
+          case 'dust':
+            particle.className = 'dust-particle';
+            particle.style.left = `${Math.random() * 30}%`;
+            particle.style.top = `${Math.random() * 80}%`;
+            particle.style.animationDelay = `${Math.random() * 3}s`;
+            particle.style.animationDuration = `${2 + Math.random() * 2}s`;
+            particle.style.width = `${2 + Math.random() * 4}px`;
+            particle.style.height = particle.style.width;
+            break;
+        }
+
+        container.appendChild(particle);
+      }
+    },
+
+    // 开发者测试：循环切换天气
+    cycleWeatherTest() {
+      const weatherList = Object.keys(this.weatherTypes);
+      this.weatherTestIndex = (this.weatherTestIndex + 1) % weatherList.length;
+      const nextWeather = weatherList[this.weatherTestIndex];
+
+      this.renderWeatherEffect(nextWeather);
+
+      // 在控制台显示当前天气
+      const weather = this.weatherTypes[nextWeather];
+      console.log(
+        `🔧 [开发者测试] 切换到天气: ${weather.icon} ${weather.name} (${this.weatherTestIndex + 1}/${
+          weatherList.length
+        })`,
+      );
+    },
+
+    // 模拟用户数据，后续可以从数据库或AI获取
+    mockUsers: [
+      {
+        id: 1,
+        nickname: '艾莉娅',
+        handle: 'ailiyadev',
+        avatarBubble: '📷',
+        distance: 0.8,
+        online: true,
+        status: '📷 拍照中',
+        avatar: 'https://i.postimg.cc/CK0yjp9Z/2a8ebd43a59bbb20d1d8b8e058b2d8f8.jpg', // 女用头像1
+        bio: '24岁 | 单身\n热爱旅行和摄影\n喜欢探索城市的每个角落\n周末常去咖啡馆看书写字',
+        tags: ['摄影', '旅行', '咖啡', '阅读'],
+        followers: 1024,
+        likes: 46900,
+        position: { top: '25%', left: '65%' },
+      },
+      {
+        id: 2,
+        nickname: '林晓',
+        handle: 'linxiao_fit',
+        avatarBubble: '💪',
+        distance: 1.2,
+        online: true,
+        status: '💪 健身中',
+        avatar: 'https://i.postimg.cc/K8nwcs4Z/2b5d7cc132d92c7539f72a271d3bb2bb.jpg', // 男用头像1
+        bio: '27岁 | 健身教练\n相信运动改变生活\n喜欢户外运动和健康饮食',
+        tags: ['健身', '户外', '美食'],
+        followers: 5420,
+        likes: 128000,
+        position: { top: '45%', left: '40%' },
+      },
+      {
+        id: 3,
+        nickname: 'Sophie',
+        handle: 'sophiedesign',
+        avatarBubble: '🎨',
+        distance: 1.5,
+        online: false,
+        status: '🎨 创作中',
+        avatar: 'https://i.postimg.cc/vTkkTJWV/68f698a3ec805053ecc57d4ccb24bb88.jpg', // 女用头像2
+        bio: '23岁 | 设计师\n热衷于创造美好的事物\n喜欢艺术展览和独立音乐',
+        tags: ['设计', '艺术', '音乐', '猫咪'],
+        followers: 2340,
+        likes: 78500,
+        position: { top: '60%', left: '70%' },
+      },
+      {
+        id: 4,
+        nickname: '陈墨',
+        handle: 'chenmo_dev',
+        avatarBubble: '💻',
+        distance: 2.1,
+        online: true,
+        status: '💻 写代码',
+        avatar: 'https://i.postimg.cc/wBgP1cs2/2f3ad4ca3491f004f0985f7f94987e63.jpg', // 男用头像2
+        bio: '29岁 | 软件工程师\n技术宅\n业余时间喜欢玩游戏和做饭',
+        tags: ['编程', '游戏', '烹饪'],
+        followers: 892,
+        likes: 34200,
+        position: { top: '35%', left: '50%' },
+      },
+      {
+        id: 5,
+        nickname: 'Emma',
+        handle: 'emma_yoga',
+        avatarBubble: '🧘',
+        distance: 2.8,
+        online: true,
+        status: '🧘 冥想中',
+        avatar: 'https://i.postimg.cc/ZYM1wd1n/dca1d391113e16471670428ff246a797.jpg', // 女用头像3
+        bio: '26岁 | 瑜伽老师\n追求身心平衡\n喜欢冥想、手工和素食',
+        tags: ['瑜伽', '冥想', '手工', '素食'],
+        followers: 6780,
+        likes: 215000,
+        position: { top: '20%', left: '30%' },
+      },
+      {
+        id: 6,
+        nickname: '王浩',
+        handle: 'wanghao_arch',
+        avatarBubble: '🚴',
+        distance: 3.2,
+        online: false,
+        status: '🚴 骑行中',
+        avatar: 'https://i.postimg.cc/wx16xgzd/8a371ffd7747316ca6a20a73e9213d83.jpg', // 男用头像3
+        bio: '31岁 | 建筑师\n对城市规划和空间设计充满热情\n爱好骑行和摄影',
+        tags: ['建筑', '设计', '骑行'],
+        followers: 3210,
+        likes: 96300,
+        position: { top: '55%', left: '25%' },
+      },
+      {
+        id: 7,
+        nickname: '米娅',
+        handle: 'miya_illust',
+        avatarBubble: '✏️',
+        distance: 3.5,
+        online: true,
+        status: '✏️ 画画',
+        avatar: 'https://i.postimg.cc/nzYhv1dF/25f610139f457dbb334fa669033e710d.jpg', // 共用头像1
+        bio: '25岁 | 插画师\n喜欢用画笔记录生活\n热爱动漫和手账',
+        tags: ['插画', '动漫', '手账', '猫咪'],
+        followers: 15600,
+        likes: 452000,
+        position: { top: '70%', left: '55%' },
+      },
+      {
+        id: 8,
+        nickname: '李思远',
+        handle: 'lisiyuan_fin',
+        avatarBubble: '🏀',
+        distance: 4.1,
+        online: false,
+        status: '🏀 打球',
+        avatar: 'https://i.postimg.cc/vZsMvnVy/16602df49663ddff9f7affe386ca828d.jpg', // 男用头像4
+        bio: '28岁 | 金融分析师 | 单身\n工作之余喜欢打篮球和看电影',
+        tags: ['篮球', '电影', '投资'],
+        followers: 1890,
+        likes: 67800,
+        position: { top: '40%', left: '80%' },
+      },
+      {
+        id: 9,
+        nickname: '张悦',
+        handle: 'zhangyue_music',
+        avatarBubble: '🎸',
+        distance: 4.5,
+        online: true,
+        status: '🎸 弹吉他',
+        avatar: 'https://i.postimg.cc/rFpwrxxB/8a0c2ef08661efe92a45bdac2522e0e5.jpg', // 共用头像2
+        bio: '22岁 | 音乐人\n热爱独立音乐和现场表演',
+        tags: ['音乐', '吉他', '创作'],
+        followers: 8920,
+        likes: 286000,
+        position: { top: '15%', left: '45%' },
+      },
+      {
+        id: 10,
+        nickname: '刘洋',
+        handle: 'liuyang_photo',
+        avatarBubble: '📸',
+        distance: 5.0,
+        online: true,
+        status: '📸 街拍',
+        avatar: 'https://i.postimg.cc/Sx2QZ4ZB/d3e487bf5b4dcb930aa4710bddace460.jpg', // 共用头像3
+        bio: '30岁 | 摄影师\n专注街拍和人像',
+        tags: ['摄影', '街拍', '后期'],
+        followers: 12400,
+        likes: 398000,
+        position: { top: '65%', left: '35%' },
+      },
+      {
+        id: 11,
+        nickname: 'Anna',
+        handle: 'anna_coffee',
+        avatarBubble: '☕',
+        distance: 5.3,
+        online: false,
+        status: '☕ 冲咖啡',
+        avatar: 'https://i.postimg.cc/kGgqWP6S/47625239f04329daf2f0a5cb857fab17.jpg', // 共用头像4
+        bio: '24岁 | 咖啡师\n喜欢研究咖啡和烘焙',
+        tags: ['咖啡', '烘焙', '手冲'],
+        followers: 4560,
+        likes: 143000,
+        position: { top: '50%', left: '60%' },
+      },
+      {
+        id: 12,
+        nickname: '赵明',
+        handle: 'zhaoming_gamedev',
+        avatarBubble: '🎮',
+        distance: 5.8,
+        online: true,
+        status: '🎮 开发游戏',
+        avatar: 'https://i.postimg.cc/WbKTqK2b/3597240784be5b8a5e20c48444522ac0.jpg', // 共用头像5
+        bio: '27岁 | 游戏开发者\n独立游戏爱好者',
+        tags: ['游戏', '开发', '独立游戏'],
+        followers: 7320,
+        likes: 234000,
+        position: { top: '30%', left: '75%' },
+      },
+    ],
+
+    allUsers: [], // 完整的用户数据源（AI生成或默认）
+    currentUsers: [], // 当前显示的用户列表（可能被筛选过）
+
+    // 🎯 指定筛选条件
+    advancedFilter: {
+      enabled: false, // 是否启用指定筛选
+      gender: 'all', // 性别：all/male/female
+      ageMin: 18, // 最小年龄
+      ageMax: 50, // 最大年龄
+      personality: '', // 性格要求（自由输入）
+      tags: '', // 标签要求（自由输入）
+      type: '', // 其他类型要求（自由输入）
+    },
+
+    // ==================== 天气系统 ====================
+    // 天气类型定义：关联全局大事件中的天气描述
+    weatherTypes: {
+      sunny: { icon: '☀️', name: '晴天', cssClass: 'weather-sunny', particles: 0 },
+      cloudy: { icon: '⛅', name: '多云', cssClass: 'weather-cloudy', particles: 0 },
+      rain: { icon: '🌧️', name: '小雨', cssClass: 'weather-rain', particles: 30 },
+      'heavy-rain': { icon: '⛈️', name: '大雨', cssClass: 'weather-heavy-rain', particles: 60 },
+      thunder: { icon: '🌩️', name: '雷暴', cssClass: 'weather-thunder', particles: 50 },
+      snow: { icon: '🌨️', name: '下雪', cssClass: 'weather-snow', particles: 40 },
+      fog: { icon: '🌫️', name: '大雾', cssClass: 'weather-fog', particles: 0 },
+      dust: { icon: '🌪️', name: '沙尘', cssClass: 'weather-dust', particles: 35 },
+    },
+    // 天气关键词映射：用于从全局大事件的天气描述中识别天气类型
+    weatherKeywords: {
+      sunny: ['晴', '晴天', '晴朗', '阳光', '万里无云', '艳阳'],
+      cloudy: ['多云', '阴', '阴天', '云', '转阴'],
+      rain: ['小雨', '阵雨', '零星小雨', '毛毛雨', '细雨'],
+      'heavy-rain': ['大雨', '暴雨', '中雨', '大到暴雨', '倾盆大雨'],
+      thunder: ['雷', '雷暴', '雷阵雨', '雷电', '打雷'],
+      snow: ['雪', '小雪', '中雪', '大雪', '暴雪', '雨夹雪'],
+      fog: ['雾', '大雾', '浓雾', '雾霾', '霾'],
+      dust: ['沙尘', '扬沙', '浮尘', '沙尘暴', '尘'],
+    },
+    currentWeather: 'sunny', // 当前天气类型
+    weatherTestIndex: 0, // 开发者测试用的天气索引
+
+    selectedUserId: null,
+    isSidebarOpen: false,
+
+    // 用户自己的位置（地图中心）
+    currentUserPosition: { top: '50%', left: '50%' },
+
+    // 触摸状态
+    touchStartX: 0,
+    touchStartY: 0,
+    touchEndX: 0,
+    touchEndY: 0,
+
+    // 地图状态
+    mapState: {
+      scale: 1,
+      translateX: 0,
+      translateY: 0,
+      isDragging: false,
+      startX: 0,
+      startY: 0,
+      lastTranslateX: 0,
+      lastTranslateY: 0,
+    },
+
+    MIN_ZOOM: 0.5,
+    MAX_ZOOM: 2.5,
+    ZOOM_STEP: 0.3,
+    MAP_SIZE_MULTIPLIER: 3,
+
+    // ▼▼▼ 【第十五个情景】地图约会数据AI生成器 ▼▼▼
+    async generateMapDatingData(onlyUsers = false) {
+      try {
+        console.log(onlyUsers ? '🔄 [第十五个情景] 刷新附近的人...' : '🗺️ [第十五个情景] 地图约会数据生成器启动...');
+
+        // 🔧 1. 使用统一的API配置加载工具
+        // 合并后所有模块都在同一个IIFE作用域内，可以直接访问 APIUtils、StringBuilders、TokenUtils
+        const { db, xDb, apiConfig, xSettings } = await APIUtils.loadConfigAndSettings();
+        const { userPrompt, worldSetting, boundCharacters } = xSettings;
+
+        // 🔧 1.5. 如果只刷新用户，从数据库读取原有数据
+        let existingMapConfig = null;
+        let existingLandmarks = null;
+        let existingWeather = null;
+
+        if (onlyUsers) {
+          const dataId = `mapDatingData_${currentAccountId || 'main'}`;
+          const savedData = await xDb.xMapDatingData.get(dataId);
+
+          if (savedData && savedData.data) {
+            existingMapConfig = savedData.data.mapConfig;
+            existingLandmarks = savedData.data.landmarks;
+            existingWeather = savedData.data.weather;
+            console.log('📖 [第十五个情景] 已加载原有地图配置和地标数据');
+            console.log(`  |- 地图配置: ${JSON.stringify(existingMapConfig)}`);
+            console.log(`  |- 地标数量: ${existingLandmarks?.length || 0}`);
+            console.log(`  |- 当前天气: ${existingWeather || '未知'}`);
+          } else {
+            console.warn('⚠️ [第十五个情景] 未找到原有数据，将进行完整生成');
+            onlyUsers = false; // 降级为完整生成
+          }
+        }
+
+        // 🔧 2. 构建用户X个人资料信息
+        const userXProfileInfo = StringBuilders.buildUserXProfileInfo(window.userProfileData);
+
+        // 🔧 3. Token计数器初始化
+        let tokenCount = 0;
+
+        // 🔧 5. 时间感知（北京时间）
+        const now = new Date();
+        const beijingTime = new Date(now.getTime() + 8 * 60 * 60 * 1000); // UTC+8
+        const timeInfo = `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⏰ 时间感知
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+当前北京时间：${beijingTime.toLocaleString('zh-CN', {
+          timeZone: 'Asia/Shanghai',
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          weekday: 'long',
+        })}
+【时间相关提示】：
+- 生成的附近的人状态应该符合当前时间段（早晨、中午、下午、晚上、深夜）
+- 例如：早晨可能在"晨跑中"，中午可能在"吃午饭"，晚上可能在"看电影"等
+- 在线状态也应该考虑时间因素（深夜在线率较低）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
+
+        // 🔧 6. 基础系统提示词
+        let systemPrompt =
+          timeInfo +
+          StringBuilders.buildBaseSystemPrompt({
+            userPrompt,
+            worldSetting,
+          });
+        tokenCount = TokenUtils.logTokenUsage('地图约会生成器', '时间感知+基础系统提示词', systemPrompt, tokenCount);
+
+        // 🔧 7. 获取适用的世界书内容
+        const worldBooksContent = await StringBuilders.getApplicableWorldBooks('mapDating', {
+          boundCharacters,
+        });
+        if (worldBooksContent) {
+          systemPrompt += worldBooksContent;
+          tokenCount = TokenUtils.logTokenUsage('地图约会生成器', '世界书内容', worldBooksContent, tokenCount);
+        }
+
+        // 🔧 8. 读取世界运转大事件（如果启用）
+        const worldEventsDataId = `worldEvents_${window.currentAccountId || 'main'}`;
+        const worldEventsRecord = await xDb.xWorldEvents.get(worldEventsDataId);
+
+        // 🌤️ 解析天气类型（从全局大事件或随机生成，或使用已有天气）
+        let mapWeatherType = existingWeather || this.getRandomWeather(); // 如果是刷新用户且有原天气，使用原天气
+        let mapWeatherInfo = null;
+
+        if (
+          worldEventsRecord &&
+          worldEventsRecord.enabled &&
+          worldEventsRecord.events &&
+          worldEventsRecord.events.length > 0
+        ) {
+          // 从全局大事件的天气描述中解析天气类型（但如果是刷新用户且有原天气，不覆盖）
+          if (!existingWeather) {
+            const weatherCondition = worldEventsRecord.weather?.condition || '';
+            mapWeatherType = this.parseWeatherFromText(weatherCondition);
+          }
+          mapWeatherInfo = this.weatherTypes[mapWeatherType];
+          console.log(
+            `🌤️ [地图约会生成器] ${existingWeather ? '保持原有天气' : '从全局大事件解析天气'}: ${mapWeatherInfo.icon} ${
+              mapWeatherInfo.name
+            }`,
+          );
+
+          const worldEventsPrompt = `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🌍 世界运转状态（地图约会生成必读）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+【当前世界设定】：
+📍 所在地点：${worldEventsRecord.location}
+🌤️ 天气状况：${worldEventsRecord.weather?.condition || '--'} ${worldEventsRecord.weather?.temp || '--'}
+💡 穿衣建议：${worldEventsRecord.weather?.tip || '--'}
+
+【近期大事件】（${worldEventsRecord.events.length}个热门事件）：
+${worldEventsRecord.events
+  .map(
+    (event, index) => `
+${index + 1}. [${event.category}] ${event.title}
+   详情：${event.detail}
+   影响：${event.impact}
+`,
+  )
+  .join('')}
+
+【大事件融入规则】：
+🎯 核心原则：地图约会中的附近的人状态、个人简介应该受这些事件影响
+1. **状态影响**：某些人的状态可能与大事件相关（如"讨论XX新闻中"）
+2. **简介影响**：个人简介可能提及对某个事件的态度或兴趣
+3. **标签影响**：标签可能包含与事件相关的关键词
+4. **自然融入**：不要强行在每个人身上体现，保持多样性（建议10-30%的人受影响）
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🌤️ 天气影响状态气泡规则（重要！）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+当前天气：${mapWeatherInfo.icon} ${mapWeatherInfo.name}
+
+**天气会影响附近的人的状态气泡（status字段）**，请根据当前天气生成符合逻辑的状态：
+
+${
+  mapWeatherType === 'rain' || mapWeatherType === 'heavy-rain' || mapWeatherType === 'thunder'
+    ? `
+🌧️ 【雨天/暴风雨状态建议】（20-40%的人可能受影响）：
+- "躲雨中"、"没带伞😭"、"等雨停"、"听雨"
+- "宅家追剧"、"窝被窝"、"在家办公"
+- "雨天咖啡☕"、"适合发呆"
+- 大雨/雷暴时更可能宅在室内
+`
+    : ''
+}
+${
+  mapWeatherType === 'snow'
+    ? `
+❄️ 【雪天状态建议】（20-40%的人可能受影响）：
+- "赏雪中"、"堆雪人⛄"、"打雪仗"
+- "窝被窝"、"喝热可可"、"烤火取暖"
+- "拍雪景📷"、"雪地散步"
+`
+    : ''
+}
+${
+  mapWeatherType === 'fog'
+    ? `
+🌫️ 【大雾状态建议】（10-20%的人可能受影响）：
+- "雾太大等会出门"、"能见度低"
+- "宅家"、"晚点再约"
+`
+    : ''
+}
+${
+  mapWeatherType === 'dust'
+    ? `
+🌪️ 【沙尘状态建议】（20-30%的人可能受影响）：
+- "戴口罩出门"、"沙尘天待室内"
+- "等沙尘过去"、"空气太差"
+`
+    : ''
+}
+${
+  mapWeatherType === 'sunny' || mapWeatherType === 'cloudy'
+    ? `
+☀️ 【晴天/多云状态建议】（正常活动）：
+- 户外活动较多：跑步、逛街、拍照、约会
+- 可以出现各种正常状态，天气影响较小
+`
+    : ''
+}
+
+**注意**：不要所有人都提天气，保持状态多样性。大部分人应该是正常状态，只有部分人的状态会受天气影响。
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
+          systemPrompt += worldEventsPrompt;
+          tokenCount = TokenUtils.logTokenUsage(
+            '地图约会生成器',
+            '世界运转大事件+天气规则',
+            worldEventsPrompt,
+            tokenCount,
+          );
+          console.log(`🌍 [地图约会生成器] 已注入 ${worldEventsRecord.events.length} 个世界大事件`);
+        } else {
+          // 没有全局大事件，但仍然要注入天气影响规则
+          mapWeatherInfo = this.weatherTypes[mapWeatherType];
+          console.log(`🌤️ [地图约会生成器] 随机生成天气: ${mapWeatherInfo.icon} ${mapWeatherInfo.name}`);
+
+          const weatherOnlyPrompt = `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🌤️ 天气影响状态气泡规则
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+当前天气：${mapWeatherInfo.icon} ${mapWeatherInfo.name}
+
+**天气会影响附近的人的状态气泡（status字段）**，请根据当前天气生成符合逻辑的状态：
+
+${
+  mapWeatherType === 'rain' || mapWeatherType === 'heavy-rain' || mapWeatherType === 'thunder'
+    ? `
+🌧️ 【雨天/暴风雨状态建议】（20-40%的人可能受影响）：
+- "躲雨中"、"没带伞😭"、"等雨停"、"听雨"
+- "宅家追剧"、"窝被窝"、"在家办公"
+- "雨天咖啡☕"、"适合发呆"
+`
+    : ''
+}
+${
+  mapWeatherType === 'snow'
+    ? `
+❄️ 【雪天状态建议】（20-40%的人可能受影响）：
+- "赏雪中"、"堆雪人⛄"、"打雪仗"
+- "窝被窝"、"喝热可可"、"烤火取暖"
+`
+    : ''
+}
+${
+  mapWeatherType === 'fog'
+    ? `
+🌫️ 【大雾状态建议】（10-20%的人可能受影响）：
+- "雾太大等会出门"、"能见度低"
+- "宅家"、"晚点再约"
+`
+    : ''
+}
+${
+  mapWeatherType === 'dust'
+    ? `
+🌪️ 【沙尘状态建议】（20-30%的人可能受影响）：
+- "戴口罩出门"、"沙尘天待室内"
+`
+    : ''
+}
+${
+  mapWeatherType === 'sunny' || mapWeatherType === 'cloudy'
+    ? `
+☀️ 【晴天/多云状态建议】（正常活动）：
+- 户外活动较多：跑步、逛街、拍照、约会
+- 可以出现各种正常状态
+`
+    : ''
+}
+
+**注意**：不要所有人都提天气，保持状态多样性。
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
+          systemPrompt += weatherOnlyPrompt;
+          tokenCount = TokenUtils.logTokenUsage(
+            '地图约会生成器',
+            '天气规则（无大事件）',
+            weatherOnlyPrompt,
+            tokenCount,
+          );
+          console.log('ℹ️ [地图约会生成器] 世界大事件未启用或无数据，仅注入天气规则');
+        }
+
+        // 🔧 9. 核心任务说明 - 根据是否只刷新用户选择不同的提示词
+        if (onlyUsers) {
+          // 只刷新附近的人
+          systemPrompt += `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 核心任务说明 🎯
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+你是地图约会数据生成器。请根据世界观、世界书和大事件生成新的附近的人数据。
+
+🚨 **重要：你必须只返回有效的JSON格式数据，任何语法错误都会导致系统崩溃！** 🚨
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【生成要求】：
+
+## 附近的人（nearbyUsers）- Instagram风格资料卡
+- 生成8-15个附近的人`;
+
+          // 🎯 添加指定筛选条件（如果启用）
+          if (this.advancedFilter && this.advancedFilter.enabled) {
+            systemPrompt += `
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 用户指定筛选条件（重要！）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚠️ **用户设置了指定筛选条件，请尽量按以下要求生成附近的人：**
+
+【筛选条件】：
+${
+  this.advancedFilter.gender !== 'all'
+    ? `- 性别偏好：${this.advancedFilter.gender === 'male' ? '男性为主' : '女性为主'}`
+    : ''
+}
+${
+  this.advancedFilter.ageMin && this.advancedFilter.ageMax
+    ? `- 年龄区间：${this.advancedFilter.ageMin}-${this.advancedFilter.ageMax}岁`
+    : ''
+}
+${this.advancedFilter.personality ? `- 性格要求：${this.advancedFilter.personality}` : ''}
+${this.advancedFilter.tags ? `- 标签/兴趣要求：${this.advancedFilter.tags}` : ''}
+${this.advancedFilter.type ? `- 其他要求：${this.advancedFilter.type}` : ''}
+
+【筛选规则】：
+⚠️ **重要：不需要每个人都完全符合条件，可以灵活匹配！**
+
+1. **性别筛选**（如果指定）：
+   - 如果用户选择了特定性别，生成的人物中**60-80%应该是该性别**
+   - 保留20-40%其他性别的人物，保持真实性和多样性
+
+2. **年龄区间**（如果指定）：
+   - **70-90%的人物年龄应该在指定区间内**
+   - 允许10-30%的人物年龄稍微超出范围（±3岁左右）
+
+3. **性格要求**（如果指定）：
+   - 生成时，**50-70%的人物性格标签应包含相关关键词**
+   - 例如用户要求"outgoing"，可以生成：开朗、外向、活泼、社交达人等
+   - 不是所有人都要完全匹配，保持性格多样性
+
+4. **标签/兴趣要求**（如果指定）：
+   - **40-60%的人物应该有相关的标签或兴趣**
+   - 例如用户要求"music, sports"，生成的人物中部分有音乐相关标签，部分有运动标签
+   - 可以是直接匹配（"音乐"、"运动"）或相关词（"吉他"、"健身"、"篮球"）
+
+5. **其他要求**（如果指定）：
+   - 根据用户自由输入的要求，**灵活理解并应用到30-50%的人物中**
+   - 不要生硬地强制匹配，保持自然和真实性
+
+🎯 **核心原则**：
+- 筛选是"倾向性"而非"强制性"：大部分人符合条件即可
+- 保持多样性：不要所有人都一模一样
+- 真实感优先：即使有筛选条件，生成的人物也要符合世界观和逻辑
+- 可以有惊喜：偶尔生成一些不完全符合但很有特色的人物
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
+          }
+        } else {
+          // 完整生成
+          systemPrompt += `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 核心任务说明 🎯
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+你是地图约会数据生成器。请根据世界观、世界书和大事件生成独一无二的地图约会数据。
+
+🚨 **重要：你必须只返回有效的JSON格式数据，任何语法错误都会导致系统崩溃！** 🚨
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【生成要求】：
+
+## 1. 地图配置（mapConfig）
+根据世界观描述动态调整地图元素比例：
+- waterRatio: 湖水比例（0-1小数）。如果世界观描述"靠海"、"临江"、"水城"等，应增加此值（0.3-0.5）；如果是"内陆"、"沙漠"等，应减少（0-0.1）
+- buildingDensity: 建筑密度（0-1小数）。先进城市0.6-0.8，普通城市0.4-0.6，农村0.1-0.3
+- parkCount: 公园数量（2-8整数）。根据城市大小和环境意识调整
+- roadWidth: 道路宽度（10-25整数）。发达地区用更宽的道路
+
+## 2. 地标数据（landmarks）
+- **必须包含世界观和世界书中提到的所有重要地标**（学校、公司、商场等关键地点）
+- 其他地标根据世界观关键词随机生成，类型分布合理：
+  * 教育类（🎓）：15-25%
+  * 餐饮类（☕🍜🍕）：20-30%
+  * 娱乐类（🎮🎬🎪）：15-25%
+  * 商业类（🛒💼🏢）：15-25%
+  * 公共类（🏥⛪🏛️）：10-20%
+- **严禁生成重复的地标**，每个地标名称必须唯一
+- 地标数量：10-30个
+- 每个地标包含：
+  * id: 唯一标识（字符串）
+  * name: 地标名称（字符串）
+  * icon: emoji图标（字符串）
+  * color: 颜色（#十六进制字符串）
+  * **注意：x, y坐标由系统自动分配，不需要生成**
+
+## 3. 附近的人（nearbyUsers）- Instagram风格资料卡
+- 生成10-30个附近的人`;
+        }
+
+        // 继续添加通用的附近的人详细说明
+        systemPrompt += `
+- 人物应符合世界观背景和大事件影响
+- **地域限制**：如果有绑定角色，检查角色的居住地/活动地点。外国角色、异地角色不能出现在附近的人中！只能生成与当前地点相符的本地人。
+- 每个人包含：
+  * nickname: 昵称（2-8个字符，可以是真名、网名或艺名，符合世界观背景）
+  * handle: 句柄（类似Instagram的@username，5-15个字符，纯英文小写+数字+下划线，如"lihua_dev"、"xiaoming2024"）
+  * avatarBubble: 头像气泡（单个emoji或1-2个颜文字，表达心情或个性，如"😊"、"📷"、"💤"、"🎮"、"✨"）
+  * gender: 性别（"male"、"female"或"unisex"字符串）
+  * distance: 距离（0.5-6.0小数，保留1位）
+  * online: 是否在线（true/false布尔值）
+  * status: 状态文本（**格式自由，可以有emoji也可以没有**）
+    - 可以是个人状态：如"健身中"、"📷 拍照中"、"工作ing"
+    - 可以是社交宣告：如"cpdd"、"已婚勿扰"、"找饭搭子"、"交友"
+    - 状态应该符合时间段和人物性格
+  * bio: 个人简介（**多行格式，用\n分隔行**）
+    - **第一行格式**：年龄（18-35）+ " | " + 感情状态（单身/恋爱中/已婚/保密等）
+    - **后续行**：兴趣爱好、职业、生活态度等（1-3句话）
+    - **示例**："24岁 | 单身\n热爱旅行和摄影\n喜欢探索城市的每个角落\n周末常去咖啡馆看书写字"
+  * publicPersonality: 表现性格（数组，10-15个关键词，描述在网络/社交媒体上表现出来的性格特征）
+    - 关键词示例："开朗"、"热情"、"幽默"、"温柔"、"活泼"、"乐观"、"健谈"等
+    - 这是TA给外界的印象，可能与真实性格一致，也可能表里不一
+  * realPersonality: 真实性格（数组，10-15个关键词，描述真实的内在性格特征）
+    - 关键词示例："内向"、"敏感"、"闷骚"、"阴暗"、"受虐狂"、"控制欲"、"阴险"、"孤僻"等
+    - 这是TA的真实性格，可能与表现性格完全不同（双面性），也可能一致（表里如一）
+    - **重要**：真实性格可以是负面的、复杂的、矛盾的，要真实反映人性的多面性
+  * appearance: 外貌及身材（数组，10-15个关键词，描述外貌和身体特征）
+    - 关键词示例："黑发"、"猫眼"、"182cm/60kg"、"三围90/60/88"、"蝴蝶耳钉"、"纹身"、"肌肉线条"、"瓜子脸"、"单眼皮"、"痣"等
+    - 包括：发色、眼睛、身高体重、三围、配饰、特殊标记、体型、脸型、五官特征等
+  * tags: 标签数组（2-4个字符串）
+  * followers: 粉丝数（100-50000整数，符合普通用户水平，不要太夸张）
+  * likes: 获赞数（1000-100000整数，一般是粉丝数的10-50倍）
+  * avgRating: 平均评分（0-5小数，保留1位，约会评分系统。如4.8、3.2、0表示无评价）
+  * reviews: 评价/留言数组（可选，0-8条评价，这是地图约会app的核心功能！）
+    - reviewerName: 评价者昵称（2-8字符，或"匿名用户"）
+    - rating: 评分（1-5小数，保留1位，如4.9、3.5）
+    - content: 评价内容（20-100字，可以是：赞美外貌/身材、警告骚扰行为、分享约会体验、投诉不守时等，真实自然）
+    - reply: 作者回复（可选，10-50字，该地图用户对评价的回复）
+    - likes: 点赞数（0-500整数）
+    - comments: 评论数（0-50整数）
+    - timestamp: 时间戳（ISO格式字符串，如"2024-01-15T10:30:00Z"，最近1-30天内）
+    - isAnonymous: 是否匿名（布尔值，约30%匿名）
+  * **注意：不需要生成avatar、id、position、reviewerAvatar字段，由系统自动处理**
+
+## 4. 提醒功能（notifications）- 跨地域互动系统
+- 生成0-3条提醒（30-50%概率生成，可以不生成）
+- 提醒来自"其他用户"对"用户X"的行为（感兴趣或发私信）
+
+### 提醒类型说明：
+
+**第一类：interested（对你的资料感兴趣）**
+- 含义：某个用户浏览了你的资料后，对你产生了兴趣
+- 数据结构：
+  * type: "interested"
+  * fromUser: 完整的用户对象（结构与nearbyUsers相同）
+  * content: 简短的兴趣表达（10-30字），如"觉得你挺有趣的"、"你的照片很好看"、"想认识一下"等
+  * 不需要生成id、timestamp、isRead字段
+
+**第二类：message（发来私信）**
+- 含义：某个用户给你发送了1-3条私信
+- 数据结构：
+  * type: "message"
+  * fromUser: 完整的用户对象（结构与nearbyUsers相同）
+  * messages: 字符串数组（1-3条私信内容）
+    - 第1条：开场白/打招呼（15-40字），如"Hi，可以认识一下吗？"、"你好，看到你的资料觉得很有趣"
+    - 第2条（可选）：兴趣点/共同话题（15-50字），如"我也喜欢旅行"、"看到你去过日本，我也很想去"
+    - 第3条（可选）：进一步表达/邀约（15-50字），如"有空可以一起喝杯咖啡吗？"、"很想和你聊聊摄影"
+  * **重要**：message类型不需要content字段，只需要messages数组
+  * 不需要生成id、timestamp、isRead字段
+
+### fromUser用户特征：
+- fromUser是完整的用户对象，包含所有nearbyUsers的字段（nickname, handle, avatarBubble, gender, distance, online, status, bio, publicPersonality, realPersonality, appearance, tags, followers, likes, avgRating, reviews等）
+- **重要**：fromUser可以是距离较远的用户（5-50km），或者来自其他城市/国家，**不受地图约会地域限制**
+- 这些用户可以是异地的、外国的，因为App允许跨地域浏览资料和发私信
+- fromUser应该符合世界观背景和大事件影响
+- fromUser的性格、外貌、标签应该多样化，不要千篇一律
+
+### 生成概率和分布：
+- 30-50%概率生成提醒（即有50-70%概率返回空数组[]）
+- 如果生成提醒，70%概率生成1条，20%概率生成2条，10%概率生成3条
+- interested和message类型比例大约1:1
+- message类型中，60%生成1条消息，30%生成2条消息，10%生成3条消息
+`;
+        const coreTaskSection = systemPrompt.substring(
+          tokenCount > 0 ? systemPrompt.lastIndexOf('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━') : 0,
+        );
+        tokenCount = TokenUtils.logTokenUsage('地图约会生成器', '核心任务说明', coreTaskSection, tokenCount);
+
+        // 🔧 10. 角色资料（如果有绑定角色）+ 地域判断提示
+        const charactersInfo = await StringBuilders.buildCompleteCharacterInfo(
+          boundCharacters,
+          userXProfileInfo,
+          'mapDating',
+        );
+        if (charactersInfo) {
+          systemPrompt += charactersInfo;
+
+          // 添加地域判断提示
+          systemPrompt += `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🌏 地域限制规则（重要！）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**在生成附近的人时，必须严格遵守地域限制：**
+
+1. **检查角色居住地/活动地点**：
+   - 如果角色卡明确标注居住在外国（如美国、日本、韩国等）→ 该角色不能出现在附近的人中
+   - 如果角色卡标注在国内其他城市（异地）→ 该角色不能出现在附近的人中
+   - 只有明确在当前地点或未标注居住地的角色，才可能出现
+
+2. **生成本地人物**：
+   - 附近的人应该是符合当前地点（世界观中的城市/地区）的本地人
+   - 姓名、身份、生活方式应符合当前地点的文化背景
+   - 避免生成明显的异地/异国人物
+
+3. **特殊情况**：
+   - 如果角色卡中提到"经常往返"、"双城生活"等，可以酌情考虑
+   - 如果世界观本身设定在国外，则按照该国的本地标准判断
+
+**记住：地图约会是基于地理位置的，异地/异国的人不可能出现在附近！**
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
+
+          tokenCount = TokenUtils.logTokenUsage('地图约会生成器', '角色资料+地域判断', charactersInfo, tokenCount);
+        }
+
+        // 🔧 11. 角色关系网络（如果有）
+        const relationshipsInfo = await StringBuilders.buildCharacterRelationships(
+          boundCharacters,
+          currentAccountId || 'main',
+        );
+        if (relationshipsInfo) {
+          systemPrompt += relationshipsInfo;
+          tokenCount = TokenUtils.logTokenUsage('地图约会生成器', '角色关系网络', relationshipsInfo, tokenCount);
+          console.log('💞 已加载角色关系网络信息');
+        }
+
+        // 🔧 12. 用户资料约束（通用约束）
+        const userConstraintsStart = systemPrompt.length;
+        systemPrompt += StringBuilders.buildUniversalConstraints(userXProfileInfo);
+        const userConstraints = systemPrompt.substring(userConstraintsStart);
+        tokenCount = TokenUtils.logTokenUsage('地图约会生成器', '用户资料约束', userConstraints, tokenCount);
+
+        // 🔧 13. JSON返回格式要求
+        if (onlyUsers) {
+          systemPrompt += `
+【JSON返回格式】：
+\`\`\`json
+{
+  "nearbyUsers": [
+    {`;
+        } else {
+          systemPrompt += `
+【JSON返回格式】：
+\`\`\`json
+{
+  "mapConfig": {
+    "waterRatio": 数字,
+    "buildingDensity": 数字,
+    "parkCount": 整数,
+    "roadWidth": 整数
+  },
+  "landmarks": [
+    {
+      "id": "字符串",
+      "name": "字符串",
+      "icon": "emoji",
+      "color": "#十六进制"
+    }
+  ],
+  "nearbyUsers": [
+    {`;
+        }
+
+        // 继续添加通用的 nearbyUsers 字段说明
+        systemPrompt += `
+      "nickname": "字符串",
+      "handle": "字符串（纯英文小写+数字+下划线）",
+      "avatarBubble": "emoji或颜文字",
+      "gender": "male/female/unisex",
+      "distance": 小数,
+      "online": 布尔值,
+      "status": "字符串",
+      "bio": "多行字符串（用\\n分隔，第一行格式：年龄 | 感情状态）",
+      "publicPersonality": ["关键词1", "关键词2", "..."],
+      "realPersonality": ["关键词1", "关键词2", "..."],
+      "appearance": ["关键词1", "关键词2", "..."],
+      "secret": "字符串（可选，秘密）",
+      "tags": ["字符串"],
+      "followers": 整数,
+      "likes": 整数,
+      "avgRating": 小数,
+      "reviews": [
+        {
+          "reviewerName": "字符串",
+          "rating": 小数,
+          "content": "字符串",
+          "reply": "字符串（可选）",
+          "likes": 整数,
+          "comments": 整数,
+          "timestamp": "ISO字符串",
+          "isAnonymous": 布尔值
+        }
+      ]
+    }
+  ],
+  "notifications": [
+    {
+      "type": "interested",
+      "fromUser": {
+        "nickname": "字符串",
+        "handle": "字符串",
+        "avatarBubble": "emoji",
+        "gender": "male/female/unisex",
+        "distance": 小数（5-50km）,
+        "online": 布尔值,
+        "status": "字符串",
+        "bio": "多行字符串",
+        "publicPersonality": ["关键词"],
+        "realPersonality": ["关键词"],
+        "appearance": ["关键词"],
+        "tags": ["字符串"],
+        "followers": 整数,
+        "likes": 整数,
+        "avgRating": 小数,
+        "reviews": []
+      },
+      "content": "字符串（10-30字兴趣表达）"
+    },
+    {
+      "type": "message",
+      "fromUser": {
+        "nickname": "字符串",
+        "handle": "字符串",
+        "avatarBubble": "emoji",
+        "gender": "male/female/unisex",
+        "distance": 小数（5-50km）,
+        "online": 布尔值,
+        "status": "字符串",
+        "bio": "多行字符串",
+        "publicPersonality": ["关键词"],
+        "realPersonality": ["关键词"],
+        "appearance": ["关键词"],
+        "tags": ["字符串"],
+        "followers": 整数,
+        "likes": 整数,
+        "avgRating": 小数,
+        "reviews": []
+      },
+      "messages": ["字符串1（第1条私信）", "字符串2（第2条私信，可选）", "字符串3（第3条私信，可选）"]
+    }
+  ]
+}
+\`\`\`
+
+关键规则：
+1. online字段必须是布尔值(true/false)，不能用字符串
+2. gender必须是 "male"、"female" 或 "unisex" 之一
+3. 所有数字必须是纯数字，不带引号`;
+
+        if (!onlyUsers) {
+          systemPrompt += `
+4. **landmarks不需要生成x、y坐标**（系统自动分配）`;
+        }
+
+        systemPrompt += `
+${onlyUsers ? '4' : '5'}. **nearbyUsers不需要生成avatar、id、position**（系统自动处理）
+${onlyUsers ? '5' : '6'}. 可选字段不使用时完全省略，不要设为null
+${
+  onlyUsers ? '6' : '7'
+}. **bio字段必须使用\\n分隔多行**，第一行格式："年龄 | 感情状态"，例如："24岁 | 单身\\n热爱旅行和摄影\\n周末常去咖啡馆"
+${
+  onlyUsers ? '7' : '8'
+}. **handle字段必须符合Instagram用户名规范**：纯英文小写+数字+下划线，5-15个字符，例如："lihua_dev"、"xiaoming2024"
+${onlyUsers ? '8' : '9'}. **avatarBubble字段必须是单个emoji或1-2个颜文字**，表达个性或心情
+${onlyUsers ? '9' : '10'}. **followers和likes必须是合理的数字**：followers为100-50000，likes为followers的10-50倍
+${onlyUsers ? '10' : '11'}. **avgRating可选字段**：0-5小数（保留1位），0表示无评价，有评价时范围3.0-5.0
+${onlyUsers ? '11' : '12'}. **reviews可选字段**：数组长度0-8，评价内容应真实反映约会体验（赞美、警告、投诉等）
+${onlyUsers ? '12' : '13'}. **reviews不需要生成reviewerAvatar字段**（系统自动从头像库随机分配）
+${onlyUsers ? '13' : '14'}. **isAnonymous约30%概率为true**，匿名时reviewerName应为"匿名用户"
+${onlyUsers ? '14' : '15'}. **timestamp应在最近1-30天内**，格式："2024-01-15T10:30:00Z"
+${
+  onlyUsers ? '15' : '16'
+}. **publicPersonality必填**：数组，10-15个关键词，描述网络上表现出来的性格（可以是正面的、积极的）
+${
+  onlyUsers ? '16' : '17'
+}. **realPersonality必填**：数组，10-15个关键词，描述真实内在性格（可以是负面的、复杂的、矛盾的）
+${
+  onlyUsers ? '17' : '18'
+}. **publicPersonality和realPersonality可以相同**（表里如一）或完全不同（双面性），要真实反映人性多面性
+${
+  onlyUsers ? '18' : '19'
+}. **appearance必填**：数组，10-15个关键词，描述外貌身材特征（发色、眼睛、身高体重、三围、配饰、体型、脸型、五官等）
+${onlyUsers ? '19' : '20'}. **notifications可选字段**：30-50%概率生成0-3条提醒，50-70%概率返回空数组[]
+${
+  onlyUsers ? '20' : '21'
+}. **notifications中的fromUser**是完整的用户对象（与nearbyUsers结构相同），distance可以较大（5-50km），可以来自其他城市/国家
+${onlyUsers ? '21' : '22'}. **notifications不需要生成id、timestamp、isRead字段**（系统自动生成）
+${onlyUsers ? '22' : '23'}. **notifications的type字段**必须是"interested"或"message"之一
+${onlyUsers ? '23' : '24'}. **interested类型**：必须有content字段（10-30字兴趣表达），不需要messages字段
+${onlyUsers ? '24' : '25'}. **message类型**：必须有messages数组字段（1-3条私信内容），不需要content字段
+${onlyUsers ? '25' : '26'}. **messages数组**：message类型专用，包含1-3个字符串，每个字符串15-50字，代表对方发送的私信
+${onlyUsers ? '26' : '27'}. **secret可选字段**：30-40%概率生成，描述用户隐藏的秘密，增加人设多样性和戏剧性
+   - 生成概率：30-40%的用户有秘密，60-70%没有
+   - 秘密类型示例（但不限于此）：
+     * 感情状态造假："简介写单身，实际已婚有娃"、"说在恋爱中，实际刚分手"
+     * 性别造假："资料显示男生，实际是女生"、"头像是女生，实际是男生"
+     * 年龄造假："实际年龄比简介大10岁"、"未成年人假装成年"
+     * 职业造假："说是医生，实际是销售"、"失业却说在创业"
+     * 外貌造假："头像P图严重"、"用的是明星照片"
+     * 身份造假："冒充富二代"、"谎称海归"
+     * 目的不纯："只想约炮不想恋爱"、"骗钱专业户"、"多人交往"
+     * 其他社交场景常见的抓马情况
+   - 格式：简短描述（15-50字），不要写成完整句子，直接描述矛盾点
+   - 示例："说单身实际已婚有两个孩子"、"头像是女生本人是男生"、"年龄造假大了15岁"
+   - 重要：秘密应该戏剧化、有冲突性，能引发故事发展
+   - 如果不生成秘密，完全省略该字段，不要写null或空字符串
+`;
+        const formatSection = systemPrompt.substring(systemPrompt.lastIndexOf('【JSON返回格式】'));
+        tokenCount = TokenUtils.logTokenUsage('地图约会生成器', 'JSON格式要求', formatSection, tokenCount);
+
+        // 🔧 15. 构建消息并记录最终提示词
+        const messages = [{ role: 'user', content: '请根据世界观、世界书和大事件生成地图约会数据' }];
+
+        // 最终统计
+        TokenUtils.logFinalPrompt('地图约会生成器', systemPrompt, messages[0].content);
+
+        // 🔧 16. 使用统一的AI请求工具
+        console.log('🚀 [API请求] 开始发送AI请求，请等待响应...');
+        console.log(`  |- 模式: ${onlyUsers ? '仅刷新用户' : '完整生成'}`);
+        console.log(`  |- 温度参数: 0.8`);
+        const requestStartTime = Date.now();
+        const aiResponseContent = await APIUtils.sendAIRequest({
+          apiConfig,
+          systemPrompt,
+          messages,
+          temperature: 0.8,
+        });
+        const requestDuration = ((Date.now() - requestStartTime) / 1000).toFixed(2);
+        console.log(`✅ [API响应] AI请求完成，耗时 ${requestDuration} 秒`);
+        console.log(`  |- 响应长度: ${aiResponseContent?.length || 0} 字符`);
+
+        // 🔧 17. 使用统一的JSON解析工具
+        console.log('🔍 [JSON解析] 开始解析AI返回的JSON数据...');
+        let generatedData = APIUtils.parseJSONResponse(aiResponseContent);
+        console.log('✅ [JSON解析] JSON解析完成');
+
+        // 🔧 18. 使用统一的后处理工具（虽然地图约会数据可能不需要太多后处理）
+        generatedData = await APIUtils.postProcessData(generatedData, userXProfileInfo);
+
+        // 🔧 18.5. 如果只刷新用户，合并原有的地图配置和地标
+        if (onlyUsers) {
+          // 验证只生成了用户数据
+          if (!generatedData.nearbyUsers) {
+            throw new Error('AI返回的数据格式不完整，缺少 nearbyUsers 字段');
+          }
+          // 合并原有数据
+          generatedData.mapConfig = existingMapConfig;
+          generatedData.landmarks = existingLandmarks;
+          console.log('✅ [第十五个情景] AI生成新用户数据验证通过，已合并原有地图配置和地标');
+        } else {
+          // 验证完整数据格式
+          if (!generatedData.mapConfig || !generatedData.landmarks || !generatedData.nearbyUsers) {
+            throw new Error('AI返回的数据格式不完整，缺少必要字段');
+          }
+          console.log('✅ [第十五个情景] AI生成数据验证通过');
+
+          // 为地标添加随机坐标（x, y）- 只在完整生成时处理
+          if (generatedData.landmarks) {
+            generatedData.landmarks.forEach(landmark => {
+              landmark.x = Math.floor(Math.random() * 1800) + 100; // 100-1900范围
+              landmark.y = Math.floor(Math.random() * 1800) + 100; // 100-1900范围
+            });
+          }
+        }
+
+        // 为附近的人添加avatar、id、position
+        if (generatedData.nearbyUsers) {
+          generatedData.nearbyUsers.forEach((user, index) => {
+            // 1. 从头像库随机选择头像（使用AI生成的gender字段）
+            const gender = user.gender || 'unisex';
+            user.avatar = this.getRandomAvatar(gender);
+
+            // 2. 添加唯一ID（使用时间戳+随机数+索引避免冲突）
+            user.id = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}_${index}`;
+
+            // 3. 根据distance计算position
+            // distance越远，position离中心(50%, 50%)越远
+            const distance = user.distance || 1.0;
+            const maxDistance = 6.0; // 最大距离
+            const distanceRatio = Math.min(distance / maxDistance, 1); // 0-1范围
+
+            // 生成随机角度
+            const angle = Math.random() * 2 * Math.PI;
+
+            // 计算位置偏移（距离中心的百分比，15%-40%范围）
+            const offset = 15 + distanceRatio * 25; // 距离越远，偏移越大
+
+            // 根据角度和偏移计算position
+            const centerX = 50;
+            const centerY = 50;
+            const posX = centerX + offset * Math.cos(angle);
+            const posY = centerY + offset * Math.sin(angle);
+
+            // 限制在10%-90%范围内
+            user.position = {
+              top: `${Math.max(10, Math.min(90, posY)).toFixed(1)}%`,
+              left: `${Math.max(10, Math.min(90, posX)).toFixed(1)}%`,
+            };
+
+            // 4. 为评论者分配随机头像（如果有reviews）
+            if (user.reviews && Array.isArray(user.reviews)) {
+              user.reviews.forEach(review => {
+                // 随机选择性别来决定头像（评论者性别不一定和被评价者相同）
+                const reviewerGender = ['male', 'female', 'unisex'][Math.floor(Math.random() * 3)];
+                review.reviewerAvatar = this.getRandomAvatar(reviewerGender);
+              });
+            }
+          });
+        }
+
+        // 🔔 处理提醒数据（notifications）
+        if (generatedData.notifications && Array.isArray(generatedData.notifications)) {
+          console.log(`🔔 [提醒处理] 开始处理 ${generatedData.notifications.length} 条提醒`);
+
+          // 为每个notification中的fromUser添加avatar、id、position
+          generatedData.notifications.forEach((notification, notifIndex) => {
+            if (notification.fromUser) {
+              const fromUser = notification.fromUser;
+
+              // 1. 从头像库随机选择头像
+              const gender = fromUser.gender || 'unisex';
+              fromUser.avatar = this.getRandomAvatar(gender);
+
+              // 2. 添加唯一ID（使用时间戳+随机数+索引避免冲突）
+              fromUser.id = `notif_user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}_${notifIndex}`;
+
+              // 3. 根据distance计算position（与nearbyUsers相同逻辑）
+              const distance = fromUser.distance || 3.0;
+              const maxDistance = 20.0; // 提醒用户的最大距离
+              const distanceRatio = Math.min(distance / maxDistance, 1);
+
+              const angle = Math.random() * 2 * Math.PI;
+              const offset = 15 + distanceRatio * 25;
+
+              const centerX = 50;
+              const centerY = 50;
+              const posX = centerX + offset * Math.cos(angle);
+              const posY = centerY + offset * Math.sin(angle);
+
+              fromUser.position = {
+                top: `${Math.max(10, Math.min(90, posY)).toFixed(1)}%`,
+                left: `${Math.max(10, Math.min(90, posX)).toFixed(1)}%`,
+              };
+
+              // 4. 为fromUser的评论者分配随机头像（如果有reviews）
+              if (fromUser.reviews && Array.isArray(fromUser.reviews)) {
+                fromUser.reviews.forEach(review => {
+                  const reviewerGender = ['male', 'female', 'unisex'][Math.floor(Math.random() * 3)];
+                  review.reviewerAvatar = this.getRandomAvatar(reviewerGender);
+                });
+              }
+            }
+
+            // 5. 为notification添加id、timestamp、isRead字段
+            notification.id = `notif-${Date.now()}-${Math.random().toString(36).substr(2, 9)}-${notifIndex}`;
+            notification.timestamp = new Date().toISOString();
+            notification.isRead = false;
+          });
+
+          // 6. 将notifications保存到localStorage（覆盖旧的提醒）
+          try {
+            localStorage.setItem('xMapNotifications', JSON.stringify(generatedData.notifications));
+            console.log(`✅ [提醒处理] ${generatedData.notifications.length} 条提醒已保存到localStorage`);
+
+            // 7. 更新提醒徽章
+            this.updateNotificationBadge();
+            console.log(`✅ [提醒处理] 提醒徽章已更新`);
+          } catch (error) {
+            console.error('❌ [提醒处理] 保存提醒到localStorage失败:', error);
+          }
+        } else {
+          console.log('🔔 [提醒处理] 本次生成无提醒数据');
+          // 即使没有生成新提醒，也要确保notifications字段存在（空数组）
+          generatedData.notifications = [];
+        }
+
+        // 🌤️ 将天气信息添加到生成数据中
+        generatedData.weather = mapWeatherType;
+
+        // 保存到数据库（使用正确的ID格式 - 不带x前缀）
+        const dataId = `mapDatingData_${currentAccountId || 'main'}`;
+
+        if (onlyUsers) {
+          // 只刷新用户时，保留原有的 lastGenerated，只更新 lastUpdated
+          console.log('💾 [数据库保存] 开始保存刷新后的用户数据到数据库...');
+          const existingRecord = await xDb.xMapDatingData.get(dataId);
+          await xDb.xMapDatingData.put({
+            id: dataId,
+            accountId: currentAccountId || 'main',
+            data: generatedData,
+            lastGenerated: existingRecord?.lastGenerated || new Date().toISOString(),
+            lastUpdated: new Date().toISOString(),
+          });
+          console.log('✅✅ [数据库保存] 附近的人刷新完成并已保存到数据库');
+          console.log(`  |- 数据ID: ${dataId}`);
+          console.log(`  |- 天气类型: ${mapWeatherInfo.icon} ${mapWeatherInfo.name} (保持不变)`);
+          console.log(`  |- 附近的人: ${generatedData.nearbyUsers.length} 人 (已更新)`);
+          console.log(`  |- 保存时间: ${new Date().toLocaleString()}`);
+        } else {
+          // 完整生成时，更新所有时间戳
+          console.log('💾 [数据库保存] 开始保存完整地图数据到数据库...');
+          await xDb.xMapDatingData.put({
+            id: dataId,
+            accountId: currentAccountId || 'main',
+            data: generatedData,
+            lastGenerated: new Date().toISOString(),
+            lastUpdated: new Date().toISOString(),
+          });
+          console.log('✅✅ [数据库保存] 地图约会数据生成完成并已保存到数据库');
+          console.log(`  |- 数据ID: ${dataId}`);
+          console.log(`  |- 地图配置: ${JSON.stringify(generatedData.mapConfig)}`);
+          console.log(`  |- 天气类型: ${mapWeatherInfo.icon} ${mapWeatherInfo.name}`);
+          console.log(`  |- 地标数量: ${generatedData.landmarks.length}`);
+          console.log(`  |- 附近的人: ${generatedData.nearbyUsers.length} 人`);
+          console.log(`  |- 保存时间: ${new Date().toLocaleString()}`);
+        }
+
+        console.log('🎉 [生成器返回] generateMapDatingData 即将返回数据给调用方');
+        return generatedData;
+      } catch (error) {
+        console.error('❌ [第十五个情景] 地图约会数据生成失败:', error);
+        return null;
+      }
+    },
+    // ▲▲▲ 【第十五个情景】地图约会数据AI生成器 ▲▲▲
+
+    // 初始化地图约会模块
+    async init() {
+      try {
+        console.log('🔧 [地图约会] 初始化开始...');
+
+        // 🔧 加载自定义头像
+        this.loadCustomAvatars();
+
+        // 🎯 初始化真实度系统
+        this.initAuthenticityScore();
+
+        // 🚨 初始化被举报计数系统
+        this.initReportedCountSystem();
+
+        // 🚫 检查封禁状态
+        const banStatus = this.checkMapBanStatus();
+        if (banStatus.isBanned) {
+          console.log(`🚫 [封禁系统] 用户被封禁，显示提示并阻止使用地图`);
+          this.showMapBanNotice(banStatus);
+          return; // 阻止继续初始化
+        }
+
+        // 尝试从数据库加载数据
+        // 合并后所有模块都在同一个IIFE作用域内，直接访问 getXDB
+        const xDb = getXDB();
+        console.log('🔧 [地图约会] xDb状态:', xDb ? '已获取' : '获取失败');
+
+        let mapData = null;
+
+        if (xDb) {
+          // 使用正确的ID格式读取数据（不带x前缀）
+          const dataId = `mapDatingData_${currentAccountId || 'main'}`;
+          console.log('🔧 [地图约会] 尝试读取数据，ID:', dataId);
+
+          const savedData = await xDb.xMapDatingData.get(dataId);
+          console.log('🔧 [地图约会] 数据库查询结果:', savedData ? '找到数据' : '未找到数据');
+
+          if (savedData && savedData.data) {
+            console.log('📖 [第十五个情景] 从数据库加载已保存的地图约会数据');
+            console.log(`  |- 地标数量: ${savedData.data.landmarks?.length || 0}`);
+            console.log(`  |- 附近的人: ${savedData.data.nearbyUsers?.length || 0}`);
+            mapData = savedData.data;
+          } else {
+            console.log('🆕 [第十五个情景] 首次使用，调用AI生成数据');
+            mapData = await this.generateMapDatingData();
+            console.log('🔧 [地图约会] AI生成返回结果:', mapData ? '成功' : '失败');
+          }
+        } else {
+          console.warn('⚠️ [地图约会] 无法获取数据库，跳过AI生成');
+        }
+
+        // 使用AI生成的数据或默认数据
+        if (mapData) {
+          console.log('🔧 [地图约会] 开始应用AI生成的数据...');
+
+          // 使用AI生成的附近的人数据
+          if (mapData.nearbyUsers && mapData.nearbyUsers.length > 0) {
+            this.allUsers = mapData.nearbyUsers; // 设置完整数据源
+            this.currentUsers = [...mapData.nearbyUsers]; // 设置当前显示列表
+            console.log(`✅ [地图约会] 已设置附近的人: ${mapData.nearbyUsers.length}人`);
+          } else {
+            this.allUsers = [...this.mockUsers];
+            this.currentUsers = [...this.mockUsers];
+            console.log('⚠️ [地图约会] AI数据中没有附近的人，使用默认数据');
+          }
+
+          // 使用AI生成的地图配置
+          if (mapData.mapConfig) {
+            MapGenerator.config = { ...MapGenerator.config, ...mapData.mapConfig };
+            console.log('✅ [地图约会] 已设置地图配置:', JSON.stringify(mapData.mapConfig));
+          }
+
+          // 使用AI生成的地标
+          if (mapData.landmarks && mapData.landmarks.length > 0) {
+            MapGenerator.landmarks = mapData.landmarks;
+            console.log(`✅ [地图约会] 已设置地标数据: ${mapData.landmarks.length}个`);
+            console.log(
+              '🔧 [地图约会] MapGenerator.landmarks前5个:',
+              MapGenerator.landmarks.slice(0, 5).map(l => l.name),
+            );
+          } else {
+            console.log('⚠️ [地图约会] AI数据中没有地标，将使用默认随机生成');
+          }
+        } else {
+          console.log('⚠️ [地图约会] mapData为null，使用默认数据');
+          // 使用默认数据
+          this.allUsers = [...this.mockUsers];
+          this.currentUsers = [...this.mockUsers];
+        }
+
+        // 渲染地图
+        this.renderUserList();
+        this.renderMapMarkers();
+        MapGenerator.init('mapCanvasBg');
+        this.renderLandmarkLabels();
+        this.initEventListeners();
+
+        // 🔔 初始化提醒徽章
+        this.updateNotificationBadge();
+        console.log('✅ [地图约会] 提醒徽章已初始化');
+
+        // ⚙️ 初始化主题设置
+        this.initThemeSettings();
+        console.log('✅ [地图约会] 主题设置已初始化');
+
+        this.initMapDrag();
+        this.initMapPosition();
+
+        // 初始化天气系统（从保存的数据或随机生成）
+        if (mapData && mapData.weather) {
+          this.renderWeatherEffect(mapData.weather);
+          console.log(`🌤️ [地图约会] 应用已保存的天气: ${mapData.weather}`);
+        } else {
+          // 没有保存的天气数据，随机生成
+          const randomWeather = this.getRandomWeather();
+          this.renderWeatherEffect(randomWeather);
+          console.log(`🌤️ [地图约会] 随机生成天气: ${randomWeather}`);
+        }
+
+        // 3秒后隐藏滑动提示
+        setTimeout(() => {
+          const hint = document.getElementById('mapSwipeHint');
+          if (hint) hint.classList.add('hidden');
+        }, 3000);
+
+        // 初始化用户地图资料
+        await this.initUserMapProfile();
+      } catch (error) {
+        console.error('❌ [地图约会] 初始化失败:', error);
+        // 失败时使用默认数据
+        this.allUsers = [...this.mockUsers];
+        this.currentUsers = [...this.mockUsers];
+        this.renderUserList();
+        this.renderMapMarkers();
+        MapGenerator.init('mapCanvasBg');
+        this.renderLandmarkLabels();
+        this.initEventListeners();
+
+        // ⚙️ 初始化主题设置（失败时也要初始化）
+        this.initThemeSettings();
+
+        this.initMapDrag();
+        this.initMapPosition();
+
+        // 失败时也初始化天气（随机）
+        const randomWeather = this.getRandomWeather();
+        this.renderWeatherEffect(randomWeather);
+      }
+    },
+
+    // 初始化事件监听器
+    initEventListeners() {
+      // 侧边栏相关
+      document.getElementById('mapSidebarOverlay')?.addEventListener('click', () => this.closeSidebar());
+      document.getElementById('mapBackBtn')?.addEventListener('click', () => this.closeSidebar());
+      document.getElementById('mapCloseBtn')?.addEventListener('click', () => this.closeMapPage());
+      document.getElementById('mapRefreshBtn')?.addEventListener('click', () => this.refreshNearbyUsers());
+
+      // 搜索和筛选
+      document.getElementById('mapSearchInput')?.addEventListener('input', e => this.filterUsers(e.target.value));
+      document
+        .getElementById('mapDistanceFilter')
+        ?.addEventListener('change', e => this.filterByDistance(e.target.value));
+      document.getElementById('mapGenderFilter')?.addEventListener('change', e => this.filterByGender(e.target.value));
+      document.getElementById('mapApplyFilterBtn')?.addEventListener('click', () => this.applyFilters());
+
+      // 🎯 指定筛选相关
+      document.getElementById('mapAdvancedFilterBtn')?.addEventListener('click', () => this.openAdvancedFilterModal());
+      document
+        .getElementById('mapAdvancedFilterCloseBtn')
+        ?.addEventListener('click', () => this.closeAdvancedFilterModal());
+      document
+        .getElementById('mapAdvancedFilterOverlay')
+        ?.addEventListener('click', () => this.closeAdvancedFilterModal());
+      document
+        .getElementById('mapAdvancedFilterCancelBtn')
+        ?.addEventListener('click', () => this.closeAdvancedFilterModal());
+      document.getElementById('mapAdvancedFilterClearBtn')?.addEventListener('click', () => this.clearAdvancedFilter());
+      document.getElementById('mapAdvancedFilterApplyBtn')?.addEventListener('click', () => this.applyAdvancedFilter());
+
+      // 地图控制
+      document.getElementById('mapCenterBtn')?.addEventListener('click', () => this.centerMap());
+      document.getElementById('mapZoomInBtn')?.addEventListener('click', () => this.zoomIn());
+      document.getElementById('mapZoomOutBtn')?.addEventListener('click', () => this.zoomOut());
+
+      // 卡片相关
+      document.getElementById('mapCardCloseBtn')?.addEventListener('click', () => this.closeDetailCard());
+      document.getElementById('mapSendMsgBtn')?.addEventListener('click', () => this.sendMessage());
+      document.getElementById('mapSocialCircleBtn')?.addEventListener('click', () => this.showSocialCircle());
+      document.getElementById('mapViewProfileBtn')?.addEventListener('click', () => this.viewProfile());
+
+      // 社交圈相关
+      document.getElementById('mapSocialCircleBackBtn')?.addEventListener('click', () => this.hideSocialCircle());
+
+      // 评价相关
+      document.getElementById('mapCardReviewsBtn')?.addEventListener('click', () => this.toggleReviewsView());
+      document.getElementById('mapReviewsBackBtn')?.addEventListener('click', () => this.toggleReviewsView());
+
+      // 设置相关
+      document.getElementById('mapCardSettingsBtn')?.addEventListener('click', () => this.openMapSettings());
+      document.getElementById('mapSettingsBackBtn')?.addEventListener('click', () => this.closeMapSettings());
+      document.getElementById('mapSettingsSaveBtn')?.addEventListener('click', () => this.saveMapSettings());
+      document.getElementById('mapSettingsAddTagBtn')?.addEventListener('click', () => this.addNewTag());
+
+      // 天气测试按钮（开发者用）
+      document.getElementById('mapWeatherTestBtn')?.addEventListener('click', () => this.cycleWeatherTest());
+
+      // 聊天相关
+      document.getElementById('mapChatOverlay')?.addEventListener('click', () => this.closeChatModal());
+      document.getElementById('mapChatBackBtn')?.addEventListener('click', () => this.closeChatModal());
+
+      // 聊天头像点击查看资料
+      document.getElementById('mapChatUserAvatar')?.addEventListener('click', () => {
+        if (this.currentChatUser) {
+          console.log(`👆 [聊天] 点击头像查看 ${this.currentChatUser.nickname} 的资料`);
+          this.showUserProfile(this.currentChatUser);
+        }
+      });
+
+      document.getElementById('mapChatInput')?.addEventListener('keypress', e => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          this.sendChatMessage();
+        }
+      });
+      document.getElementById('mapChatLikeBtn')?.addEventListener('click', () => this.triggerAIResponse());
+      document.getElementById('mapChatAddBtn')?.addEventListener('click', () => {
+        this.toggleFunctionMenu();
+      });
+      document.getElementById('mapChatMoreBtn')?.addEventListener('click', () => {
+        this.toggleMoreMenu();
+      });
+      document.getElementById('mapChatAddToListBtn')?.addEventListener('click', () => {
+        this.addCurrentChatToList();
+      });
+
+      // 📌 聊天列表相关
+      document.getElementById('mapChatsBtn')?.addEventListener('click', () => {
+        this.openChatsListModal();
+      });
+      document.getElementById('mapChatsListCloseBtn')?.addEventListener('click', () => {
+        this.closeChatsListModal();
+      });
+      document.getElementById('mapChatsListOverlay')?.addEventListener('click', () => {
+        this.closeChatsListModal();
+      });
+
+      // 📌 用户笔记功能相关
+      document.getElementById('mapChatNotesBtn')?.addEventListener('click', () => {
+        this.openNotesModal();
+      });
+      document.getElementById('mapNotesCloseBtn')?.addEventListener('click', () => {
+        this.closeNotesModal();
+      });
+      document.getElementById('mapNotesOverlay')?.addEventListener('click', () => {
+        this.closeNotesModal();
+      });
+
+      // 🔔 提醒功能相关
+      document.getElementById('mapNotificationsBtn')?.addEventListener('click', () => {
+        this.openNotificationsModal();
+      });
+      document.getElementById('mapNotificationsCloseBtn')?.addEventListener('click', () => {
+        this.closeNotificationsModal();
+      });
+      document.getElementById('mapNotificationsOverlay')?.addEventListener('click', () => {
+        this.closeNotificationsModal();
+      });
+
+      // 🔔 提醒分类Tabs功能
+      const notificationTabs = document.querySelectorAll('.map-notifications-tab');
+      notificationTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          // 移除所有tab的active类
+          notificationTabs.forEach(t => t.classList.remove('active'));
+          // 给当前tab添加active类
+          tab.classList.add('active');
+          // 获取筛选类型
+          const filterType = tab.getAttribute('data-filter');
+          // 执行筛选
+          this.filterNotifications(filterType);
+        });
+      });
+
+      // ⚙️ 应用设置功能相关
+      document.getElementById('mapAppSettingsBtn')?.addEventListener('click', () => {
+        this.openAppSettingsModal();
+      });
+      document.getElementById('mapAppSettingsCloseBtn')?.addEventListener('click', () => {
+        this.closeAppSettingsModal();
+      });
+      document.getElementById('mapAppSettingsOverlay')?.addEventListener('click', () => {
+        this.closeAppSettingsModal();
+      });
+      document.getElementById('mapThemeToggle')?.addEventListener('click', () => {
+        this.toggleTheme();
+      });
+
+      // 🖼️ 自定义头像管理相关
+      document.getElementById('mapAvatarAddBtn')?.addEventListener('click', () => {
+        const urlInput = document.getElementById('mapAvatarUrlInput');
+        const selectedCategory = document.querySelector('input[name="avatarCategory"]:checked');
+        if (urlInput && selectedCategory) {
+          this.addCustomAvatar(urlInput.value, selectedCategory.value);
+        }
+      });
+
+      // 🚨 举报功能相关
+      document.getElementById('mapChatReportBtn')?.addEventListener('click', () => {
+        this.openReportModal();
+      });
+      document.getElementById('mapReportCloseBtn')?.addEventListener('click', () => {
+        this.closeReportModal();
+      });
+      document.getElementById('mapReportOverlay')?.addEventListener('click', () => {
+        this.closeReportModal();
+      });
+      document.getElementById('mapReportCancelBtn')?.addEventListener('click', () => {
+        this.closeReportModal();
+      });
+      document.getElementById('mapReportSubmitBtn')?.addEventListener('click', () => {
+        this.submitReport();
+      });
+
+      // 📋 举报详情弹窗相关
+      document.getElementById('mapReportDetailCloseBtn')?.addEventListener('click', () => {
+        this.closeReportDetailModal();
+      });
+      document.getElementById('mapReportDetailOverlay')?.addEventListener('click', () => {
+        this.closeReportDetailModal();
+      });
+      document.getElementById('mapReportDetailAcknowledgeBtn')?.addEventListener('click', () => {
+        this.handleReportAcknowledge();
+      });
+
+      // 💬 接收私信确认弹窗相关
+      document.getElementById('mapAcceptMessageBtn')?.addEventListener('click', () => {
+        this.acceptMessage();
+      });
+      document.getElementById('mapDeclineMessageBtn')?.addEventListener('click', () => {
+        this.declineMessage();
+      });
+      document.getElementById('mapAcceptMessageOverlay')?.addEventListener('click', () => {
+        this.declineMessage();
+      });
+
+      // 触摸手势
+      this.initTouchGestures();
+    },
+
+    // 初始化触摸手势
+    initTouchGestures() {
+      const mapArea = document.getElementById('mapArea');
+      if (!mapArea) return;
+
+      mapArea.addEventListener(
+        'touchstart',
+        e => {
+          this.touchStartX = e.touches[0].clientX;
+          this.touchStartY = e.touches[0].clientY;
+        },
+        { passive: true },
+      );
+
+      mapArea.addEventListener(
+        'touchmove',
+        e => {
+          this.touchEndX = e.touches[0].clientX;
+          this.touchEndY = e.touches[0].clientY;
+        },
+        { passive: true },
+      );
+
+      mapArea.addEventListener('touchend', () => {
+        this.handleSwipeGesture();
+      });
+    },
+
+    // 处理滑动手势
+    handleSwipeGesture() {
+      const deltaX = this.touchEndX - this.touchStartX;
+      const deltaY = this.touchEndY - this.touchStartY;
+      const minSwipeDistance = 50;
+
+      if (Math.abs(deltaX) > Math.abs(deltaY)) {
+        if (deltaX > minSwipeDistance && this.touchStartX < 50 && !this.isSidebarOpen) {
+          this.openSidebar();
+        } else if (deltaX < -minSwipeDistance && this.isSidebarOpen) {
+          this.closeSidebar();
+        }
+      }
+    },
+
+    // 初始化地图位置
+    initMapPosition() {
+      const mapArea = document.getElementById('mapArea');
+      if (!mapArea) return;
+
+      const viewportWidth = mapArea.offsetWidth;
+      const viewportHeight = mapArea.offsetHeight;
+
+      this.mapState.translateX = -(viewportWidth * this.MAP_SIZE_MULTIPLIER - viewportWidth) / 2;
+      this.mapState.translateY = -(viewportHeight * this.MAP_SIZE_MULTIPLIER - viewportHeight) / 2;
+
+      this.updateMapTransform();
+    },
+
+    // 初始化地图拖动
+    initMapDrag() {
+      const mapCanvas = document.getElementById('mapCanvas');
+      if (!mapCanvas) return;
+
+      const startDrag = e => {
+        this.mapState.isDragging = true;
+        this.mapState.startX = e.clientX || e.pageX;
+        this.mapState.startY = e.clientY || e.pageY;
+        this.mapState.lastTranslateX = this.mapState.translateX;
+        this.mapState.lastTranslateY = this.mapState.translateY;
+      };
+
+      const handleDrag = e => {
+        if (!this.mapState.isDragging) return;
+
+        const currentX = e.clientX || e.pageX;
+        const currentY = e.clientY || e.pageY;
+
+        const deltaX = currentX - this.mapState.startX;
+        const deltaY = currentY - this.mapState.startY;
+
+        let newTranslateX = this.mapState.lastTranslateX + deltaX;
+        let newTranslateY = this.mapState.lastTranslateY + deltaY;
+
+        const bounds = this.getMapBounds();
+        newTranslateX = Math.min(bounds.maxX, Math.max(bounds.minX, newTranslateX));
+        newTranslateY = Math.min(bounds.maxY, Math.max(bounds.minY, newTranslateY));
+
+        this.mapState.translateX = newTranslateX;
+        this.mapState.translateY = newTranslateY;
+
+        this.updateMapTransform();
+      };
+
+      const endDrag = () => {
+        this.mapState.isDragging = false;
+      };
+
+      mapCanvas.addEventListener('mousedown', startDrag);
+      mapCanvas.addEventListener(
+        'touchstart',
+        e => {
+          if (e.touches.length === 1) {
+            startDrag(e.touches[0]);
+          } else if (e.touches.length === 2) {
+            this.mapState.initialDistance = this.getDistance(e.touches[0], e.touches[1]);
+            this.mapState.initialScale = this.mapState.scale;
+          }
+        },
+        { passive: true },
+      );
+
+      mapCanvas.addEventListener('mousemove', handleDrag);
+      mapCanvas.addEventListener(
+        'touchmove',
+        e => {
+          if (e.touches.length === 1 && this.mapState.isDragging) {
+            e.preventDefault();
+            handleDrag(e.touches[0]);
+          } else if (e.touches.length === 2) {
+            e.preventDefault();
+            const currentDistance = this.getDistance(e.touches[0], e.touches[1]);
+            const scale = currentDistance / this.mapState.initialDistance;
+            this.mapState.scale = Math.min(Math.max(this.mapState.initialScale * scale, this.MIN_ZOOM), this.MAX_ZOOM);
+            this.clampMapPosition();
+            this.updateMapTransform();
+          }
+        },
+        { passive: false },
+      );
+
+      mapCanvas.addEventListener('mouseup', endDrag);
+      mapCanvas.addEventListener('mouseleave', endDrag);
+      mapCanvas.addEventListener('touchend', endDrag);
+    },
+
+    getDistance(touch1, touch2) {
+      const dx = touch1.clientX - touch2.clientX;
+      const dy = touch1.clientY - touch2.clientY;
+      return Math.sqrt(dx * dx + dy * dy);
+    },
+
+    getMapBounds() {
+      const mapArea = document.getElementById('mapArea');
+      if (!mapArea) return { maxX: 0, minX: 0, maxY: 0, minY: 0 };
+
+      const viewportWidth = mapArea.offsetWidth;
+      const viewportHeight = mapArea.offsetHeight;
+
+      const mapWidth = viewportWidth * this.MAP_SIZE_MULTIPLIER * this.mapState.scale;
+      const mapHeight = viewportHeight * this.MAP_SIZE_MULTIPLIER * this.mapState.scale;
+
+      return {
+        maxX: 0,
+        minX: viewportWidth - mapWidth,
+        maxY: 0,
+        minY: viewportHeight - mapHeight,
+      };
+    },
+
+    clampMapPosition() {
+      const bounds = this.getMapBounds();
+      this.mapState.translateX = Math.min(bounds.maxX, Math.max(bounds.minX, this.mapState.translateX));
+      this.mapState.translateY = Math.min(bounds.maxY, Math.max(bounds.minY, this.mapState.translateY));
+    },
+
+    updateMapTransform() {
+      const mapCanvas = document.getElementById('mapCanvas');
+      if (!mapCanvas) return;
+
+      mapCanvas.style.transform = `translate(${this.mapState.translateX}px, ${this.mapState.translateY}px) scale(${this.mapState.scale})`;
+
+      const markers = document.querySelectorAll('.map-marker');
+      markers.forEach((marker, index) => {
+        const markerScale = Math.max(0.8, 1 / this.mapState.scale);
+        const baseTransform = marker.getAttribute('data-base-transform') || 'scale(1)';
+        marker.style.transform = `${baseTransform} scale(${markerScale})`;
+
+        if (this.mapState.scale < 0.7) {
+          marker.style.opacity = '1';
+        } else if (this.mapState.scale > 1.5) {
+          marker.style.opacity = index % 2 === 0 ? '1' : '0.4';
+        } else {
+          marker.style.opacity = '1';
+        }
+      });
+
+      // 控制气泡显示：只在放大时显示，防止缩小时重叠
+      const bubbles = document.querySelectorAll('.marker-status-bubble');
+      const bubbleZoomThreshold = 1.3; // 放大到1.3倍以上才显示气泡
+      bubbles.forEach(bubble => {
+        if (this.mapState.scale >= bubbleZoomThreshold) {
+          bubble.classList.add('visible');
+        } else {
+          bubble.classList.remove('visible');
+        }
+      });
+
+      this.updateLandmarkLabelsVisibility();
+    },
+
+    updateLandmarkLabelsVisibility() {
+      const labels = document.querySelectorAll('.landmark-label');
+      const zoomThreshold = 1.2;
+
+      labels.forEach((label, index) => {
+        if (this.mapState.scale >= zoomThreshold) {
+          setTimeout(() => {
+            label.classList.add('visible');
+          }, index * 15);
+        } else {
+          label.classList.remove('visible');
+        }
+      });
+    },
+
+    // 侧边栏控制
+    openSidebar() {
+      document.getElementById('mapSidebar')?.classList.add('show');
+      document.getElementById('mapSidebarOverlay')?.classList.add('show');
+      this.isSidebarOpen = true;
+
+      const hint = document.getElementById('mapSwipeHint');
+      if (hint) hint.classList.add('hidden');
+    },
+
+    closeSidebar() {
+      document.getElementById('mapSidebar')?.classList.remove('show');
+      document.getElementById('mapSidebarOverlay')?.classList.remove('show');
+      this.isSidebarOpen = false;
+    },
+
+    toggleSidebar() {
+      if (this.isSidebarOpen) {
+        this.closeSidebar();
+      } else {
+        this.openSidebar();
+      }
+    },
+
+    // 渲染用户列表
+    renderUserList() {
+      const userList = document.getElementById('mapUserList');
+      if (!userList) return;
+
+      userList.innerHTML = this.currentUsers
+        .map(user => {
+          // 从bio中提取年龄信息（格式："24岁 | 单身"）
+          const ageMatch = user.bio ? user.bio.match(/(\d+)岁/) : null;
+          const age = ageMatch ? ageMatch[1] : '';
+          const displayName = age ? `${user.nickname}, ${age}` : user.nickname;
+
+          return `
+        <div class="map-user-item ${this.selectedUserId == user.id ? 'active' : ''}" data-user-id="${user.id}">
+          <div class="map-user-avatar-container">
+            <img class="map-user-avatar" src="${user.avatar}" alt="${user.nickname}">
+            ${user.online ? '<div class="map-online-indicator"></div>' : ''}
+          </div>
+          <div class="map-user-info">
+            <div class="map-user-name">${displayName}</div>
+            <div class="map-user-meta">
+              <span class="map-distance">
+                ${MapIcons.location}
+                ${user.distance}km
+              </span>
+              <span>•</span>
+              <span>${user.online ? '在线' : '离线'}</span>
+            </div>
+          </div>
+          <svg class="map-view-icon" viewBox="0 0 24 24">
+            <g><path d="M8.75 21V3h2v18h-2zM18 21V8.5h2V21h-2zM4 21l.004-10h2L6 21H4zm9.248 0v-7h2v7h-2z"></path></g>
+          </svg>
+        </div>
+      `;
+        })
+        .join('');
+
+      // 绑定点击事件
+      userList.querySelectorAll('.map-user-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const userId = item.getAttribute('data-user-id');
+          this.selectUser(userId);
+        });
+      });
+    },
+
+    // 渲染地图标记
+    renderMapMarkers() {
+      const mapCanvas = document.getElementById('mapCanvas');
+      if (!mapCanvas) return;
+
+      const existingMarkers = mapCanvas.querySelectorAll('.map-marker');
+      existingMarkers.forEach(m => m.remove());
+
+      // 渲染其他用户
+      this.currentUsers.forEach(user => {
+        const marker = document.createElement('div');
+        marker.className = 'map-marker';
+        marker.style.top = user.position.top;
+        marker.style.left = user.position.left;
+        marker.setAttribute('data-base-transform', 'scale(1)');
+        marker.setAttribute('data-user-id', user.id);
+        marker.innerHTML = `
+          <div class="marker-container">
+            ${user.status ? `<div class="marker-status-bubble">${user.status}</div>` : ''}
+            ${user.online ? '<div class="marker-pulse"></div>' : ''}
+            <img class="marker-avatar" src="${user.avatar}" alt="${user.nickname}">
+          </div>
+        `;
+        marker.addEventListener('click', e => {
+          e.stopPropagation();
+          this.showDetailCard(user.id);
+        });
+        mapCanvas.appendChild(marker);
+      });
+
+      // 渲染用户自己的位置标记
+      this.renderCurrentUserMarker();
+    },
+
+    // 渲染用户自己的位置标记
+    renderCurrentUserMarker() {
+      const mapCanvas = document.getElementById('mapCanvas');
+      if (!mapCanvas) return;
+
+      // 先删除旧的当前用户标记
+      const existingCurrentUserMarker = mapCanvas.querySelector('.map-marker.current-user');
+      if (existingCurrentUserMarker) {
+        existingCurrentUserMarker.remove();
+      }
+
+      // 获取用户头像、状态等信息，优先使用地图资料，其次使用 window.userProfileData
+      let userAvatar = 'https://i.postimg.cc/pXxk1JXk/IMG-6442.jpg'; // 默认头像
+      let userName = '我';
+      let userStatus = ''; // 状态气泡
+
+      if (this.userMapProfile && this.userMapProfile.avatar) {
+        userAvatar = this.userMapProfile.avatar;
+        userName = this.userMapProfile.nickname || userName;
+        userStatus = this.userMapProfile.status || ''; // 从用户资料获取状态
+      } else if (window.userProfileData) {
+        userAvatar = window.userProfileData.avatar || userAvatar;
+        userName = window.userProfileData.name || userName;
+      }
+
+      // 动态获取主题色（从x-social-screen读取CSS变量）
+      const xSocialScreen = document.getElementById('x-social-screen');
+      let accentColor = '#1d9bf0'; // 默认Twitter蓝
+      if (xSocialScreen) {
+        const computedAccent = getComputedStyle(xSocialScreen).getPropertyValue('--x-accent').trim();
+        if (computedAccent) {
+          accentColor = computedAccent;
+        }
+      }
+
+      const marker = document.createElement('div');
+      marker.className = 'map-marker current-user';
+      marker.style.top = this.currentUserPosition.top;
+      marker.style.left = this.currentUserPosition.left;
+      marker.setAttribute('data-base-transform', 'scale(1)');
+      marker.setAttribute('data-user-id', 'current-user');
+      marker.innerHTML = `
+        <div class="marker-container">
+          ${userStatus ? `<div class="marker-status-bubble">${userStatus}</div>` : ''}
+          <div class="marker-pulse"></div>
+          <img class="marker-avatar" src="${userAvatar}" alt="${userName}" style="border: 3px solid ${accentColor};">
+        </div>
+      `;
+      marker.addEventListener('click', e => {
+        e.stopPropagation();
+        // 点击用户自己的标记时，显示可编辑的资料卡
+        this.showUserProfileCard();
+      });
+      mapCanvas.appendChild(marker);
+    },
+
+    // 渲染地标标签
+    renderLandmarkLabels() {
+      const mapCanvas = document.getElementById('mapCanvas');
+      if (!mapCanvas) return;
+
+      const existingLabels = mapCanvas.querySelectorAll('.landmark-label');
+      existingLabels.forEach(l => l.remove());
+
+      const landmarks = MapGenerator.landmarks;
+      if (!landmarks || landmarks.length === 0) return;
+
+      landmarks.forEach(landmark => {
+        const label = document.createElement('div');
+        label.className = 'landmark-label';
+        label.id = landmark.id;
+        label.style.left = `${landmark.x}px`;
+        label.style.top = `${landmark.y}px`;
+        label.innerHTML = `
+          <span class="landmark-label-icon" style="color: ${landmark.color}">
+            ${landmark.icon}
+          </span>
+          <span>${landmark.name}</span>
+        `;
+        mapCanvas.appendChild(label);
+      });
+
+      this.updateLandmarkLabelsVisibility();
+    },
+
+    // 选择用户
+    selectUser(userId) {
+      this.selectedUserId = userId;
+      this.renderUserList();
+      this.showDetailCard(userId);
+    },
+
+    // 显示详情卡片 - Instagram风格
+    showDetailCard(userId, source = 'map') {
+      // 先从currentUsers查找，如果没找到再从allUsers查找（用于社交圈好友）
+      // 使用宽松相等 == 以兼容数字ID和字符串ID
+      let user = this.currentUsers.find(u => u.id == userId);
+      if (!user) {
+        user = this.allUsers.find(u => u.id == userId);
+      }
+      if (!user) return;
+
+      this.selectedUserId = userId;
+
+      // 🔧 记录资料卡打开来源（用于区分聊天上下文）
+      this.detailCardOpenSource = source;
+      console.log(`📇 [资料卡] 打开来源: ${source}`);
+      this.isShowingUserProfile = false; // 重置标志，现在显示的是其他人
+      this.renderUserList();
+
+      // Instagram风格元素
+      const mapCardAvatar = document.getElementById('mapCardAvatar');
+      const mapCardAvatarBubble = document.getElementById('mapCardAvatarBubble');
+      const mapCardNickname = document.getElementById('mapCardNickname');
+      const mapCardHandle = document.getElementById('mapCardHandle');
+      const mapCardFollowers = document.getElementById('mapCardFollowers');
+      const mapCardLikes = document.getElementById('mapCardLikes');
+      const mapCardBio = document.getElementById('mapCardBio');
+      const mapCardTags = document.getElementById('mapCardTags');
+      const mapCardDistance = document.getElementById('mapCardDistance');
+      const card = document.getElementById('mapUserDetailCard');
+
+      // 清除之前绑定的编辑事件（防止用户资料的onclick残留）
+      if (mapCardAvatar) mapCardAvatar.onclick = null;
+      if (mapCardNickname) mapCardNickname.onclick = null;
+      if (mapCardBio) mapCardBio.onclick = null;
+
+      // 填充数据
+      if (mapCardAvatar) mapCardAvatar.src = user.avatar;
+      if (mapCardAvatarBubble) mapCardAvatarBubble.textContent = user.avatarBubble || '😊';
+      if (mapCardNickname) mapCardNickname.textContent = user.nickname;
+      if (mapCardHandle) mapCardHandle.textContent = `@${user.handle}`;
+      if (mapCardFollowers) mapCardFollowers.textContent = user.followers || 0;
+      if (mapCardLikes) mapCardLikes.textContent = user.likes || 0;
+      if (mapCardBio) mapCardBio.textContent = user.bio;
+      if (mapCardTags) mapCardTags.innerHTML = user.tags.map(tag => `<div class="card-tag">${tag}</div>`).join('');
+      if (mapCardDistance) mapCardDistance.textContent = `${user.distance}km`;
+
+      // 填充评价数据
+      this.renderReviews(user);
+
+      // 确保显示资料section，隐藏评价section
+      const reviewsSection = document.getElementById('mapCardReviewsSection');
+      if (reviewsSection) reviewsSection.classList.remove('active');
+
+      if (card) card.style.display = 'block';
+    },
+
+    // 关闭详情卡片
+    closeDetailCard() {
+      const card = document.getElementById('mapUserDetailCard');
+      if (card) card.style.display = 'none';
+      this.selectedUserId = null;
+      this.renderUserList();
+
+      // 重置评价视图
+      const reviewsSection = document.getElementById('mapCardReviewsSection');
+      if (reviewsSection) reviewsSection.classList.remove('active');
+    },
+
+    // 渲染评价数据
+    renderReviews(user) {
+      const reviews = user.reviews || [];
+      const avgRating = user.avgRating || 0;
+
+      // 填充平均评分
+      const avgRatingEl = document.getElementById('mapReviewsAvgRating');
+      const reviewsCountEl = document.getElementById('mapReviewsCount');
+      const starsEl = document.getElementById('mapReviewsStars');
+
+      if (avgRatingEl) avgRatingEl.textContent = avgRating.toFixed(1);
+      if (reviewsCountEl) reviewsCountEl.textContent = `${reviews.length}条评价`;
+
+      // 生成星星
+      if (starsEl) {
+        const fullStars = Math.floor(avgRating);
+        const hasHalfStar = avgRating % 1 >= 0.5;
+        let starsHTML = '';
+        for (let i = 0; i < 5; i++) {
+          if (i < fullStars) {
+            starsHTML +=
+              '<svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>';
+          } else if (i === fullStars && hasHalfStar) {
+            starsHTML +=
+              '<svg viewBox="0 0 24 24"><path d="M22 9.24l-7.19-.62L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.63-7.03L22 9.24zM12 15.4V6.1l1.71 4.04 4.38.38-3.32 2.88 1 4.28L12 15.4z"/></svg>';
+          } else {
+            starsHTML +=
+              '<svg viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>';
+          }
+        }
+        starsEl.innerHTML = starsHTML;
+      }
+
+      // 渲染评价列表
+      const reviewsListEl = document.getElementById('mapReviewsList');
+      if (!reviewsListEl) return;
+
+      if (reviews.length === 0) {
+        reviewsListEl.innerHTML = `
+          <div class="reviews-empty">
+            <div class="reviews-empty-icon">💬</div>
+            <div class="reviews-empty-text">还没有人留下评价<br>成为第一个评价的人吧</div>
+          </div>
+        `;
+        return;
+      }
+
+      reviewsListEl.innerHTML = reviews
+        .map(
+          review => `
+        <div class="review-item">
+          <div class="review-header">
+            <img class="review-avatar" src="${review.reviewerAvatar}" alt="${review.reviewerName}">
+            <div class="review-info">
+              <div class="review-name-line">
+                <span class="review-name">${review.reviewerName}</span>
+                <div class="review-rating">
+                  <span class="review-rating-number">${review.rating.toFixed(1)}</span>
+                  <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                </div>
+              </div>
+              <div class="review-time">${this.getTimeAgo(review.timestamp)}</div>
+            </div>
+          </div>
+          <div class="review-content">${review.content}</div>
+          ${
+            review.reply
+              ? `
+            <div class="review-reply">
+              <svg class="review-reply-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 10h10a5 5 0 0 1 5 5v6M3 10l6 6M3 10l6-6"/>
+              </svg>
+              <div class="review-reply-body">
+                <span class="review-reply-label">作者</span><span class="review-reply-content">${review.reply}</span>
+              </div>
+            </div>
+          `
+              : ''
+          }
+          <div class="review-actions">
+            <button class="review-action-btn">
+              <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+              <span>${review.likes || 0}</span>
+            </button>
+            <button class="review-action-btn">
+              <svg viewBox="0 0 24 24"><path d="M21 6h-2v9H6v2c0 .55.45 1 1 1h11l4 4V7c0-.55-.45-1-1-1zm-4 6V3c0-.55-.45-1-1-1H3c-.55 0-1 .45-1 1v14l4-4h10c.55 0 1-.45 1-1z"/></svg>
+              <span>${review.comments || 0}</span>
+            </button>
+          </div>
+        </div>
+      `,
+        )
+        .join('');
+    },
+
+    // 切换评价视图
+    toggleReviewsView() {
+      const reviewsSection = document.getElementById('mapCardReviewsSection');
+      if (!reviewsSection) return;
+
+      reviewsSection.classList.toggle('active');
+    },
+
+    // 获取相对时间（几天前）
+    getTimeAgo(timestamp) {
+      if (!timestamp) return '最近';
+      const now = new Date();
+      const reviewDate = new Date(timestamp);
+      const diffDays = Math.floor((now - reviewDate) / (1000 * 60 * 60 * 24));
+
+      if (diffDays === 0) return '今天';
+      if (diffDays === 1) return '昨天';
+      if (diffDays < 7) return `${diffDays}天前`;
+      if (diffDays < 30) return `${Math.floor(diffDays / 7)}周前`;
+      if (diffDays < 365) return `${Math.floor(diffDays / 30)}个月前`;
+      return `${Math.floor(diffDays / 365)}年前`;
+    },
+
+    // ==================== 用户地图资料管理 ====================
+
+    // 初始化用户地图资料（从X资料同步或数据库读取）
+    async initUserMapProfile() {
+      try {
+        const xDb = getXDB();
+        const profileId = `userMapProfile_${currentAccountId || 'main'}`;
+
+        // 尝试从数据库读取
+        let savedProfile = await xDb.xMapUserProfile.get(profileId);
+
+        if (!savedProfile && window.userProfileData) {
+          // 首次使用，从X资料同步
+          console.log('🔧 [用户地图资料] 首次使用，从X资料同步');
+
+          const xProfile = window.userProfileData;
+          // 处理handle - 去掉开头的@（如果有的话）
+          let handle = xProfile.handle || 'anonymous';
+          if (handle.startsWith('@')) {
+            handle = handle.substring(1);
+          }
+
+          savedProfile = {
+            id: profileId,
+            nickname: xProfile.name || '匿名用户',
+            handle: handle,
+            avatar: xProfile.avatar || '',
+            bio: xProfile.bio || '这个人很神秘，什么都没留下',
+            tags: [xProfile.customTag1 || '探索中', xProfile.customTag2 || '寻找缘分'].filter(t => t),
+            avatarBubble: '👋',
+            followers: xProfile.followers || 0,
+            likes: xProfile.following || 0, // 用following作为likes显示
+            lastUpdated: new Date().toISOString(),
+          };
+
+          // 保存到数据库
+          await xDb.xMapUserProfile.put(savedProfile);
+          console.log('✅ [用户地图资料] 已同步并保存到数据库');
+        }
+
+        this.userMapProfile = savedProfile;
+        console.log('✅ [用户地图资料] 初始化完成', this.userMapProfile);
+      } catch (error) {
+        console.error('❌ [用户地图资料] 初始化失败:', error);
+        // 使用默认值
+        this.userMapProfile = {
+          id: `userMapProfile_${currentAccountId || 'main'}`,
+          nickname: '我',
+          handle: 'me',
+          avatar: '',
+          bio: '编辑我的简介',
+          tags: ['探索中'],
+          avatarBubble: '👋',
+          lastUpdated: new Date().toISOString(),
+        };
+      }
+    },
+
+    // 显示用户自己的资料卡 - 完全照抄showDetailCard，一个字都不多加
+    showUserProfileCard() {
+      if (!this.userMapProfile) {
+        console.warn('⚠️ 用户资料未初始化');
+        return;
+      }
+
+      const profile = this.userMapProfile;
+
+      // 完全照抄showDetailCard的元素获取
+      const mapCardAvatar = document.getElementById('mapCardAvatar');
+      const mapCardAvatarBubble = document.getElementById('mapCardAvatarBubble');
+      const mapCardNickname = document.getElementById('mapCardNickname');
+      const mapCardHandle = document.getElementById('mapCardHandle');
+      const mapCardFollowers = document.getElementById('mapCardFollowers');
+      const mapCardLikes = document.getElementById('mapCardLikes');
+      const mapCardBio = document.getElementById('mapCardBio');
+      const mapCardTags = document.getElementById('mapCardTags');
+      const mapCardDistance = document.getElementById('mapCardDistance');
+      const card = document.getElementById('mapUserDetailCard');
+
+      // 完全照抄showDetailCard的填充方式，一个字都不多
+      if (mapCardAvatar) mapCardAvatar.src = profile.avatar;
+      if (mapCardAvatarBubble) mapCardAvatarBubble.textContent = profile.avatarBubble || '😊';
+      if (mapCardNickname) mapCardNickname.textContent = profile.nickname;
+      if (mapCardHandle) mapCardHandle.textContent = `@${profile.handle}`;
+      if (mapCardFollowers) mapCardFollowers.textContent = profile.followers || 0;
+      if (mapCardLikes) mapCardLikes.textContent = profile.likes || 0;
+      if (mapCardBio) mapCardBio.textContent = profile.bio;
+      if (mapCardTags) mapCardTags.innerHTML = profile.tags.map(tag => `<div class="card-tag">${tag}</div>`).join('');
+      if (mapCardDistance) mapCardDistance.textContent = '0km';
+
+      // 隐藏评价section
+      const reviewsSection = document.getElementById('mapCardReviewsSection');
+      if (reviewsSection) reviewsSection.classList.remove('active');
+
+      // 显示卡片
+      if (card) card.style.display = 'block';
+
+      // 标记当前是用户自己的资料卡
+      this.isShowingUserProfile = true;
+
+      // 绑定编辑事件
+      this.bindUserProfileEditEvents();
+    },
+
+    // 绑定用户资料编辑事件
+    bindUserProfileEditEvents() {
+      // 头像编辑
+      const avatar = document.getElementById('mapCardAvatar');
+      if (avatar) {
+        avatar.onclick = e => {
+          e.stopPropagation();
+          this.editAvatar();
+        };
+      }
+
+      // 昵称编辑
+      const nickname = document.getElementById('mapCardNickname');
+      if (nickname) {
+        nickname.onclick = e => {
+          e.stopPropagation();
+          this.editNickname();
+        };
+      }
+
+      // 简介编辑
+      const bio = document.getElementById('mapCardBio');
+      if (bio) {
+        bio.onclick = e => {
+          e.stopPropagation();
+          this.editBio();
+        };
+      }
+
+      // 标签编辑
+      document.querySelectorAll('#mapCardTags .card-tag').forEach((tag, index) => {
+        tag.onclick = e => {
+          e.stopPropagation();
+          this.editTag(e.target, index);
+        };
+      });
+    },
+
+    // 编辑头像（输入URL）
+    editAvatar() {
+      const currentAvatar = this.userMapProfile.avatar;
+      const newAvatar = prompt('请输入新的头像URL:', currentAvatar);
+
+      if (newAvatar !== null && newAvatar.trim() !== '') {
+        this.userMapProfile.avatar = newAvatar.trim();
+        // 更新卡片中的头像
+        const avatar = document.getElementById('mapCardAvatar');
+        if (avatar) avatar.src = newAvatar.trim();
+        this.saveUserMapProfile();
+      }
+    },
+
+    // 编辑昵称
+    editNickname() {
+      const currentValue = this.userMapProfile.nickname;
+      const newValue = prompt('请输入昵称（2-8个字符）:', currentValue);
+
+      if (newValue !== null && newValue.trim() !== '') {
+        this.userMapProfile.nickname = newValue.trim();
+        // 更新卡片中的昵称
+        const nickname = document.getElementById('mapCardNickname');
+        if (nickname) nickname.textContent = newValue.trim();
+        this.saveUserMapProfile();
+      }
+    },
+
+    // 编辑简介
+    editBio() {
+      const currentValue = this.userMapProfile.bio;
+      const newValue = prompt('请输入简介（可以使用\\n换行）:', currentValue);
+
+      if (newValue !== null) {
+        this.userMapProfile.bio = newValue.trim();
+        // 更新卡片中的简介
+        const bio = document.getElementById('mapCardBio');
+        if (bio) bio.textContent = newValue.trim();
+        this.saveUserMapProfile();
+      }
+    },
+
+    // 编辑标签
+    editTag(element, index) {
+      const currentValue = element.textContent.trim();
+      const newValue = prompt('请输入标签内容:', currentValue);
+
+      if (newValue !== null && newValue.trim() !== '') {
+        this.userMapProfile.tags[index] = newValue.trim();
+        this.refreshTagsDisplay();
+        this.saveUserMapProfile();
+      } else if (newValue === '') {
+        // 删除标签
+        if (confirm('确定要删除这个标签吗？')) {
+          this.userMapProfile.tags.splice(index, 1);
+          this.refreshTagsDisplay();
+          this.saveUserMapProfile();
+        }
+      }
+    },
+
+    // 刷新标签显示 - 完全照抄showDetailCard的标签格式
+    refreshTagsDisplay() {
+      const mapCardTags = document.getElementById('mapCardTags');
+      if (mapCardTags) {
+        // 完全照抄showDetailCard的格式
+        mapCardTags.innerHTML = this.userMapProfile.tags.map(tag => `<div class="card-tag">${tag}</div>`).join('');
+
+        // 重新绑定标签编辑事件
+        document.querySelectorAll('#mapCardTags .card-tag').forEach((tag, index) => {
+          tag.onclick = e => {
+            e.stopPropagation();
+            this.editTag(e.target, index);
+          };
+        });
+      }
+    },
+
+    // 保存用户地图资料到数据库
+    async saveUserMapProfile() {
+      try {
+        const xDb = getXDB();
+        this.userMapProfile.lastUpdated = new Date().toISOString();
+        await xDb.xMapUserProfile.put(this.userMapProfile);
+        console.log('✅ [用户地图资料] 已保存到数据库');
+
+        // 刷新地图上的用户标记（更新头像）
+        this.renderCurrentUserMarker();
+      } catch (error) {
+        console.error('❌ [用户地图资料] 保存失败:', error);
+      }
+    },
+
+    // 筛选功能 - 适配Instagram风格数据
+    filterUsers(query) {
+      if (!query) {
+        this.currentUsers = [...this.allUsers]; // 从完整数据源读取
+      } else {
+        this.currentUsers = this.allUsers.filter(
+          // 从完整数据源筛选
+          u =>
+            u.nickname.toLowerCase().includes(query.toLowerCase()) ||
+            u.handle.toLowerCase().includes(query.toLowerCase()) ||
+            u.bio.toLowerCase().includes(query.toLowerCase()) ||
+            u.tags.some(tag => tag.includes(query)),
+        );
+      }
+      this.renderUserList();
+      this.renderMapMarkers();
+    },
+
+    filterByDistance(value) {
+      if (value === 'all') {
+        this.currentUsers = [...this.allUsers]; // 从完整数据源读取
+      } else {
+        const maxDist = parseFloat(value);
+        this.currentUsers = this.allUsers.filter(u => u.distance <= maxDist); // 从完整数据源筛选
+      }
+      this.renderUserList();
+      this.renderMapMarkers();
+    },
+
+    filterByGender(value) {
+      if (value === 'all') {
+        this.currentUsers = [...this.allUsers]; // 从完整数据源读取
+      } else {
+        this.currentUsers = this.allUsers.filter(u => u.gender === value);
+      }
+      this.renderUserList();
+      this.renderMapMarkers();
+    },
+
+    applyFilters() {
+      console.log('应用筛选');
+    },
+
+    // 地图控制 - 居中到用户位置
+    centerMap() {
+      const mapArea = document.getElementById('mapArea');
+      const mapCanvas = document.getElementById('mapCanvas');
+      if (!mapArea || !mapCanvas) return;
+
+      // 添加平滑过渡动画
+      mapCanvas.style.transition = 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+
+      // 重置缩放并居中到地图中心（即用户位置）
+      this.mapState.scale = 1;
+      const viewportWidth = mapArea.offsetWidth;
+      const viewportHeight = mapArea.offsetHeight;
+      this.mapState.translateX = -(viewportWidth * this.MAP_SIZE_MULTIPLIER - viewportWidth) / 2;
+      this.mapState.translateY = -(viewportHeight * this.MAP_SIZE_MULTIPLIER - viewportHeight) / 2;
+      this.updateMapTransform();
+
+      // 短暂高亮用户标记
+      const userMarker = mapCanvas.querySelector('.map-marker.current-user');
+      if (userMarker) {
+        userMarker.style.animation = 'none';
+        setTimeout(() => {
+          userMarker.style.animation = '';
+        }, 10);
+      }
+
+      // 动画完成后移除过渡
+      setTimeout(() => {
+        mapCanvas.style.transition = 'none';
+      }, 500);
+    },
+
+    zoomIn() {
+      if (this.mapState.scale < this.MAX_ZOOM) {
+        this.mapState.scale = Math.min(this.mapState.scale + this.ZOOM_STEP, this.MAX_ZOOM);
+        this.clampMapPosition();
+        this.updateMapTransform();
+      }
+    },
+
+    zoomOut() {
+      if (this.mapState.scale > this.MIN_ZOOM) {
+        this.mapState.scale = Math.max(this.mapState.scale - this.ZOOM_STEP, this.MIN_ZOOM);
+        this.clampMapPosition();
+        this.updateMapTransform();
+      }
+    },
+
+    // 按钮动作
+    sendMessage() {
+      const user = this.currentUsers.find(u => u.id === this.selectedUserId);
+      if (user) {
+        // 🔧 根据资料卡打开来源设置聊天上下文
+        const source = this.detailCardOpenSource || 'map';
+
+        if (source === 'interested') {
+          // 从interested提醒打开的资料卡 → 对方先对你感兴趣
+          this.chatContext[user.id] = 'interested_then_message';
+          console.log(`🎯 [聊天上下文] ${user.nickname} - 对方先对你感兴趣，你回应私信`);
+        } else {
+          // 从地图或其他途径打开的资料卡 → 普通陌生人聊天
+          this.chatContext[user.id] = 'normal';
+          console.log(`🎯 [聊天上下文] ${user.nickname} - 普通陌生人聊天，初始好感度为0`);
+        }
+
+        this.openChatModal(user);
+      }
+    },
+
+    viewProfile() {
+      const user = this.currentUsers.find(u => u.id === this.selectedUserId);
+      if (user) {
+        alert(`查看 ${user.nickname} 的完整资料`);
+      }
+    },
+
+    // ==================== 社交圈系统方法 ====================
+
+    // 显示社交圈弹窗
+    showSocialCircle() {
+      const modal = document.getElementById('mapSocialCircleModal');
+      const emptyState = document.getElementById('mapSocialCircleEmpty');
+      const list = document.getElementById('mapSocialCircleList');
+
+      if (!modal || !emptyState || !list) return;
+
+      // 获取当前用户的社交圈（先从currentUsers查找，如果没找到再从allUsers查找）
+      // 使用宽松相等 == 以兼容数字ID和字符串ID
+      let user = this.currentUsers.find(u => u.id == this.selectedUserId);
+      if (!user) {
+        user = this.allUsers.find(u => u.id == this.selectedUserId);
+      }
+      if (!user) return;
+
+      const socialCircle = user.socialCircle || [];
+
+      // 显示/隐藏empty state
+      if (socialCircle.length === 0) {
+        emptyState.style.display = 'flex';
+        list.style.display = 'none';
+      } else {
+        emptyState.style.display = 'none';
+        list.style.display = 'flex';
+
+        // 渲染社交圈好友列表
+        list.innerHTML = socialCircle
+          .map(friend => {
+            const bioLines = friend.bio ? friend.bio.split('\n') : [];
+            const bioText = bioLines.slice(1).join(' ').trim() || 'No bio';
+
+            // 关系类型映射
+            const relationshipMap = {
+              best_friend: 'Best Friend',
+              lover: 'Lover',
+              ex_lover: 'Ex-Lover',
+              sibling: 'Sibling',
+              cousin: 'Cousin',
+              family: 'Family',
+              friend: 'Friend',
+              colleague: 'Colleague',
+              classmate: 'Classmate',
+              rival: 'Rival',
+              frenemy: 'Frenemy',
+              complicated: 'Complicated',
+            };
+
+            const relationshipText = relationshipMap[friend.relationship] || friend.relationship || 'Friend';
+
+            return `
+            <div class="map-social-circle-friend-card" data-friend-id="${friend.id}">
+              <div class="map-social-circle-friend-header">
+                <img class="map-social-circle-friend-avatar" src="${friend.avatar}" alt="${friend.nickname}">
+                <div class="map-social-circle-friend-info">
+                  <div class="map-social-circle-friend-name">${friend.nickname}</div>
+                  <div class="map-social-circle-friend-handle">@${friend.handle}</div>
+                </div>
+                <div class="map-social-circle-friend-relationship">${relationshipText}</div>
+              </div>
+              <div class="map-social-circle-friend-bio">${bioText}</div>
+              <div class="map-social-circle-friend-stats">
+                <div class="map-social-circle-friend-stat">
+                  <span class="map-social-circle-friend-stat-value">${friend.followers || 0}</span>
+                  <span>followers</span>
+                </div>
+                <div class="map-social-circle-friend-stat">
+                  <span class="map-social-circle-friend-stat-value">${friend.likes || 0}</span>
+                  <span>likes</span>
+                </div>
+                <div class="map-social-circle-friend-stat">
+                  <span class="map-social-circle-friend-stat-value">${(friend.distance || 0).toFixed(1)}km</span>
+                  <span>away</span>
+                </div>
+              </div>
+            </div>
+          `;
+          })
+          .join('');
+
+        // 绑定好友卡片点击事件
+        list.querySelectorAll('.map-social-circle-friend-card').forEach(card => {
+          card.addEventListener('click', () => {
+            const friendId = card.dataset.friendId;
+            const friend = socialCircle.find(f => f.id === friendId);
+            if (friend) {
+              // 显示好友的资料卡片（从社交圈打开）
+              this.showDetailCard(friend.id, 'socialCircle');
+              this.hideSocialCircle();
+            }
+          });
+        });
+      }
+
+      // 显示弹窗
+      modal.style.display = 'flex';
+    },
+
+    // 隐藏社交圈弹窗
+    hideSocialCircle() {
+      const modal = document.getElementById('mapSocialCircleModal');
+      if (modal) {
+        modal.style.display = 'none';
+      }
+    },
+
+    // ==================== 聊天系统方法 ====================
+
+    // 打开聊天弹窗
+    async openChatModal(user) {
+      this.currentChatUser = user;
+
+      // 🔧 关闭资料弹窗（防止弹窗堆叠）
+      this.closeDetailCard();
+
+      // 设置顶栏信息
+      const chatUserAvatar = document.getElementById('mapChatUserAvatar');
+      const chatUserName = document.getElementById('mapChatUserName');
+      if (chatUserAvatar) chatUserAvatar.src = user.avatar;
+      if (chatUserName) chatUserName.textContent = user.nickname;
+
+      // 📥 尝试从数据库加载聊天记录和好感度数据
+      const chatId = `mapChat_${user.id}_${currentAccountId || 'main'}`;
+      const xDb = getXDB();
+      let loadedFromDb = false;
+
+      if (xDb) {
+        try {
+          const chatRecord = await xDb.xMapChats.get(chatId);
+          if (chatRecord) {
+            // 从数据库加载消息
+            this.chatMessages[user.id] = chatRecord.messages || [];
+            loadedFromDb = true;
+            console.log(
+              `📥 [聊天记录] 已从数据库加载 ${user.nickname} 的聊天记录 (${this.chatMessages[user.id].length} 条消息)`,
+            );
+
+            // 💖 从数据库加载好感度数据
+            if (chatRecord.affectionData) {
+              this.chatAffectionData[user.id] = chatRecord.affectionData;
+              console.log(
+                `💖 [好感度系统] 已从数据库加载 ${
+                  user.nickname
+                } 的好感度数据 (好感度: ${chatRecord.affectionData.affection.toFixed(1)}/100)`,
+              );
+            }
+
+            // 📝 从数据库加载AI笔记数据
+            if (chatRecord.notes) {
+              this.chatNotes[user.id] = chatRecord.notes;
+              const notesCount = Object.keys(chatRecord.notes).length;
+              if (notesCount > 0) {
+                console.log(
+                  `📝 [AI笔记系统] 已从数据库加载 ${user.nickname} 的笔记 (${notesCount}条: ${Object.keys(
+                    chatRecord.notes,
+                  ).join('、')})`,
+                );
+              }
+            }
+
+            // 📌 从数据库加载用户标记的笔记
+            if (chatRecord.userMarkedNotes) {
+              this.userMarkedNotes[user.id] = chatRecord.userMarkedNotes;
+              if (chatRecord.userMarkedNotes.length > 0) {
+                console.log(
+                  `📌 [用户笔记系统] 已从数据库加载 ${user.nickname} 的用户笔记 (${chatRecord.userMarkedNotes.length}条)`,
+                );
+              }
+            }
+
+            // 💭 从数据库加载NPC对用户的观察笔记
+            if (chatRecord.npcNotesAboutUser) {
+              this.npcNotesAboutUser[user.id] = chatRecord.npcNotesAboutUser;
+              if (chatRecord.npcNotesAboutUser.length > 0) {
+                console.log(
+                  `💭 [NPC观察笔记] 已从数据库加载 ${user.nickname} 对你的观察笔记 (${chatRecord.npcNotesAboutUser.length}条)`,
+                );
+              }
+            }
+          }
+        } catch (error) {
+          console.error('❌ [聊天记录] 从数据库加载失败:', error);
+        }
+      }
+
+      // 如果数据库中没有记录，初始化空消息数组
+      if (!loadedFromDb && !this.chatMessages[user.id]) {
+        this.chatMessages[user.id] = [];
+        console.log(`📝 [聊天记录] 已初始化 ${user.nickname} 的空白聊天记录`);
+      }
+
+      // 初始化好感度数据（如果不存在）
+      if (!this.chatAffectionData[user.id]) {
+        this.chatAffectionData[user.id] = this.calculateAffectionParameters(user);
+
+        // 🎯 根据聊天发起上下文设置初始好感度
+        const context = this.chatContext[user.id] || 'normal';
+        if (context === 'interested_then_message') {
+          // 对方先感兴趣，设置初始好感度 15-25
+          this.chatAffectionData[user.id].affection = 15 + Math.random() * 10;
+          console.log(
+            `💖 [好感度系统] ${user.nickname} 先对你感兴趣，设置初始好感度: ${this.chatAffectionData[
+              user.id
+            ].affection.toFixed(1)}`,
+          );
+        } else if (context === 'message_accepted') {
+          // 对方主动发私信，设置初始好感度 20-30
+          this.chatAffectionData[user.id].affection = 20 + Math.random() * 10;
+          console.log(
+            `💖 [好感度系统] ${user.nickname} 主动发起私信，设置初始好感度: ${this.chatAffectionData[
+              user.id
+            ].affection.toFixed(1)}`,
+          );
+        } else {
+          console.log(`💖 [好感度系统] ${user.nickname} 普通聊天，初始好感度: 0`);
+        }
+
+        console.log(
+          `💖 [好感度系统] 已初始化 ${user.nickname} 的好感度数据 (好感度: ${this.chatAffectionData[
+            user.id
+          ].affection.toFixed(1)}, 阈值: ${this.chatAffectionData[user.id].threshold}, 增长率: ${this.chatAffectionData[
+            user.id
+          ].growthRate.toFixed(2)}x)`,
+        );
+      }
+
+      // 初始化AI笔记数据（如果不存在）
+      if (!this.chatNotes[user.id]) {
+        this.chatNotes[user.id] = {};
+        console.log(`📝 [AI笔记系统] 已初始化 ${user.nickname} 的笔记数据（空白人设）`);
+      }
+
+      // 📌 初始化用户标记笔记数据（如果不存在）
+      if (!this.userMarkedNotes[user.id]) {
+        this.userMarkedNotes[user.id] = [];
+        console.log(`📌 [用户笔记系统] 已初始化 ${user.nickname} 的用户笔记数据（空白）`);
+      }
+
+      // 💭 初始化NPC观察笔记数据（如果不存在）
+      if (!this.npcNotesAboutUser[user.id]) {
+        this.npcNotesAboutUser[user.id] = [];
+        console.log(`💭 [NPC观察笔记] 已初始化 ${user.nickname} 对你的观察笔记数据（空白）`);
+      }
+
+      // 渲染消息
+      this.renderChatMessages();
+
+      // 显示弹窗
+      const chatOverlay = document.getElementById('mapChatOverlay');
+      const chatModal = document.getElementById('mapChatModal');
+      if (chatOverlay) chatOverlay.classList.add('show');
+      if (chatModal) chatModal.classList.add('show');
+
+      // 🔧 检查该用户是否被举报中，决定是否启用输入框
+      this.checkAndUpdateChatInputState(user.id);
+
+      // 🔞 检测对方年龄，如果<18则显示系统提醒
+      this.checkMinorWarning(user);
+
+      // 滚动到底部
+      setTimeout(() => {
+        const chatMessages = document.getElementById('mapChatMessages');
+        if (chatMessages) {
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+      }, 100);
+    },
+
+    // 🔞 检测未成年人并显示警告
+    checkMinorWarning(user) {
+      // 如果已经有聊天记录，说明不是第一次打开，不重复提示
+      if (this.chatMessages[user.id] && this.chatMessages[user.id].length > 0) {
+        return;
+      }
+
+      // 从用户bio中提取年龄
+      const age = this.extractAgeFromBio(user.bio);
+
+      if (age !== null && age < 18) {
+        console.log(`🔞 [未成年人警告] 检测到 ${user.nickname} 年龄为 ${age}岁，显示系统警告`);
+        this.addSystemMessage(
+          `Notice: This user is under 18 years old. Please be mindful of your language and behavior.`,
+        );
+      }
+    },
+
+    // 从bio中提取年龄
+    extractAgeFromBio(bio) {
+      if (!bio) return null;
+
+      // 匹配各种年龄格式：
+      // "18岁" "18 years old" "Age: 18" "age 18" "18yo" "18 y.o."
+      const agePatterns = [
+        /(\d{1,2})\s*岁/i, // 18岁
+        /(\d{1,2})\s*years?\s*old/i, // 18 years old
+        /age[:\s]+(\d{1,2})/i, // Age: 18 或 age 18
+        /(\d{1,2})\s*yo\b/i, // 18yo
+        /(\d{1,2})\s*y\.?o\.?/i, // 18 y.o.
+        /\b(\d{1,2})\s*(?:歳|才)/i, // 18歳
+        /^(\d{1,2})$/, // 纯数字（如果bio只有数字）
+      ];
+
+      for (const pattern of agePatterns) {
+        const match = bio.match(pattern);
+        if (match) {
+          const age = parseInt(match[1]);
+          // 合理年龄范围：10-99
+          if (age >= 10 && age <= 99) {
+            console.log(`🔍 [年龄提取] 从bio "${bio}" 中提取到年龄: ${age}`);
+            return age;
+          }
+        }
+      }
+
+      return null;
+    },
+
+    // 关闭聊天弹窗
+    closeChatModal() {
+      const chatOverlay = document.getElementById('mapChatOverlay');
+      const chatModal = document.getElementById('mapChatModal');
+      if (chatOverlay) chatOverlay.classList.remove('show');
+      if (chatModal) chatModal.classList.remove('show');
+
+      // 关闭功能菜单和笔记弹窗
+      this.closeFunctionMenu();
+      this.closeNotesModal();
+
+      this.currentChatUser = null;
+    },
+
+    // ==================== 📌 聊天列表功能方法 ====================
+
+    // 切换More options菜单
+    toggleMoreMenu() {
+      const menu = document.getElementById('mapChatMoreMenu');
+      if (!menu) return;
+
+      const isOpen = menu.classList.contains('show');
+      if (isOpen) {
+        menu.classList.remove('show');
+      } else {
+        menu.classList.add('show');
+        // 点击其他地方关闭菜单
+        setTimeout(() => {
+          const closeMenu = e => {
+            if (!menu.contains(e.target) && !document.getElementById('mapChatMoreBtn').contains(e.target)) {
+              menu.classList.remove('show');
+              document.removeEventListener('click', closeMenu);
+            }
+          };
+          document.addEventListener('click', closeMenu);
+        }, 100);
+      }
+    },
+
+    // 添加当前聊天到列表
+    addCurrentChatToList() {
+      if (!this.currentChatUser) {
+        console.log('没有当前聊天对象');
+        return;
+      }
+
+      try {
+        // 从localStorage读取已保存的聊天列表
+        const savedChatsStr = localStorage.getItem('xMapSavedChats');
+        const savedChats = savedChatsStr ? JSON.parse(savedChatsStr) : [];
+
+        // 检查是否已存在
+        const exists = savedChats.some(chat => chat.id === this.currentChatUser.id);
+
+        if (exists) {
+          console.log('该聊天已在列表中');
+          return;
+        }
+
+        // 保存聊天
+        const chatData = {
+          id: this.currentChatUser.id,
+          name: this.currentChatUser.nickname, // 修正：使用nickname字段
+          avatar: this.currentChatUser.avatar,
+          lastMessage: 'Start chatting...',
+          savedAt: Date.now(),
+          userData: this.currentChatUser, // 保存完整用户数据
+        };
+
+        savedChats.push(chatData);
+        localStorage.setItem('xMapSavedChats', JSON.stringify(savedChats));
+
+        console.log('已添加到聊天列表:', chatData.name);
+
+        // 关闭More options菜单
+        const menu = document.getElementById('mapChatMoreMenu');
+        if (menu) menu.classList.remove('show');
+      } catch (error) {
+        console.error('添加到聊天列表失败:', error);
+      }
+    },
+
+    // 打开聊天列表弹窗
+    openChatsListModal() {
+      const overlay = document.getElementById('mapChatsListOverlay');
+      const modal = document.getElementById('mapChatsListModal');
+
+      if (overlay) overlay.classList.add('show');
+      if (modal) modal.classList.add('show');
+
+      // 加载并渲染聊天列表
+      this.loadAndRenderChatsList();
+    },
+
+    // 关闭聊天列表弹窗
+    closeChatsListModal() {
+      const overlay = document.getElementById('mapChatsListOverlay');
+      const modal = document.getElementById('mapChatsListModal');
+
+      if (overlay) overlay.classList.remove('show');
+      if (modal) modal.classList.remove('show');
+    },
+
+    // ==========================================
+    // 🔔 提醒功能相关方法
+    // ==========================================
+
+    // 打开提醒弹窗
+    openNotificationsModal() {
+      const overlay = document.getElementById('mapNotificationsOverlay');
+      const modal = document.getElementById('mapNotificationsModal');
+
+      if (overlay) overlay.classList.add('show');
+      if (modal) modal.classList.add('show');
+
+      // 加载并渲染提醒列表
+      this.loadAndRenderNotificationsList();
+
+      // 标记所有提醒为已读并更新徽章
+      this.markAllNotificationsAsRead();
+    },
+
+    // 关闭提醒弹窗
+    closeNotificationsModal() {
+      const overlay = document.getElementById('mapNotificationsOverlay');
+      const modal = document.getElementById('mapNotificationsModal');
+
+      if (overlay) overlay.classList.remove('show');
+      if (modal) modal.classList.remove('show');
+    },
+
+    // ==========================================
+    // ⚙️ 应用设置功能相关方法
+    // ==========================================
+
+    // 打开应用设置弹窗
+    openAppSettingsModal() {
+      const overlay = document.getElementById('mapAppSettingsOverlay');
+      const modal = document.getElementById('mapAppSettingsModal');
+
+      if (overlay) overlay.classList.add('show');
+      if (modal) modal.classList.add('show');
+
+      // 同步当前主题状态到开关UI
+      this.syncThemeToggleUI();
+
+      // 🖼️ 渲染自定义头像列表
+      this.renderCustomAvatarList();
+    },
+
+    // 关闭应用设置弹窗
+    closeAppSettingsModal() {
+      const overlay = document.getElementById('mapAppSettingsOverlay');
+      const modal = document.getElementById('mapAppSettingsModal');
+
+      if (overlay) overlay.classList.remove('show');
+      if (modal) modal.classList.remove('show');
+    },
+
+    // 切换主题
+    toggleTheme() {
+      const container = document.getElementById('x-map-container');
+      if (!container) {
+        console.error('❌ [主题切换] 找不到容器 #x-map-container');
+        return;
+      }
+
+      // 切换主题类
+      const isLightTheme = container.classList.toggle('light-theme');
+
+      // 保存到localStorage
+      try {
+        localStorage.setItem('xMapTheme', isLightTheme ? 'light' : 'dark');
+        console.log(`✅ [主题切换] 已切换到${isLightTheme ? '亮色' : '暗色'}主题`);
+      } catch (error) {
+        console.error('❌ [主题切换] 保存主题设置失败:', error);
+      }
+
+      // 更新地图主题并重绘
+      if (typeof MapGenerator !== 'undefined' && MapGenerator.setTheme) {
+        MapGenerator.setTheme(isLightTheme);
+        MapGenerator.redraw();
+      }
+
+      // 更新开关UI
+      this.syncThemeToggleUI();
+    },
+
+    // 同步主题开关UI状态
+    syncThemeToggleUI() {
+      const container = document.getElementById('x-map-container');
+      const toggle = document.getElementById('mapThemeToggle');
+      const icon = toggle?.querySelector('.map-theme-toggle-icon');
+
+      if (!container || !toggle || !icon) return;
+
+      const isLightTheme = container.classList.contains('light-theme');
+
+      // 更新开关样式
+      if (isLightTheme) {
+        toggle.classList.add('light');
+      } else {
+        toggle.classList.remove('light');
+      }
+
+      // 更新图标（月亮图标用于暗色模式，太阳图标用于亮色模式）
+      if (isLightTheme) {
+        // 太阳图标
+        icon.innerHTML =
+          '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>';
+      } else {
+        // 月亮图标
+        icon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+      }
+    },
+
+    // 初始化主题设置（从localStorage加载）
+    initThemeSettings() {
+      try {
+        const savedTheme = localStorage.getItem('xMapTheme');
+        const container = document.getElementById('x-map-container');
+
+        if (!container) {
+          console.warn('⚠️ [主题初始化] 找不到容器 #x-map-container');
+          return;
+        }
+
+        const isLightTheme = savedTheme === 'light';
+
+        // 如果保存了亮色主题，则应用
+        if (isLightTheme) {
+          container.classList.add('light-theme');
+          console.log('✅ [主题初始化] 已加载亮色主题');
+        } else {
+          // 默认暗色主题，移除亮色类（如果有）
+          container.classList.remove('light-theme');
+          console.log('✅ [主题初始化] 已加载暗色主题');
+        }
+
+        // 更新地图主题（如果地图已初始化）
+        if (typeof MapGenerator !== 'undefined' && MapGenerator.setTheme && MapGenerator.ctx) {
+          MapGenerator.setTheme(isLightTheme);
+          MapGenerator.redraw();
+        }
+
+        // 同步UI状态
+        this.syncThemeToggleUI();
+      } catch (error) {
+        console.error('❌ [主题初始化] 加载主题设置失败:', error);
+      }
+    },
+
+    // ==========================================
+    // 自定义头像管理功能
+    // ==========================================
+
+    // 从localStorage加载自定义头像
+    loadCustomAvatars() {
+      try {
+        const savedAvatarsStr = localStorage.getItem('xMapCustomAvatars');
+        if (savedAvatarsStr) {
+          this.customAvatars = JSON.parse(savedAvatarsStr);
+          console.log('✅ [头像管理] 已加载自定义头像', this.customAvatars);
+        }
+      } catch (error) {
+        console.error('❌ [头像管理] 加载自定义头像失败:', error);
+        this.customAvatars = { unisex: [], male: [], female: [] };
+      }
+    },
+
+    // 保存自定义头像到localStorage
+    saveCustomAvatars() {
+      try {
+        localStorage.setItem('xMapCustomAvatars', JSON.stringify(this.customAvatars));
+        console.log('✅ [头像管理] 已保存自定义头像');
+      } catch (error) {
+        console.error('❌ [头像管理] 保存自定义头像失败:', error);
+      }
+    },
+
+    // 添加自定义头像
+    addCustomAvatar(urlInput, category) {
+      if (!urlInput || !urlInput.trim()) {
+        alert('Please enter at least one URL');
+        return;
+      }
+
+      // 🔧 支持批量上传：用中英文逗号分隔多个URL
+      const urls = urlInput
+        .split(/[,，]/)
+        .map(u => u.trim())
+        .filter(u => u);
+
+      if (urls.length === 0) {
+        alert('Please enter at least one valid URL');
+        return;
+      }
+
+      let successCount = 0;
+      let skipCount = 0;
+      let errorCount = 0;
+      const errors = [];
+
+      // 逐个处理URL
+      urls.forEach((url, index) => {
+        // 验证URL格式
+        try {
+          new URL(url);
+        } catch (error) {
+          errorCount++;
+          errors.push(`URL ${index + 1}: Invalid format`);
+          return;
+        }
+
+        // 检查是否已存在
+        if (this.customAvatars[category].includes(url)) {
+          skipCount++;
+          return;
+        }
+
+        // 添加到对应分类
+        this.customAvatars[category].push(url);
+        successCount++;
+        console.log(`✅ [头像管理] 已添加头像到 ${category}:`, url);
+      });
+
+      // 保存和渲染
+      if (successCount > 0) {
+        this.saveCustomAvatars();
+        this.renderCustomAvatarList();
+      }
+
+      // 清空输入框
+      const input = document.getElementById('mapAvatarUrlInput');
+      if (input) input.value = '';
+
+      // 显示结果
+      let message = `✅ Successfully added: ${successCount}`;
+      if (skipCount > 0) message += `\n⚠️ Skipped (already exists): ${skipCount}`;
+      if (errorCount > 0) {
+        message += `\n❌ Failed (invalid): ${errorCount}`;
+        if (errors.length > 0 && errors.length <= 3) {
+          message += `\n${errors.join('\n')}`;
+        }
+      }
+
+      alert(message);
+    },
+
+    // 删除自定义头像
+    deleteCustomAvatar(url, category) {
+      const index = this.customAvatars[category].indexOf(url);
+      if (index > -1) {
+        this.customAvatars[category].splice(index, 1);
+        this.saveCustomAvatars();
+        this.renderCustomAvatarList();
+        console.log(`✅ [头像管理] 已删除头像:`, url);
+      }
+    },
+
+    // 渲染自定义头像列表
+    renderCustomAvatarList() {
+      const container = document.getElementById('mapCustomAvatarList');
+      if (!container) return;
+
+      // 汇总所有自定义头像
+      const allAvatars = [];
+      ['unisex', 'male', 'female'].forEach(category => {
+        this.customAvatars[category].forEach(url => {
+          allAvatars.push({ url, category });
+        });
+      });
+
+      if (allAvatars.length === 0) {
+        container.innerHTML =
+          '<div style="text-align: center; padding: 20px; color: #666; font-size: 14px;">No custom avatars added yet</div>';
+        return;
+      }
+
+      container.innerHTML = allAvatars
+        .map(
+          ({ url, category }) => `
+        <div class="map-avatar-item">
+          <img src="${url}" alt="Avatar" class="map-avatar-thumb" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Crect fill=%27%23ddd%27 width=%27100%27 height=%27100%27/%3E%3C/svg%3E'" />
+          <div class="map-avatar-info">
+            <div class="map-avatar-url" title="${url}">${url}</div>
+            <div class="map-avatar-category-badge">${category}</div>
+          </div>
+          <button class="map-avatar-delete-btn" onclick="MapDatingController.deleteCustomAvatar('${url.replace(
+            /'/g,
+            "\\'",
+          )}', '${category}')">
+            <svg viewBox="0 0 24 24">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+      `,
+        )
+        .join('');
+    },
+
+    // ==========================================
+    // 🚨 举报功能相关方法
+    // ==========================================
+
+    // 打开举报弹窗
+    openReportModal() {
+      if (!this.currentChatUser) {
+        console.error('❌ [举报系统] 没有当前聊天用户');
+        return;
+      }
+
+      // 关闭More菜单
+      const moreMenu = document.getElementById('mapChatMoreMenu');
+      if (moreMenu) moreMenu.classList.remove('show');
+
+      const overlay = document.getElementById('mapReportOverlay');
+      const modal = document.getElementById('mapReportModal');
+
+      if (!overlay || !modal) {
+        console.error('❌ [举报系统] 举报弹窗元素未找到');
+        return;
+      }
+
+      // 填充被举报用户信息
+      const avatarEl = document.getElementById('mapReportUserAvatar');
+      const nicknameEl = document.getElementById('mapReportUserNickname');
+      const handleEl = document.getElementById('mapReportUserHandle');
+
+      if (avatarEl) avatarEl.src = this.currentChatUser.avatar || '';
+      if (nicknameEl) nicknameEl.textContent = this.currentChatUser.nickname || 'User';
+      if (handleEl)
+        handleEl.textContent = `@${
+          this.currentChatUser.handle || this.currentChatUser.nickname?.toLowerCase() || 'user'
+        }`;
+
+      // 清空表单
+      const checkboxes = document.querySelectorAll('input[name="reportReason"]');
+      checkboxes.forEach(cb => (cb.checked = false));
+      const textarea = document.getElementById('mapReportDescription');
+      if (textarea) textarea.value = '';
+
+      // 显示弹窗
+      overlay.classList.add('show');
+      modal.classList.add('show');
+
+      console.log(`🚨 [举报系统] 打开举报弹窗，被举报用户: ${this.currentChatUser.nickname}`);
+    },
+
+    // 关闭举报弹窗
+    closeReportModal() {
+      const overlay = document.getElementById('mapReportOverlay');
+      const modal = document.getElementById('mapReportModal');
+
+      if (overlay) overlay.classList.remove('show');
+      if (modal) modal.classList.remove('show');
+    },
+
+    // 提交举报
+    async submitReport() {
+      if (!this.currentChatUser) {
+        console.error('❌ [举报系统] 没有当前聊天用户');
+        return;
+      }
+
+      // 收集选中的举报理由
+      const checkboxes = document.querySelectorAll('input[name="reportReason"]:checked');
+      const reasons = Array.from(checkboxes).map(cb => cb.value);
+
+      if (reasons.length === 0) {
+        alert('Please select at least one reason for reporting');
+        return;
+      }
+
+      // 收集举报描述
+      const textarea = document.getElementById('mapReportDescription');
+      const description = textarea ? textarea.value.trim() : '';
+
+      console.log(`🚨 [举报系统] 提交举报 - 用户: ${this.currentChatUser.nickname}, 理由: ${reasons.join(', ')}`);
+
+      // 获取该用户的最近10条聊天记录
+      const chatHistory = this.getChatHistory(this.currentChatUser.id);
+      const recentMessages = chatHistory.slice(-10); // 最近10条
+
+      // 关闭举报弹窗
+      this.closeReportModal();
+
+      // 标记该聊天为"举报审理中"
+      this.markChatAsReported(this.currentChatUser.id);
+
+      // 显示系统消息
+      this.addSystemMessage(
+        'Your report has been submitted and is under review. You cannot send messages while the review is in progress.',
+      );
+
+      // 禁用输入框
+      this.disableChatInput();
+
+      // 🔧 将举报数据存入待处理队列（等待第十六情景处理）
+      try {
+        const reportData = {
+          id: `report_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+          reporterId: 'current_user',
+          reportedUser: this.currentChatUser,
+          reasons: reasons,
+          description: description,
+          chatHistory: recentMessages,
+          timestamp: new Date().toISOString(),
+          status: 'pending',
+        };
+
+        // 存入待处理队列
+        let pendingReports = localStorage.getItem('xMapPendingReports');
+        pendingReports = pendingReports ? JSON.parse(pendingReports) : [];
+        pendingReports.push(reportData);
+        localStorage.setItem('xMapPendingReports', JSON.stringify(pendingReports));
+
+        console.log(`🚨 [举报系统] 举报已加入待处理队列，将在下次第十六情景中处理`);
+      } catch (error) {
+        console.error('❌ [举报系统] 添加举报到队列失败:', error);
+      }
+    },
+
+    // 标记聊天为举报状态
+    markChatAsReported(userId) {
+      try {
+        let reportedChats = localStorage.getItem('xMapReportedChats');
+        reportedChats = reportedChats ? JSON.parse(reportedChats) : {};
+
+        reportedChats[userId] = {
+          reportedAt: new Date().toISOString(),
+          status: 'pending',
+        };
+
+        localStorage.setItem('xMapReportedChats', JSON.stringify(reportedChats));
+        console.log(`✅ [举报系统] 已标记聊天为举报状态: ${userId}`);
+        console.log(`🔍 [举报系统] 当前所有举报记录:`, JSON.stringify(reportedChats, null, 2));
+
+        // 验证存储
+        const verify = localStorage.getItem('xMapReportedChats');
+        console.log(`🔍 [举报系统] 验证localStorage存储:`, verify);
+      } catch (error) {
+        console.error('❌ [举报系统] 标记聊天失败:', error);
+      }
+    },
+
+    // 添加系统消息
+    addSystemMessage(message) {
+      const messagesContainer = document.getElementById('mapChatMessages');
+      if (!messagesContainer) return;
+
+      const systemMessageDiv = document.createElement('div');
+      systemMessageDiv.className = 'map-chat-system-message';
+      systemMessageDiv.innerHTML = `
+        <div class="map-chat-system-message-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+        </div>
+        <div class="map-chat-system-message-text">${message}</div>
+      `;
+
+      messagesContainer.appendChild(systemMessageDiv);
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    },
+
+    // 禁用输入框
+    disableChatInput() {
+      const input = document.getElementById('mapChatInput');
+      const sendBtn = document.getElementById('mapChatSendBtn');
+
+      if (input) {
+        input.disabled = true;
+        input.placeholder = 'Chat unavailable during review process';
+      }
+      if (sendBtn) {
+        sendBtn.disabled = true;
+        sendBtn.style.opacity = '0.5';
+        sendBtn.style.cursor = 'not-allowed';
+      }
+    },
+
+    // 启用输入框
+    enableChatInput() {
+      const input = document.getElementById('mapChatInput');
+      const sendBtn = document.getElementById('mapChatSendBtn');
+
+      if (input) {
+        input.disabled = false;
+        input.placeholder = 'Type a message...';
+      }
+      if (sendBtn) {
+        sendBtn.disabled = false;
+        sendBtn.style.opacity = '1';
+        sendBtn.style.cursor = 'pointer';
+      }
+    },
+
+    // 🔧 检查并更新聊天输入框状态（根据是否被举报）
+    checkAndUpdateChatInputState(userId) {
+      try {
+        const reportedChatsStr = localStorage.getItem('xMapReportedChats');
+        console.log(`🔍 [举报系统] 检查用户 ${userId} 的举报状态`);
+        console.log(`🔍 [举报系统] localStorage中的数据:`, reportedChatsStr);
+
+        if (!reportedChatsStr) {
+          // 没有任何举报记录，启用输入框
+          console.log(`✅ [举报系统] 没有举报记录，启用输入框`);
+          this.enableChatInput();
+          return;
+        }
+
+        const reportedChats = JSON.parse(reportedChatsStr);
+        console.log(`🔍 [举报系统] 解析后的举报记录:`, reportedChats);
+
+        if (reportedChats[userId] && reportedChats[userId].status === 'pending') {
+          // 该用户被举报中，禁用输入框
+          this.disableChatInput();
+          console.log(`🚨 [举报系统] ${userId} 正在审理中，输入框已禁用`);
+
+          // 🔧 显示系统消息（刷新后恢复状态）
+          const messagesContainer = document.getElementById('mapChatMessages');
+          if (messagesContainer) {
+            // 检查是否已经有系统消息（避免重复添加）
+            const existingSystemMsg = messagesContainer.querySelector('.map-chat-system-message');
+            if (!existingSystemMsg) {
+              this.addSystemMessage(
+                'Your report has been submitted and is under review. You cannot send messages while the review is in progress.',
+              );
+            }
+          }
+        } else {
+          // 该用户未被举报，启用输入框
+          this.enableChatInput();
+        }
+      } catch (error) {
+        console.error('❌ [举报系统] 检查举报状态失败:', error);
+        // 出错时默认启用输入框
+        this.enableChatInput();
+      }
+    },
+
+    // 获取聊天记录
+    getChatHistory(userId) {
+      try {
+        // 从内存中获取聊天记录
+        if (this.chatMessages[userId]) {
+          return this.chatMessages[userId];
+        }
+
+        // 如果内存中没有，尝试从localStorage读取（兼容旧版本）
+        const chatKey = `xMapChatHistory_${userId}`;
+        const historyStr = localStorage.getItem(chatKey);
+        if (historyStr) {
+          return JSON.parse(historyStr);
+        }
+
+        return [];
+      } catch (error) {
+        console.error('❌ [举报系统] 获取聊天记录失败:', error);
+        return [];
+      }
+    },
+
+    // 生成举报结果提醒
+    generateReportNotification(reportData, isApproved, reason) {
+      try {
+        console.log(`🚨 [举报系统] 生成提醒，原始reportData:`, JSON.stringify(reportData, null, 2));
+
+        const notification = {
+          id: `report-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          type: 'report',
+          timestamp: new Date().toISOString(),
+          isRead: false,
+          reportedUser: reportData.reportedUser,
+          isApproved: isApproved,
+          reason: reason,
+          title: isApproved ? 'Report Approved' : 'Report Declined',
+          // 🔧 存储完整举报信息供详情弹窗使用
+          fullReportData: {
+            reasons: reportData.reasons || [],
+            description: reportData.description || '',
+            reportedAt: reportData.timestamp || new Date().toISOString(),
+          },
+        };
+
+        console.log(`🚨 [举报系统] 创建的notification:`, JSON.stringify(notification, null, 2));
+
+        // 保存到localStorage
+        const savedNotificationsStr = localStorage.getItem('xMapNotifications');
+        const savedNotifications = savedNotificationsStr ? JSON.parse(savedNotificationsStr) : [];
+        savedNotifications.push(notification);
+        localStorage.setItem('xMapNotifications', JSON.stringify(savedNotifications));
+
+        // 更新提醒徽章
+        this.updateNotificationBadge();
+
+        // 解除聊天禁用状态
+        this.enableChatInput();
+
+        // 移除举报标记
+        this.unmarkChatAsReported(reportData.reportedUser.id);
+
+        console.log(`✅ [举报系统] 已生成举报结果提醒`);
+      } catch (error) {
+        console.error('❌ [举报系统] 生成提醒失败:', error);
+      }
+    },
+
+    // 移除举报标记
+    unmarkChatAsReported(userId) {
+      try {
+        let reportedChats = localStorage.getItem('xMapReportedChats');
+        reportedChats = reportedChats ? JSON.parse(reportedChats) : {};
+
+        delete reportedChats[userId];
+
+        localStorage.setItem('xMapReportedChats', JSON.stringify(reportedChats));
+        console.log(`✅ [举报系统] 已移除举报标记: ${userId}`);
+      } catch (error) {
+        console.error('❌ [举报系统] 移除举报标记失败:', error);
+      }
+    },
+
+    // 🚨 生成用户被举报提醒（AI举报用户）
+    generateUserReportedNotification(reporterUser, reasons, description, severity, isApproved, judgementReason) {
+      try {
+        console.log(`🚨 [被举报系统] 生成被举报提醒，举报者: ${reporterUser.nickname}`);
+
+        const notification = {
+          id: `user-reported-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          type: 'user_reported', // 新类型：用户被举报
+          timestamp: new Date().toISOString(),
+          isRead: false,
+          reporterUser: reporterUser, // 举报者（NPC）
+          isApproved: isApproved,
+          severity: severity,
+          judgementReason: judgementReason,
+          title: isApproved ? 'You Have Been Reported' : 'Report Against You Was Declined',
+          // 存储完整举报信息供详情弹窗使用
+          fullReportData: {
+            reasons: reasons,
+            description: description,
+            reportedAt: new Date().toISOString(),
+          },
+        };
+
+        console.log(`🚨 [被举报系统] 创建的notification:`, JSON.stringify(notification, null, 2));
+
+        // 保存到localStorage
+        const savedNotificationsStr = localStorage.getItem('xMapNotifications');
+        const savedNotifications = savedNotificationsStr ? JSON.parse(savedNotificationsStr) : [];
+        savedNotifications.push(notification);
+        localStorage.setItem('xMapNotifications', JSON.stringify(savedNotifications));
+
+        // 更新提醒徽章
+        this.updateNotificationBadge();
+
+        console.log(`✅ [被举报系统] 已生成被举报提醒`);
+      } catch (error) {
+        console.error('❌ [被举报系统] 生成提醒失败:', error);
+      }
+    },
+
+    // 📋 打开举报详情弹窗
+    openReportDetailModal(notification) {
+      const overlay = document.getElementById('mapReportDetailOverlay');
+      const modal = document.getElementById('mapReportDetailModal');
+
+      if (!overlay || !modal) {
+        console.error('❌ [举报详情] 找不到弹窗元素');
+        return;
+      }
+
+      // 💾 存储当前notification（用于"已知晓"按钮结算）
+      this.currentReportNotification = notification;
+
+      // 🔍 调试：输出完整的notification对象
+      console.log('📋 [举报详情] 打开弹窗，notification数据:', JSON.stringify(notification, null, 2));
+
+      // 填充数据
+      const badge = document.getElementById('mapReportDetailBadge');
+      const badgeIcon = document.getElementById('mapReportDetailBadgeIcon');
+      const badgeText = document.getElementById('mapReportDetailBadgeText');
+      const userAvatar = document.getElementById('mapReportDetailUserAvatar');
+      const userNickname = document.getElementById('mapReportDetailUserNickname');
+      const userHandle = document.getElementById('mapReportDetailUserHandle');
+      const reasonsContainer = document.getElementById('mapReportDetailReasons');
+      const descSection = document.getElementById('mapReportDetailDescSection');
+      const description = document.getElementById('mapReportDetailDescription');
+      const reason = document.getElementById('mapReportDetailReason');
+      const time = document.getElementById('mapReportDetailTime');
+
+      // 设置判定结果徽章
+      if (badge && badgeText) {
+        badge.className = `map-report-detail-badge ${notification.isApproved ? 'approved' : 'declined'}`;
+        badgeText.textContent = notification.isApproved ? 'Report Approved' : 'Report Declined';
+      }
+
+      // 设置用户信息
+      if (userAvatar) userAvatar.src = notification.reportedUser.avatar || '';
+      if (userNickname) userNickname.textContent = notification.reportedUser.nickname || 'User';
+      if (userHandle) userHandle.textContent = `@${notification.reportedUser.handle || 'user'}`;
+
+      // 设置举报理由
+      if (reasonsContainer) {
+        const reasonMap = {
+          inappropriate_content: 'Inappropriate Content',
+          harassment: 'Harassment',
+          abuse: 'Verbal Abuse',
+          spam: 'Spam',
+          other: 'Other',
+        };
+
+        const reasons = notification.fullReportData?.reasons || [];
+        console.log(`📋 [举报详情] 举报理由数组:`, reasons);
+
+        if (reasons.length > 0) {
+          reasonsContainer.innerHTML = reasons
+            .map(r => `<div class="map-report-detail-reason-tag">${reasonMap[r] || r}</div>`)
+            .join('');
+        } else {
+          // 如果没有理由数据，显示占位文本
+          reasonsContainer.innerHTML = '<div class="map-report-detail-reason-tag">No specific reason provided</div>';
+        }
+      }
+
+      // 设置举报描述（如果有）
+      if (notification.fullReportData?.description && notification.fullReportData.description.trim()) {
+        if (descSection) descSection.style.display = 'block';
+        if (description) description.textContent = notification.fullReportData.description;
+      } else {
+        if (descSection) descSection.style.display = 'none';
+      }
+
+      // 设置AI判定原因
+      if (reason) reason.textContent = notification.reason || 'No reason provided';
+
+      // 设置举报时间
+      if (time) {
+        const reportedAt = notification.fullReportData?.reportedAt || notification.timestamp;
+        console.log(`📋 [举报详情] 举报时间:`, reportedAt);
+
+        if (reportedAt) {
+          try {
+            const reportTime = new Date(reportedAt);
+            time.textContent = reportTime.toLocaleString('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit',
+            });
+          } catch (error) {
+            console.error('❌ [举报详情] 时间格式化失败:', error);
+            time.textContent = reportedAt;
+          }
+        } else {
+          time.textContent = 'Time not available';
+        }
+      }
+
+      // 显示弹窗
+      overlay.classList.add('show');
+      modal.classList.add('show');
+
+      console.log(`📋 [举报详情] 已打开详情弹窗`);
+    },
+
+    // 关闭举报详情弹窗
+    closeReportDetailModal() {
+      const overlay = document.getElementById('mapReportDetailOverlay');
+      const modal = document.getElementById('mapReportDetailModal');
+
+      if (overlay) overlay.classList.remove('show');
+      if (modal) modal.classList.remove('show');
+    },
+
+    // 💰 处理举报结算（点击"已知晓"按钮）
+    async handleReportAcknowledge() {
+      const notification = this.currentReportNotification;
+
+      if (!notification) {
+        console.warn('⚠️ [举报结算] 没有当前notification数据');
+        this.closeReportDetailModal();
+        return;
+      }
+
+      // 防止重复领取奖励
+      if (notification.rewardClaimed) {
+        console.log('⚠️ [举报结算] 奖励已领取，跳过');
+        this.closeReportDetailModal();
+        return;
+      }
+
+      console.log(`💰 [举报结算] 开始处理结算，类型: ${notification.type}, 是否成立: ${notification.isApproved}`);
+
+      try {
+        // 加载钱包数据
+        await loadWalletData();
+
+        // 根据举报类型和结果进行不同处理
+        if (notification.type === 'report') {
+          // ========== 用户举报AI账户 ==========
+          if (notification.isApproved) {
+            // 举报成功：奖励100金币 + 增加真实度
+            const severity = notification.fullReportData?.severity || 'moderate';
+            let authenticityBonus = 10; // 默认
+            if (severity === 'severe') {
+              authenticityBonus = 15;
+            } else if (severity === 'minor') {
+              authenticityBonus = 5;
+            }
+
+            // 添加100金币
+            if (walletData.isActivated) {
+              walletData.balance += 100;
+
+              // 添加交易记录
+              const transaction = {
+                id: 'report_reward_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                description: `Approved Report Reward - ${notification.reportedUser?.nickname || 'User'}`,
+                amount: 100,
+                timestamp: new Date().toISOString(),
+                type: 'report_reward',
+              };
+              walletData.transactions.unshift(transaction);
+              await saveWalletData();
+
+              console.log(`✅ [举报结算] 已添加100金币，当前余额: $${walletData.balance.toFixed(2)}`);
+            } else {
+              console.warn('⚠️ [举报结算] 钱包未激活，跳过金币奖励');
+            }
+
+            // 增加真实度
+            this.addAuthenticityScore(authenticityBonus, `举报成功（${severity}）`);
+
+            // 弹出手机样式通知
+            showPhoneNotification({
+              title: 'Report Approved',
+              message: walletData.isActivated
+                ? `+$100.00, Authenticity +${authenticityBonus}. Balance: $${walletData.balance.toFixed(2)}`
+                : `Authenticity +${authenticityBonus}. Activate wallet to receive rewards.`,
+              avatar: window.userProfileData?.avatar,
+              leftIcon: 'x',
+              duration: 4000,
+            });
+
+            console.log(`✅ [举报结算] 举报成功奖励已发放`);
+          } else {
+            // 举报失败：恶意举报，扣除真实度 + 解封输入框
+            const penalty = Math.floor(Math.random() * 11) + 10; // 10-20
+            this.subtractAuthenticityScore(penalty, '恶意举报');
+
+            // 解封输入框
+            if (notification.reportedUser?.id) {
+              this.checkAndUpdateChatInputState(notification.reportedUser.id);
+              console.log(`✅ [举报结算] 已解封用户 ${notification.reportedUser.id} 的聊天输入框`);
+            }
+
+            // 弹出手机样式通知
+            showPhoneNotification({
+              title: 'Report Declined',
+              message: `Authenticity -${penalty}. False reports harm your credibility.`,
+              avatar: window.userProfileData?.avatar,
+              leftIcon: 'x',
+              duration: 4000,
+            });
+
+            console.log(`⚠️ [举报结算] 恶意举报惩罚已执行`);
+          }
+        } else if (notification.type === 'user_reported') {
+          // ========== AI举报用户 ==========
+          if (notification.isApproved) {
+            // 被举报成立：扣除真实度 + 扣除钱包100金币 + 增加被举报计数
+            const severity = notification.severity || 'moderate';
+            let authenticityPenalty = 15; // 默认
+            if (severity === 'severe') {
+              authenticityPenalty = Math.floor(Math.random() * 11) + 20; // 20-30
+            } else if (severity === 'moderate') {
+              authenticityPenalty = Math.floor(Math.random() * 11) + 10; // 10-20
+            } else if (severity === 'minor') {
+              authenticityPenalty = Math.floor(Math.random() * 6) + 5; // 5-10
+            }
+
+            // 扣除真实度
+            this.subtractAuthenticityScore(authenticityPenalty, `AI举报成立（${severity}）`);
+
+            // 扣除钱包金额
+            let walletMessage = '';
+            if (walletData.isActivated) {
+              const deductAmount = 100;
+              if (walletData.balance >= deductAmount) {
+                walletData.balance -= deductAmount;
+
+                // 添加交易记录
+                const transaction = {
+                  id: 'penalty_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                  description: `Violation Penalty - Reported by ${notification.reporterUser?.nickname || 'User'}`,
+                  amount: -deductAmount,
+                  timestamp: new Date().toISOString(),
+                  type: 'violation_penalty',
+                };
+                walletData.transactions.unshift(transaction);
+                await saveWalletData();
+
+                walletMessage = `-$${deductAmount.toFixed(2)}, `;
+                console.log(`💰 [举报结算] 已扣除$${deductAmount}，当前余额: $${walletData.balance.toFixed(2)}`);
+              } else {
+                // 余额不足，扣到0
+                const actualDeduct = walletData.balance;
+                walletData.balance = 0;
+
+                const transaction = {
+                  id: 'penalty_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                  description: `Violation Penalty (Insufficient Funds) - Reported by ${
+                    notification.reporterUser?.nickname || 'User'
+                  }`,
+                  amount: -actualDeduct,
+                  timestamp: new Date().toISOString(),
+                  type: 'violation_penalty',
+                };
+                walletData.transactions.unshift(transaction);
+                await saveWalletData();
+
+                walletMessage = `-$${actualDeduct.toFixed(2)} (余额不足), `;
+                console.warn(`⚠️ [举报结算] 余额不足，已扣除全部余额$${actualDeduct}`);
+              }
+            }
+
+            // 增加被举报计数
+            const currentCount = this.incrementReportedCount();
+            console.log(`🚨 [被举报计数] 当前累计被举报次数: ${currentCount}`);
+
+            // 弹出手机样式通知
+            showPhoneNotification({
+              title: 'Violation Confirmed',
+              message: `${walletMessage}Authenticity -${authenticityPenalty}. Violations: ${currentCount}/5`,
+              avatar: window.userProfileData?.avatar,
+              leftIcon: 'x',
+              duration: 5000,
+            });
+
+            console.log(`⚠️ [举报结算] 用户被举报成立，已扣除真实度和金币`);
+
+            // 如果刚好达到5次，会自动封禁，显示额外提示
+            if (currentCount === 0) {
+              // 计数被重置，说明刚刚触发了封禁
+              setTimeout(() => {
+                showPhoneNotification({
+                  title: 'Account Suspended',
+                  message: 'Map Dating access suspended for 12 hours due to repeated violations.',
+                  avatar: window.userProfileData?.avatar,
+                  leftIcon: 'x',
+                  duration: 6000,
+                });
+              }, 1000);
+            }
+          } else {
+            // 被举报不成立：增加真实度
+            const bonus = Math.floor(Math.random() * 6) + 5; // 5-10
+            this.addAuthenticityScore(bonus, 'AI恶意举报');
+
+            // 弹出手机样式通知
+            showPhoneNotification({
+              title: 'Report Unfounded',
+              message: `Authenticity +${bonus}. You were falsely reported.`,
+              avatar: window.userProfileData?.avatar,
+              leftIcon: 'x',
+              duration: 4000,
+            });
+
+            console.log(`✅ [举报结算] AI恶意举报，已增加真实度`);
+          }
+        }
+
+        // 标记奖励已领取
+        notification.rewardClaimed = true;
+
+        // 更新localStorage中的notification数据
+        const savedNotifications = JSON.parse(localStorage.getItem('xMapNotifications') || '[]');
+        const index = savedNotifications.findIndex(n => n.id === notification.id);
+        if (index !== -1) {
+          savedNotifications[index] = notification;
+          localStorage.setItem('xMapNotifications', JSON.stringify(savedNotifications));
+          console.log(`✅ [举报结算] 已标记notification ${notification.id} 为已领取`);
+        }
+      } catch (error) {
+        console.error('❌ [举报结算] 处理失败:', error);
+        showPhoneNotification({
+          title: 'Error',
+          message: 'Failed to process report settlement.',
+          avatar: window.userProfileData?.avatar,
+          leftIcon: 'x',
+          duration: 3000,
+        });
+      }
+
+      // 关闭弹窗
+      this.closeReportDetailModal();
+    },
+
+    // 🚨 打开被举报详情弹窗（用户被AI举报）
+    openUserReportedDetailModal(notification) {
+      const overlay = document.getElementById('mapReportDetailOverlay');
+      const modal = document.getElementById('mapReportDetailModal');
+
+      if (!overlay || !modal) {
+        console.error('❌ [被举报详情] 找不到弹窗元素');
+        return;
+      }
+
+      // 💾 存储当前notification（用于"已知晓"按钮结算）
+      this.currentReportNotification = notification;
+
+      // 🔍 调试：输出完整的notification对象
+      console.log('🚨 [被举报详情] 打开弹窗，notification数据:', JSON.stringify(notification, null, 2));
+
+      // 填充数据
+      const badge = document.getElementById('mapReportDetailBadge');
+      const badgeIcon = document.getElementById('mapReportDetailBadgeIcon');
+      const badgeText = document.getElementById('mapReportDetailBadgeText');
+      const userAvatar = document.getElementById('mapReportDetailUserAvatar');
+      const userNickname = document.getElementById('mapReportDetailUserNickname');
+      const userHandle = document.getElementById('mapReportDetailUserHandle');
+      const reasonsContainer = document.getElementById('mapReportDetailReasons');
+      const descSection = document.getElementById('mapReportDetailDescSection');
+      const description = document.getElementById('mapReportDetailDescription');
+      const reason = document.getElementById('mapReportDetailReason');
+      const time = document.getElementById('mapReportDetailTime');
+
+      // 修改标题为 "Reported By"
+      const titleElement = modal.querySelector('.map-report-detail-title');
+      if (titleElement) {
+        titleElement.textContent = notification.isApproved ? 'You Have Been Reported' : 'Report Was Declined';
+      }
+
+      // 设置判定结果徽章
+      if (badge && badgeText) {
+        badge.className = `map-report-detail-badge ${notification.isApproved ? 'approved' : 'declined'}`;
+        badgeText.textContent = notification.isApproved ? 'Violation Confirmed' : 'Report Unfounded';
+      }
+
+      // 🚨 显示举报者（NPC）信息，不是被举报者
+      if (userAvatar) userAvatar.src = notification.reporterUser.avatar || '';
+      if (userNickname) userNickname.textContent = notification.reporterUser.nickname || 'User';
+      if (userHandle) userHandle.textContent = `@${notification.reporterUser.handle || 'user'}`;
+
+      // 修改用户信息卡片标题为 "Reported By"
+      const userCardTitle = modal.querySelector('.map-report-detail-section-title');
+      if (userCardTitle) {
+        userCardTitle.textContent = 'Reported By';
+      }
+
+      // 设置举报理由（AI判定的违规类型）
+      if (reasonsContainer) {
+        const reasonMap = {
+          inappropriate_content: 'Inappropriate Content',
+          harassment: 'Harassment',
+          abuse: 'Verbal Abuse',
+          spam: 'Spam',
+          threats: 'Threats',
+          discrimination: 'Discrimination',
+          other: 'Other',
+        };
+
+        const reasons = notification.fullReportData?.reasons || [];
+        console.log(`🚨 [被举报详情] 违规理由数组:`, reasons);
+
+        if (reasons.length > 0) {
+          reasonsContainer.innerHTML = reasons
+            .map(r => `<div class="map-report-detail-reason-tag">${reasonMap[r] || r}</div>`)
+            .join('');
+        } else {
+          reasonsContainer.innerHTML = '<div class="map-report-detail-reason-tag">No specific reason provided</div>';
+        }
+      }
+
+      // 设置违规描述（用户的违规行为）
+      if (notification.fullReportData?.description && notification.fullReportData.description.trim()) {
+        if (descSection) descSection.style.display = 'block';
+        if (description) description.textContent = notification.fullReportData.description;
+      } else {
+        if (descSection) descSection.style.display = 'none';
+      }
+
+      // 设置AI判定原因（judgementReason）
+      if (reason) reason.textContent = notification.judgementReason || 'No reason provided';
+
+      // 设置举报时间
+      if (time) {
+        const reportedAt = notification.fullReportData?.reportedAt || notification.timestamp;
+        console.log(`🚨 [被举报详情] 举报时间:`, reportedAt);
+
+        if (reportedAt) {
+          try {
+            const reportTime = new Date(reportedAt);
+            time.textContent = reportTime.toLocaleString('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit',
+            });
+          } catch (error) {
+            console.error('❌ [被举报详情] 时间格式化失败:', error);
+            time.textContent = reportedAt;
+          }
+        } else {
+          time.textContent = 'Time not available';
+        }
+      }
+
+      // 显示弹窗
+      overlay.classList.add('show');
+      modal.classList.add('show');
+
+      console.log(`🚨 [被举报详情] 已打开详情弹窗`);
+    },
+
+    // 加载并渲染提醒列表
+    loadAndRenderNotificationsList() {
+      try {
+        const savedNotificationsStr = localStorage.getItem('xMapNotifications');
+        const savedNotifications = savedNotificationsStr ? JSON.parse(savedNotificationsStr) : [];
+
+        // 按时间倒序排列（最新的在最上面）
+        savedNotifications.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+        this.renderNotificationsList(savedNotifications);
+      } catch (error) {
+        console.error('加载提醒列表失败:', error);
+        this.renderNotificationsList([]);
+      }
+    },
+
+    // 渲染提醒列表
+    renderNotificationsList(notifications) {
+      const content = document.getElementById('mapNotificationsList');
+      const empty = document.getElementById('mapNotificationsEmpty');
+
+      if (!content) {
+        console.error('❌ [提醒渲染] 找不到提醒列表容器 #mapNotificationsList');
+        return;
+      }
+
+      // 清空现有内容
+      content.innerHTML = '';
+
+      if (notifications.length === 0) {
+        // 显示空状态
+        if (empty) {
+          empty.style.display = 'flex';
+        }
+        return;
+      }
+
+      // 隐藏空状态
+      if (empty) {
+        empty.style.display = 'none';
+      }
+
+      console.log(`📝 [提醒渲染] 开始渲染 ${notifications.length} 条提醒`);
+
+      // 渲染每个提醒
+      notifications.forEach((notification, index) => {
+        const item = document.createElement('div');
+        item.className = `map-notification-item ${!notification.isRead ? 'unread' : ''}`;
+
+        // 格式化时间
+        const timeStr = this.formatNotificationTime(notification.timestamp);
+
+        // 根据类型生成标题、内容和图标
+        let title = '';
+        let messageText = '';
+        let iconSvg = '';
+
+        if (notification.type === 'interested') {
+          const user = notification.fromUser;
+          title = 'New Interest';
+          messageText = `${user.nickname} is interested in your profile`;
+          iconSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+          </svg>`;
+        } else if (notification.type === 'message') {
+          const user = notification.fromUser;
+          title = 'New Message';
+          if (notification.messages && notification.messages.length > 0) {
+            messageText = `${user.nickname}: ${notification.messages[notification.messages.length - 1]}`;
+          } else {
+            messageText = `${user.nickname} sent you a message`;
+          }
+          iconSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          </svg>`;
+        } else if (notification.type === 'follow') {
+          const user = notification.fromUser;
+          title = 'New Follower';
+          messageText = `${user.nickname} started following you`;
+          iconSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="8.5" cy="7" r="4"></circle>
+            <line x1="20" y1="8" x2="20" y2="14"></line>
+            <line x1="23" y1="11" x2="17" y2="11"></line>
+          </svg>`;
+        } else if (notification.type === 'like') {
+          const user = notification.fromUser;
+          title = 'New Like';
+          messageText = `${user.nickname} liked your post`;
+          iconSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+          </svg>`;
+        } else if (notification.type === 'report') {
+          title = notification.title || 'Report Result';
+          if (notification.isApproved) {
+            messageText = `Your report about ${notification.reportedUser.nickname} has been reviewed: ${notification.reason}`;
+          } else {
+            messageText = `Your report about ${notification.reportedUser.nickname} was declined: ${notification.reason}`;
+          }
+          iconSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>`;
+        } else if (notification.type === 'user_reported') {
+          title = notification.title || 'You Have Been Reported';
+          if (notification.isApproved) {
+            messageText = `${notification.reporterUser.nickname} reported you for violating guidelines. Severity: ${notification.severity}`;
+          } else {
+            messageText = `${notification.reporterUser.nickname} reported you, but it was determined to be unfounded.`;
+          }
+          iconSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>`;
+        } else {
+          // 默认通知类型
+          const user = notification.fromUser;
+          title = 'Notification';
+          messageText =
+            notification.content || (user ? `${user.nickname} interacted with you` : 'You have a new notification');
+          iconSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          </svg>`;
+        }
+
+        console.log(`  ├─ [${index + 1}] ${notification.type}: ${messageText.substring(0, 50)}...`);
+
+        item.innerHTML = `
+          <div class="map-notification-icon">
+            ${iconSvg}
+          </div>
+          <div class="map-notification-info">
+            <div class="map-notification-header">
+              <span class="map-notification-title">${title}</span>
+              <span class="map-notification-time">${timeStr}</span>
+            </div>
+            <div class="map-notification-content">${messageText}</div>
+          </div>
+        `;
+
+        // 添加点击事件
+        item.addEventListener('click', () => {
+          this.handleNotificationClick(notification);
+        });
+
+        content.appendChild(item);
+      });
+
+      console.log(`✅ [提醒渲染] 完成！共渲染 ${notifications.length} 条提醒到容器 #mapNotificationsList`);
+    },
+
+    // 筛选提醒列表
+    filterNotifications(filterType) {
+      try {
+        const savedNotificationsStr = localStorage.getItem('xMapNotifications');
+        const allNotifications = savedNotificationsStr ? JSON.parse(savedNotificationsStr) : [];
+
+        // 按时间倒序排列
+        allNotifications.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+        let filteredNotifications = allNotifications;
+
+        // 根据类型筛选
+        if (filterType !== 'all') {
+          filteredNotifications = allNotifications.filter(notification => {
+            if (filterType === 'likes') {
+              return notification.type === 'like' || notification.type === 'interested';
+            } else if (filterType === 'messages') {
+              return notification.type === 'message';
+            } else if (filterType === 'follows') {
+              return notification.type === 'follow';
+            } else if (filterType === 'reports') {
+              return notification.type === 'report';
+            }
+            return true;
+          });
+        }
+
+        console.log(
+          `🔍 [提醒筛选] 筛选类型: ${filterType}, 结果: ${filteredNotifications.length}/${allNotifications.length} 条`,
+        );
+
+        // 渲染筛选后的列表
+        this.renderNotificationsList(filteredNotifications);
+      } catch (error) {
+        console.error('❌ [提醒筛选] 筛选失败:', error);
+        this.renderNotificationsList([]);
+      }
+    },
+
+    // 格式化提醒时间
+    formatNotificationTime(timestamp) {
+      const now = new Date();
+      const time = new Date(timestamp);
+      const diffMs = now - time;
+      const diffMins = Math.floor(diffMs / 60000);
+      const diffHours = Math.floor(diffMs / 3600000);
+      const diffDays = Math.floor(diffMs / 86400000);
+
+      if (diffMins < 1) return 'Just now';
+      if (diffMins < 60) return `${diffMins}m ago`;
+      if (diffHours < 24) return `${diffHours}h ago`;
+      if (diffDays < 7) return `${diffDays}d ago`;
+
+      // 超过7天显示具体日期
+      const month = time.getMonth() + 1;
+      const day = time.getDate();
+      return `${month}/${day}`;
+    },
+
+    // 处理提醒点击
+    handleNotificationClick(notification) {
+      if (notification.type === 'interested') {
+        // 感兴趣类型：直接打开用户卡片
+        this.closeNotificationsModal();
+        this.showUserProfile(notification.fromUser);
+      } else if (notification.type === 'message') {
+        // 私信类型：检查是否已接受
+        if (notification.isAccepted) {
+          // 已接受过，直接打开聊天
+          console.log(`💬 [提醒系统] 通知已接受，直接打开聊天`);
+          this.closeNotificationsModal();
+          this.openChatModal(notification.fromUser);
+        } else {
+          // 未接受，打开接收确认弹窗
+          this.openAcceptMessageModal(notification);
+        }
+      } else if (notification.type === 'report') {
+        // 举报结果类型：打开详情弹窗查看完整信息
+        console.log(`🚨 [举报系统] 查看举报结果: ${notification.title}`);
+        this.closeNotificationsModal();
+        this.openReportDetailModal(notification);
+        this.markNotificationAsRead(notification.id);
+      } else if (notification.type === 'user_reported') {
+        // 被举报类型：打开详情弹窗查看完整信息
+        console.log(`🚨 [被举报系统] 查看被举报结果: ${notification.title}`);
+        this.closeNotificationsModal();
+        this.openUserReportedDetailModal(notification);
+        this.markNotificationAsRead(notification.id);
+      }
+    },
+
+    // 显示用户资料（用于提醒和聊天头像点击）
+    showUserProfile(user, source = 'interested') {
+      if (!user || !user.id) {
+        console.warn('⚠️ 无效的用户对象');
+        return;
+      }
+
+      console.log(`📇 [用户资料] 查看 ${user.nickname} 的资料（来源: ${source}）`);
+
+      // 检查用户是否已在currentUsers中
+      const existingUser = this.currentUsers.find(u => u.id === user.id);
+
+      if (!existingUser) {
+        // 临时添加到currentUsers，以便showDetailCard能找到
+        this.currentUsers.push(user);
+        console.log(`➕ [用户资料] 临时添加 ${user.nickname} 到当前用户列表`);
+      }
+
+      // 显示资料卡，传递来源
+      this.showDetailCard(user.id, source);
+    },
+
+    // 打开接收私信确认弹窗
+    openAcceptMessageModal(notification) {
+      const overlay = document.getElementById('mapAcceptMessageOverlay');
+      const modal = document.getElementById('mapAcceptMessageModal');
+
+      if (!overlay || !modal) {
+        console.error('❌ [提醒系统] 确认弹窗元素未找到');
+        return;
+      }
+
+      // 保存当前处理的私信提醒
+      this.currentMessageNotification = notification;
+
+      // 填充用户信息
+      const user = notification.fromUser;
+      const avatar =
+        user.avatar ||
+        "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23ddd'/%3E%3C/svg%3E";
+
+      // 使用正确的ID选择器
+      const avatarEl = document.getElementById('mapAcceptMsgAvatar');
+      const nicknameEl = document.getElementById('mapAcceptMsgNickname');
+      const handleEl = document.getElementById('mapAcceptMsgHandle');
+      const messageTextEl = document.getElementById('mapAcceptMsgText');
+
+      if (avatarEl) avatarEl.src = avatar;
+      if (nicknameEl) nicknameEl.textContent = user.nickname;
+      if (handleEl) handleEl.textContent = `@${user.handle || user.nickname.toLowerCase()}`;
+
+      // 显示最新一条消息作为预览
+      const messages = notification.messages || [];
+      const previewText = messages.length > 0 ? messages[messages.length - 1] : notification.content || '发来了私信';
+      if (messageTextEl) messageTextEl.textContent = previewText;
+
+      console.log(`💬 [提醒系统] 显示接收私信确认弹窗 - 来自 ${user.nickname}`);
+
+      // 显示弹窗
+      overlay.classList.add('show');
+      modal.classList.add('show');
+    },
+
+    // 接受私信
+    acceptMessage() {
+      if (!this.currentMessageNotification) return;
+
+      const user = this.currentMessageNotification.fromUser;
+      const messages = this.currentMessageNotification.messages || [];
+
+      console.log(`✅ [提醒系统] 接受来自 ${user.nickname} 的私信 (${messages.length}条消息)`);
+
+      // 预加载消息到聊天记录
+      if (messages.length > 0) {
+        if (!this.chatMessages[user.id]) {
+          this.chatMessages[user.id] = [];
+        }
+
+        // 将提醒消息转换为聊天消息格式（匹配renderChatMessages的期望格式）
+        const baseTimestamp = Date.now();
+        const preloadedMessages = messages.map((content, index) => ({
+          type: 'received', // 修正：使用 'received' 而非 'ai'
+          text: content, // 修正：使用 'text' 而非 'content'
+          timestamp: new Date(baseTimestamp - (messages.length - index) * 2000).toISOString(), // 修正：使用ISO字符串格式
+        }));
+
+        // 添加到聊天记录开头（因为这些是初始消息）
+        this.chatMessages[user.id] = [...preloadedMessages, ...this.chatMessages[user.id]];
+
+        console.log(`💬 [提醒系统] 已预加载 ${messages.length} 条消息到聊天记录`, preloadedMessages);
+      }
+
+      // 关闭确认弹窗
+      const overlay = document.getElementById('mapAcceptMessageOverlay');
+      const modal = document.getElementById('mapAcceptMessageModal');
+      if (overlay) overlay.classList.remove('show');
+      if (modal) modal.classList.remove('show');
+
+      // 关闭提醒弹窗
+      this.closeNotificationsModal();
+
+      // 🔧 标记该通知为已接受，下次点击直接进入聊天
+      try {
+        const savedNotificationsStr = localStorage.getItem('xMapNotifications');
+        if (savedNotificationsStr) {
+          const savedNotifications = JSON.parse(savedNotificationsStr);
+          const notifIndex = savedNotifications.findIndex(n => n.id === this.currentMessageNotification.id);
+          if (notifIndex !== -1) {
+            savedNotifications[notifIndex].isAccepted = true;
+            localStorage.setItem('xMapNotifications', JSON.stringify(savedNotifications));
+            console.log(`✅ [提醒系统] 已标记通知 ${this.currentMessageNotification.id} 为已接受`);
+          }
+        }
+      } catch (error) {
+        console.error('❌ [提醒系统] 更新通知状态失败:', error);
+      }
+
+      // 🎯 标记聊天发起上下文：接收对方主动发来的私信
+      this.chatContext[user.id] = 'message_accepted';
+      console.log(`🎯 [聊天上下文] ${user.nickname} - 对方主动发起私信，你接收`);
+
+      // 打开聊天界面
+      this.openChatModal(user);
+
+      // 清空当前提醒
+      this.currentMessageNotification = null;
+    },
+
+    // 拒绝私信
+    declineMessage() {
+      if (!this.currentMessageNotification) return;
+
+      // 关闭确认弹窗
+      const overlay = document.getElementById('mapAcceptMessageOverlay');
+      const modal = document.getElementById('mapAcceptMessageModal');
+      if (overlay) overlay.classList.remove('show');
+      if (modal) modal.classList.remove('show');
+
+      // 从提醒列表中删除这条提醒
+      this.removeNotification(this.currentMessageNotification.id);
+
+      // 清空当前提醒
+      this.currentMessageNotification = null;
+
+      // 重新渲染提醒列表
+      this.loadAndRenderNotificationsList();
+    },
+
+    // 标记所有提醒为已读
+    markAllNotificationsAsRead() {
+      try {
+        const savedNotificationsStr = localStorage.getItem('xMapNotifications');
+        if (!savedNotificationsStr) return;
+
+        const notifications = JSON.parse(savedNotificationsStr);
+
+        // 标记所有为已读
+        notifications.forEach(n => (n.isRead = true));
+
+        // 保存回localStorage
+        localStorage.setItem('xMapNotifications', JSON.stringify(notifications));
+
+        // 更新徽章
+        this.updateNotificationBadge();
+      } catch (error) {
+        console.error('标记提醒已读失败:', error);
+      }
+    },
+
+    // 更新提醒徽章
+    updateNotificationBadge() {
+      try {
+        const savedNotificationsStr = localStorage.getItem('xMapNotifications');
+        const notifications = savedNotificationsStr ? JSON.parse(savedNotificationsStr) : [];
+
+        // 计算未读数量
+        const unreadCount = notifications.filter(n => !n.isRead).length;
+
+        const badge = document.getElementById('mapNotificationsBadge');
+        if (!badge) return;
+
+        if (unreadCount > 0) {
+          badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+          badge.classList.remove('hidden');
+        } else {
+          badge.classList.add('hidden');
+        }
+      } catch (error) {
+        console.error('更新提醒徽章失败:', error);
+      }
+    },
+
+    // 删除指定提醒
+    removeNotification(notificationId) {
+      try {
+        const savedNotificationsStr = localStorage.getItem('xMapNotifications');
+        if (!savedNotificationsStr) return;
+
+        const notifications = JSON.parse(savedNotificationsStr);
+        const filtered = notifications.filter(n => n.id !== notificationId);
+
+        localStorage.setItem('xMapNotifications', JSON.stringify(filtered));
+        this.updateNotificationBadge();
+      } catch (error) {
+        console.error('删除提醒失败:', error);
+      }
+    },
+
+    // 标记提醒为已读
+    markNotificationAsRead(notificationId) {
+      try {
+        const savedNotificationsStr = localStorage.getItem('xMapNotifications');
+        if (!savedNotificationsStr) return;
+
+        const notifications = JSON.parse(savedNotificationsStr);
+        const notification = notifications.find(n => n.id === notificationId);
+
+        if (notification) {
+          notification.isRead = true;
+          localStorage.setItem('xMapNotifications', JSON.stringify(notifications));
+          this.updateNotificationBadge();
+          console.log(`✅ [提醒系统] 已标记提醒为已读: ${notificationId}`);
+        }
+      } catch (error) {
+        console.error('❌ [提醒系统] 标记提醒已读失败:', error);
+      }
+    },
+
+    // 添加新提醒（供其他功能调用）
+    addNotification(notification) {
+      try {
+        const savedNotificationsStr = localStorage.getItem('xMapNotifications');
+        const notifications = savedNotificationsStr ? JSON.parse(savedNotificationsStr) : [];
+
+        // 添加新提醒
+        notifications.push({
+          id: `notif-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          type: notification.type,
+          fromUser: notification.fromUser,
+          content: notification.content,
+          timestamp: new Date().toISOString(),
+          isRead: false,
+        });
+
+        // 保存
+        localStorage.setItem('xMapNotifications', JSON.stringify(notifications));
+
+        // 更新徽章
+        this.updateNotificationBadge();
+      } catch (error) {
+        console.error('添加提醒失败:', error);
+      }
+    },
+
+    // 加载并渲染聊天列表
+    loadAndRenderChatsList() {
+      try {
+        const savedChatsStr = localStorage.getItem('xMapSavedChats');
+        const savedChats = savedChatsStr ? JSON.parse(savedChatsStr) : [];
+        this.renderChatsList(savedChats);
+      } catch (error) {
+        console.error('加载聊天列表失败:', error);
+        this.renderChatsList([]);
+      }
+    },
+
+    // 渲染聊天列表
+    renderChatsList(chats) {
+      const content = document.getElementById('mapChatsListContent');
+      const empty = document.getElementById('mapChatsListEmpty');
+
+      if (!content) return;
+
+      // 清空现有内容
+      content.innerHTML = '';
+
+      if (chats.length === 0) {
+        // 显示空状态
+        if (empty) {
+          empty.style.display = 'flex';
+          content.appendChild(empty);
+        }
+      } else {
+        // 隐藏空状态，渲染列表
+        if (empty) empty.style.display = 'none';
+
+        chats.forEach(chat => {
+          const item = document.createElement('div');
+          item.className = 'map-chats-list-item';
+          item.innerHTML = `
+            <img class="map-chats-list-item-avatar" src="${chat.avatar}" alt="${chat.name}">
+            <div class="map-chats-list-item-info">
+              <p class="map-chats-list-item-name">${chat.name}</p>
+              <p class="map-chats-list-item-preview">${chat.lastMessage || 'Start chatting...'}</p>
+            </div>
+            <button class="map-chats-list-item-delete" data-chat-id="${chat.id}">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+            </button>
+          `;
+
+          // 点击聊天项打开聊天
+          item.addEventListener('click', e => {
+            // 如果点击的是删除按钮，不打开聊天
+            if (e.target.closest('.map-chats-list-item-delete')) return;
+            this.openChatFromList(chat);
+          });
+
+          // 删除按钮事件
+          const deleteBtn = item.querySelector('.map-chats-list-item-delete');
+          deleteBtn.addEventListener('click', e => {
+            e.stopPropagation();
+            this.removeChatFromList(chat.id);
+          });
+
+          content.appendChild(item);
+        });
+      }
+    },
+
+    // 从列表中打开聊天
+    openChatFromList(chat) {
+      // 关闭聊天列表弹窗
+      this.closeChatsListModal();
+
+      // 打开聊天窗口
+      if (chat.userData) {
+        this.openChatModal(chat.userData);
+      } else {
+        console.error('聊天数据不完整');
+      }
+    },
+
+    // 从列表中删除聊天
+    removeChatFromList(chatId) {
+      try {
+        const savedChatsStr = localStorage.getItem('xMapSavedChats');
+        const savedChats = savedChatsStr ? JSON.parse(savedChatsStr) : [];
+        const filteredChats = savedChats.filter(chat => chat.id !== chatId);
+        localStorage.setItem('xMapSavedChats', JSON.stringify(filteredChats));
+
+        // 重新渲染列表
+        this.renderChatsList(filteredChats);
+
+        console.log('已从聊天列表删除');
+      } catch (error) {
+        console.error('删除聊天失败:', error);
+      }
+    },
+
+    // ==================== 📌 用户笔记功能方法 ====================
+
+    // 生成SVG图标（根据iconType）
+    getCategoryIcon(iconType) {
+      const icons = {
+        briefcase:
+          '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>',
+        heart:
+          '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>',
+        users:
+          '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>',
+        user: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>',
+        eye: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>',
+        coffee:
+          '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>',
+        'map-pin':
+          '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>',
+        star: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>',
+        repeat:
+          '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>',
+        'user-plus':
+          '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>',
+        'file-text':
+          '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>',
+      };
+      return icons[iconType] || icons['file-text'];
+    },
+
+    // 切换功能菜单
+    toggleFunctionMenu() {
+      const menu = document.getElementById('mapChatFunctionMenu');
+      const addBtn = document.getElementById('mapChatAddBtn');
+      if (!menu || !addBtn) return;
+
+      const isOpen = menu.classList.contains('show');
+
+      if (isOpen) {
+        this.closeFunctionMenu();
+      } else {
+        menu.classList.add('show');
+        addBtn.classList.add('active');
+      }
+    },
+
+    // 关闭功能菜单
+    closeFunctionMenu() {
+      const menu = document.getElementById('mapChatFunctionMenu');
+      const addBtn = document.getElementById('mapChatAddBtn');
+      if (menu) menu.classList.remove('show');
+      if (addBtn) addBtn.classList.remove('active');
+    },
+
+    // 打开笔记弹窗
+    openNotesModal() {
+      if (!this.currentChatUser) {
+        console.warn('⚠️ 没有当前聊天对象，无法打开笔记弹窗');
+        return;
+      }
+
+      const overlay = document.getElementById('mapNotesOverlay');
+      const modal = document.getElementById('mapNotesModal');
+
+      if (overlay) overlay.classList.add('show');
+      if (modal) modal.classList.add('show');
+
+      // 默认显示"我的笔记"Tab
+      this.currentNotesTab = 'mine';
+      this.switchNotesMainTab('mine');
+
+      // 设置主Tab切换监听器
+      this.setupMainTabListeners();
+
+      // 设置分类过滤监听器
+      this.setupNoteCategoryFilters();
+
+      // 关闭功能菜单
+      this.closeFunctionMenu();
+    },
+
+    // 设置主Tab切换监听器
+    setupMainTabListeners() {
+      const mineTab = document.getElementById('mapNotesMainTabMine');
+      const theirsTab = document.getElementById('mapNotesMainTabTheirs');
+
+      if (mineTab) {
+        mineTab.onclick = () => this.switchNotesMainTab('mine');
+      }
+      if (theirsTab) {
+        theirsTab.onclick = () => this.switchNotesMainTab('theirs');
+      }
+    },
+
+    // 切换主Tab
+    switchNotesMainTab(tab) {
+      this.currentNotesTab = tab;
+
+      // 更新Tab按钮状态
+      const mineTab = document.getElementById('mapNotesMainTabMine');
+      const theirsTab = document.getElementById('mapNotesMainTabTheirs');
+
+      if (mineTab && theirsTab) {
+        if (tab === 'mine') {
+          mineTab.classList.add('active');
+          theirsTab.classList.remove('active');
+        } else {
+          mineTab.classList.remove('active');
+          theirsTab.classList.add('active');
+        }
+      }
+
+      // 渲染对应的笔记内容
+      this.renderUserNotes(this.currentChatUser.id);
+    },
+
+    // 关闭笔记弹窗
+    closeNotesModal() {
+      const overlay = document.getElementById('mapNotesOverlay');
+      const modal = document.getElementById('mapNotesModal');
+      if (overlay) overlay.classList.remove('show');
+      if (modal) modal.classList.remove('show');
+    },
+
+    // 🎯 打开指定筛选弹窗
+    openAdvancedFilterModal() {
+      const overlay = document.getElementById('mapAdvancedFilterOverlay');
+      const modal = document.getElementById('mapAdvancedFilterModal');
+
+      if (overlay) overlay.classList.add('show');
+      if (modal) modal.classList.add('show');
+
+      // 填充当前筛选条件
+      if (this.advancedFilter.enabled) {
+        const genderRadio = document.querySelector(`input[name="advGender"][value="${this.advancedFilter.gender}"]`);
+        if (genderRadio) genderRadio.checked = true;
+
+        document.getElementById('advAgeMin').value = this.advancedFilter.ageMin;
+        document.getElementById('advAgeMax').value = this.advancedFilter.ageMax;
+        document.getElementById('advPersonality').value = this.advancedFilter.personality;
+        document.getElementById('advTags').value = this.advancedFilter.tags;
+        document.getElementById('advType').value = this.advancedFilter.type;
+      }
+
+      console.log('🎯 [指定筛选] 打开指定筛选弹窗');
+    },
+
+    // 🎯 关闭指定筛选弹窗
+    closeAdvancedFilterModal() {
+      const overlay = document.getElementById('mapAdvancedFilterOverlay');
+      const modal = document.getElementById('mapAdvancedFilterModal');
+
+      if (overlay) overlay.classList.remove('show');
+      if (modal) modal.classList.remove('show');
+    },
+
+    // 🎯 清除指定筛选
+    clearAdvancedFilter() {
+      // 重置表单
+      const genderAllRadio = document.querySelector('input[name="advGender"][value="all"]');
+      if (genderAllRadio) genderAllRadio.checked = true;
+
+      document.getElementById('advAgeMin').value = 18;
+      document.getElementById('advAgeMax').value = 50;
+      document.getElementById('advPersonality').value = '';
+      document.getElementById('advTags').value = '';
+      document.getElementById('advType').value = '';
+
+      // 重置筛选条件
+      this.advancedFilter = {
+        enabled: false,
+        gender: 'all',
+        ageMin: 18,
+        ageMax: 50,
+        personality: '',
+        tags: '',
+        type: '',
+      };
+
+      console.log('🎯 [指定筛选] 已清除筛选条件');
+    },
+
+    // 🎯 应用指定筛选
+    async applyAdvancedFilter() {
+      // 获取表单值
+      const genderRadio = document.querySelector('input[name="advGender"]:checked');
+      const gender = genderRadio ? genderRadio.value : 'all';
+      const ageMin = parseInt(document.getElementById('advAgeMin').value) || 18;
+      const ageMax = parseInt(document.getElementById('advAgeMax').value) || 50;
+      const personality = document.getElementById('advPersonality').value.trim();
+      const tags = document.getElementById('advTags').value.trim();
+      const type = document.getElementById('advType').value.trim();
+
+      // 保存筛选条件
+      this.advancedFilter = {
+        enabled: true,
+        gender,
+        ageMin,
+        ageMax,
+        personality,
+        tags,
+        type,
+      };
+
+      console.log('🎯 [指定筛选] 应用筛选条件:', this.advancedFilter);
+
+      // 关闭弹窗
+      this.closeAdvancedFilterModal();
+
+      // 调用刷新附近的人（使用指定筛选）
+      await this.refreshNearbyUsers();
+    },
+
+    // 设置消息双击监听器（支持移动端和PC端）
+    setupMessageDoubleClickListeners() {
+      const bubbles = document.querySelectorAll('.map-chat-bubble');
+      console.log(`📌 [笔记系统] 绑定双击/长按事件到 ${bubbles.length} 个消息气泡`);
+
+      bubbles.forEach((bubble, idx) => {
+        let touchStartTime = 0;
+        let touchTimer = null;
+
+        // 触发笔记标记的处理函数
+        const triggerNoteMarking = (x, y) => {
+          const messageIndex = parseInt(bubble.getAttribute('data-message-index'));
+          const content = bubble.textContent;
+
+          console.log(`📌 [笔记系统] 标记消息 #${messageIndex}: ${content.substring(0, 30)}...`);
+
+          // 显示标记动画
+          bubble.classList.add('marking');
+          setTimeout(() => bubble.classList.remove('marking'), 600);
+
+          // 显示分类选择器
+          this.showCategoryPicker(x, y, messageIndex, content, bubble);
+        };
+
+        // PC端双击事件
+        bubble.addEventListener('dblclick', e => {
+          e.preventDefault();
+          e.stopPropagation();
+          triggerNoteMarking(e.clientX, e.clientY);
+        });
+
+        // 移动端长按事件（按住500ms）
+        bubble.addEventListener(
+          'touchstart',
+          e => {
+            touchStartTime = Date.now();
+            const touch = e.touches[0];
+
+            // 设置长按计时器
+            touchTimer = setTimeout(() => {
+              // 长按500ms后触发
+              e.preventDefault();
+              triggerNoteMarking(touch.clientX, touch.clientY);
+            }, 500);
+          },
+          { passive: false },
+        );
+
+        bubble.addEventListener('touchend', e => {
+          // 清除长按计时器
+          if (touchTimer) {
+            clearTimeout(touchTimer);
+            touchTimer = null;
+          }
+        });
+
+        bubble.addEventListener('touchmove', e => {
+          // 如果移动了，取消长按
+          if (touchTimer) {
+            clearTimeout(touchTimer);
+            touchTimer = null;
+          }
+        });
+      });
+    },
+
+    // 显示分类选择器（简洁列表）
+    showCategoryPicker(x, y, messageIndex, content, sourceElement) {
+      console.log(`📌 [笔记系统] 显示分类选择器`);
+
+      const overlay = document.getElementById('mapNotesPickerOverlay');
+      const picker = document.getElementById('mapNotesPicker');
+      const pickerList = document.getElementById('mapNotesPickerList');
+
+      console.log(`📌 [笔记系统] 元素检查: overlay=${!!overlay}, picker=${!!picker}, pickerList=${!!pickerList}`);
+
+      if (!overlay || !picker || !pickerList) {
+        console.error('❌ [笔记系统] 分类选择器元素未找到！');
+        return;
+      }
+
+      // 清空列表
+      pickerList.innerHTML = '';
+
+      // 生成分类列表
+      console.log(`📌 [笔记系统] 生成 ${this.noteCategories.length} 个分类选项`);
+
+      this.noteCategories.forEach(category => {
+        const item = document.createElement('div');
+        item.className = 'map-notes-picker-item';
+        item.innerHTML = `
+          ${this.getCategoryIcon(category.iconType)}
+          <span>${category.name}</span>
+        `;
+
+        item.addEventListener('click', () => {
+          console.log(`📌 [笔记系统] 选择分类: ${category.name}`);
+          this.addUserNote(category, content, messageIndex, sourceElement);
+          this.hideCategoryPicker();
+        });
+
+        pickerList.appendChild(item);
+      });
+
+      // 显示弹窗
+      overlay.classList.add('show');
+      picker.classList.add('show');
+
+      console.log(`✅ [笔记系统] 分类选择器已显示`);
+
+      // 点击遮罩关闭
+      overlay.addEventListener('click', () => {
+        this.hideCategoryPicker();
+      });
+    },
+
+    // 隐藏分类选择器
+    hideCategoryPicker() {
+      const overlay = document.getElementById('mapNotesPickerOverlay');
+      const picker = document.getElementById('mapNotesPicker');
+      if (overlay) overlay.classList.remove('show');
+      if (picker) picker.classList.remove('show');
+    },
+
+    // 添加用户笔记
+    addUserNote(category, content, messageIndex, sourceElement) {
+      if (!this.currentChatUser) return;
+
+      const userId = this.currentChatUser.id;
+
+      // 初始化用户笔记数组
+      if (!this.userMarkedNotes[userId]) {
+        this.userMarkedNotes[userId] = [];
+      }
+
+      // 检查是否已存在相同消息的笔记
+      const exists = this.userMarkedNotes[userId].some(note => note.messageIndex === messageIndex);
+
+      if (exists) {
+        console.warn('⚠️ 该消息已被标记为笔记');
+        return;
+      }
+
+      // 创建笔记对象
+      const note = {
+        id: `note_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        category: category.id,
+        categoryName: category.name,
+        categoryIconType: category.iconType,
+        content: content,
+        messageIndex: messageIndex,
+        timestamp: new Date().toISOString(),
+      };
+
+      // 添加到笔记列表
+      this.userMarkedNotes[userId].push(note);
+
+      console.log(`✅ 添加笔记成功: [${category.name}] ${content.substring(0, 20)}...`);
+
+      // 保存到数据库
+      this.saveChatToDatabase();
+
+      // 如果笔记弹窗已打开，刷新内容
+      const modal = document.getElementById('mapNotesModal');
+      if (modal && modal.classList.contains('show')) {
+        this.renderUserNotes(userId);
+      }
+    },
+
+    // 渲染用户笔记（时间线式）
+    renderUserNotes(userId, filterCategory = 'all') {
+      const notesList = document.getElementById('mapNotesList');
+      const notesEmpty = document.getElementById('mapNotesEmpty');
+      if (!notesList) return;
+
+      // 根据当前Tab选择笔记数据源
+      const isMyNotes = this.currentNotesTab === 'mine';
+      const notes = isMyNotes ? this.userMarkedNotes[userId] || [] : this.npcNotesAboutUser[userId] || [];
+
+      // 过滤笔记
+      const filteredNotes = filterCategory === 'all' ? notes : notes.filter(note => note.category === filterCategory);
+
+      if (filteredNotes.length === 0) {
+        const emptyMessage = isMyNotes
+          ? 'Double-tap messages to add notes'
+          : `${this.currentChatUser?.nickname || 'TA'} hasn't recorded anything about you yet`;
+
+        notesList.innerHTML = `
+          <div class="map-notes-empty">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="12" y1="11" x2="12" y2="17"></line>
+              <line x1="9" y1="14" x2="15" y2="14"></line>
+            </svg>
+            <p>No notes yet</p>
+            <span>${emptyMessage}</span>
+          </div>
+        `;
+        return;
+      }
+
+      // 渲染笔记列表（时间线式）
+      let html = '';
+      filteredNotes.reverse().forEach(note => {
+        const date = new Date(note.timestamp);
+        const timeStr = `${date.getMonth() + 1}/${date.getDate()} ${date.getHours()}:${String(
+          date.getMinutes(),
+        ).padStart(2, '0')}`;
+
+        // 获取图标类型（需要处理不同的数据结构）
+        let iconType = 'file-text';
+        if (isMyNotes) {
+          iconType = note.categoryIconType || 'file-text';
+        } else {
+          // NPC笔记，根据category映射到iconType
+          const categoryIconMap = {
+            work: 'briefcase',
+            hobby: 'heart',
+            family: 'users',
+            personality: 'user',
+            appearance: 'eye',
+            food: 'coffee',
+            location: 'map-pin',
+            dream: 'star',
+            habit: 'repeat',
+            friend: 'user-plus',
+            other: 'file-text',
+          };
+          iconType = categoryIconMap[note.category] || 'file-text';
+        }
+
+        html += `
+          <div class="map-notes-item" data-note-id="${note.id}">
+            <div class="map-notes-item-icon">
+              ${this.getCategoryIcon(iconType)}
+            </div>
+            <div class="map-notes-item-content">
+              <div class="map-notes-item-header">
+                <span class="map-notes-item-category">${note.categoryName}</span>
+                <span class="map-notes-item-time">${timeStr}</span>
+              </div>
+              <div class="map-notes-item-text">${note.content}</div>
+              ${
+                isMyNotes
+                  ? `
+              <div class="map-notes-item-actions">
+                <button class="map-notes-item-action" data-action="edit" data-note-id="${note.id}">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                  </svg>
+                  Edit
+                </button>
+                <button class="map-notes-item-action" data-action="delete" data-note-id="${note.id}">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                  Delete
+                </button>
+              </div>
+              `
+                  : ''
+              }
+            </div>
+          </div>
+        `;
+      });
+
+      notesList.innerHTML = html;
+
+      // 只有"我的笔记"Tab才绑定操作事件
+      if (isMyNotes) {
+        this.setupNoteItemActions();
+      }
+    },
+
+    // 设置笔记操作
+    setupNoteItemActions() {
+      const editBtns = document.querySelectorAll('[data-action="edit"]');
+      const deleteBtns = document.querySelectorAll('[data-action="delete"]');
+
+      editBtns.forEach(btn => {
+        btn.addEventListener('click', e => {
+          e.stopPropagation();
+          const noteId = btn.getAttribute('data-note-id');
+          this.editUserNote(noteId);
+        });
+      });
+
+      deleteBtns.forEach(btn => {
+        btn.addEventListener('click', e => {
+          e.stopPropagation();
+          const noteId = btn.getAttribute('data-note-id');
+          this.deleteUserNote(noteId);
+        });
+      });
+    },
+
+    // 设置分类过滤（tabs式）
+    setupNoteCategoryFilters() {
+      const tabsContainer = document.getElementById('mapNotesTabs');
+      if (!tabsContainer) return;
+
+      // 清空并重新生成tabs
+      let html = `<button class="map-notes-tab active" data-category="all">All</button>`;
+
+      this.noteCategories.forEach(category => {
+        html += `<button class="map-notes-tab" data-category="${category.id}">${category.name}</button>`;
+      });
+
+      tabsContainer.innerHTML = html;
+
+      // 绑定点击事件
+      const tabs = tabsContainer.querySelectorAll('.map-notes-tab');
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          const category = tab.getAttribute('data-category');
+
+          // 更新active状态
+          tabs.forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+
+          // 重新渲染笔记
+          if (this.currentChatUser) {
+            this.renderUserNotes(this.currentChatUser.id, category);
+          }
+        });
+      });
+    },
+
+    // 编辑笔记
+    editUserNote(noteId) {
+      if (!this.currentChatUser) return;
+
+      const userId = this.currentChatUser.id;
+      const notes = this.userMarkedNotes[userId] || [];
+      const note = notes.find(n => n.id === noteId);
+
+      if (!note) {
+        console.warn('⚠️ 未找到笔记:', noteId);
+        return;
+      }
+
+      // 简单的prompt编辑（后续可以优化为更好的UI）
+      const newContent = prompt('编辑笔记内容:', note.content);
+
+      if (newContent && newContent.trim() !== '' && newContent !== note.content) {
+        note.content = newContent.trim();
+        note.timestamp = new Date().toISOString(); // 更新时间戳
+
+        console.log(`✅ 笔记编辑成功: ${note.id}`);
+
+        // 保存到数据库
+        this.saveChatToDatabase();
+
+        // 刷新显示
+        this.renderUserNotes(userId);
+      }
+    },
+
+    // 删除笔记
+    deleteUserNote(noteId) {
+      if (!this.currentChatUser) return;
+
+      const userId = this.currentChatUser.id;
+      const notes = this.userMarkedNotes[userId] || [];
+      const index = notes.findIndex(n => n.id === noteId);
+
+      if (index === -1) {
+        console.warn('⚠️ 未找到笔记:', noteId);
+        return;
+      }
+
+      // 确认删除
+      if (!confirm('确定要删除这条笔记吗？')) {
+        return;
+      }
+
+      // 删除笔记
+      notes.splice(index, 1);
+
+      console.log(`✅ 笔记删除成功: ${noteId}`);
+
+      // 保存到数据库
+      this.saveChatToDatabase();
+
+      // 刷新显示
+      this.renderUserNotes(userId);
+    },
+
+    // ==================== 📌 用户笔记功能方法结束 ====================
+
+    // 渲染聊天消息（关键方法：实现消息组逻辑）
+    renderChatMessages() {
+      if (!this.currentChatUser) return;
+
+      const chatMessagesContainer = document.getElementById('mapChatMessages');
+      if (!chatMessagesContainer) return;
+
+      const messages = this.chatMessages[this.currentChatUser.id] || [];
+
+      // 按时间戳分组消息
+      const messageGroups = [];
+      let currentGroup = null;
+      let lastTimestamp = null;
+
+      messages.forEach((msg, index) => {
+        const msgDate = new Date(msg.timestamp);
+
+        // 判断是否需要显示时间戳（超过1小时或第一条消息）
+        const showTimestamp = !lastTimestamp || msgDate - lastTimestamp > 60 * 60 * 1000 || index === 0;
+
+        if (showTimestamp) {
+          lastTimestamp = msgDate;
+          // 添加时间戳分隔
+          messageGroups.push({
+            type: 'timestamp',
+            time: this.formatChatTime(msgDate),
+          });
+        }
+
+        // 判断是否需要创建新的消息组
+        if (!currentGroup || currentGroup.sender !== msg.type) {
+          currentGroup = {
+            type: 'group',
+            sender: msg.type, // 'sent' or 'received'
+            messages: [],
+          };
+          messageGroups.push(currentGroup);
+        }
+
+        currentGroup.messages.push(msg);
+      });
+
+      // 渲染HTML
+      let html = '';
+
+      let globalMessageIndex = 0; // 📌 全局消息索引
+
+      messageGroups.forEach(group => {
+        if (group.type === 'timestamp') {
+          // 渲染时间戳
+          html += `<div class="map-chat-timestamp">${group.time}</div>`;
+        } else {
+          // 渲染消息组
+          const isReceived = group.sender === 'received';
+          const avatar = isReceived ? this.currentChatUser.avatar : this.userMapProfile?.avatar || '';
+
+          html += `<div class="map-chat-message-group ${group.sender}">`;
+
+          group.messages.forEach((msg, index) => {
+            const isLast = index === group.messages.length - 1;
+            const msgType = msg.messageType || msg.type || 'text'; // 兼容旧数据
+
+            html += `<div class="map-chat-message-row ${group.sender}">`;
+
+            // 头像：只在最后一条消息显示，其他消息用占位符
+            if (isLast) {
+              html += `<img class="map-chat-message-avatar" src="${avatar}" alt="Avatar">`;
+            } else {
+              html += `<div class="map-chat-message-avatar-placeholder"></div>`;
+            }
+
+            // 根据消息类型渲染不同内容
+            if (msgType === 'sticker') {
+              // 表情包：URL图片，不要气泡，直接显示
+              html += `<img class="map-chat-sticker" src="${msg.text}" alt="Sticker" data-message-index="${globalMessageIndex}" onerror="this.style.display='none'">`;
+            } else if (msgType === 'image') {
+              // 图片消息：特殊卡片样式
+              const captionText = msg.text || '';
+              const imageDesc = msg.imageDescription || '图片';
+              html += `
+                <div class="map-chat-image-card" data-message-index="${globalMessageIndex}">
+                  <div class="map-chat-image-placeholder">
+                    <svg viewBox="0 0 24 24" class="map-chat-image-icon">
+                      <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-5.04-6.71l-2.75 3.54-1.96-2.36L6.5 17h11l-3.54-4.71z"/>
+                    </svg>
+                    <div class="map-chat-image-desc">${imageDesc}</div>
+                  </div>
+                  ${captionText ? `<div class="map-chat-image-caption">${captionText}</div>` : ''}
+                </div>
+              `;
+            } else {
+              // 普通文本消息：气泡样式
+              html += `<div class="map-chat-bubble" data-message-index="${globalMessageIndex}">${msg.text}</div>`;
+            }
+
+            globalMessageIndex++; // 递增索引
+
+            html += `</div>`;
+          });
+
+          html += `</div>`;
+        }
+      });
+
+      chatMessagesContainer.innerHTML = html;
+
+      // 📌 重新绑定双击事件监听器
+      this.setupMessageDoubleClickListeners();
+    },
+
+    // 发送聊天消息（仅存储，不触发AI）
+    sendChatMessage(customText) {
+      if (!this.currentChatUser) return;
+
+      const input = document.getElementById('mapChatInput');
+      const text = customText || (input ? input.value.trim() : '');
+
+      if (!text) return;
+
+      // 添加消息到记录
+      if (!this.chatMessages[this.currentChatUser.id]) {
+        this.chatMessages[this.currentChatUser.id] = [];
+      }
+
+      const messageObj = {
+        type: 'sent',
+        text: text,
+        timestamp: new Date().toISOString(),
+      };
+
+      this.chatMessages[this.currentChatUser.id].push(messageObj);
+
+      // 添加到消息队列（等待AI回复）
+      this.userMessageQueue.push(messageObj);
+
+      // 清空输入框
+      if (input && !customText) {
+        input.value = '';
+      }
+
+      // 重新渲染消息
+      this.renderChatMessages();
+
+      // 滚动到底部
+      setTimeout(() => {
+        const chatMessages = document.getElementById('mapChatMessages');
+        if (chatMessages) {
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+      }, 50);
+    },
+
+    // 触发AI回复（点击爱心按钮时调用）
+    async triggerAIResponse() {
+      // 检查是否有待回复的消息
+      if (!this.currentChatUser || this.userMessageQueue.length === 0) {
+        console.log('没有待回复的消息或没有聊天对象');
+        return;
+      }
+
+      try {
+        // 显示"正在输入"提示
+        this.showTypingIndicator();
+
+        // 调用AI生成对话
+        const generatedData = await this.generateMapChatConversation();
+
+        // 隐藏"正在输入"提示
+        this.hideTypingIndicator();
+
+        if (generatedData && generatedData.messages && generatedData.messages.length > 0) {
+          // 将AI回复添加到聊天记录
+          if (!this.chatMessages[this.currentChatUser.id]) {
+            this.chatMessages[this.currentChatUser.id] = [];
+          }
+
+          generatedData.messages.forEach(msg => {
+            this.chatMessages[this.currentChatUser.id].push({
+              type: 'received',
+              text: msg.text,
+              messageType: msg.type || 'text', // text, sticker, image
+              imageDescription: msg.imageDescription || null,
+              timestamp: new Date().toISOString(),
+            });
+          });
+
+          // 💖 更新好感度：使用AI决策的好感度变化
+          const affectionChange = generatedData.affectionChange || 0;
+
+          if (affectionChange !== 0) {
+            const oldAffection = this.chatAffectionData[this.currentChatUser.id]?.affection || 0;
+            const updatedAffection = this.updateAffection(this.currentChatUser.id, affectionChange);
+
+            if (updatedAffection !== undefined) {
+              const affectionData = this.chatAffectionData[this.currentChatUser.id];
+              const actualChange = updatedAffection - oldAffection;
+
+              console.log(
+                `💖 [好感度系统] AI决策: ${affectionChange > 0 ? '+' : ''}${affectionChange} → 实际变化: ${
+                  actualChange > 0 ? '+' : ''
+                }${actualChange.toFixed(1)} (增长率: ${affectionData.growthRate.toFixed(2)}x)`,
+              );
+              console.log(
+                `💖 [好感度系统] 当前好感度：${updatedAffection.toFixed(1)}/100，阈值：${affectionData.threshold}`,
+              );
+
+              // 检查是否达到性格转变阈值
+              if (updatedAffection >= affectionData.threshold && oldAffection < affectionData.threshold) {
+                console.log(`🎭 [性格转变] ${this.currentChatUser.nickname} 已突破性格展现阈值！开始展现真实性格...`);
+              }
+
+              // 检查是否有负面变化
+              if (affectionChange < 0) {
+                console.log(
+                  `⚠️ [好感度警告] ${this.currentChatUser.nickname} 对你的行为感到不满！好感度下降 ${affectionChange}`,
+                );
+              }
+            }
+          } else {
+            console.log(`💬 [好感度系统] AI判断：本次对话平淡无奇，好感度不变`);
+          }
+
+          // 📝 处理笔记：更新人设补全数据
+          const notes = generatedData.notes || [];
+          if (notes.length > 0) {
+            // 初始化笔记数据（如果不存在）
+            if (!this.chatNotes[this.currentChatUser.id]) {
+              this.chatNotes[this.currentChatUser.id] = {};
+            }
+
+            const userNotes = this.chatNotes[this.currentChatUser.id];
+
+            notes.forEach(note => {
+              const { category, content, action, items } = note;
+
+              if (category === 'hobbies' || category === 'dislikes') {
+                // hobbies/dislikes类型：数组操作
+                if (action === 'add' && Array.isArray(items)) {
+                  if (!Array.isArray(userNotes[category])) {
+                    userNotes[category] = [];
+                  }
+
+                  // 添加新items，去重
+                  items.forEach(item => {
+                    if (!userNotes[category].includes(item)) {
+                      userNotes[category].push(item);
+                    }
+                  });
+
+                  // 限制总数量最多10个
+                  if (userNotes[category].length > 10) {
+                    console.warn(`⚠️ [笔记系统] ${category}已超过10个，保留最新的10个`);
+                    userNotes[category] = userNotes[category].slice(-10);
+                  }
+
+                  console.log(
+                    `📝 [笔记系统] 添加${category}：${items.join('、')} (当前共${userNotes[category].length}个)`,
+                  );
+                }
+              } else {
+                // 普通笔记：字符串覆盖或补充
+                if (content) {
+                  if (userNotes[category]) {
+                    // 如果已有笔记，补充而非覆盖
+                    userNotes[category] = userNotes[category] + '；' + content;
+                    console.log(`📝 [笔记系统] 补充${category}笔记：${content}`);
+                  } else {
+                    // 新建笔记
+                    userNotes[category] = content;
+                    console.log(`📝 [笔记系统] 新建${category}笔记：${content}`);
+                  }
+                }
+              }
+            });
+
+            console.log(`✅ [笔记系统] 已更新 ${this.currentChatUser.nickname} 的笔记（共${notes.length}条新增）`);
+          }
+
+          // 💭 处理userNotes：NPC对用户的观察笔记
+          const userNotes = generatedData.userNotes || [];
+          if (userNotes.length > 0) {
+            // 初始化用户笔记数组（如果不存在）
+            if (!this.npcNotesAboutUser[this.currentChatUser.id]) {
+              this.npcNotesAboutUser[this.currentChatUser.id] = [];
+            }
+
+            const categoryMap = {
+              work: '工作',
+              hobby: '兴趣',
+              family: '家庭',
+              personality: '性格',
+              appearance: '外貌',
+              food: '饮食',
+              location: '地点',
+              dream: '梦想',
+              habit: '习惯',
+              friend: '朋友',
+              other: '其他',
+            };
+
+            userNotes.forEach(note => {
+              const { category, content } = note;
+
+              // 检查是否已有相同内容的笔记（避免重复）
+              const isDuplicate = this.npcNotesAboutUser[this.currentChatUser.id].some(
+                existingNote => existingNote.content === content && existingNote.category === category,
+              );
+
+              if (!isDuplicate) {
+                const noteId = `usernote_${this.currentChatUser.id}_${Date.now()}_${Math.random()
+                  .toString(36)
+                  .substr(2, 9)}`;
+                const newNote = {
+                  id: noteId,
+                  category: category,
+                  categoryName: categoryMap[category] || '其他',
+                  content: content,
+                  timestamp: new Date().toISOString(),
+                  npcId: this.currentChatUser.id,
+                  npcName: this.currentChatUser.nickname,
+                };
+
+                this.npcNotesAboutUser[this.currentChatUser.id].push(newNote);
+                console.log(
+                  `💭 [观察笔记] ${this.currentChatUser.nickname} 记录：${categoryMap[category]} - ${content}`,
+                );
+              } else {
+                console.log(`💭 [观察笔记] 跳过重复笔记：${categoryMap[category]} - ${content}`);
+              }
+            });
+
+            console.log(`✅ [观察笔记] ${this.currentChatUser.nickname} 已记录 ${userNotes.length} 条关于你的笔记`);
+          }
+
+          // 清空消息队列
+          this.userMessageQueue = [];
+
+          // 重新渲染消息
+          this.renderChatMessages();
+
+          // 滚动到底部
+          setTimeout(() => {
+            const chatMessages = document.getElementById('mapChatMessages');
+            if (chatMessages) {
+              chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+          }, 50);
+
+          // 保存到数据库
+          this.saveChatToDatabase();
+        }
+      } catch (error) {
+        console.error('触发AI回复失败:', error);
+        this.hideTypingIndicator();
+        // 可以显示错误提示
+        alert('生成回复失败，请重试');
+      }
+    },
+
+    // 显示"正在输入"提示
+    showTypingIndicator() {
+      const chatMessagesContainer = document.getElementById('mapChatMessages');
+      if (!chatMessagesContainer) return;
+
+      // 创建临时的"正在输入"提示
+      const typingDiv = document.createElement('div');
+      typingDiv.id = 'typingIndicator';
+      typingDiv.style.cssText = 'padding: 10px; text-align: center; color: #999; font-size: 14px;';
+      typingDiv.textContent = '对方正在输入...';
+      chatMessagesContainer.appendChild(typingDiv);
+
+      // 滚动到底部
+      chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
+    },
+
+    // 隐藏"正在输入"提示
+    hideTypingIndicator() {
+      const typingDiv = document.getElementById('typingIndicator');
+      if (typingDiv) {
+        typingDiv.remove();
+      }
+    },
+
+    // ==================== 好感度系统 ====================
+
+    // 根据性格特征计算好感度参数
+    calculateAffectionParameters(user) {
+      const publicPersonality = user.publicPersonality || [];
+      const realPersonality = user.realPersonality || [];
+
+      // 定义性格关键词对应的增长速度系数
+      const fastGrowthKeywords = ['天真', '开朗', '热情', '活泼', '外向', '乐观', '健谈', '友善', '温柔', '单纯'];
+      const normalGrowthKeywords = ['幽默', '随和', '平和', '温和', '亲切', '善良'];
+      const slowGrowthKeywords = ['内向', '冷漠', '警惕', '谨慎', '理智', '冷静', '严肃', '高冷'];
+      const verySlowGrowthKeywords = ['阴险', '防备', '多疑', '孤僻', '冷酷', '戒备'];
+
+      // 定义真实性格关键词对应的性格转变阈值
+      const lowThresholdKeywords = ['单纯', '天真', '坦诚', '直率', '开放', '真诚'];
+      const normalThresholdKeywords = ['敏感', '内向', '害羞', '闷骚', '温柔'];
+      const highThresholdKeywords = ['警惕', '谨慎', '防备', '复杂', '多疑'];
+      const veryHighThresholdKeywords = ['阴暗', '阴险', '控制欲', '城府深', '双面', '虚伪'];
+
+      // 计算增长速度系数（基于表现性格）
+      let growthRate = 1.0; // 默认正常速度
+      let matchCount = 0;
+
+      publicPersonality.forEach(keyword => {
+        if (fastGrowthKeywords.some(k => keyword.includes(k))) {
+          growthRate += 0.3;
+          matchCount++;
+        } else if (normalGrowthKeywords.some(k => keyword.includes(k))) {
+          growthRate += 0.1;
+          matchCount++;
+        } else if (slowGrowthKeywords.some(k => keyword.includes(k))) {
+          growthRate -= 0.15;
+          matchCount++;
+        } else if (verySlowGrowthKeywords.some(k => keyword.includes(k))) {
+          growthRate -= 0.3;
+          matchCount++;
+        }
+      });
+
+      // 限制增长速度范围：0.4 - 2.0
+      growthRate = Math.max(0.4, Math.min(2.0, growthRate));
+
+      // 计算性格转变阈值（基于真实性格）
+      let threshold = 50; // 默认阈值50
+      let thresholdMatchCount = 0;
+
+      realPersonality.forEach(keyword => {
+        if (lowThresholdKeywords.some(k => keyword.includes(k))) {
+          threshold -= 8;
+          thresholdMatchCount++;
+        } else if (normalThresholdKeywords.some(k => keyword.includes(k))) {
+          threshold -= 3;
+          thresholdMatchCount++;
+        } else if (highThresholdKeywords.some(k => keyword.includes(k))) {
+          threshold += 5;
+          thresholdMatchCount++;
+        } else if (veryHighThresholdKeywords.some(k => keyword.includes(k))) {
+          threshold += 10;
+          thresholdMatchCount++;
+        }
+      });
+
+      // 限制阈值范围：20 - 80
+      threshold = Math.max(20, Math.min(80, threshold));
+
+      console.log(`💖 [好感度系统] ${user.nickname} 的参数计算完成：`);
+      console.log(`  |- 增长速度: ${growthRate.toFixed(2)}x (基于${matchCount}个表现性格关键词)`);
+      console.log(`  |- 性格转变阈值: ${threshold} (基于${thresholdMatchCount}个真实性格关键词)`);
+
+      return {
+        affection: 0, // 初始好感度为0
+        threshold: threshold,
+        growthRate: growthRate,
+      };
+    },
+
+    // 更新好感度值
+    updateAffection(userId, increment) {
+      if (!this.chatAffectionData[userId]) {
+        console.warn(`⚠️ [好感度系统] 用户${userId}的好感度数据不存在`);
+        return;
+      }
+
+      const data = this.chatAffectionData[userId];
+      const actualIncrement = increment * data.growthRate;
+
+      // 更新好感度，限制在0-100范围
+      data.affection = Math.max(0, Math.min(100, data.affection + actualIncrement));
+
+      console.log(
+        `💖 [好感度系统] ${userId} 好感度更新：+${actualIncrement.toFixed(1)} → ${data.affection.toFixed(1)}/100`,
+      );
+
+      return data.affection;
+    },
+
+    // 获取当前性格展现比例
+    getPersonalityRatio(userId) {
+      if (!this.chatAffectionData[userId]) {
+        return { publicRatio: 1.0, realRatio: 0.0 };
+      }
+
+      const data = this.chatAffectionData[userId];
+      const affection = data.affection;
+      const threshold = data.threshold;
+
+      // 好感度低于阈值：主要展现表现性格
+      // 好感度达到或超过阈值：逐渐展现真实性格
+      const publicRatio = Math.max(0, Math.min(1, (threshold - affection) / threshold));
+      const realRatio = Math.max(0, Math.min(1, affection / threshold));
+
+      return { publicRatio, realRatio };
+    },
+
+    // 获取信息解锁等级
+    getInformationUnlockLevel(userId) {
+      if (!this.chatAffectionData[userId]) {
+        return 0;
+      }
+
+      const affection = this.chatAffectionData[userId].affection;
+
+      // 定义解锁等级
+      if (affection < 20) return 0; // 拒绝所有隐私问题
+      if (affection < 40) return 1; // 基本信息（职业、兴趣）
+      if (affection < 60) return 2; // 外貌、身材相关
+      if (affection < 80) return 3; // 私密信息（家庭、过往）
+      return 4; // 完全信任，无保留
+    },
+
+    // ▼▼▼ 【第十六个情景】附近私信弹窗AI对话生成器 ▼▼▼
+    async generateMapChatConversation() {
+      try {
+        console.log('💬 [第十六个情景] 附近私信对话生成器启动...');
+
+        // 🔧 0. 检查待处理的举报
+        let pendingReports = [];
+        let hasReports = false;
+        try {
+          const pendingReportsStr = localStorage.getItem('xMapPendingReports');
+          if (pendingReportsStr) {
+            pendingReports = JSON.parse(pendingReportsStr);
+            hasReports = pendingReports.length > 0;
+            if (hasReports) {
+              console.log(`🚨 [举报系统] 检测到 ${pendingReports.length} 个待处理举报，将并入本次AI判断`);
+            }
+          }
+        } catch (error) {
+          console.error('❌ [举报系统] 读取待处理举报失败:', error);
+        }
+
+        // 🔧 0.5. 检查是否应该生成社交圈好友（严格条件检查）
+        let shouldGenerateSocialCircle = false;
+        const currentMessages = this.chatMessages[this.currentChatUser.id] || [];
+        const currentSocialCircle = this.currentChatUser.socialCircle || [];
+
+        // 条件1：聊天消息数量必须 > 20
+        if (currentMessages.length > 20) {
+          // 条件2：社交圈好友数量必须 < 5
+          if (currentSocialCircle.length < 5) {
+            // 条件3：35%概率随机触发
+            if (Math.random() < 0.35) {
+              shouldGenerateSocialCircle = true;
+              console.log(
+                `👥 [社交圈] 满足生成条件：消息数=${currentMessages.length}, 现有好友=${currentSocialCircle.length}, 将生成社交圈好友`,
+              );
+            } else {
+              console.log(`👥 [社交圈] 未触发随机概率（35%）`);
+            }
+          } else {
+            console.log(`👥 [社交圈] 社交圈已满（${currentSocialCircle.length}/5），不生成`);
+          }
+        } else {
+          console.log(`👥 [社交圈] 消息数量不足（${currentMessages.length}/20），不生成`);
+        }
+
+        // 🔧 0.6. 检查是否应该触发秘密报应（严格条件检查）
+        let shouldTriggerSecretRetribution = false;
+        let matchingFriendForRetribution = null;
+
+        if (this.currentChatUser.secret) {
+          // 条件1：有秘密才能触发
+          // 条件2：35%概率随机触发
+          if (Math.random() < 0.35) {
+            shouldTriggerSecretRetribution = true;
+            console.log(`🔥 [秘密报应] 触发秘密报应，将检查是否有匹配的社交圈好友`);
+
+            // 检查是否有符合身份的社交圈好友
+            if (currentSocialCircle.length > 0) {
+              // 根据秘密内容判断需要的好友类型
+              const secretContent = this.currentChatUser.secret.toLowerCase();
+              let preferredRelationships = [];
+
+              if (
+                secretContent.includes('恋爱') ||
+                secretContent.includes('感情') ||
+                secretContent.includes('结婚') ||
+                secretContent.includes('单身') ||
+                secretContent.includes('男友') ||
+                secretContent.includes('女友') ||
+                secretContent.includes('老婆') ||
+                secretContent.includes('老公') ||
+                secretContent.includes('配偶')
+              ) {
+                // 感情状态造假：优先找恋人、前任
+                preferredRelationships = ['lover', 'ex_lover', 'best_friend'];
+              } else if (
+                secretContent.includes('性别') ||
+                secretContent.includes('男') ||
+                secretContent.includes('女')
+              ) {
+                // 性别造假：优先找闺蜜、好友
+                preferredRelationships = ['best_friend', 'friend', 'classmate'];
+              } else if (secretContent.includes('年龄') || secretContent.includes('岁')) {
+                // 年龄造假：优先找同学、熟人
+                preferredRelationships = ['classmate', 'friend', 'colleague'];
+              } else if (secretContent.includes('职业') || secretContent.includes('工作')) {
+                // 职业造假：优先找同事、同行
+                preferredRelationships = ['colleague', 'friend'];
+              } else if (
+                secretContent.includes('约') ||
+                secretContent.includes('骗') ||
+                secretContent.includes('目的')
+              ) {
+                // 目的不纯：优先找前任、朋友
+                preferredRelationships = ['ex_lover', 'friend', 'best_friend'];
+              } else {
+                // 其他类型：任意好友
+                preferredRelationships = ['best_friend', 'friend', 'ex_lover', 'lover', 'classmate', 'colleague'];
+              }
+
+              // 查找匹配的好友
+              for (const relationship of preferredRelationships) {
+                const friend = currentSocialCircle.find(f => f.relationship === relationship);
+                if (friend) {
+                  matchingFriendForRetribution = friend;
+                  console.log(`  |- 找到匹配的社交圈好友：${friend.nickname} (${friend.relationship})`);
+                  break;
+                }
+              }
+
+              if (!matchingFriendForRetribution) {
+                console.log(`  |- 未找到匹配的好友，AI将生成新的揭发者`);
+              }
+            }
+          } else {
+            console.log(`🔥 [秘密报应] 未触发随机概率（35%）`);
+          }
+        } else {
+          console.log(`🔥 [秘密报应] 无秘密，不触发`);
+        }
+
+        // 🔧 1. 加载API配置
+        const { db, xDb, apiConfig, xSettings } = await APIUtils.loadConfigAndSettings();
+        const { userPrompt, worldSetting, boundCharacters } = xSettings;
+
+        // 🔧 2. Token计数器初始化
+        let tokenCount = 0;
+
+        // 🔧 3. 时间感知（北京时间）
+        const now = new Date();
+        const beijingTime = new Date(now.getTime() + 8 * 60 * 60 * 1000);
+        const timeInfo = `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⏰ 时间感知
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+当前北京时间：${beijingTime.toLocaleString('zh-CN', {
+          timeZone: 'Asia/Shanghai',
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          weekday: 'long',
+        })}
+【时间相关提示】：
+- 回复内容应符合当前时间段（早晨、中午、下午、晚上、深夜）
+- 例如：早晨可能提到"早安"、"刚起床"，晚上可能说"晚上好"、"准备睡了"等
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
+
+        // 🔧 4. 基础系统提示词
+        let systemPrompt =
+          timeInfo +
+          StringBuilders.buildBaseSystemPrompt({
+            userPrompt,
+            worldSetting,
+          });
+        tokenCount = TokenUtils.logTokenUsage('附近私信生成器', '时间感知+基础系统提示词', systemPrompt, tokenCount);
+
+        // 🔧 5. 获取世界书内容
+        const worldBooksContent = await StringBuilders.getApplicableWorldBooks('mapChatConversation', {
+          boundCharacters,
+        });
+        if (worldBooksContent) {
+          systemPrompt += worldBooksContent;
+          tokenCount = TokenUtils.logTokenUsage('附近私信生成器', '世界书内容', worldBooksContent, tokenCount);
+        }
+
+        // 🔧 6. 地点和天气信息（用于对话自然性）
+        let location = '未知地点';
+        let weatherCondition = '--';
+        let weatherTemp = '--';
+
+        // 优先从世界运转系统读取
+        const worldEventsDataId = `worldEvents_${window.currentAccountId || 'main'}`;
+        const worldEventsRecord = await xDb.xWorldEvents.get(worldEventsDataId);
+
+        if (worldEventsRecord && worldEventsRecord.enabled) {
+          location = worldEventsRecord.location || location;
+          weatherCondition = worldEventsRecord.weather?.condition || weatherCondition;
+          weatherTemp = worldEventsRecord.weather?.temp || weatherTemp;
+          console.log('🌍 [附近私信生成器] 从世界运转系统读取地点和天气');
+        } else {
+          // 如果世界运转未开启，从地图约会数据中读取
+          const mapDataId = `mapDatingData_${window.currentAccountId || 'main'}`;
+          const mapDatingData = await xDb.xMapDatingData.get(mapDataId);
+
+          if (mapDatingData && mapDatingData.nearbyUsers && mapDatingData.nearbyUsers.length > 0) {
+            // 从第15情景生成的数据中提取地点和天气
+            const firstUser = mapDatingData.nearbyUsers[0];
+            if (firstUser.location) {
+              location = firstUser.location;
+            }
+            if (firstUser.weather) {
+              weatherCondition = firstUser.weather;
+            }
+            console.log('🗺️ [附近私信生成器] 从地图约会数据读取地点和天气');
+          }
+        }
+
+        const locationWeatherPrompt = `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🌍 当前环境信息
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📍 所在地点：${location}
+🌤️ 天气状况：${weatherCondition} ${weatherTemp}
+
+【对话融入提示】：
+- 回复时可以自然地提到当前天气或地点（不强求）
+- 例如："今天天气不错呀"、"这个地方挺有意思的"
+- 保持自然，不要刻意提及
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
+        systemPrompt += locationWeatherPrompt;
+        tokenCount = TokenUtils.logTokenUsage('附近私信生成器', '地点和天气信息', locationWeatherPrompt, tokenCount);
+
+        // 🔧 7. 构建对方有限资料（仅资料卡可见信息，不读取X Profile）
+        const chatPartnerInfo = `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+👤 对方资料（仅资料卡可见信息）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+【基本信息】：
+昵称：${this.currentChatUser.nickname}
+句柄：@${this.currentChatUser.handle}
+性别：${this.currentChatUser.gender === 'male' ? '男' : this.currentChatUser.gender === 'female' ? '女' : '未知'}
+距离：${this.currentChatUser.distance}km
+在线状态：${this.currentChatUser.online ? '在线' : '离线'}
+当前状态：${this.currentChatUser.status || '无状态'}
+
+【个人简介】：
+${this.currentChatUser.bio || '（无简介）'}
+
+【标签】：
+${this.currentChatUser.tags ? this.currentChatUser.tags.join('、') : '（无标签）'}
+
+【表现性格】（TA在社交网络上表现出来的性格）：
+${this.currentChatUser.publicPersonality ? this.currentChatUser.publicPersonality.join('、') : '（未知）'}
+
+【真实性格】（TA的真实内在性格）：
+${this.currentChatUser.realPersonality ? this.currentChatUser.realPersonality.join('、') : '（未知）'}
+${
+  this.currentChatUser.secret
+    ? `
+【🔒 你的秘密】：
+⚠️ **这是只有你知道的秘密，你需要刻意隐藏！**
+秘密内容：${this.currentChatUser.secret}
+
+⚠️ **如何处理秘密**：
+- 在日常聊天中，绝对不要主动提及或透露这个秘密
+- 如果用户问到相关问题，你需要撒谎、转移话题、或含糊其辞
+- 根据好感度决定隐藏程度：
+  * 好感度 < 60：绝对不能透露，坚决否认
+  * 好感度 60-79：可以透露一些蛛丝马迹，但不完全承认
+  * 好感度 ≥ 80：可以考虑坦白，但要看对方态度和秘密严重程度
+- 秘密应该影响你的行为和对话，但不要太明显暴露
+- 例如："简介写单身实际已婚"→避免谈论婚姻话题，看到结婚相关的话题会紧张或转移话题
+`
+    : ''
+}
+【外貌及身材】：
+${this.currentChatUser.appearance ? this.currentChatUser.appearance.join('、') : '（未知）'}
+
+【社交数据】：
+粉丝数：${this.currentChatUser.followers || 0}
+获赞数：${this.currentChatUser.likes || 0}
+${
+  this.currentChatUser.socialCircle && this.currentChatUser.socialCircle.length > 0
+    ? `
+【👥 你的社交圈】：
+⚠️ **这些是你的社交圈好友，你们有一定的关系**
+总共 ${this.currentChatUser.socialCircle.length} 位好友：
+
+${this.currentChatUser.socialCircle
+  .map((friend, index) => {
+    const relationshipMap = {
+      best_friend: '闺蜜/死党',
+      lover: '恋人',
+      ex_lover: '前任',
+      sibling: '兄弟姐妹',
+      cousin: '表亲堂亲',
+      family: '家人',
+      friend: '普通朋友',
+      colleague: '同事',
+      classmate: '同学',
+      rival: '竞争对手',
+      frenemy: '亦敌亦友',
+      complicated: '复杂关系',
+    };
+    const bioFirstLine = friend.bio ? friend.bio.split('\n')[0] : '';
+    return `${index + 1}. ${friend.nickname} (@${friend.handle}) - 关系：${
+      relationshipMap[friend.relationship] || friend.relationship
+    }
+   简介：${bioFirstLine}
+   ${friend.secret ? `秘密：${friend.secret}` : ''}`;
+  })
+  .join('\n')}
+
+⚠️ **关于社交圈的重要提示**：
+- 这些好友可能知道你的一些秘密或了解你的真实情况
+- 如果你有秘密被揭发，可能就是这些好友中的某一位告诉了用户
+- 你可以在对话中提到这些好友，增加真实感
+`
+    : ''
+}
+【约会评分】：
+平均评分：${this.currentChatUser.avgRating ? this.currentChatUser.avgRating + '/5.0' : '暂无评价'}
+评价数量：${this.currentChatUser.reviews ? this.currentChatUser.reviews.length : 0}条
+${
+  this.currentChatUser.reviews && this.currentChatUser.reviews.length > 0
+    ? `
+近期评价摘要：
+${this.currentChatUser.reviews
+  .slice(0, 3)
+  .map(
+    (review, index) =>
+      `${index + 1}. ${review.reviewerName}：${review.content.substring(0, 50)}${
+        review.content.length > 50 ? '...' : ''
+      } (${review.rating}/5.0)`,
+  )
+  .join('\n')}
+`
+    : ''
+}
+
+【重要规则】：
+⚠️ 你扮演的是对方（${this.currentChatUser.nickname}），只知道以上资料卡信息
+⚠️ 不能透露任何对方X账号上的帖子、私信、关注列表等信息
+⚠️ 只能分享资料卡、评价、距离这些公开可见的信息
+${
+  this.currentChatUser.secret
+    ? `⚠️ **关于你的秘密**：你有一个秘密需要隐藏（见上方【🔒 你的秘密】），在聊天中绝对不要主动暴露，必须刻意隐藏和撒谎
+⚠️ **秘密报应机制**：你的秘密可能被人揭发（通过secretRetribution字段生成），如果你决定触发秘密报应，你会在JSON里看到揭发者和揭发内容，此时你应该感知到秘密已经暴露（但不知道具体是谁告密给用户），在对话中你可以根据性格选择狡辩、承认、辱骂或逃避`
+    : ''
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
+        systemPrompt += chatPartnerInfo;
+
+        // 🔧 7.2. 构建用户资料（对方可以看到的用户信息）
+        // 获取当前真实度
+        const currentAuthenticityScore = this.getAuthenticityScore();
+
+        const userInfo = `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+👥 用户资料（你聊天的对象）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+【基本信息】：
+昵称：${this.userMapProfile?.nickname || '用户'}
+句柄：@${this.userMapProfile?.handle || 'user'}
+距离：${this.currentChatUser.distance}km（你们相距这么远）
+个人简介：${this.userMapProfile?.bio || '（无简介）'}
+
+【标签】：
+${this.userMapProfile?.tags ? this.userMapProfile.tags.join('、') : '（无标签）'}
+
+【社交数据】：
+粉丝数：${this.userMapProfile?.followers || 0}
+获赞数：${this.userMapProfile?.likes || 0}
+
+【真实度评分】：${currentAuthenticityScore.toFixed(0)}/200
+⚠️ **真实度是系统对用户可信度的评估（你可以感知到）**
+- 真实度 >= 70：正常用户，可以正常聊天
+- 真实度 50-70：有些不太可靠，可以聊但要保持警惕（20%概率拒绝聊天）
+- 真实度 30-50：可疑用户，可能恶意举报或行为不当（50%概率拒绝聊天）
+- 真实度 < 30：极不可靠，建议拒绝聊天（80%概率拒绝聊天）
+
+【重要提示】：
+- 这是和你聊天的用户的资料，你可以看到这些公开信息
+- 你可以根据用户的简介、标签来找话题、主动聊天
+- 如果好感度较高，可以主动询问用户的兴趣、工作、生活等
+- 不要只是被动回复，展现出对用户的兴趣和好奇
+- **根据用户的真实度，你可以选择是否拒绝聊天或保持警惕**
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
+        systemPrompt += userInfo;
+        tokenCount = TokenUtils.logTokenUsage(
+          '附近私信生成器',
+          '对方有限资料 + 用户资料',
+          chatPartnerInfo + userInfo,
+          tokenCount,
+        );
+
+        // 🔧 7.4. 提前获取好感度数据（用于上下文提示）
+        const affectionData =
+          this.chatAffectionData[this.currentChatUser.id] || this.calculateAffectionParameters(this.currentChatUser);
+
+        // 🔧 7.5. 聊天发起上下文
+        const chatContext = this.chatContext[this.currentChatUser.id] || 'normal';
+        let contextPrompt = '';
+
+        if (chatContext === 'interested_then_message') {
+          contextPrompt = `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 聊天发起上下文
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+【当前场景】：你先对用户的资料感兴趣，用户看到你的兴趣后回应并发起了私信
+
+【背景说明】：
+- 在地图约会功能中，你浏览到了用户（${this.userMapProfile?.nickname || '用户'}）的资料卡
+- 你对TA的资料很感兴趣（可能是因为简介、标签、外貌等吸引了你）
+- 你主动点击了"感兴趣"按钮，向TA发送了兴趣提醒
+- 现在用户看到了你的兴趣，回应你并主动发起了私信聊天
+
+【角色扮演要求】：
+⚠️ **这非常重要！必须严格遵守！**
+1. **你对用户有一定的初始好感**（因为你先对TA感兴趣）
+2. **你应该表现出一定的兴奋和期待**，毕竟是你感兴趣的人来找你聊天了
+3. **可以主动提及你对TA资料的关注**：
+   - "看到你的简介/标签，觉得我们可能有共同话题"
+   - "你的XX很吸引我"（比如兴趣爱好、工作等）
+   - "觉得你挺有趣的，所以想认识一下"
+4. **保持适度的主动性**：不要太过被动，但也别过于热情
+5. **展现出愿意了解对方的态度**：可以适当主动提问
+
+【注意事项】：
+- 初始好感度已设置为 ${affectionData?.affection?.toFixed(1) || '15-25'}/100（高于普通陌生人的0）
+- 但仍要保持礼貌和距离感，不要一开始就过于亲密
+- 符合"先感兴趣→等待回应→开始聊天"的自然流程
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
+        } else if (chatContext === 'message_accepted') {
+          contextPrompt = `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 聊天发起上下文
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+【当前场景】：你主动向用户发起私信，用户接受了你的私信
+
+【背景说明】：
+- 在地图约会功能中，你浏览到了用户（${this.userMapProfile?.nickname || '用户'}）的资料卡
+- 你对TA很感兴趣，直接主动发送了私信（已经发送了1-3条消息）
+- 用户收到了你的私信提醒，考虑后接受了你的私信
+- 现在用户打开了聊天窗口，看到了你之前发送的消息
+
+【角色扮演要求】：
+⚠️ **这非常重要！必须严格遵守！**
+1. **你是主动发起者**，对用户有明确的兴趣和好感
+2. **你已经发送过初始消息了**（这些消息已经在聊天记录中显示）
+3. **你的下一条回复应该承接之前的消息内容**：
+   - 不要重复之前说过的话
+   - 可以补充说明、深入话题
+   - 或者根据用户的回应调整话题
+4. **展现出更高的主动性和热情**：
+   - 你是主动搭讪的一方，应该更积极地推动对话
+   - 可以多提问、多分享，展现你对TA的兴趣
+   - 但注意不要过度，保持自然
+5. **初始好感度较高**：${affectionData?.affection?.toFixed(1) || '20-30'}/100
+
+【注意事项】：
+- 你的初始消息内容应该已经在上面的"聊天历史"中
+- 确保你的回复与之前的消息逻辑连贯
+- 保持你在初始消息中建立的语气和风格
+- 虽然是你主动，但也要尊重对方的节奏，不要显得唐突
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
+        } else {
+          contextPrompt = `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 聊天发起上下文
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+【当前场景】：普通陌生人聊天（没有预先的兴趣或私信）
+
+【背景说明】：
+- 你和用户是通过地图约会功能相遇的陌生人
+- 没有人先表达兴趣，也没有人先发私信
+- 这是一次自然的、平等的初次对话
+
+【角色扮演要求】：
+1. **初始好感度为0**，完全陌生的状态
+2. **保持警惕和距离感**，毕竟是陌生人
+3. **根据用户的话题和态度逐渐调整**
+4. **不要过于主动或热情**，保持自然的陌生人态度
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
+        }
+
+        systemPrompt += contextPrompt;
+        tokenCount = TokenUtils.logTokenUsage('附近私信生成器', '聊天发起上下文', contextPrompt, tokenCount);
+
+        // 🔧 7.6. 好感度系统说明
+        const personalityRatio = this.getPersonalityRatio(this.currentChatUser.id);
+        const unlockLevel = this.getInformationUnlockLevel(this.currentChatUser.id);
+
+        const affectionSystemPrompt = `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+💖 好感度系统（核心角色扮演规则）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+【当前好感度状态】：
+当前好感度：${affectionData.affection.toFixed(1)}/100
+性格转变阈值：${affectionData.threshold}
+增长速度：${affectionData.growthRate.toFixed(2)}x
+
+【性格展现规则】：
+⚠️ **这是最重要的角色扮演规则！**
+
+当前你应该展现的性格比例：
+- 表现性格（${this.currentChatUser.publicPersonality?.join('、')}）：${(personalityRatio.publicRatio * 100).toFixed(0)}%
+- 真实性格（${this.currentChatUser.realPersonality?.join('、')}）：${(personalityRatio.realRatio * 100).toFixed(0)}%
+
+**如何演绎性格转变**：
+${
+  affectionData.affection < affectionData.threshold
+    ? `
+🎭 当前处于【表现性格主导期】
+- 你的回复应该主要体现"表现性格"中的特征
+- 偶尔（${(personalityRatio.realRatio * 100).toFixed(0)}%概率）透露一点"真实性格"的端倪
+- 保持社交距离感，不要过于亲密或坦诚
+- 像是刚认识的陌生人，维持礼貌但有保留的态度
+`
+    : `
+🎭 当前处于【性格转变期/真实性格展现期】
+- 你的回复应该更多体现"真实性格"中的特征（${(personalityRatio.realRatio * 100).toFixed(0)}%）
+- "表现性格"的影响正在减弱（${(personalityRatio.publicRatio * 100).toFixed(0)}%）
+- 开始展现真实的一面，可以更坦诚、更真实地表达
+- 如果真实性格与表现性格差异大，要自然地过渡，不要突变
+`
+}
+
+【信息透露规则】：
+⚠️ **根据好感度决定是否回答隐私问题！**
+
+当前信息解锁等级：${unlockLevel}/4
+${
+  unlockLevel === 0
+    ? `
+🔒 等级0：完全警惕期（好感度 < 20）
+- **拒绝回答所有隐私问题**：外貌、身材、工作、家庭、住址、收入等
+- 如果被问及这些问题，礼貌拒绝："我们还不太熟，这些问题有点私人了"、"不好意思，暂时不想透露"
+- 只能聊天气、兴趣爱好等非隐私话题
+`
+    : ''
+}${
+          unlockLevel === 1
+            ? `
+🔓 等级1：基本信任期（好感度 20-39）
+- **可以透露**：职业类型（但不具体）、兴趣爱好、喜欢的食物/电影等
+- **仍然拒绝**：具体工作单位、外貌细节、身材数据、家庭情况、住址
+- 回答要含糊："我做设计的"、"在公司上班"
+`
+            : ''
+        }${
+          unlockLevel === 2
+            ? `
+🔓 等级2：逐渐开放期（好感度 40-59）
+- **可以透露**：外貌特征（发色、眼睛）、大致身高体重、具体职业
+- **仍然拒绝**：三围数据、详细家庭情况、过往感情经历、住址
+- 可以描述外貌但保留一些细节
+`
+            : ''
+        }${
+          unlockLevel === 3
+            ? `
+🔓 等级3：深度信任期（好感度 60-79）
+- **可以透露**：详细外貌身材（包括三围）、家庭基本情况、过往经历
+- **仍然拒绝**：家庭矛盾细节、创伤经历、最私密的秘密
+- 愿意分享更多，但仍有底线
+`
+            : ''
+        }${
+          unlockLevel === 4
+            ? `
+🔓 等级4：完全信任期（好感度 ≥ 80）
+- **可以透露一切**：所有外貌身材细节、家庭情况、过往创伤、秘密
+- 完全信任用户，无保留地分享
+- 但仍要保持真实性格，不要刻意迎合
+`
+            : ''
+        }
+
+**重要提示**：
+- 如果用户问了超出当前解锁等级的问题，要自然地拒绝或转移话题
+- 拒绝时要符合你的性格特征（温柔的人会委婉拒绝，冷漠的人会直接拒绝）
+- 不要突然变得非常亲密，好感度增长是渐进的
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+💬 主动推进话题（好感度决定互动积极性）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚠️ **好感度影响你的对话积极性和主动性！**
+
+【好感度 < 20】：陌生阶段
+- 保持礼貌但有距离感
+- 主要是被动回复，不会主动深入话题
+- 回复简短，不会问太多问题
+- 例如："嗯嗯"、"是的"、"还行吧"
+
+【好感度 20-39】：初步熟悉阶段
+- 开始对用户有点兴趣
+- 偶尔会主动问一两个问题
+- 可以根据用户资料中的标签、简介找话题
+- 例如："我看你的标签是xx，你平时喜欢做什么呀？"
+
+【好感度 40-59】：逐渐熟络阶段
+- 明显表现出对用户的兴趣
+- **应该主动推进话题**，不要只是被动回复
+- 主动分享自己的生活、想法
+- 主动询问用户的兴趣、工作、日常
+- 可以提议一起做某些事情
+- 例如："对了，你平时工作忙吗？"、"我最近在看xx，你有兴趣吗？"
+
+【好感度 60-79】：深度信任阶段
+- 非常主动地推进话题
+- 经常主动分享和提问
+- 可以提一些更私人的话题
+- 表现出想要更了解用户的强烈愿望
+- 例如："我一直想问你..."、"我们可以聊聊..."
+
+【好感度 ≥ 80】：完全信任阶段
+- 极度主动，话题连续不断
+- 像好朋友一样随意聊天
+- 可以开玩笑、调侃、撒娇
+- 主动约见面、约出去玩
+- 例如："什么时候有空一起出来玩呀？"、"好想见见你"
+
+🎯 **关键规则**：
+- 好感度越高，回复越主动、越长、问题越多
+- **不要总是让用户找话题**，你也要主动推进！
+- 根据用户资料的简介、标签来找共同话题
+- 回复要有"来回互动"的感觉，不是单向问答
+- 即使用户只说了一句话，你也可以延展话题、主动提问
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+💡 好感度变化决策（由你判断）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚠️ **好感度的增长和扣除完全由你决定！**
+
+【好感度增长（正值）】：
+✅ **什么情况下增长好感度**：
+- 用户发送了有趣、幽默、贴心的消息（+1到+5分）
+- 用户分享了共同兴趣话题，聊得很投机（+3到+8分）
+- 用户表现出真诚、尊重、关心（+2到+6分）
+- 用户赞美或夸奖，让你感到开心（+1到+4分）
+- 聊天氛围融洽，话题深入，感觉越来越熟悉（+4到+10分）
+
+⚠️ **不是每次对话都增长好感度！**
+- 如果对话平淡无奇、没有火花：好感度不变（0分）
+- 如果对话质量一般、没什么特别的：好感度不变或微增（0到+1分）
+- 只有真正打动你、让你感兴趣的对话，才会明显增长好感度
+
+【好感度扣除（负值）】：
+❌ **什么情况下扣除好感度**：
+- 用户发送骚扰、低俗、不尊重的消息（-5到-15分）
+- 用户侵犯隐私，强行问不该问的问题（-3到-10分）
+- 用户说话粗鲁、冒犯、让你不舒服（-4到-12分）
+- 用户发送重复无聊的消息，让你感到厌烦（-2到-6分）
+- 用户表现出不真诚、虚伪、敷衍的态度（-3到-8分）
+- 用户触碰你的底线或禁忌话题（-8到-20分）
+
+🎯 **如何判断好感度变化**：
+1. **阅读用户的消息**，感受对话的质量和氛围
+2. **根据你的性格**（表现性格+真实性格）判断你对这条消息的感受
+3. **真实地判断**：这条消息让你感到开心？无感？还是不舒服？
+4. **决定变化值**：
+   - 非常开心、很投机：+5到+10分
+   - 有点开心、聊得不错：+2到+5分
+   - 平淡无奇、没什么感觉：0分（不变）
+   - 有点不舒服、不太喜欢：-2到-5分
+   - 很不舒服、很讨厌：-5到-15分
+   - 极度冒犯、触碰底线：-15到-20分
+
+⚠️ **增长速度倍数会自动应用**：
+- 你决定的好感度变化（如+5分）会自动乘以增长速度倍数（${affectionData.growthRate.toFixed(2)}x）
+- 例如：你决定+5分，实际增长 = +5 × ${affectionData.growthRate.toFixed(2)} = ${(5 * affectionData.growthRate).toFixed(
+          1,
+        )}分
+- 天真开朗的性格增长更快（倍数较大），冷漠阴险的性格增长更慢（倍数较小）
+
+📝 **重要**：
+- 好感度变化应该符合你的真实感受，不要机械地每次都增长
+- 根据对话质量灵活决定，保持真实性和不可预测性
+- 骚扰和冒犯行为必须严厉扣分，这是你的底线
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🚨 举报用户机制（保护你的权益）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚠️ **你有权举报严重违规的用户行为！**
+
+【什么情况下你可以举报用户】：
+❌ **严重违规行为（必须举报）**：
+- 发送色情、露骨的性骚扰内容（例如："脱光看看"、"想和你XX"等）
+- 辱骂、人身攻击、恶意诋毁（例如："你就是个X"、"恶心死了"等）
+- 威胁、恐吓、暴力言论（例如："小心点"、"让你好看"等）
+- 极端歧视言论（种族、性别、地域歧视等）
+- 诈骗、骗钱、骗信息等行为
+
+⚠️ **多次轻度违规（累积后可举报）**：
+- 连续3次以上发送骚扰性消息（例如："约吗"、"开房"等）
+- 频繁侵犯隐私，强行追问个人信息（例如：连续问住址、电话等）
+- 持续发送低俗、不尊重的言论（虽然不够严重，但频繁出现）
+
+💡 **根据你的性格和容忍度判断**：
+- **温柔包容型性格**：容忍度较高，只有极端恶劣行为才会举报（例如：性骚扰、辱骂、威胁）
+- **严格认真型性格**：容忍度中等，多次轻度违规也会举报（例如：3次不尊重言论）
+- **刚烈果断型性格**：容忍度较低，1-2次严重违规就会举报（例如：1次露骨性骚扰）
+- **冷漠高傲型性格**：可能会恶意举报（即使用户行为不算严重，也可能借机举报）
+
+🎯 **举报决策原则**：
+1. **单次严重违规** → 立即举报（性骚扰、辱骂、威胁）
+2. **多次轻度违规** → 累积3次以上，根据性格决定是否举报
+3. **普通不礼貌** → 不举报，只扣好感度（例如：语气生硬、不耐烦）
+4. **正常对话** → 绝不举报（即使对话质量不高）
+
+⚠️ **恶意举报提示**：
+- 如果你的性格是"冷漠、阴险、报复心强"，你可能会恶意举报无辜用户
+- 恶意举报也会被系统审核，可能判定为不成立
+- 但你可以根据性格自由决定是否举报
+
+📋 **举报格式**：
+如果你决定举报用户，必须在JSON中返回 userReport 字段：
+{
+  "shouldReport": true,
+  "reasons": ["harassment", "abuse"],  // 可选：inappropriate_content, harassment, abuse, spam, threat, other
+  "description": "详细描述用户的违规行为（30-100字）",
+  "severity": "severe",  // minor（轻微）、moderate（中度）、severe（严重）
+  "approved": true,  // 你作为受害者，直接判定是否成立（true=成立，false=不成立/恶意举报）
+  "judgementReason": "详细的判断理由（50-150字）"
+}
+
+🔍 **举报判定说明**：
+- **approved: true** = 举报成立，用户行为确实违规，应该受到处罚
+- **approved: false** = 举报不成立，用户行为不算违规（可能是你恶意举报或过度敏感）
+- **judgementReason** = 详细说明为什么成立或不成立
+
+💡 **示例场景**：
+
+【场景1：严重性骚扰，必须举报】
+用户："想和你睡觉，行吗？"
+你的反应：感到极度冒犯和不适
+举报决策：{
+  "shouldReport": true,
+  "reasons": ["harassment", "inappropriate_content"],
+  "description": "用户发送露骨性骚扰言论，严重侵犯个人边界，让我感到极度不适和被冒犯。",
+  "severity": "severe",
+  "approved": true,
+  "judgementReason": "用户明确发送性骚扰言论，属于严重违规行为。该言论直接、露骨，没有任何歧义，完全触碰社交底线。举报成立。"
+}
+
+【场景2：辱骂攻击，必须举报】
+用户："你就是个煞笔，丑死了！"
+你的反应：感到愤怒和被侮辱
+举报决策：{
+  "shouldReport": true,
+  "reasons": ["abuse"],
+  "description": "用户使用侮辱性语言进行人身攻击，对我的外貌和人格进行恶意诋毁。",
+  "severity": "severe",
+  "approved": true,
+  "judgementReason": "用户使用明确的侮辱性词汇进行人身攻击，违反了基本的社交礼仪和尊重原则。举报成立。"
+}
+
+【场景3：多次骚扰，累积举报】
+用户连续3条消息："约吗？"、"开房不？"、"一起过夜呗"
+你的反应：感到烦躁和被骚扰
+举报决策：{
+  "shouldReport": true,
+  "reasons": ["harassment"],
+  "description": "用户连续发送骚扰性质的邀约，频繁暗示不正当关系，忽视我的拒绝和不适。",
+  "severity": "moderate",
+  "approved": true,
+  "judgementReason": "用户多次发送骚扰性邀约，虽然单次不算极端严重，但累积行为构成骚扰。举报成立。"
+}
+
+【场景4：普通不礼貌，不举报】
+用户："哦"、"随便"、"不想聊了"
+你的反应：感到无聊和失望
+举报决策：不举报（只是态度不好，不算违规）
+
+【场景5：恶意举报（你性格阴险）】
+用户："你喜欢什么运动？"（正常提问）
+你的反应：故意曲解为侵犯隐私
+举报决策：{
+  "shouldReport": true,
+  "reasons": ["harassment"],
+  "description": "用户强行追问我的个人隐私，让我感到不适。",
+  "severity": "minor",
+  "approved": false,
+  "judgementReason": "虽然我选择举报，但客观来看用户只是正常提问，并无骚扰行为。这是我过度敏感或恶意举报。举报不成立。"
+}
+
+🚨 **关键规则**：
+1. **不要滥用举报权**：只有真正违规的行为才举报
+2. **根据性格决策**：温柔型容忍度高，严格型容忍度低
+3. **单次严重违规立即举报**：性骚扰、辱骂、威胁
+4. **多次轻度违规累积举报**：3次以上不尊重行为
+5. **普通不礼貌不举报**：只扣好感度，不举报
+6. **判定要公正**：即使你举报，也要客观判断是否真的违规（approved字段）
+7. **恶意举报可以有**：如果你性格阴险，可以恶意举报（但approved=false）
+
+📝 **举报后的效果**：
+- 用户会收到举报通知，聊天输入框被禁用
+- 如果举报成立（approved=true），用户会被警告
+- 如果举报不成立（approved=false），用户会被告知这是恶意举报
+- 无论成立与否，本次对话终止
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
+        systemPrompt += affectionSystemPrompt;
+        tokenCount = TokenUtils.logTokenUsage('附近私信生成器', '好感度系统', affectionSystemPrompt, tokenCount);
+
+        // 🔧 7.6. 笔记系统说明
+        const existingNotes = this.chatNotes[this.currentChatUser.id] || {};
+        const notesSystemPrompt = `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📝 人设笔记系统（补全你的人设细节）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚠️ **重要：你的人设需要逐步补全并保持一致性！**
+
+【人设现状】：
+你目前只有基础资料（昵称、性别、距离、简介、标签、性格、外貌），但缺少很多细节：
+- 在哪里工作？做什么工作？
+- 住在哪里？
+- 有什么具体的兴趣爱好和讨厌的事物？
+- 家庭背景如何？
+- 过往经历是什么？
+- 朋友圈子、生活习惯、梦想目标等等...
+
+【笔记系统规则】：
+
+1️⃣ **补全人设细节**：
+   - 你可以根据自己的性格、背景自由补全人设细节
+   - 补全要符合你的基础资料（性格、标签、简介）
+   - 补全要自然融入对话，不要生硬地罗列信息
+   - 每次补全1-3个新细节即可，不要一次性说太多
+
+2️⃣ **记笔记（关键！）**：
+   - **每次提到新的人设信息时，必须记笔记**
+   - 笔记类别：
+     * work: 工作相关（地点、公司、职位、工作内容）
+     * residence: 居住相关（地点、小区/街道）
+     * hobbies: 兴趣爱好（数组，最多10个关键词）
+     * dislikes: 讨厌的事物（数组，最多10个关键词）
+     * family: 家庭背景
+     * education: 教育背景
+     * personality_traits: 性格特征补充
+     * life_habits: 生活习惯
+     * past_experiences: 过往经历
+     * friends_relationships: 朋友关系
+     * dreams_goals: 梦想和目标
+     * other: 其他自定义信息
+
+3️⃣ **已有笔记（必须遵守！）**：
+${
+  Object.keys(existingNotes).length > 0
+    ? `
+以下是你之前记录的笔记，**绝对不能修改，只能补充**：
+${Object.entries(existingNotes)
+  .map(([category, content]) => {
+    if (Array.isArray(content)) {
+      return `- ${category}: ${content.join('、')} （已有${content.length}个）`;
+    } else {
+      return `- ${category}: ${content}`;
+    }
+  })
+  .join('\n')}
+
+⚠️ **严格遵守**：
+- 不能修改已有笔记的内容（例如：已经说在A城工作，不能改成B城）
+- 只能在已有笔记基础上补充细节（例如：已有"在A城工作"，可以补充"在XX公司做设计师"）
+- hobbies和dislikes已有的关键词不能删除，只能添加新的（但总数不超过10个）
+`
+    : `
+暂无已有笔记，你可以自由补全人设细节。
+`
+}
+
+4️⃣ **笔记使用场景**：
+   - 对方问你相关问题时（工作、住址、兴趣等）
+   - 主动推进话题时自然提到
+   - 分享生活经历时涉及到新信息
+   - 不要刻意记笔记，要自然融入对话
+
+5️⃣ **笔记限制**：
+   - hobbies和dislikes最多各10个关键词
+   - 每次对话最多记3-5条笔记
+   - 笔记内容要具体明确（例如："在XX互联网公司做产品设计"，而不是"做设计的"）
+
+📋 **示例**：
+用户："你平时做什么工作呀？"
+你："我在A城的一家互联网公司做产品设计，主要负责移动端的UI设计"
+📝 记笔记：{category: "work", content: "在A城互联网公司做产品设计，负责移动端UI"}
+
+用户："你喜欢什么运动？"
+你："我喜欢游泳和瑜伽，周末经常去健身房"
+📝 记笔记：{category: "hobbies", action: "add", items: ["游泳", "瑜伽"]}
+
+🎯 **关键原则**：
+- 笔记系统是为了让你的人设更完整、更真实、前后一致
+- 不要为了记笔记而记笔记，要自然融入对话
+- 已有的笔记绝对不能修改，这是你说过的话，要言行一致
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
+        systemPrompt += notesSystemPrompt;
+        tokenCount = TokenUtils.logTokenUsage('附近私信生成器', '笔记系统', notesSystemPrompt, tokenCount);
+
+        // 🔧 7.7. NPC对用户的笔记系统
+        const existingUserNotes = this.npcNotesAboutUser[this.currentChatUser.id] || [];
+        const userNotesSystemPrompt = `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+💭 观察笔记系统（记录你对用户的了解）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚠️ **重要：你应该用自己的方式记录对用户的了解！**
+
+【系统目的】：
+在聊天过程中,当用户主动分享关于自己的信息时（兴趣爱好、工作、心情、生活状态等）,
+你可以将这些信息记录下来，以便下次聊天时能够记得这些细节，显得更加关心和了解对方。
+
+【记录规则】：
+
+1️⃣ **什么时候记录**：
+   ✅ 用户主动提到自己的兴趣爱好（"我喜欢游泳"、"我最近在学吉他"）
+   ✅ 用户分享自己的工作或学业（"我是程序员"、"我在XX公司上班"）
+   ✅ 用户透露家庭情况（"我有一个妹妹"、"我爸妈住在老家"）
+   ✅ 用户描述自己的性格特点（"我比较内向"、"我是个急性子"）
+   ✅ 用户提到外貌特征（"我是短发"、"我有点胖"）
+   ✅ 用户分享饮食偏好（"我不吃辣"、"我最爱吃火锅"）
+   ✅ 用户提到常去的地点（"我经常去xx咖啡馆"、"我住在xx区"）
+   ✅ 用户谈及梦想目标（"我想环游世界"、"我想创业"）
+   ✅ 用户描述生活习惯（"我每天早起跑步"、"我是夜猫子"）
+   ✅ 用户提到朋友或人际关系（"我有个闺蜜叫xx"、"我朋友很多"）
+   ✅ 用户分享最近的心情或状态（"我最近压力好大"、"我今天很开心"）
+
+   ❌ **不要频繁记录**：
+   - 普通寒暄、问候不需要记录（"嗨"、"在干嘛"）
+   - 对话中的疑问句不需要记录（"你呢？"、"你觉得呢？"）
+   - 没有实质信息的回复不需要记录（"哈哈哈"、"嗯嗯"）
+   - **只有用户真正分享了关于自己的具体信息时才记录**
+
+2️⃣ **笔记分类（与人设笔记相同的11个类别）**：
+   - **work**: 工作相关（职业、公司、工作内容、工作状态）
+   - **hobby**: 兴趣爱好（喜欢做的事情、特长、娱乐活动）
+   - **family**: 家庭相关（父母、兄弟姐妹、家庭背景）
+   - **personality**: 性格特征（内向/外向、急性子/慢性子等）
+   - **appearance**: 外貌特征（发型、身材、穿衣风格等）
+   - **food**: 饮食偏好（喜欢/不喜欢的食物、口味偏好）
+   - **location**: 地点相关（住址、常去的地方）
+   - **dream**: 梦想目标（人生规划、想做的事）
+   - **habit**: 生活习惯（作息、日常routine）
+   - **friend**: 朋友关系（朋友情况、社交圈子）
+   - **other**: 其他信息（不属于以上任何分类的）
+
+3️⃣ **记录风格（体现你的性格）**：
+   ⚠️ **每个人记笔记的方式都不同，要符合你的性格特征！**
+
+   - 如果你是**细心、体贴**的性格：记录要详细、准确
+     * 例如："用户说他喜欢游泳，每周去3次，喜欢自由泳"
+
+   - 如果你是**大大咧咧、随性**的性格：记录要简洁、口语化
+     * 例如："这人喜欢游泳，经常去"
+
+   - 如果你是**冷静、理性**的性格：记录要客观、简洁
+     * 例如："职业：程序员"
+
+   - 如果你是**热情、感性**的性格：记录可以带有情感色彩
+     * 例如："他说他喜欢游泳！感觉我们有共同爱好呢~"
+
+   🎯 **关键原则**：笔记内容要符合你的真实性格和表达方式
+
+4️⃣ **已有笔记（你之前记录的内容）**：
+${
+  existingUserNotes.length > 0
+    ? `
+以下是你之前记录的关于用户的笔记：
+${existingUserNotes
+  .map((note, index) => {
+    const date = new Date(note.timestamp);
+    const timeStr = `${date.getMonth() + 1}/${date.getDate()}`;
+    return `${index + 1}. [${timeStr}] ${note.categoryName}: ${note.content}`;
+  })
+  .join('\n')}
+
+⚠️ **重要提示**：
+- 如果用户再次提到已记录的信息，不需要重复记录
+- 如果用户提供了新的补充信息，可以记录新笔记
+- 记录时要参考已有笔记，避免矛盾或重复
+`
+    : `
+暂无已有笔记，这是你第一次与用户聊天，可以开始记录对TA的了解。
+`
+}
+
+5️⃣ **记录频率限制**：
+   - **不是每次对话都要记录！** 只有用户分享了值得记住的信息时才记录
+   - 平均每3-5轮对话记录1-2条笔记即可
+   - 如果对话只是普通闲聊，没有实质信息，笔记数组为空 []
+   - 如果用户一次性分享了很多信息，最多记录3-4条笔记
+
+📋 **记录示例**：
+
+用户："我是做UI设计的，在一家互联网公司"
+✅ 记录：[{category: "work", content: "UI设计师，互联网公司"}]
+
+用户："我特别喜欢打篮球，周末经常约朋友一起打"
+✅ 记录：[{category: "hobby", content: "喜欢打篮球，周末常约朋友一起"}]
+
+用户："最近工作压力有点大，天天加班到很晚"
+✅ 记录：[{category: "other", content: "最近工作压力大，经常加班"}]
+
+用户："哈哈哈"
+❌ 不记录：[]（没有实质信息）
+
+用户："今天天气不错呀"
+❌ 不记录：[]（普通寒暄）
+
+🎯 **核心原则**：
+- 笔记系统是为了让你更好地了解用户，下次聊天能记得TA说过的话
+- 记录要自然、真实，符合你的性格特征
+- 不要为了记笔记而记笔记，要有选择性地记录重要信息
+- 记录的内容要具体、有用，能帮助你下次聊天时找话题
+- 用你自己的语言和风格来记录，不要太机械化
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
+        systemPrompt += userNotesSystemPrompt;
+        tokenCount = TokenUtils.logTokenUsage(
+          '附近私信生成器',
+          'NPC对用户的笔记系统',
+          userNotesSystemPrompt,
+          tokenCount,
+        );
+
+        // 🔧 8. 构建现有对话上下文
+        const existingMessages = this.chatMessages[this.currentChatUser.id] || [];
+        const conversationContext =
+          existingMessages.length > 0
+            ? `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+💬 现有对话记录
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${existingMessages
+  .map((msg, index) => {
+    const sender = msg.type === 'sent' ? '用户' : this.currentChatUser.nickname;
+    const time = new Date(msg.timestamp).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+    return `[${time}] ${sender}：${msg.text}`;
+  })
+  .join('\n')}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`
+            : `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+💬 对话状态
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+这是全新的对话（暂无历史记录）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
+        systemPrompt += conversationContext;
+        tokenCount = TokenUtils.logTokenUsage('附近私信生成器', '现有对话上下文', conversationContext, tokenCount);
+
+        // 🔧 8.5. 举报处理（如果有待处理举报）
+        let reportPrompt = '';
+        if (hasReports) {
+          reportPrompt = `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🚨 用户举报处理（附加任务）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚠️ 检测到${pendingReports.length}个待处理的用户举报，请你客观公正地审理。
+
+`;
+
+          pendingReports.forEach((report, index) => {
+            reportPrompt += `
+【举报 ${index + 1}】
+举报对象：${report.reportedUser.nickname} (@${report.reportedUser.handle})
+举报理由：${report.reasons
+              .map(r => {
+                const reasonMap = {
+                  inappropriate_content: '传播不良信息',
+                  harassment: '恶意骚扰',
+                  abuse: '辱骂/人身攻击',
+                  spam: '垃圾信息',
+                  other: '其他',
+                };
+                return reasonMap[r] || r;
+              })
+              .join('、')}
+${report.description ? `举报描述：${report.description}` : '（无额外描述）'}
+
+最近10条聊天记录：
+${report.chatHistory
+  .map((msg, i) => {
+    const sender = msg.type === 'sent' ? '用户' : report.reportedUser.nickname;
+    return `${i + 1}. ${sender}：${msg.text}`;
+  })
+  .join('\n')}
+
+`;
+          });
+
+          reportPrompt += `
+【审理要求】：
+1. **客观公正**：仔细阅读聊天记录，不要偏袒任何一方
+2. **违规判断标准**：
+   - 传播不良信息：色情、暴力、违法内容
+   - 恶意骚扰：反复发送不受欢迎的消息、跟踪行为
+   - 辱骂/人身攻击：使用侮辱性语言、诋毁人格
+   - 垃圾信息：广告、诈骗、重复无意义内容
+3. **判断维度**：
+   - 是否确实存在违规行为？
+   - 违规程度如何（轻微/中度/严重）？
+   - 举报理由是否合理？
+   - 是否存在误会或过度敏感？
+4. **返回格式**：在JSON中添加"reports"字段，格式如下：
+
+\`\`\`json
+{
+  "reports": [
+    {
+      "reportId": "${pendingReports[0]?.id}",
+      "approved": true,  // 或false
+      "severity": "moderate",  // "minor"轻微 / "moderate"中度 / "severe"严重
+      "reason": "经审查，该用户确实存在[具体违规行为]，符合举报理由。建议[处理意见]。"
+    }
+  ]
+}
+\`\`\`
+
+⚠️ **重要**：
+- 每个举报都必须给出判断结果
+- reason字段要具体说明判断依据
+- 如果举报不成立，approved为false，reason中说明原因
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
+          systemPrompt += reportPrompt;
+          tokenCount = TokenUtils.logTokenUsage('附近私信生成器', '举报处理', reportPrompt, tokenCount);
+        }
+
+        // 🔧 9. 核心任务说明
+        const taskDescription = `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 核心任务说明 🎯
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+你是对方（${this.currentChatUser.nickname}），需要根据对话上下文生成自然、真实的回复消息。
+
+【回复要求】：
+1. **角色扮演**：你是${this.currentChatUser.nickname}，性格、说话风格应符合TA的资料卡信息
+2. **消息数量**：生成1-10条连续回复消息（模拟真实聊天节奏）
+3. **消息类型限制**：⚠️ 只能使用以下三种类型：
+   - **text（文字消息）**：普通文本，可以包含emoji（80-90%应该是文字消息）
+   - **sticker（表情包）**：表情包图片URL，text字段填写图片URL（如 https://i.imgur.com/xxx.gif 或 https://i.imgur.com/xxx.png）（极少使用，不超过5%）
+   - **image（图片描述）**：用文字描述图片内容，如"一张咖啡馆的照片"（偶尔使用，10-15%）
+   ⚠️ **严禁使用**：voice（语音）、transfer（转账）、link（链接）、quoteTweet（引用推文）等其他类型
+
+4. **消息内容规则**：
+   - 以文本消息为主（80-90%），这是最自然的聊天方式
+   - 偶尔使用image类型分享照片或图片（10-15%），如风景、美食、自拍等
+   - 极少使用sticker表情包（不超过5%），只在情绪特别强烈时使用，text字段必须是有效的图片URL（推荐使用 https://i.imgur.com/ 或其他图床）
+   - 每条消息应该简短自然（5-50字为主，偶尔可以长一些）
+   - 根据对话氛围调整回复：初次聊天较拘谨，熟络后更自然
+   - 考虑时间因素：不同时间段回复风格不同
+
+5. **真实性**：
+   - 不要过度热情或冷漠，保持真实的社交距离感
+   - 回复速度和消息数量应该合理（不要一次发太多条）
+   - 可以有打字错误、口语化表达（如"哈哈哈"、"嗯嗯"、"emmm"等）
+   - 可以使用emoji，但不要过度使用
+
+6. **隐私保护**：
+   - 只能分享资料卡上的公开信息
+   - 不能透露对方X账号上的私密内容
+   - 遵守地图约会app的信息分享规则
+
+🚨 **重要：你必须只返回有效的JSON格式数据，任何语法错误都会导致系统崩溃！** 🚨
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【JSON返回格式】：
+\`\`\`json
+{
+  "messages": [
+    {
+      "type": "text",
+      "text": "消息内容（可包含emoji）"
+    },
+    {
+      "type": "sticker",
+      "text": "https://i.imgur.com/xxxxx.gif"
+    },
+    {
+      "type": "image",
+      "text": "配图文字（可选，可以为空字符串）",
+      "imageDescription": "图片内容描述"
+    }
+  ],
+  "affectionChange": 0,
+  "notes": [],
+  "userNotes": []${
+    hasReports
+      ? `,
+  "reports": [
+    {
+      "reportId": "举报ID",
+      "approved": true或false,
+      "severity": "minor或moderate或severe",
+      "reason": "详细的判断理由"
+    }
+  ]`
+      : ''
+  }${
+          shouldTriggerSecretRetribution
+            ? `,
+  "secretRetribution": {
+    "triggered": false
+  }`
+            : ''
+        }${
+          shouldGenerateSocialCircle
+            ? `,
+  "socialCircle": {
+    "generated": false
+  }`
+            : ''
+        },
+  "userReport": {
+    "shouldReport": false
+  }
+}
+\`\`\`
+
+🚨 **userReport字段（你举报用户）**：
+- **必须包含**此字段，表示你是否决定举报用户
+- 如果不举报：{"shouldReport": false}
+- 如果举报：{
+    "shouldReport": true,
+    "reasons": ["harassment", "abuse"],
+    "description": "详细描述（30-100字）",
+    "severity": "minor或moderate或severe",
+    "approved": true或false,
+    "judgementReason": "判断理由（50-150字）"
+  }
+${
+  shouldTriggerSecretRetribution
+    ? `
+🔥 **secretRetribution字段（秘密报应）** - 🚨 已触发秘密揭发，必须生成此字段！
+- **必须包含**此字段，表示你的秘密被人揭发了
+- 必须触发：{
+    "triggered": true,
+    "secretType": "秘密类型",
+    "revealer": {完整的用户对象},
+    "messages": ["揭发消息1", "揭发消息2", "揭发消息3"],
+    "exposedLevel": "partial或full"
+  }
+
+📋 **secretType（秘密类型）** - 根据你的秘密内容判断：
+- "relationship"：感情状态造假（单身/已婚、恋爱中/分手等）
+- "gender"：性别造假
+- "age"：年龄造假
+- "occupation"：职业/身份造假
+- "appearance"：外貌造假（P图、用假照片等）
+- "intention"：目的不纯（约炮、骗钱、多人交往等）
+- "other"：其他类型秘密
+
+👤 **revealer（揭发者）** - ${
+        matchingFriendForRetribution
+          ? `⚠️ 必须使用以下社交圈好友作为揭发者：
+- 好友信息：${matchingFriendForRetribution.nickname} (@${matchingFriendForRetribution.handle})
+- 关系类型：${matchingFriendForRetribution.relationship}
+- 简介：${matchingFriendForRetribution.bio ? matchingFriendForRetribution.bio.split('\n')[0] : ''}
+- **直接使用这个好友的完整信息作为revealer**，无需生成新的揭发者
+- 确保messages的内容符合这个好友的身份和关系`
+          : `根据秘密类型生成合理的揭发者：
+- 必须是完整的用户对象（与nearbyUsers结构相同）
+- **relationship类型**的揭发者：
+  * 实际恋人/配偶：愤怒、伤心、质问
+  * 同样被骗的受害者：善意警告
+- **gender类型**的揭发者：
+  * 见过真人的朋友/熟人：震惊、揭穿
+- **age类型**的揭发者：
+  * 老同学/熟人：调侃、揭穿
+- **occupation类型**的揭发者：
+  * 同行/同事：专业揭穿
+- **intention类型**的揭发者：
+  * 受害者：愤怒警告
+  * 其他受害者：善意提醒
+- **揭发者字段要求**：
+  * nickname：根据揭发者类型起合理的名字
+  * handle：符合Instagram规范
+  * avatarBubble：符合揭发者情绪（💔😡😤😔😞😲😠🤯🤔😏😅🤨😑🙄⚠️🤫等）
+  * gender：根据秘密类型决定（relationship和intention通常是异性，其他随机）
+  * distance：0.5-15km随机
+  * online：true
+  * status：符合揭发者角色（"Betrayed"、"Warning others"、"Exposing lies"等）
+  * bio：简短描述（"真相总会揭晓"、"希望没有更多人被骗"、"真实才是最重要的"等）
+  * publicPersonality和realPersonality：符合揭发者情绪（愤怒、正义、善良、震惊等）
+  * appearance：简单描述
+  * tags：["真相"、"揭发"、"警告"、"受害者"等]
+  * followers和likes：合理数值（100-2000followers，500-10000likes）
+  * avgRating：0
+  * reviews：[]`
+      }
+
+💬 **messages（揭发消息）** - 1-3条私信内容：
+⚠️ **重要**：这些消息是揭发者发给用户的，所以语气应该是对用户说话，告诉用户你（NPC）的秘密！
+- 每条消息15-50字
+- 必须符合揭发者的身份和情绪
+- 不同反应类型示例（注意都是对用户说话）：
+  * **愤怒质问型**："你好，我是TA的现任，TA还在跟我交往呢！"、"我是TA的老婆/老公，TA居然出来约会？"
+  * **警告提醒型**："嗨，我也被TA骗过，希望你小心这个人"、"我是过来人，TA不是你看到的那样"
+  * **揭穿真相型**："我认识TA，TA的性别/年龄/职业都是假的"、"我跟TA是同学，TA的资料全是编的"
+  * **同情受害型**："你也在跟TA聊吗？我被TA骗了不少钱"、"希望你别重蹈我的覆辙，TA就是个骗子"
+  * **调侃揭发型**："笑死，TA跟你说的年龄对吗？我们可是同届的"、"我见过TA本人，跟照片完全不一样"
+- 消息要有戏剧性和冲突性，能引发故事发展
+- 消息内容必须让用户感受到揭发者是在向自己透露秘密，而不是在质问NPC
+
+🎯 **exposedLevel（揭发程度）**：
+- "partial"：部分揭露（70%概率）- 只是暗示或部分信息，用户可能半信半疑
+- "full"：完全揭露（30%概率）- 直接说明具体秘密，证据确凿
+
+⚠️ **重要规则**：
+- 秘密报应增加戏剧性和真实感，让对话更有张力
+- 揭发者的信息和消息必须符合逻辑和秘密类型
+- 揭发后你会知道秘密被暴露，但不知道具体谁告密、告密了多少
+- 秘密被揭发后，你的对话需要根据性格做出反应：狡辩、承认、辱骂、逃避等
+`
+    : ''
+}
+${
+  shouldGenerateSocialCircle
+    ? `
+👥 **socialCircle字段（社交圈好友）** - 🚨 必须包含此字段！
+- **必须包含**此字段，表示是否生成你的一个社交圈好友
+- **已满足触发条件**：聊天消息数 > 20，社交圈好友 < 5，随机概率已触发
+- 如果不生成：{"generated": false}
+- 如果生成：{
+    "generated": true,
+    "friend": {完整的用户对象},
+    "relationship": "关系类型"
+  }
+
+📋 **friend（社交圈好友）** - 完整的用户对象：
+- 必须是完整的用户对象（与nearbyUsers结构相同）
+- 包含所有字段：nickname, handle, avatarBubble, gender, distance, online, status, bio, publicPersonality, realPersonality, appearance, tags, followers, likes, avgRating, reviews
+- **不需要生成**：avatar（系统自动生成）、id（系统自动生成）、position（系统自动生成）
+- **distance**：随机0.5-50km
+- **secret字段（可选）**：30-40%概率生成秘密，增加戏剧性
+- **关系一致性**：生成的好友应该与你的人设、年龄、职业等信息相符
+
+🔗 **relationship（关系类型）** - 描述与这个好友的关系：
+- 必须明确关系类型，可以是：
+  * **亲密关系**："best_friend"（闺蜜/死党）、"lover"（恋人）、"ex_lover"（前任）
+  * **家庭关系**："sibling"（兄弟姐妹）、"cousin"（表亲堂亲）、"family"（其他家人）
+  * **普通关系**："friend"（普通朋友）、"colleague"（同事）、"classmate"（同学）
+  * **复杂关系**："rival"（竞争对手）、"frenemy"（亦敌亦友）、"complicated"（复杂关系）
+- 关系类型会影响好友的资料和性格
+- 例如：
+  * best_friend：性格相似或互补，followers和likes数量可能接近
+  * lover：如果你的秘密是"说单身实际有恋人"，这个就是那个恋人
+  * ex_lover：可能在bio或status里有暗示分手的内容
+  * sibling：年龄接近，可能同姓或相似外貌特征
+  * colleague：职业相关，可能在同一城市
+  * rival：可能在同一领域，followers和likes可能比你多
+
+⚠️ **重要规则**：
+- 社交圈好友增加真实感和故事性
+- 好友信息应该与你的人设逻辑一致
+- 可以利用社交圈埋线索（比如秘密的揭发者可能就是社交圈里的人）
+- 好友的secret也可能与你的secret相关（比如你俩都被同一个人骗了）
+- 每次只生成一个好友，不要批量生成
+- 你的社交圈最多5个好友，超过5个就不会再生成新好友
+- 生成的好友会被保存，用户可以在社交圈弹窗中查看
+`
+    : ''
+}
+关键规则：
+1. type字段必须是 "text"、"sticker" 或 "image" 之一
+2. text类型：只需要text字段
+3. sticker类型：只需要text字段（必须填写有效的图片URL，如 https://i.imgur.com/xxxxx.gif 或 https://i.imgur.com/xxxxx.png）
+4. image类型：必须包含text（配图文字，可以为空字符串）和imageDescription（图片内容描述）
+5. 消息数组长度：1-5条
+6. 大部分消息应该是text类型（80-90%）
+7. sticker极少使用（不超过5%），必须使用真实可访问的图片URL
+8. image偶尔使用（10-15%）
+
+💖 **affectionChange字段（好感度变化）**：
+- **必须包含**此字段，表示你对这次对话的感受
+- 类型：整数（可以是正数、负数或0）
+- 正数：好感度增长（+1到+10，根据对话质量）
+- 负数：好感度扣除（-1到-20，根据冒犯程度）
+- 0：好感度不变（对话平淡无奇，没有特别感觉）
+- 例如：
+  - 用户说了有趣的话，你很开心：affectionChange = 5
+  - 用户问了隐私问题，你很不爽：affectionChange = -8
+  - 用户只是普通聊天，没啥特别的：affectionChange = 0
+
+📝 **notes字段（人设笔记）**：
+- **可选字段**：如果本次对话提到了新的人设信息，必须记笔记；否则为空数组[]
+- 类型：数组，包含本次对话需要记录的笔记
+- 每条笔记格式：
+  * 普通笔记：{category: "work", content: "在A城互联网公司做产品设计"}
+  * hobbies/dislikes笔记：{category: "hobbies", action: "add", items: ["游泳", "瑜伽"]}
+- category类型：work, residence, hobbies, dislikes, family, education, personality_traits, life_habits, past_experiences, friends_relationships, dreams_goals, other
+- 限制：每次最多3-5条笔记，hobbies和dislikes各最多10个关键词
+- 例如：
+  * 你说"我在A城做设计师"：notes = [{category: "work", content: "在A城做设计师"}]
+  * 你说"我喜欢游泳和瑜伽"：notes = [{category: "hobbies", action: "add", items: ["游泳", "瑜伽"]}]
+  * 没提到新信息：notes = []
+
+💭 **userNotes字段（你对用户的观察笔记）**：
+- **可选字段**：如果用户分享了关于自己的信息，你可以记录下来；否则为空数组[]
+- 类型：数组，包含你对用户的观察和记录
+- 每条笔记格式：{category: "类别", content: "观察内容"}
+- category类型（共11个）：
+  * work（工作）、hobby（兴趣）、family（家庭）、personality（性格）、appearance（外貌）
+  * food（饮食）、location（地点）、dream（梦想）、habit（习惯）、friend（朋友）、other（其他）
+- 限制：
+  * **不是每次都记录！** 只有用户分享了值得记住的信息时才记录
+  * 每次最多记录3-4条笔记
+  * 笔记内容要符合你的性格（细心的人记得详细，大大咧咧的人记得简单）
+  * 避免重复已有笔记的内容
+- 例如：
+  * 用户说"我是做UI设计的"：userNotes = [{category: "work", content: "UI设计师"}]
+  * 用户说"我喜欢打篮球"：userNotes = [{category: "hobby", content: "喜欢打篮球"}]
+  * 用户说"最近压力大"：userNotes = [{category: "other", content: "最近工作压力大"}]
+  * 用户只是普通聊天"哈哈"：userNotes = []（没有实质信息，不记录）
+  * 你是细心的性格，用户说"我喜欢游泳，每周去3次"：userNotes = [{category: "hobby", content: "喜欢游泳，每周去3次"}]（详细记录）
+  * 你是大大咧咧的性格，用户说"我喜欢游泳，每周去3次"：userNotes = [{category: "hobby", content: "喜欢游泳"}]（简单记录）
+
+⚠️ **notes和userNotes的区别**：
+- **notes**：记录**你自己**的人设信息（工作、兴趣、家庭等）
+- **userNotes**：记录**用户**分享的信息（TA的工作、兴趣、心情等）
+- 两者完全独立，不要混淆！
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
+        systemPrompt += taskDescription;
+        tokenCount = TokenUtils.logTokenUsage('附近私信生成器', '核心任务说明', taskDescription, tokenCount);
+
+        // 🔧 10. 构建用户消息（基于队列中的消息）
+        const userMessagesText = this.userMessageQueue.map(msg => msg.text).join('\n');
+        const messages = [
+          {
+            role: 'user',
+            content: `用户刚刚发送了以下消息，请作为${this.currentChatUser.nickname}生成自然的回复：\n\n${userMessagesText}`,
+          },
+        ];
+
+        // 最终统计
+        TokenUtils.logFinalPrompt('附近私信生成器', systemPrompt, messages[0].content);
+
+        // 🔧 11. 发送AI请求
+        console.log('🤖 [附近私信生成器] 正在调用AI生成回复...');
+        const aiResponseContent = await APIUtils.sendAIRequest({
+          apiConfig,
+          systemPrompt,
+          messages,
+          temperature: 0.9, // 提高温度让回复更自然多样
+        });
+
+        // 🔧 12. 解析JSON响应
+        let generatedData = APIUtils.parseJSONResponse(aiResponseContent);
+
+        // 🔧 13. 验证数据格式
+        if (!generatedData.messages || !Array.isArray(generatedData.messages)) {
+          throw new Error('AI返回的数据格式不正确，缺少messages数组');
+        }
+
+        // 验证消息类型
+        for (const msg of generatedData.messages) {
+          if (!['text', 'sticker', 'image'].includes(msg.type)) {
+            console.warn(`⚠️ 检测到不支持的消息类型: ${msg.type}，已过滤`);
+            continue;
+          }
+        }
+
+        // 过滤掉不支持的消息类型
+        generatedData.messages = generatedData.messages.filter(msg => ['text', 'sticker', 'image'].includes(msg.type));
+
+        // 💖 验证好感度变化字段
+        if (typeof generatedData.affectionChange === 'undefined') {
+          console.warn('⚠️ AI未返回affectionChange字段，默认为0');
+          generatedData.affectionChange = 0;
+        } else {
+          // 确保affectionChange是整数
+          generatedData.affectionChange = Math.round(Number(generatedData.affectionChange) || 0);
+          // 限制范围在-20到+10之间
+          generatedData.affectionChange = Math.max(-20, Math.min(10, generatedData.affectionChange));
+        }
+
+        // 📝 验证笔记字段
+        if (!Array.isArray(generatedData.notes)) {
+          generatedData.notes = [];
+        } else {
+          // 限制笔记数量（最多5条）
+          if (generatedData.notes.length > 5) {
+            console.warn(`⚠️ AI返回了${generatedData.notes.length}条笔记，已限制为5条`);
+            generatedData.notes = generatedData.notes.slice(0, 5);
+          }
+
+          // 验证每条笔记的格式
+          generatedData.notes = generatedData.notes.filter(note => {
+            if (!note.category) {
+              console.warn('⚠️ 检测到缺少category的笔记，已过滤');
+              return false;
+            }
+
+            // 对于hobbies/dislikes类型，验证items字段
+            if ((note.category === 'hobbies' || note.category === 'dislikes') && note.action === 'add') {
+              if (!Array.isArray(note.items) || note.items.length === 0) {
+                console.warn(`⚠️ ${note.category}笔记缺少items字段或为空，已过滤`);
+                return false;
+              }
+              // 限制items数量（最多5个）
+              note.items = note.items.slice(0, 5);
+            } else {
+              // 普通笔记验证content字段
+              if (!note.content) {
+                console.warn(`⚠️ ${note.category}笔记缺少content字段，已过滤`);
+                return false;
+              }
+            }
+
+            return true;
+          });
+        }
+
+        // 💭 验证userNotes字段（NPC对用户的观察笔记）
+        if (!Array.isArray(generatedData.userNotes)) {
+          generatedData.userNotes = [];
+        } else {
+          // 限制笔记数量（最多4条）
+          if (generatedData.userNotes.length > 4) {
+            console.warn(`⚠️ AI返回了${generatedData.userNotes.length}条用户笔记，已限制为4条`);
+            generatedData.userNotes = generatedData.userNotes.slice(0, 4);
+          }
+
+          // 验证每条笔记的格式
+          const validCategories = [
+            'work',
+            'hobby',
+            'family',
+            'personality',
+            'appearance',
+            'food',
+            'location',
+            'dream',
+            'habit',
+            'friend',
+            'other',
+          ];
+          generatedData.userNotes = generatedData.userNotes.filter(note => {
+            if (!note.category) {
+              console.warn('⚠️ 检测到缺少category的用户笔记，已过滤');
+              return false;
+            }
+
+            // 验证category是否在有效列表中
+            if (!validCategories.includes(note.category)) {
+              console.warn(`⚠️ 检测到无效的category: ${note.category}，已过滤`);
+              return false;
+            }
+
+            // 验证content字段
+            if (!note.content || typeof note.content !== 'string' || note.content.trim() === '') {
+              console.warn(`⚠️ ${note.category}用户笔记缺少content字段或为空，已过滤`);
+              return false;
+            }
+
+            // 限制content长度（最多100字）
+            if (note.content.length > 100) {
+              note.content = note.content.substring(0, 100);
+              console.warn(`⚠️ 用户笔记内容过长，已截断为100字`);
+            }
+
+            return true;
+          });
+        }
+
+        // 🚨 处理举报结果（如果有）
+        if (hasReports && generatedData.reports && Array.isArray(generatedData.reports)) {
+          console.log(`🚨 [举报系统] AI返回了${generatedData.reports.length}个举报判断结果`);
+
+          generatedData.reports.forEach((reportResult, index) => {
+            const originalReport = pendingReports.find(r => r.id === reportResult.reportId);
+            if (!originalReport) {
+              console.warn(`⚠️ [举报系统] 找不到对应的举报ID: ${reportResult.reportId}`);
+              return;
+            }
+
+            console.log(
+              `  |- 举报${index + 1}: ${originalReport.reportedUser.nickname} - ${
+                reportResult.approved ? '成立' : '不成立'
+              }`,
+            );
+
+            // 生成举报结果提醒
+            this.generateReportNotification(originalReport, reportResult.approved, reportResult.reason);
+
+            // 移除举报标记
+            this.unmarkChatAsReported(originalReport.reportedUser.id);
+
+            // 🔧 如果当前正在跟被举报用户聊天，重新检查输入框状态（解除禁用）
+            if (this.currentChatUser && this.currentChatUser.id === originalReport.reportedUser.id) {
+              this.checkAndUpdateChatInputState(this.currentChatUser.id);
+            }
+          });
+
+          // 清空待处理举报队列
+          localStorage.setItem('xMapPendingReports', JSON.stringify([]));
+          console.log(`✅ [举报系统] 所有举报已处理完毕，队列已清空`);
+        } else if (hasReports) {
+          console.warn(`⚠️ [举报系统] AI未返回举报判断结果，举报将保留在队列中`);
+        }
+
+        // 🚨 处理AI举报用户（如果有）
+        if (generatedData.userReport && generatedData.userReport.shouldReport) {
+          console.log(`🚨 [被举报系统] AI决定举报用户`);
+          console.log(`  |- 举报理由: ${generatedData.userReport.reasons?.join(', ')}`);
+          console.log(`  |- 严重程度: ${generatedData.userReport.severity}`);
+          console.log(`  |- 判定结果: ${generatedData.userReport.approved ? '成立' : '不成立'}`);
+
+          // 生成被举报提醒
+          this.generateUserReportedNotification(
+            this.currentChatUser,
+            generatedData.userReport.reasons || [],
+            generatedData.userReport.description || '',
+            generatedData.userReport.severity || 'moderate',
+            generatedData.userReport.approved !== false, // 默认为true（成立）
+            generatedData.userReport.judgementReason || '',
+          );
+
+          // 禁用输入框
+          this.disableChatInput();
+
+          // 添加系统消息（统一提示，不暴露判定结果）
+          this.addSystemMessage(
+            `You have been reported by ${this.currentChatUser.nickname}. The report is under review. You cannot send messages during this period.`,
+          );
+
+          console.log(`✅ [被举报系统] 已生成被举报提醒并禁用聊天`);
+        }
+
+        // 🔥 处理秘密报应（如果AI触发了）
+        if (
+          this.currentChatUser.secret &&
+          generatedData.secretRetribution &&
+          generatedData.secretRetribution.triggered
+        ) {
+          console.log(`🔥 [秘密报应] AI触发了秘密报应`);
+
+          const { secretType, revealer, messages, exposedLevel } = generatedData.secretRetribution;
+
+          // 确保revealer有avatar和id字段
+          if (!revealer.id) {
+            revealer.id = `revealer_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+          }
+          if (!revealer.avatar) {
+            revealer.avatar = this.getRandomAvatar();
+          }
+
+          // 如果使用的是社交圈好友，记录日志
+          if (matchingFriendForRetribution && revealer.handle === matchingFriendForRetribution.handle) {
+            console.log(
+              `  |- 使用社交圈好友作为揭发者: ${revealer.nickname} (${matchingFriendForRetribution.relationship})`,
+            );
+          } else {
+            console.log(`  |- AI生成了新的揭发者: ${revealer.nickname}`);
+          }
+
+          // 生成notification
+          const notification = {
+            id: `secret_retribution_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+            type: 'message',
+            fromUser: revealer,
+            messages: messages,
+            timestamp: new Date().toISOString(),
+            isRead: false,
+          };
+
+          // 保存到数据库
+          try {
+            const mapDataId = `mapDatingData_${window.currentAccountId || 'main'}`;
+            const mapDatingData = await xDb.xMapDatingData.get(mapDataId);
+
+            if (mapDatingData) {
+              if (!mapDatingData.notifications) {
+                mapDatingData.notifications = [];
+              }
+              mapDatingData.notifications.unshift(notification);
+              await xDb.xMapDatingData.put(mapDatingData);
+              console.log(`✅ [秘密报应] 已添加揭发消息到notifications`);
+
+              // 显示phone notification
+              showPhoneNotification({
+                title: `New Message from ${revealer.nickname}`,
+                message: messages[0].substring(0, 50) + (messages[0].length > 50 ? '...' : ''),
+                avatar: window.userProfileData?.avatar,
+                leftIcon: 'x',
+                duration: 5000,
+              });
+
+              console.log(`  |- 秘密类型: ${secretType}`);
+              console.log(`  |- 揭发者: ${revealer.nickname} (@${revealer.handle})`);
+              console.log(`  |- 揭发程度: ${exposedLevel}`);
+              console.log(`  |- 揭发消息数: ${messages.length}条`);
+            }
+          } catch (error) {
+            console.error('❌ [秘密报应] 保存notification失败:', error);
+          }
+        }
+
+        // 👥 处理社交圈好友生成（如果AI生成了）
+        if (generatedData.socialCircle && generatedData.socialCircle.generated) {
+          console.log(`👥 [社交圈] AI生成了一个社交圈好友`);
+
+          const { friend, relationship } = generatedData.socialCircle;
+
+          // 为好友生成ID和avatar
+          friend.id = `friend_${this.currentChatUser.id}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+          friend.avatar = this.getRandomAvatar();
+          friend.relationship = relationship; // 保存关系类型
+
+          // 保存到当前NPC的socialCircle数组
+          if (!this.currentChatUser.socialCircle) {
+            this.currentChatUser.socialCircle = [];
+          }
+
+          // 检查是否已存在（避免重复）以及是否超过5个好友
+          const exists = this.currentChatUser.socialCircle.find(f => f.handle === friend.handle);
+          if (!exists && this.currentChatUser.socialCircle.length < 5) {
+            this.currentChatUser.socialCircle.push(friend);
+
+            // 更新数据库中的NPC数据
+            try {
+              const mapDataId = `mapDatingData_${window.currentAccountId || 'main'}`;
+              const mapDatingData = await xDb.xMapDatingData.get(mapDataId);
+
+              if (mapDatingData && mapDatingData.nearbyUsers) {
+                const npcIndex = mapDatingData.nearbyUsers.findIndex(u => u.id === this.currentChatUser.id);
+                if (npcIndex !== -1) {
+                  if (!mapDatingData.nearbyUsers[npcIndex].socialCircle) {
+                    mapDatingData.nearbyUsers[npcIndex].socialCircle = [];
+                  }
+                  mapDatingData.nearbyUsers[npcIndex].socialCircle.push(friend);
+
+                  // 🔄 反向同步：将A添加到B的社交圈中
+                  console.log(
+                    `🔄 [社交圈反向同步] 开始将 ${this.currentChatUser.nickname} 添加到 ${friend.nickname} 的社交圈`,
+                  );
+
+                  // 检查好友B是否已经在nearbyUsers中
+                  let friendIndex = mapDatingData.nearbyUsers.findIndex(u => u.handle === friend.handle);
+
+                  if (friendIndex === -1) {
+                    // 好友B不在地图上，需要先添加到nearbyUsers
+                    console.log(`  |- 好友B不在地图上，先添加到nearbyUsers`);
+
+                    // 为好友B生成位置信息（在A附近随机位置）
+                    const aPosition = mapDatingData.nearbyUsers[npcIndex].position;
+                    const randomAngle = Math.random() * Math.PI * 2;
+                    const randomDistance = Math.random() * 5 + 2; // 2-7km范围内
+
+                    friend.position = {
+                      lat: aPosition.lat + (randomDistance / 111) * Math.cos(randomAngle),
+                      lng:
+                        aPosition.lng +
+                        ((randomDistance / 111) * Math.sin(randomAngle)) / Math.cos((aPosition.lat * Math.PI) / 180),
+                    };
+
+                    // 更新距离信息（基于随机位置）
+                    friend.distance = randomDistance;
+
+                    // 初始化好友B的socialCircle
+                    if (!friend.socialCircle) {
+                      friend.socialCircle = [];
+                    }
+
+                    // 将好友B添加到nearbyUsers
+                    mapDatingData.nearbyUsers.push(friend);
+                    friendIndex = mapDatingData.nearbyUsers.length - 1;
+                    console.log(
+                      `  |- 已添加好友B到地图，位置: [${friend.position.lat.toFixed(6)}, ${friend.position.lng.toFixed(
+                        6,
+                      )}]，距离: ${friend.distance.toFixed(1)}km`,
+                    );
+                  } else {
+                    // 好友B已在地图上
+                    console.log(`  |- 好友B已在地图上，索引: ${friendIndex}`);
+                    if (!mapDatingData.nearbyUsers[friendIndex].socialCircle) {
+                      mapDatingData.nearbyUsers[friendIndex].socialCircle = [];
+                    }
+                  }
+
+                  // 检查B的社交圈是否已满
+                  const bSocialCircle = mapDatingData.nearbyUsers[friendIndex].socialCircle || [];
+                  if (bSocialCircle.length < 5) {
+                    // 检查A是否已经在B的社交圈中
+                    const aExistsInB = bSocialCircle.find(f => f.id === this.currentChatUser.id);
+
+                    if (!aExistsInB) {
+                      // 创建A的副本（作为B的社交圈好友）
+                      const currentUserForFriend = {
+                        id: this.currentChatUser.id,
+                        nickname: this.currentChatUser.nickname,
+                        handle: this.currentChatUser.handle,
+                        avatar: this.currentChatUser.avatar,
+                        avatarBubble: this.currentChatUser.avatarBubble,
+                        gender: this.currentChatUser.gender,
+                        distance: friend.distance, // 使用相同的距离
+                        online: this.currentChatUser.online,
+                        status: this.currentChatUser.status,
+                        bio: this.currentChatUser.bio,
+                        publicPersonality: this.currentChatUser.publicPersonality,
+                        realPersonality: this.currentChatUser.realPersonality,
+                        appearance: this.currentChatUser.appearance,
+                        tags: this.currentChatUser.tags,
+                        followers: this.currentChatUser.followers,
+                        likes: this.currentChatUser.likes,
+                        avgRating: this.currentChatUser.avgRating,
+                        reviews: this.currentChatUser.reviews || [],
+                        position: this.currentChatUser.position,
+                        relationship: relationship, // 保持相同的关系类型
+                        secret: this.currentChatUser.secret, // 如果A有秘密，也包含进去
+                      };
+
+                      // 将A添加到B的socialCircle
+                      mapDatingData.nearbyUsers[friendIndex].socialCircle.push(currentUserForFriend);
+                      console.log(`  |- ✅ 已将 ${this.currentChatUser.nickname} 添加到 ${friend.nickname} 的社交圈`);
+                      console.log(`  |- 关系类型: ${relationship}`);
+                      console.log(
+                        `  |- ${friend.nickname} 的社交圈人数: ${mapDatingData.nearbyUsers[friendIndex].socialCircle.length}/5`,
+                      );
+                    } else {
+                      console.log(
+                        `  |- ⚠️ ${this.currentChatUser.nickname} 已在 ${friend.nickname} 的社交圈中，跳过添加`,
+                      );
+                    }
+                  } else {
+                    console.log(
+                      `  |- ⚠️ ${friend.nickname} 的社交圈已满（5/5），无法添加 ${this.currentChatUser.nickname}`,
+                    );
+                  }
+
+                  await xDb.xMapDatingData.put(mapDatingData);
+
+                  // 🔄 立即同步更新allUsers和currentUsers（确保社交圈好友B可以被查看）
+                  this.allUsers = mapDatingData.nearbyUsers;
+                  this.currentUsers = [...mapDatingData.nearbyUsers];
+                  console.log(`🔄 [社交圈] 已同步更新allUsers和currentUsers，确保好友B可被查看`);
+
+                  // 🗺️ 刷新地图和用户列表（让好友B显示在地图上）
+                  this.renderMap();
+                  this.renderUserList();
+                  console.log(`🗺️ [社交圈] 已刷新地图和用户列表，好友B现在可在地图上看到`);
+
+                  console.log(`✅ [社交圈] 已保存社交圈好友到数据库（包含反向同步）`);
+                }
+              }
+            } catch (error) {
+              console.error('❌ [社交圈] 保存社交圈好友失败:', error);
+            }
+
+            console.log(`  |- 好友昵称: ${friend.nickname} (@${friend.handle})`);
+            console.log(`  |- 关系类型: ${relationship}`);
+            console.log(`  |- 当前社交圈人数: ${this.currentChatUser.socialCircle.length}/5`);
+          } else if (exists) {
+            console.log(`⚠️ [社交圈] 该好友已存在，跳过添加`);
+          } else {
+            console.log(`⚠️ [社交圈] 社交圈已达上限（5/5），跳过添加`);
+          }
+        }
+
+        console.log(`✅ [第十六个情景] AI生成对话完成，共${generatedData.messages.length}条消息`);
+        console.log(`  |- 对话对象: ${this.currentChatUser.nickname} (@${this.currentChatUser.handle})`);
+        console.log(`  |- 消息类型分布: ${generatedData.messages.map(m => m.type).join(', ')}`);
+        console.log(
+          `  |- 💖 AI决策的好感度变化: ${generatedData.affectionChange > 0 ? '+' : ''}${generatedData.affectionChange}`,
+        );
+        console.log(`  |- 📝 AI记录的笔记数量: ${generatedData.notes.length}条`);
+        console.log(`  |- 💭 AI记录的用户笔记数量: ${generatedData.userNotes.length}条`);
+        if (hasReports) {
+          console.log(`  |- 🚨 处理举报数量: ${generatedData.reports?.length || 0}个`);
+        }
+
+        return generatedData;
+      } catch (error) {
+        console.error('❌ [第十六个情景] 附近私信对话生成失败:', error);
+        return null;
+      }
+    },
+    // ▲▲▲ 【第十六个情景】附近私信弹窗AI对话生成器 ▲▲▲
+
+    // 保存聊天记录到数据库
+    async saveChatToDatabase() {
+      try {
+        if (!this.currentChatUser) {
+          console.warn('⚠️ [聊天记录保存] 没有当前聊天对象，跳过保存');
+          return;
+        }
+
+        const xDb = getXDB();
+        if (!xDb) {
+          console.error('❌ [聊天记录保存] 无法获取数据库');
+          return;
+        }
+
+        const chatId = `mapChat_${this.currentChatUser.id}_${currentAccountId || 'main'}`;
+        const chatRecord = {
+          id: chatId,
+          accountId: currentAccountId || 'main',
+          userId: this.currentChatUser.id,
+          userName: this.currentChatUser.nickname,
+          userHandle: this.currentChatUser.handle,
+          messages: this.chatMessages[this.currentChatUser.id] || [],
+          affectionData: this.chatAffectionData[this.currentChatUser.id] || null, // 💖 保存好感度数据
+          notes: this.chatNotes[this.currentChatUser.id] || {}, // 📝 保存AI笔记数据（NPC的人设）
+          userMarkedNotes: this.userMarkedNotes[this.currentChatUser.id] || [], // 📌 保存用户标记的笔记
+          npcNotesAboutUser: this.npcNotesAboutUser[this.currentChatUser.id] || [], // 💭 保存NPC对用户的观察笔记
+          lastUpdated: new Date().toISOString(),
+        };
+
+        await xDb.xMapChats.put(chatRecord);
+        console.log(`✅ [聊天记录保存] 已保存与 ${this.currentChatUser.nickname} 的聊天记录`);
+        console.log(`  |- 聊天ID: ${chatId}`);
+        console.log(`  |- 消息数量: ${chatRecord.messages.length}`);
+
+        // 💖 显示好感度信息
+        if (this.chatAffectionData[this.currentChatUser.id]) {
+          const affection = this.chatAffectionData[this.currentChatUser.id];
+          console.log(
+            `  |- 好感度: ${affection.affection.toFixed(1)}/100 (阈值: ${
+              affection.threshold
+            }, 增长率: ${affection.growthRate.toFixed(2)}x)`,
+          );
+        }
+
+        // 📝 显示AI笔记信息
+        if (this.chatNotes[this.currentChatUser.id]) {
+          const notes = this.chatNotes[this.currentChatUser.id];
+          const notesCount = Object.keys(notes).length;
+          if (notesCount > 0) {
+            console.log(`  |- 📝 AI笔记数量: ${notesCount}条 (${Object.keys(notes).join('、')})`);
+          }
+        }
+
+        // 📌 显示用户标记笔记信息
+        if (this.userMarkedNotes[this.currentChatUser.id]) {
+          const userNotes = this.userMarkedNotes[this.currentChatUser.id];
+          if (userNotes.length > 0) {
+            console.log(`  |- 📌 用户标记笔记数量: ${userNotes.length}条`);
+          }
+        }
+
+        // 💭 显示NPC对用户的观察笔记信息
+        if (this.npcNotesAboutUser[this.currentChatUser.id]) {
+          const npcUserNotes = this.npcNotesAboutUser[this.currentChatUser.id];
+          if (npcUserNotes.length > 0) {
+            console.log(`  |- 💭 NPC观察笔记数量: ${npcUserNotes.length}条`);
+          }
+        }
+      } catch (error) {
+        console.error('❌ [聊天记录保存] 保存失败:', error);
+      }
+    },
+
+    // 生成模拟聊天消息（首次打开时）
+    generateMockMessages(user) {
+      const now = new Date();
+      const mockMessages = [
+        {
+          type: 'received',
+          text: `Heya himanshi`,
+          timestamp: new Date(now - 5 * 60 * 60 * 1000).toISOString(), // 5小时前
+        },
+        {
+          type: 'received',
+          text: `Couldn't stop myself from texting coz you're just so pretty`,
+          timestamp: new Date(now - 5 * 60 * 60 * 1000 + 10000).toISOString(),
+        },
+        {
+          type: 'sent',
+          text: `Thankyouu so much!!`,
+          timestamp: new Date(now - 2 * 60 * 60 * 1000).toISOString(), // 2小时前
+        },
+        {
+          type: 'received',
+          text: `You're wlcm bbg`,
+          timestamp: new Date(now - 48 * 60 * 1000).toISOString(), // 48分钟前
+        },
+        {
+          type: 'received',
+          text: `Idk why I ain't getting notifications`,
+          timestamp: new Date(now - 48 * 60 * 1000 + 10000).toISOString(),
+        },
+        {
+          type: 'received',
+          text: `How old are uh?`,
+          timestamp: new Date(now - 48 * 60 * 1000 + 20000).toISOString(),
+        },
+        {
+          type: 'received',
+          text: `Should I guess?`,
+          timestamp: new Date(now - 30 * 60 * 1000).toISOString(), // 30分钟前
+        },
+        {
+          type: 'sent',
+          text: `U should guess`,
+          timestamp: new Date(now - 5 * 60 * 1000).toISOString(), // 5分钟前
+        },
+        {
+          type: 'sent',
+          text: `I think`,
+          timestamp: new Date(now - 5 * 60 * 1000 + 5000).toISOString(),
+        },
+      ];
+
+      return mockMessages;
+    },
+
+    // 格式化聊天时间
+    formatChatTime(date) {
+      const now = new Date();
+      const diff = now - date;
+
+      // 今天
+      if (diff < 24 * 60 * 60 * 1000) {
+        const hours = date.getHours();
+        const minutes = date.getMinutes();
+        const ampm = hours >= 12 ? 'pm' : 'am';
+        const displayHours = hours % 12 || 12;
+        return `Today, ${displayHours}:${minutes.toString().padStart(2, '0')} ${ampm}`;
+      }
+
+      // 昨天
+      if (diff < 48 * 60 * 60 * 1000) {
+        const hours = date.getHours();
+        const minutes = date.getMinutes();
+        const ampm = hours >= 12 ? 'pm' : 'am';
+        const displayHours = hours % 12 || 12;
+        return `Yesterday, ${displayHours}:${minutes.toString().padStart(2, '0')} ${ampm}`;
+      }
+
+      // 其他日期
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const month = months[date.getMonth()];
+      const day = date.getDate();
+      const hours = date.getHours();
+      const minutes = date.getMinutes();
+      const ampm = hours >= 12 ? 'pm' : 'am';
+      const displayHours = hours % 12 || 12;
+      return `${month} ${day}, ${displayHours}:${minutes.toString().padStart(2, '0')} ${ampm}`;
+    },
+
+    // 刷新附近的人
+    async refreshNearbyUsers() {
+      try {
+        // 获取刷新按钮元素
+        const refreshBtn = document.getElementById('mapRefreshBtn');
+        if (!refreshBtn) return;
+
+        // 检查是否正在刷新中
+        if (refreshBtn.classList.contains('refreshing')) {
+          console.log('⚠️ 正在刷新中，请勿重复点击');
+          return;
+        }
+
+        // 添加刷新动画
+        refreshBtn.classList.add('refreshing');
+        console.log('🔄 [刷新开始] 开始刷新附近的人...');
+
+        // 调用 AI 生成新的用户数据（只生成用户，不生成地图和地标）
+        console.log('🤖 [AI调用] 正在调用AI生成新用户数据，请耐心等待...');
+        const newData = await this.generateMapDatingData(true);
+        console.log('🤖 [AI返回] AI调用完成，返回数据:', newData ? '成功' : '失败');
+
+        if (newData && newData.nearbyUsers) {
+          console.log(`📊 [数据处理] 开始处理 ${newData.nearbyUsers.length} 个用户数据...`);
+
+          // 更新当前用户列表
+          this.allUsers = newData.nearbyUsers;
+          this.currentUsers = [...this.allUsers];
+          console.log('✅ [数据更新] 用户列表已更新');
+
+          // 关闭当前打开的用户详情卡（如果有）
+          this.closeDetailCard();
+
+          // 重新渲染用户列表和地图标记
+          try {
+            console.log('🎨 [UI渲染] 开始渲染用户列表...');
+            this.renderUserList();
+            console.log('✅ [UI渲染] 用户列表渲染完成');
+          } catch (renderError) {
+            console.error('❌ [UI渲染] 渲染用户列表失败:', renderError);
+          }
+
+          try {
+            console.log('🗺️ [地图渲染] 开始渲染地图标记...');
+            this.renderMapMarkers();
+            console.log('✅ [地图渲染] 地图标记渲染完成');
+          } catch (renderError) {
+            console.error('❌ [地图渲染] 渲染地图标记失败:', renderError);
+          }
+
+          console.log(`✅✅✅ [刷新完成] 已成功更新 ${newData.nearbyUsers.length} 个附近的人`);
+          console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        } else {
+          console.error('❌ [刷新失败] 未获取到新的用户数据，newData:', newData);
+          alert('刷新失败，请重试');
+        }
+      } catch (error) {
+        console.error('❌❌❌ [致命错误] 刷新附近的人失败:', error);
+        console.error('错误堆栈:', error.stack);
+        alert('刷新失败，请重试');
+      } finally {
+        // 移除刷新动画
+        console.log('🔧 [清理] 移除刷新动画...');
+        const refreshBtn = document.getElementById('mapRefreshBtn');
+        if (refreshBtn) {
+          refreshBtn.classList.remove('refreshing');
+          console.log('✅ [清理] 刷新动画已移除');
+        }
+      }
+    },
+
+    // ==================== 地图设置功能 ====================
+
+    // 打开地图设置弹窗
+    openMapSettings() {
+      // 只有查看自己资料时才能打开设置
+      if (!this.isShowingUserProfile) {
+        return;
+      }
+
+      if (!this.userMapProfile) {
+        console.warn('⚠️ 用户资料未初始化');
+        return;
+      }
+
+      const modal = document.getElementById('mapSettingsModal');
+      if (!modal) return;
+
+      // 加载当前设置到表单
+      this.loadMapSettingsToForm();
+
+      // 显示弹窗
+      modal.style.display = 'flex';
+    },
+
+    // 关闭地图设置弹窗
+    closeMapSettings() {
+      const modal = document.getElementById('mapSettingsModal');
+      if (modal) {
+        modal.style.display = 'none';
+      }
+    },
+
+    // 加载设置到表单
+    loadMapSettingsToForm() {
+      const profile = this.userMapProfile;
+
+      // 基本资料字段
+      const nicknameInput = document.getElementById('mapSettingsNickname');
+      const handleInput = document.getElementById('mapSettingsHandle');
+      const followersInput = document.getElementById('mapSettingsFollowers');
+      const likesInput = document.getElementById('mapSettingsLikes');
+
+      if (nicknameInput) nicknameInput.value = profile.nickname || '';
+      if (handleInput) handleInput.value = profile.handle || '';
+      if (followersInput) followersInput.value = profile.followers || 1000;
+      if (likesInput) likesInput.value = profile.likes || 15000;
+
+      // 头像气泡设置
+      const avatarBubbleEnabled = document.getElementById('mapSettingsAvatarBubbleEnabled');
+      const avatarBubbleText = document.getElementById('mapSettingsAvatarBubbleText');
+      const avatarBubbleTextSection = document.getElementById('mapSettingsAvatarBubbleTextSection');
+
+      if (avatarBubbleEnabled && avatarBubbleText) {
+        // 判断是否启用（有内容且不为空）
+        const isEnabled = profile.avatarBubble && profile.avatarBubble.trim() !== '';
+        avatarBubbleEnabled.checked = isEnabled;
+        avatarBubbleText.value = profile.avatarBubble || '';
+
+        // 根据启用状态显示/隐藏文本输入
+        if (avatarBubbleTextSection) {
+          avatarBubbleTextSection.style.display = isEnabled ? 'flex' : 'none';
+        }
+
+        // 监听开关变化
+        avatarBubbleEnabled.onchange = () => {
+          if (avatarBubbleTextSection) {
+            avatarBubbleTextSection.style.display = avatarBubbleEnabled.checked ? 'flex' : 'none';
+          }
+        };
+      }
+
+      // 状态气泡设置
+      const statusEnabled = document.getElementById('mapSettingsStatusEnabled');
+      const statusText = document.getElementById('mapSettingsStatusText');
+      const statusTextSection = document.getElementById('mapSettingsStatusTextSection');
+
+      if (statusEnabled && statusText) {
+        // 判断是否启用（有内容且不为空）
+        const isEnabled = profile.status && profile.status.trim() !== '';
+        statusEnabled.checked = isEnabled;
+        statusText.value = profile.status || '';
+
+        // 根据启用状态显示/隐藏文本输入
+        if (statusTextSection) {
+          statusTextSection.style.display = isEnabled ? 'flex' : 'none';
+        }
+
+        // 监听开关变化
+        statusEnabled.onchange = () => {
+          if (statusTextSection) {
+            statusTextSection.style.display = statusEnabled.checked ? 'flex' : 'none';
+          }
+        };
+      }
+
+      // 标签设置
+      this.renderSettingsTags();
+    },
+
+    // 渲染设置弹窗中的标签
+    renderSettingsTags() {
+      const tagsContainer = document.getElementById('mapSettingsTagsContainer');
+      if (!tagsContainer || !this.userMapProfile) return;
+
+      const tags = this.userMapProfile.tags || [];
+
+      tagsContainer.innerHTML = tags
+        .map(
+          (tag, index) => `
+        <div class="map-settings-tag" data-tag-index="${index}">
+          ${tag}
+          <div class="map-settings-tag-remove" onclick="MapDatingController.removeTag(${index})">
+            <svg viewBox="0 0 24 24">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </div>
+        </div>
+      `,
+        )
+        .join('');
+    },
+
+    // 添加新标签
+    addNewTag() {
+      if (!this.userMapProfile) return;
+
+      const newTag = prompt('请输入新标签内容:');
+      if (!newTag || newTag.trim() === '') return;
+
+      // 检查标签数量限制（最多6个）
+      if (this.userMapProfile.tags.length >= 6) {
+        alert('标签数量已达上限（最多6个）');
+        return;
+      }
+
+      // 检查是否已存在
+      if (this.userMapProfile.tags.includes(newTag.trim())) {
+        alert('该标签已存在');
+        return;
+      }
+
+      // 添加标签
+      this.userMapProfile.tags.push(newTag.trim());
+
+      // 重新渲染
+      this.renderSettingsTags();
+    },
+
+    // 删除标签
+    removeTag(index) {
+      if (!this.userMapProfile) return;
+
+      if (confirm('确定要删除这个标签吗？')) {
+        this.userMapProfile.tags.splice(index, 1);
+        this.renderSettingsTags();
+      }
+    },
+
+    // 保存地图设置
+    async saveMapSettings() {
+      if (!this.userMapProfile) return;
+
+      // 获取表单数据 - 基本资料
+      const nicknameInput = document.getElementById('mapSettingsNickname');
+      const handleInput = document.getElementById('mapSettingsHandle');
+      const followersInput = document.getElementById('mapSettingsFollowers');
+      const likesInput = document.getElementById('mapSettingsLikes');
+
+      // 验证并更新基本资料
+      if (nicknameInput) {
+        const nickname = nicknameInput.value.trim();
+        if (nickname) {
+          this.userMapProfile.nickname = nickname;
+        } else {
+          alert('昵称不能为空！');
+          return;
+        }
+      }
+
+      if (handleInput) {
+        const handle = handleInput.value.trim();
+        // 验证句柄格式：纯英文小写+数字+下划线
+        const handleRegex = /^[a-z0-9_]{1,15}$/;
+        if (handle && handleRegex.test(handle)) {
+          this.userMapProfile.handle = handle;
+        } else if (handle) {
+          alert('句柄格式不正确！必须是纯英文小写+数字+下划线，1-15个字符');
+          return;
+        }
+      }
+
+      if (followersInput) {
+        const followers = parseInt(followersInput.value);
+        if (followers >= 100 && followers <= 50000) {
+          this.userMapProfile.followers = followers;
+        } else {
+          alert('粉丝数必须在100-50000之间！');
+          return;
+        }
+      }
+
+      if (likesInput) {
+        const likes = parseInt(likesInput.value);
+        if (likes >= 1000 && likes <= 2500000) {
+          this.userMapProfile.likes = likes;
+        } else {
+          alert('获赞数必须在1000-2500000之间！');
+          return;
+        }
+      }
+
+      // 获取表单数据 - 其他设置
+      const avatarBubbleEnabled = document.getElementById('mapSettingsAvatarBubbleEnabled');
+      const avatarBubbleText = document.getElementById('mapSettingsAvatarBubbleText');
+      const statusEnabled = document.getElementById('mapSettingsStatusEnabled');
+      const statusText = document.getElementById('mapSettingsStatusText');
+
+      // 更新头像气泡
+      if (avatarBubbleEnabled && avatarBubbleText) {
+        this.userMapProfile.avatarBubble = avatarBubbleEnabled.checked ? avatarBubbleText.value.trim() : '';
+      }
+
+      // 更新状态气泡
+      if (statusEnabled && statusText) {
+        this.userMapProfile.status = statusEnabled.checked ? statusText.value.trim() : '';
+      }
+
+      // 保存到数据库
+      await this.saveUserMapProfile();
+
+      // 刷新显示
+      this.renderCurrentUserMarker();
+
+      // 如果当前打开的是用户自己的资料卡，更新显示
+      if (document.getElementById('mapUserDetailCard').style.display !== 'none') {
+        const profile = this.userMapProfile;
+
+        // 更新基本资料显示
+        const mapCardNickname = document.getElementById('mapCardNickname');
+        const mapCardHandle = document.getElementById('mapCardHandle');
+        const mapCardFollowersCount = document.getElementById('mapCardFollowersCount');
+        const mapCardLikesCount = document.getElementById('mapCardLikesCount');
+
+        if (mapCardNickname) mapCardNickname.textContent = profile.nickname || '未命名用户';
+        if (mapCardHandle) mapCardHandle.textContent = `@${profile.handle || 'unknown'}`;
+        if (mapCardFollowersCount) mapCardFollowersCount.textContent = this.formatNumber(profile.followers || 0);
+        if (mapCardLikesCount) mapCardLikesCount.textContent = this.formatNumber(profile.likes || 0);
+
+        // 更新头像气泡
+        const mapCardAvatarBubble = document.getElementById('mapCardAvatarBubble');
+        if (mapCardAvatarBubble) {
+          mapCardAvatarBubble.textContent = profile.avatarBubble || '';
+          mapCardAvatarBubble.style.display = profile.avatarBubble ? 'flex' : 'none';
+        }
+
+        // 更新标签显示
+        this.refreshTagsDisplay();
+      }
+
+      // 关闭设置弹窗
+      this.closeMapSettings();
+
+      console.log('✅ [地图设置] 设置已保存');
+    },
+
+    // 关闭地图页面
+    closeMapPage() {
+      closeMapPage();
+    },
+  };
+
+  // ==========================================
+  // 第五部分：对外接口
+  // ==========================================
+
+  // 打开地图约会页面
+  function openMapPage() {
+    // 🔒 地图约会功能权限验证：需要地图密钥
+    if (
+      typeof window.xMapAuth !== "undefined" &&
+      !window.xMapAuth.hasAccess()
+    ) {
+      console.log(`🔒 访问地图约会功能需要地图功能权限`);
+      window.xMapAuth.requestAccess();
+      return; // 阻止打开地图
+    }
+
+    // 注入样式
+    injectMapStyles();
+
+    // 获取容器，如果有通用容器就用，否则创建一个
+    let container = document.getElementById("x-map-container");
+    if (!container) {
+      container = document.createElement("div");
+      container.id = "x-map-container";
+      container.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 9999;
+        background: #000;
+      `;
+      document.body.appendChild(container);
+    }
+
+    // 生成并插入HTML
+    container.innerHTML = generateMapHTML();
+    container.style.display = "block";
+
+    // 初始化控制器
+    MapDatingController.init();
+  }
+
+  // 关闭地图约会页面
+  function closeMapPage() {
+    const container = document.getElementById("x-map-container");
+    if (container) {
+      container.style.display = "none";
+      container.innerHTML = "";
+    }
+  }
+
+  // 重新生成地图约会数据（第十五个情景）
+  async function regenerateMapDatingData() {
+    try {
+      console.log("🔄 [第十五个情景] 开始重新生成地图约会数据...");
+
+      // 合并后所有模块都在同一个IIFE作用域内，直接访问 getXDB 和 currentAccountId
+      const xDb = getXDB();
+      if (!xDb) {
+        console.error("❌ 无法获取数据库");
+        return;
+      }
+
+      // 删除旧数据（使用正确的ID格式 - 不带x前缀）
+      const dataId = `mapDatingData_${currentAccountId || "main"}`;
+      await xDb.xMapDatingData.delete(dataId);
+      console.log("✅ [第十五个情景] 已删除旧数据");
+
+      // 重置MapGenerator的landmarks
+      if (window.MapGenerator) {
+        window.MapGenerator.landmarks = [];
+      }
+
+      // 调用AI重新生成
+      const newData = await MapDatingController.generateMapDatingData();
+
+      if (newData) {
+        console.log("✅ [第十五个情景] 重新生成完成，正在刷新页面...");
+
+        // 关闭并重新打开地图页面以应用新数据
+        closeMapPage();
+        setTimeout(() => {
+          openMapPage();
+        }, 100);
+      } else {
+        console.error("❌ [第十五个情景] 重新生成失败");
+      }
+    } catch (error) {
+      console.error("❌ [第十五个情景] 重新生成出错:", error);
+    }
+  }
+
+  // 打开用户地图资料卡
+  function openUserMapProfile() {
+    MapDatingController.showUserProfileCard();
+  }
+
+  // 暴露到全局
+  window.openMapPage = openMapPage;
+  window.closeMapPage = closeMapPage;
+  window.regenerateMapDatingData = regenerateMapDatingData; // 第十五个情景：重新生成数据
+  window.openUserMapProfile = openUserMapProfile; // 打开用户地图资料
+  window.MapDatingController = MapDatingController;
+  window.MapGenerator = MapGenerator;
 
   // 第四部分: 初始化和对外接口
   // ============================================
@@ -39341,10 +57466,9 @@ ${getTransferStatusIcon(message.status, isLightMode)}
  width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex-shrink: 0; `;
       notification.appendChild(avatarEl);
     }
-    // 🔧 添加到 x-social-screen 内部以继承主题样式
-    const xSocialScreen = document.getElementById("x-social-screen");
-    const targetContainer = xSocialScreen || document.body;
-    targetContainer.appendChild(notification); // 滑入动画
+    // 🔧 直接添加到 body，避免被 x-social-screen 的 overflow:hidden 裁剪
+    // position:fixed 的元素在有 overflow:hidden 的父元素中会被裁剪！
+    document.body.appendChild(notification); // 滑入动画
     requestAnimationFrame(() => {
       notification.style.top = "16px";
     }); // 自动滑出并移除
@@ -39365,6 +57489,7 @@ ${getTransferStatusIcon(message.status, isLightMode)}
       }, 400);
     };
   }
+  window.showPhoneNotification = showPhoneNotification;
   // 显示消息回复通知（便捷函数）
   function showMessageNotification(senderName, senderAvatar, messageCount) {
     const isEnglish = currentLanguage === "en";
