@@ -51363,24 +51363,20 @@ ${
 
   // 打开地图约会页面
   function openMapPage() {
-    // 🔒 地图约会功能权限验证：需要地图密钥
-    if (
-      typeof window.xMapAuth !== "undefined" &&
-      !window.xMapAuth.hasAccess()
-    ) {
-      console.log(`🔒 访问地图约会功能需要地图功能权限`);
-      window.xMapAuth.requestAccess();
+    // 🔒 地图约会功能权限验证：需要社交密钥
+    if (typeof window.xSocialAuth !== 'undefined' && !window.xSocialAuth.hasAccess()) {
+      console.log(`🔒 访问地图约会功能需要社交功能权限`);
+      window.xSocialAuth.requestAccess();
       return; // 阻止打开地图
     }
-
     // 注入样式
     injectMapStyles();
 
     // 获取容器，如果有通用容器就用，否则创建一个
-    let container = document.getElementById("x-map-container");
+    let container = document.getElementById('x-map-container');
     if (!container) {
-      container = document.createElement("div");
-      container.id = "x-map-container";
+      container = document.createElement('div');
+      container.id = 'x-map-container';
       container.style.cssText = `
         position: fixed;
         top: 0;
@@ -51395,7 +51391,7 @@ ${
 
     // 生成并插入HTML
     container.innerHTML = generateMapHTML();
-    container.style.display = "block";
+    container.style.display = 'block';
 
     // 初始化控制器
     MapDatingController.init();
@@ -51566,12 +51562,11 @@ ${
   async function showWelcomePopup() {
     try {
       // 🆕 定义当前弹窗内容版本（内容变化时修改此版本号）
-      const currentPopupVersion = "v2.3"; // 修改版本号以触发重新显示
-      const currentPopupContent = `直播更新
-+粉丝团
-+主播私联（当刷的积分超多和达到相应粉丝等级时将触发 主播主动私联）
-+点击头像进入账户主页
-+一些小彩蛋`;
+      const currentPopupVersion = "v2.4"; // 修改版本号以触发重新显示
+      const currentPopupContent = `地图/直播更新
++基本地图功能 搜索页面搜索框查看按钮
++灰屏是正常的！！第一次进入自动刷新
++直播新增pk和语音连线 请点击右侧轮盘！`;
 
       // 检查是否已经显示过此版本的弹窗
       const lastShownVersion = localStorage.getItem(
@@ -51684,10 +51679,10 @@ ${
  font-family: 'Fusion Pixel 10px P zh_hans', monospace;
  ">
  <div style="font-weight: bold; margin-bottom: 6px;">吃点羊提醒您：</div>
-            <div style="font-weight: bold; margin-bottom: 8px;">直播更新</div>
-            <div style="margin-bottom: 4px;">+粉丝团</div>
-            <div style="margin-bottom: 4px;">+主播私联（当刷的积分超多和达到相应粉丝等级时将触发 主播主动私联）</div>
-            <div style="margin-bottom: 4px;">+点击头像进入账户主页</div>
+            <div style="font-weight: bold; margin-bottom: 8px;">地图/直播更新</div>
+            <div style="margin-bottom: 4px;">+基本地图功能 搜索页面搜索框查看按钮</div>
+            <div style="margin-bottom: 4px;">+灰屏是正常的！！第一次进入自动刷新</div>
+            <div style="margin-bottom: 4px;">+直播新增pk和语音连线 请点击右侧轮盘！</div>
             <div>+一些小彩蛋</div>
  </div>
  </div>
