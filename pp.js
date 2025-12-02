@@ -1168,6 +1168,28 @@ color: #ffffff !important; }
     filter: blur(0);
   }
 }
+
+/* ========== 用户资料下拉菜单主题适配 ========== */
+/* 下拉菜单背景和边框 */
+#profile-dropdown-menu {
+  background-color: var(--x-bg-secondary) !important;
+  border-color: var(--x-border-color) !important;
+}
+
+/* 下拉菜单项文字颜色 */
+#profile-dropdown-menu > div {
+  color: var(--x-text-primary) !important;
+}
+
+/* 下拉菜单项SVG图标颜色 */
+#profile-dropdown-menu svg {
+  fill: var(--x-text-primary) !important;
+}
+
+/* 下拉菜单项悬停背景 */
+#profile-dropdown-menu > div:hover {
+  background-color: var(--x-bg-hover) !important;
+}
 `;
     document.head.appendChild(style);
     console.log("✅ X Social App: 样式已注入");
@@ -2870,6 +2892,15 @@ onmouseout="this.style.opacity='1'">
  </svg>
  <span data-i18n="profileAccountWallet">账户钱包</span>
  </div>
+ <div onclick="openToolModal()" style="padding: 12px 16px; color: #fff; font-size: 15px; cursor: pointer; transition: background-color 0.2s; display: flex; align-items: center; gap: 12px; " onmouseover="this.style.backgroundColor='rgba(255,255,255,0.03)'"
+ onmouseout="this.style.backgroundColor='transparent'">
+ <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; fill: currentColor;">
+ <g>
+ <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-5.5-2.5l7.51-3.49L17.5 6.5 9.99 9.99 6.5 17.5zm5.5-6.6c.61 0 1.1.49 1.1 1.1s-.49 1.1-1.1 1.1-1.1-.49-1.1-1.1.49-1.1 1.1-1.1z"/>
+ </g>
+ </svg>
+ <span data-i18n="profileAccountTools">账户道具</span>
+ </div>
  </div>
  </div>
  </div>
@@ -4300,7 +4331,6 @@ style="position: absolute; width: 5px; height: 5px; background-color: var(--x-ac
  </div>
  </div>
 </div>
-
 `; // 将创建的HTML添加到body
     document.body.appendChild(container);
     console.log("✅ X Social App: HTML结构已创建");
@@ -4338,239 +4368,262 @@ style="position: absolute; width: 5px; height: 5px; background-color: var(--x-ac
     });
     // 版本3：添加角色关系册表
     db.version(3).stores({
-      xTweetsData: "&id",
-      xSettings: "&id",
-      xPresets: "++id, name, createdAt",
-      xUserProfile: "&id",
-      xUserTweets: "&id",
-      xCharacterProfiles: "&characterId",
-      xActiveAccount: "&id",
-      xAccountList: "&accountId, name, createdAt",
-      xNPCs: "&id",
-      xAskbox: "&id",
-      xAccountProfiles: "&handle, name, updatedAt",
-      xAccountAskbox: "&id",
-      xCharacterRelationships: "&id, accountId, lastUpdated",
+      xTweetsData: '&id',
+      xSettings: '&id',
+      xPresets: '++id, name, createdAt',
+      xUserProfile: '&id',
+      xUserTweets: '&id',
+      xCharacterProfiles: '&characterId',
+      xActiveAccount: '&id',
+      xAccountList: '&accountId, name, createdAt',
+      xNPCs: '&id',
+      xAskbox: '&id',
+      xAccountProfiles: '&handle, name, updatedAt',
+      xAccountAskbox: '&id',
+      xCharacterRelationships: '&id, accountId, lastUpdated',
     });
     // 版本4：确保所有表都存在
     db.version(4).stores({
-      xTweetsData: "&id",
-      xSettings: "&id",
-      xPresets: "++id, name, createdAt",
-      xUserProfile: "&id",
-      xUserTweets: "&id",
-      xCharacterProfiles: "&characterId",
-      xActiveAccount: "&id",
-      xAccountList: "&accountId, name, createdAt",
-      xNPCs: "&id",
-      xAskbox: "&id",
-      xAccountProfiles: "&handle, name, updatedAt",
-      xAccountAskbox: "&id",
-      xCharacterRelationships: "&id, accountId, lastUpdated",
+      xTweetsData: '&id',
+      xSettings: '&id',
+      xPresets: '++id, name, createdAt',
+      xUserProfile: '&id',
+      xUserTweets: '&id',
+      xCharacterProfiles: '&characterId',
+      xActiveAccount: '&id',
+      xAccountList: '&accountId, name, createdAt',
+      xNPCs: '&id',
+      xAskbox: '&id',
+      xAccountProfiles: '&handle, name, updatedAt',
+      xAccountAskbox: '&id',
+      xCharacterRelationships: '&id, accountId, lastUpdated',
     });
     // 版本5：添加书签表（多账户隔离）
     db.version(5).stores({
-      xTweetsData: "&id",
-      xSettings: "&id",
-      xPresets: "++id, name, createdAt",
-      xUserProfile: "&id",
-      xUserTweets: "&id",
-      xCharacterProfiles: "&characterId",
-      xActiveAccount: "&id",
-      xAccountList: "&accountId, name, createdAt",
-      xNPCs: "&id",
-      xAskbox: "&id",
-      xAccountProfiles: "&handle, name, updatedAt",
-      xAccountAskbox: "&id",
-      xCharacterRelationships: "&id, accountId, lastUpdated",
-      xBookmarks: "&id, accountId, tweetId, bookmarkedAt",
+      xTweetsData: '&id',
+      xSettings: '&id',
+      xPresets: '++id, name, createdAt',
+      xUserProfile: '&id',
+      xUserTweets: '&id',
+      xCharacterProfiles: '&characterId',
+      xActiveAccount: '&id',
+      xAccountList: '&accountId, name, createdAt',
+      xNPCs: '&id',
+      xAskbox: '&id',
+      xAccountProfiles: '&handle, name, updatedAt',
+      xAccountAskbox: '&id',
+      xCharacterRelationships: '&id, accountId, lastUpdated',
+      xBookmarks: '&id, accountId, tweetId, bookmarkedAt',
     });
     // 版本6：添加喜欢表（多账户隔离）
     db.version(6).stores({
-      xTweetsData: "&id",
-      xSettings: "&id",
-      xPresets: "++id, name, createdAt",
-      xUserProfile: "&id",
-      xUserTweets: "&id",
-      xCharacterProfiles: "&characterId",
-      xActiveAccount: "&id",
-      xAccountList: "&accountId, name, createdAt",
-      xNPCs: "&id",
-      xAskbox: "&id",
-      xAccountProfiles: "&handle, name, updatedAt",
-      xAccountAskbox: "&id",
-      xCharacterRelationships: "&id, accountId, lastUpdated",
-      xBookmarks: "&id, accountId, tweetId, bookmarkedAt",
-      xLikes: "&id, accountId, tweetId, likedAt",
+      xTweetsData: '&id',
+      xSettings: '&id',
+      xPresets: '++id, name, createdAt',
+      xUserProfile: '&id',
+      xUserTweets: '&id',
+      xCharacterProfiles: '&characterId',
+      xActiveAccount: '&id',
+      xAccountList: '&accountId, name, createdAt',
+      xNPCs: '&id',
+      xAskbox: '&id',
+      xAccountProfiles: '&handle, name, updatedAt',
+      xAccountAskbox: '&id',
+      xCharacterRelationships: '&id, accountId, lastUpdated',
+      xBookmarks: '&id, accountId, tweetId, bookmarkedAt',
+      xLikes: '&id, accountId, tweetId, likedAt',
     });
     // 版本7：添加世界运转大事件表（多账户隔离）
     db.version(7).stores({
-      xTweetsData: "&id",
-      xSettings: "&id",
-      xPresets: "++id, name, createdAt",
-      xUserProfile: "&id",
-      xUserTweets: "&id",
-      xCharacterProfiles: "&characterId",
-      xActiveAccount: "&id",
-      xAccountList: "&accountId, name, createdAt",
-      xNPCs: "&id",
-      xAskbox: "&id",
-      xAccountProfiles: "&handle, name, updatedAt",
-      xAccountAskbox: "&id",
-      xCharacterRelationships: "&id, accountId, lastUpdated",
-      xBookmarks: "&id, accountId, tweetId, bookmarkedAt",
-      xLikes: "&id, accountId, tweetId, likedAt",
-      xWorldEvents: "&id, accountId, lastGenerated, lastProgressed",
+      xTweetsData: '&id',
+      xSettings: '&id',
+      xPresets: '++id, name, createdAt',
+      xUserProfile: '&id',
+      xUserTweets: '&id',
+      xCharacterProfiles: '&characterId',
+      xActiveAccount: '&id',
+      xAccountList: '&accountId, name, createdAt',
+      xNPCs: '&id',
+      xAskbox: '&id',
+      xAccountProfiles: '&handle, name, updatedAt',
+      xAccountAskbox: '&id',
+      xCharacterRelationships: '&id, accountId, lastUpdated',
+      xBookmarks: '&id, accountId, tweetId, bookmarkedAt',
+      xLikes: '&id, accountId, tweetId, likedAt',
+      xWorldEvents: '&id, accountId, lastGenerated, lastProgressed',
     });
     // 版本8：添加自定义礼物系统表（分类+礼物）
     db.version(8).stores({
-      xTweetsData: "&id",
-      xSettings: "&id",
-      xPresets: "++id, name, createdAt",
-      xUserProfile: "&id",
-      xUserTweets: "&id",
-      xCharacterProfiles: "&characterId",
-      xActiveAccount: "&id",
-      xAccountList: "&accountId, name, createdAt",
-      xNPCs: "&id",
-      xAskbox: "&id",
-      xAccountProfiles: "&handle, name, updatedAt",
-      xAccountAskbox: "&id",
-      xCharacterRelationships: "&id, accountId, lastUpdated",
-      xBookmarks: "&id, accountId, tweetId, bookmarkedAt",
-      xLikes: "&id, accountId, tweetId, likedAt",
-      xWorldEvents: "&id, accountId, lastGenerated, lastProgressed",
-      xCustomGiftCategories: "&id, accountId, name, enabled, createdAt",
-      xCustomGifts: "&id, categoryId, accountId, name, points, createdAt",
+      xTweetsData: '&id',
+      xSettings: '&id',
+      xPresets: '++id, name, createdAt',
+      xUserProfile: '&id',
+      xUserTweets: '&id',
+      xCharacterProfiles: '&characterId',
+      xActiveAccount: '&id',
+      xAccountList: '&accountId, name, createdAt',
+      xNPCs: '&id',
+      xAskbox: '&id',
+      xAccountProfiles: '&handle, name, updatedAt',
+      xAccountAskbox: '&id',
+      xCharacterRelationships: '&id, accountId, lastUpdated',
+      xBookmarks: '&id, accountId, tweetId, bookmarkedAt',
+      xLikes: '&id, accountId, tweetId, likedAt',
+      xWorldEvents: '&id, accountId, lastGenerated, lastProgressed',
+      xCustomGiftCategories: '&id, accountId, name, enabled, createdAt',
+      xCustomGifts: '&id, categoryId, accountId, name, points, createdAt',
     });
     // 版本9：添加粉丝团表
     db.version(9).stores({
-      xTweetsData: "&id",
-      xSettings: "&id",
-      xPresets: "++id, name, createdAt",
-      xUserProfile: "&id",
-      xUserTweets: "&id",
-      xCharacterProfiles: "&characterId",
-      xActiveAccount: "&id",
-      xAccountList: "&accountId, name, createdAt",
-      xNPCs: "&id",
-      xAskbox: "&id",
-      xAccountProfiles: "&handle, name, updatedAt",
-      xAccountAskbox: "&id",
-      xCharacterRelationships: "&id, accountId, lastUpdated",
-      xBookmarks: "&id, accountId, tweetId, bookmarkedAt",
-      xLikes: "&id, accountId, tweetId, likedAt",
-      xWorldEvents: "&id, accountId, lastGenerated, lastProgressed",
-      xCustomGiftCategories: "&id, accountId, name, enabled, createdAt",
-      xCustomGifts: "&id, categoryId, accountId, name, points, createdAt",
-      xFanClubs: "&handle, createdAt, updatedAt",
+      xTweetsData: '&id',
+      xSettings: '&id',
+      xPresets: '++id, name, createdAt',
+      xUserProfile: '&id',
+      xUserTweets: '&id',
+      xCharacterProfiles: '&characterId',
+      xActiveAccount: '&id',
+      xAccountList: '&accountId, name, createdAt',
+      xNPCs: '&id',
+      xAskbox: '&id',
+      xAccountProfiles: '&handle, name, updatedAt',
+      xAccountAskbox: '&id',
+      xCharacterRelationships: '&id, accountId, lastUpdated',
+      xBookmarks: '&id, accountId, tweetId, bookmarkedAt',
+      xLikes: '&id, accountId, tweetId, likedAt',
+      xWorldEvents: '&id, accountId, lastGenerated, lastProgressed',
+      xCustomGiftCategories: '&id, accountId, name, enabled, createdAt',
+      xCustomGifts: '&id, categoryId, accountId, name, points, createdAt',
+      xFanClubs: '&handle, createdAt, updatedAt',
     });
 
     // Version 10: 粉丝团会员系统（添加新表，保留所有已有表）
     db.version(10).stores({
-      xTweetsData: "&id",
-      xSettings: "&id",
-      xPresets: "++id, name, createdAt",
-      xUserProfile: "&id",
-      xUserTweets: "&id",
-      xCharacterProfiles: "&characterId",
-      xActiveAccount: "&id",
-      xAccountList: "&accountId, name, createdAt",
-      xNPCs: "&id",
-      xAskbox: "&id",
-      xAccountProfiles: "&handle, name, updatedAt",
-      xAccountAskbox: "&id",
-      xCharacterRelationships: "&id, accountId, lastUpdated",
-      xBookmarks: "&id, accountId, tweetId, bookmarkedAt",
-      xLikes: "&id, accountId, tweetId, likedAt",
-      xWorldEvents: "&id, accountId, lastGenerated, lastProgressed",
-      xCustomGiftCategories: "&id, accountId, name, enabled, createdAt",
-      xCustomGifts: "&id, categoryId, accountId, name, points, createdAt",
-      xFanClubs: "&handle, createdAt, updatedAt",
-      xFanClubMemberships:
-        "&streamerHandle, joined, joinedAt, lastCheckinDate, points, level",
+      xTweetsData: '&id',
+      xSettings: '&id',
+      xPresets: '++id, name, createdAt',
+      xUserProfile: '&id',
+      xUserTweets: '&id',
+      xCharacterProfiles: '&characterId',
+      xActiveAccount: '&id',
+      xAccountList: '&accountId, name, createdAt',
+      xNPCs: '&id',
+      xAskbox: '&id',
+      xAccountProfiles: '&handle, name, updatedAt',
+      xAccountAskbox: '&id',
+      xCharacterRelationships: '&id, accountId, lastUpdated',
+      xBookmarks: '&id, accountId, tweetId, bookmarkedAt',
+      xLikes: '&id, accountId, tweetId, likedAt',
+      xWorldEvents: '&id, accountId, lastGenerated, lastProgressed',
+      xCustomGiftCategories: '&id, accountId, name, enabled, createdAt',
+      xCustomGifts: '&id, categoryId, accountId, name, points, createdAt',
+      xFanClubs: '&handle, createdAt, updatedAt',
+      xFanClubMemberships: '&streamerHandle, joined, joinedAt, lastCheckinDate, points, level',
     });
 
     // Version 11: 地图约会数据表（第十五个情景）
     db.version(11).stores({
-      xTweetsData: "&id",
-      xSettings: "&id",
-      xPresets: "++id, name, createdAt",
-      xUserProfile: "&id",
-      xUserTweets: "&id",
-      xCharacterProfiles: "&characterId",
-      xActiveAccount: "&id",
-      xAccountList: "&accountId, name, createdAt",
-      xNPCs: "&id",
-      xAskbox: "&id",
-      xAccountProfiles: "&handle, name, updatedAt",
-      xAccountAskbox: "&id",
-      xCharacterRelationships: "&id, accountId, lastUpdated",
-      xBookmarks: "&id, accountId, tweetId, bookmarkedAt",
-      xLikes: "&id, accountId, tweetId, likedAt",
-      xWorldEvents: "&id, accountId, lastGenerated, lastProgressed",
-      xCustomGiftCategories: "&id, accountId, name, enabled, createdAt",
-      xCustomGifts: "&id, categoryId, accountId, name, points, createdAt",
-      xFanClubs: "&handle, createdAt, updatedAt",
-      xFanClubMemberships:
-        "&streamerHandle, joined, joinedAt, lastCheckinDate, points, level",
-      xMapDatingData: "&id, accountId, lastGenerated, lastUpdated",
+      xTweetsData: '&id',
+      xSettings: '&id',
+      xPresets: '++id, name, createdAt',
+      xUserProfile: '&id',
+      xUserTweets: '&id',
+      xCharacterProfiles: '&characterId',
+      xActiveAccount: '&id',
+      xAccountList: '&accountId, name, createdAt',
+      xNPCs: '&id',
+      xAskbox: '&id',
+      xAccountProfiles: '&handle, name, updatedAt',
+      xAccountAskbox: '&id',
+      xCharacterRelationships: '&id, accountId, lastUpdated',
+      xBookmarks: '&id, accountId, tweetId, bookmarkedAt',
+      xLikes: '&id, accountId, tweetId, likedAt',
+      xWorldEvents: '&id, accountId, lastGenerated, lastProgressed',
+      xCustomGiftCategories: '&id, accountId, name, enabled, createdAt',
+      xCustomGifts: '&id, categoryId, accountId, name, points, createdAt',
+      xFanClubs: '&handle, createdAt, updatedAt',
+      xFanClubMemberships: '&streamerHandle, joined, joinedAt, lastCheckinDate, points, level',
+      xMapDatingData: '&id, accountId, lastGenerated, lastUpdated',
     });
 
     // Version 12: 用户地图约会个人资料表
     db.version(12).stores({
-      xTweetsData: "&id",
-      xSettings: "&id",
-      xPresets: "++id, name, createdAt",
-      xUserProfile: "&id",
-      xUserTweets: "&id",
-      xCharacterProfiles: "&characterId",
-      xActiveAccount: "&id",
-      xAccountList: "&accountId, name, createdAt",
-      xNPCs: "&id",
-      xAskbox: "&id",
-      xAccountProfiles: "&handle, name, updatedAt",
-      xAccountAskbox: "&id",
-      xCharacterRelationships: "&id, accountId, lastUpdated",
-      xBookmarks: "&id, accountId, tweetId, bookmarkedAt",
-      xLikes: "&id, accountId, tweetId, likedAt",
-      xWorldEvents: "&id, accountId, lastGenerated, lastProgressed",
-      xCustomGiftCategories: "&id, accountId, name, enabled, createdAt",
-      xCustomGifts: "&id, categoryId, accountId, name, points, createdAt",
-      xFanClubs: "&handle, createdAt, updatedAt",
-      xFanClubMemberships:
-        "&streamerHandle, joined, joinedAt, lastCheckinDate, points, level",
-      xMapDatingData: "&id, accountId, lastGenerated, lastUpdated",
-      xMapUserProfile: "&id, lastUpdated",
+      xTweetsData: '&id',
+      xSettings: '&id',
+      xPresets: '++id, name, createdAt',
+      xUserProfile: '&id',
+      xUserTweets: '&id',
+      xCharacterProfiles: '&characterId',
+      xActiveAccount: '&id',
+      xAccountList: '&accountId, name, createdAt',
+      xNPCs: '&id',
+      xAskbox: '&id',
+      xAccountProfiles: '&handle, name, updatedAt',
+      xAccountAskbox: '&id',
+      xCharacterRelationships: '&id, accountId, lastUpdated',
+      xBookmarks: '&id, accountId, tweetId, bookmarkedAt',
+      xLikes: '&id, accountId, tweetId, likedAt',
+      xWorldEvents: '&id, accountId, lastGenerated, lastProgressed',
+      xCustomGiftCategories: '&id, accountId, name, enabled, createdAt',
+      xCustomGifts: '&id, categoryId, accountId, name, points, createdAt',
+      xFanClubs: '&handle, createdAt, updatedAt',
+      xFanClubMemberships: '&streamerHandle, joined, joinedAt, lastCheckinDate, points, level',
+      xMapDatingData: '&id, accountId, lastGenerated, lastUpdated',
+      xMapUserProfile: '&id, lastUpdated',
     });
     // 版本13：添加地图约会聊天记录表
     db.version(13).stores({
-      xTweetsData: "&id",
-      xSettings: "&id",
-      xPresets: "++id, name, createdAt",
-      xUserProfile: "&id",
-      xUserTweets: "&id",
-      xCharacterProfiles: "&characterId",
-      xActiveAccount: "&id",
-      xAccountList: "&accountId, name, createdAt",
-      xNPCs: "&id",
-      xAskbox: "&id",
-      xAccountProfiles: "&handle, name, updatedAt",
-      xAccountAskbox: "&id",
-      xCharacterRelationships: "&id, accountId, lastUpdated",
-      xBookmarks: "&id, accountId, tweetId, bookmarkedAt",
-      xLikes: "&id, accountId, tweetId, likedAt",
-      xWorldEvents: "&id, accountId, lastGenerated, lastProgressed",
-      xCustomGiftCategories: "&id, accountId, name, enabled, createdAt",
-      xCustomGifts: "&id, categoryId, accountId, name, points, createdAt",
-      xFanClubs: "&handle, createdAt, updatedAt",
-      xFanClubMemberships:
-        "&streamerHandle, joined, joinedAt, lastCheckinDate, points, level",
-      xMapDatingData: "&id, accountId, lastGenerated, lastUpdated",
-      xMapUserProfile: "&id, lastUpdated",
-      xMapChats: "&id, accountId, userId, lastUpdated",
+      xTweetsData: '&id',
+      xSettings: '&id',
+      xPresets: '++id, name, createdAt',
+      xUserProfile: '&id',
+      xUserTweets: '&id',
+      xCharacterProfiles: '&characterId',
+      xActiveAccount: '&id',
+      xAccountList: '&accountId, name, createdAt',
+      xNPCs: '&id',
+      xAskbox: '&id',
+      xAccountProfiles: '&handle, name, updatedAt',
+      xAccountAskbox: '&id',
+      xCharacterRelationships: '&id, accountId, lastUpdated',
+      xBookmarks: '&id, accountId, tweetId, bookmarkedAt',
+      xLikes: '&id, accountId, tweetId, likedAt',
+      xWorldEvents: '&id, accountId, lastGenerated, lastProgressed',
+      xCustomGiftCategories: '&id, accountId, name, enabled, createdAt',
+      xCustomGifts: '&id, categoryId, accountId, name, points, createdAt',
+      xFanClubs: '&handle, createdAt, updatedAt',
+      xFanClubMemberships: '&streamerHandle, joined, joinedAt, lastCheckinDate, points, level',
+      xMapDatingData: '&id, accountId, lastGenerated, lastUpdated',
+      xMapUserProfile: '&id, lastUpdated',
+      xMapChats: '&id, accountId, userId, lastUpdated',
     });
-
+    // 版本14：添加道具系统
+    db.version(13).stores({
+      xTweetsData: '&id',
+      xSettings: '&id',
+      xPresets: '++id, name, createdAt',
+      xUserProfile: '&id',
+      xUserTweets: '&id',
+      xCharacterProfiles: '&characterId',
+      xActiveAccount: '&id',
+      xAccountList: '&accountId, name, createdAt',
+      xNPCs: '&id',
+      xAskbox: '&id',
+      xAccountProfiles: '&handle, name, updatedAt',
+      xAccountAskbox: '&id',
+      xCharacterRelationships: '&id, accountId, lastUpdated',
+      xBookmarks: '&id, accountId, tweetId, bookmarkedAt',
+      xLikes: '&id, accountId, tweetId, likedAt',
+      xWorldEvents: '&id, accountId, lastGenerated, lastProgressed',
+      xCustomGiftCategories: '&id, accountId, name, enabled, createdAt',
+      xCustomGifts: '&id, categoryId, accountId, name, points, createdAt',
+      xFanClubs: '&handle, createdAt, updatedAt',
+      xFanClubMemberships: '&streamerHandle, joined, joinedAt, lastCheckinDate, points, level',
+      xMapDatingData: '&id, accountId, lastGenerated, lastUpdated',
+      xMapUserProfile: '&id, lastUpdated',
+      xMapChats: '&id, accountId, userId, lastUpdated',
+      xTools: '&id, accountId, updatedAt',
+    });
+    
     return db;
   }
   // 原有全局数据库配置函数 - 用于访问API配置和角色信息
@@ -12076,39 +12129,181 @@ ${
     // 使用统一的推文详情页面显示
     await showTweetDetail(tweet);
   }
-  // X风格提示框
+  // X风格提示框（PSP风格设计）
   function showXToast(message, type = "success") {
     // 移除现有的提示框
     const existingToast = document.querySelector(".x-toast");
     if (existingToast) {
       existingToast.remove();
     }
+
+    // 🎨 主题检测
+    const xSocialScreen = document.getElementById("x-social-screen");
+    const isLightTheme = xSocialScreen?.classList.contains("x-theme-light");
+
+    // 🎨 根据类型和主题设置颜色
+    let bgColor, borderColor, textColor, shadowColor, icon;
+
+    if (type === "success") {
+      icon = "✓";
+      if (isLightTheme) {
+        bgColor = "linear-gradient(135deg, rgba(29, 155, 240, 0.15) 0%, rgba(29, 155, 240, 0.08) 100%)";
+        borderColor = "rgba(29, 155, 240, 0.4)";
+        textColor = "#1d9bf0";
+        shadowColor = "rgba(29, 155, 240, 0.3)";
+      } else {
+        bgColor = "linear-gradient(135deg, rgba(29, 155, 240, 0.25) 0%, rgba(29, 155, 240, 0.15) 100%)";
+        borderColor = "rgba(29, 155, 240, 0.6)";
+        textColor = "#60c5ff";
+        shadowColor = "rgba(29, 155, 240, 0.4)";
+      }
+    } else if (type === "error") {
+      icon = "✕";
+      if (isLightTheme) {
+        bgColor = "linear-gradient(135deg, rgba(244, 33, 46, 0.15) 0%, rgba(244, 33, 46, 0.08) 100%)";
+        borderColor = "rgba(244, 33, 46, 0.4)";
+        textColor = "#f4212e";
+        shadowColor = "rgba(244, 33, 46, 0.3)";
+      } else {
+        bgColor = "linear-gradient(135deg, rgba(244, 33, 46, 0.25) 0%, rgba(244, 33, 46, 0.15) 100%)";
+        borderColor = "rgba(244, 33, 46, 0.6)";
+        textColor = "#ff6b75";
+        shadowColor = "rgba(244, 33, 46, 0.4)";
+      }
+    } else {
+      // info 类型
+      icon = "ℹ";
+      if (isLightTheme) {
+        bgColor = "linear-gradient(135deg, rgba(83, 100, 113, 0.15) 0%, rgba(83, 100, 113, 0.08) 100%)";
+        borderColor = "rgba(83, 100, 113, 0.4)";
+        textColor = "#536471";
+        shadowColor = "rgba(83, 100, 113, 0.3)";
+      } else {
+        bgColor = "linear-gradient(135deg, rgba(113, 118, 123, 0.25) 0%, rgba(113, 118, 123, 0.15) 100%)";
+        borderColor = "rgba(113, 118, 123, 0.6)";
+        textColor = "#8b98a5";
+        shadowColor = "rgba(113, 118, 123, 0.4)";
+      }
+    }
+
+    // 📦 创建Toast容器
     const toast = document.createElement("div");
     toast.className = "x-toast";
+    toast.innerHTML = `
+      <div class="x-toast-icon">${icon}</div>
+      <div class="x-toast-message">${message}</div>
+      <div class="x-toast-scanline"></div>
+    `;
+
+    // 🎨 PSP风格样式
     toast.style.cssText = `
- position: fixed; top: 80px; left: 50%; transform: translateX(-50%); background-color: ${
-   type === "success" ? "#1d9bf0" : "#f4212e"
- }; color: #fff; padding: 12px 20px; border-radius: 20px; font-size: 15px; font-weight: 600; z-index: 100000; box-shadow: 0 4px 12px rgba(0,0,0,0.3); animation: fadeInOut 3s ease-in-out forwards; `;
-    toast.textContent = message; // 添加淡入淡出动画
+      position: fixed;
+      top: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 20px;
+      background: ${bgColor};
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 2px solid ${borderColor};
+      color: ${textColor};
+      font-size: 15px;
+      font-weight: 600;
+      z-index: 100000;
+      box-shadow:
+        0 4px 16px ${shadowColor},
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      clip-path: polygon(
+        0 8px, 8px 0, calc(100% - 8px) 0, 100% 8px,
+        100% calc(100% - 8px), calc(100% - 8px) 100%,
+        8px 100%, 0 calc(100% - 8px)
+      );
+      animation: xToastSlideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      pointer-events: none;
+      user-select: none;
+    `;
+
+    // 🎨 图标样式
+    const iconEl = toast.querySelector(".x-toast-icon");
+    iconEl.style.cssText = `
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      font-size: 16px;
+      font-weight: bold;
+      flex-shrink: 0;
+    `;
+
+    // 🎨 消息样式
+    const messageEl = toast.querySelector(".x-toast-message");
+    messageEl.style.cssText = `
+      flex: 1;
+      line-height: 1.4;
+    `;
+
+    // 🎨 扫描线效果
+    const scanlineEl = toast.querySelector(".x-toast-scanline");
+    scanlineEl.style.cssText = `
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        rgba(255, 255, 255, 0.03) 0px,
+        rgba(255, 255, 255, 0.03) 1px,
+        transparent 1px,
+        transparent 2px
+      );
+      pointer-events: none;
+      z-index: 1;
+    `;
+
+    // 🎬 添加动画样式
     const style = document.createElement("style");
     style.textContent = `
- @keyframes fadeInOut {
- 0 % { opacity: 0; transform: translateX(-50 %) translateY(- 20px); }
- 15% {opacity: 1; transform: translateX(-50%) translateY(0); }
- 85% {opacity: 1; transform: translateX(-50%) translateY(0); }
- 100% {opacity: 0; transform: translateX(-50%) translateY(-20px); }
- }
- `;
+      @keyframes xToastSlideIn {
+        0% {
+          opacity: 0;
+          transform: translateX(-50%) translateY(-30px) scale(0.9);
+        }
+        100% {
+          opacity: 1;
+          transform: translateX(-50%) translateY(0) scale(1);
+        }
+      }
+      @keyframes xToastSlideOut {
+        0% {
+          opacity: 1;
+          transform: translateX(-50%) translateY(0) scale(1);
+        }
+        100% {
+          opacity: 0;
+          transform: translateX(-50%) translateY(-30px) scale(0.9);
+        }
+      }
+    `;
     document.head.appendChild(style);
-    document.body.appendChild(toast); // 3秒后自动移除
+    document.body.appendChild(toast);
+
+    // ⏰ 3秒后滑出并移除
     setTimeout(() => {
-      if (toast.parentNode) {
-        toast.remove();
-      }
-      if (style.parentNode) {
-        style.remove();
-      }
-    }, 3000);
+      toast.style.animation = "xToastSlideOut 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards";
+      setTimeout(() => {
+        if (toast.parentNode) {
+          toast.remove();
+        }
+        if (style.parentNode) {
+          style.remove();
+        }
+      }, 300);
+    }, 2700);
   }
   // ▼▼▼ 【主要！！！】第一个情景：推文生成器▼▼▼
   async function refreshXTweets() {
@@ -19697,6 +19892,10 @@ ${
         xMapChats: await xDb.xMapChats.toArray(),
         // localStorage中的聊天列表
         xMapSavedChats: localStorage.getItem("xMapSavedChats") || "[]",
+        // 咩三三城市报纸数据
+        newspaperCachedData: localStorage.getItem("newspaperCachedData") || null,
+        newspaperStats: localStorage.getItem("newspaperStats") || null,
+        newspaperGenerateHistory: localStorage.getItem("newspaperGenerateHistory") || null,
         // 元数据
         exportTime: new Date().toISOString(),
         version: "2.2",
@@ -19779,6 +19978,10 @@ ${
           await xDb.xMapUserProfile.clear();
           await xDb.xMapChats.clear();
           localStorage.removeItem("xMapSavedChats");
+          // 清空报纸数据
+          localStorage.removeItem("newspaperCachedData");
+          localStorage.removeItem("newspaperStats");
+          localStorage.removeItem("newspaperGenerateHistory");
           console.log("✅ 已清空旧数据"); // 导入新数据
           if (importData.xSettings && importData.xSettings.length > 0) {
             await xDb.xSettings.bulkAdd(importData.xSettings);
@@ -19850,6 +20053,16 @@ ${
           }
           if (importData.xMapSavedChats) {
             localStorage.setItem("xMapSavedChats", importData.xMapSavedChats);
+          }
+          // 恢复报纸数据
+          if (importData.newspaperCachedData) {
+            localStorage.setItem("newspaperCachedData", importData.newspaperCachedData);
+          }
+          if (importData.newspaperStats) {
+            localStorage.setItem("newspaperStats", importData.newspaperStats);
+          }
+          if (importData.newspaperGenerateHistory) {
+            localStorage.setItem("newspaperGenerateHistory", importData.newspaperGenerateHistory);
           }
           console.log("✅ X数据导入成功，包含:", {
             设置数: importData.xSettings?.length || 0,
@@ -34173,6 +34386,39 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
         overflow: hidden;
       }
 
+      /* 羊图标按钮（咩三三报纸）- 在提醒按钮下方、设置按钮上方 */
+      .map-newspaper-btn {
+        position: absolute;
+        top: 228px; /* 186 + 32 + 10 = 提醒按钮top + 提醒按钮高度 + 间距 */
+        left: 20px;
+        z-index: 10;
+        width: 32px;
+        height: 32px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 0.15s ease, transform 0.2s ease;
+        padding: 0;
+      }
+
+      .map-newspaper-btn:hover {
+        opacity: 0.7;
+      }
+
+      .map-newspaper-btn:active {
+        transform: scale(0.95);
+      }
+
+      .map-newspaper-btn svg {
+        width: 24px;
+        height: 24px;
+        stroke: #fff;
+        filter: drop-shadow(0 1px 3px rgba(0,0,0,0.4));
+      }
+
       /* 关闭按钮 - ins风格简洁设计 */
       .map-close-btn {
         position: absolute;
@@ -34340,10 +34586,45 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
         display: none;
       }
 
+      /* ==================== 城市乘车按钮 - 简约设计 ==================== */
+      .map-ride-btn {
+        position: absolute;
+        top: 270px; /* 228 + 32 + 10 = 报纸按钮top + 报纸按钮高度 + 间距 */
+        left: 20px;
+        z-index: 10;
+        width: 32px;
+        height: 32px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 0.15s ease, transform 0.2s ease;
+        padding: 0;
+      }
+
+      .map-ride-btn:hover {
+        opacity: 0.7;
+      }
+
+      .map-ride-btn:active {
+        transform: scale(0.95);
+      }
+
+      .map-ride-btn svg {
+        width: 24px;
+        height: 24px;
+        stroke: #fff;
+        fill: none;
+        stroke-width: 2;
+        filter: drop-shadow(0 1px 3px rgba(0,0,0,0.4));
+      }
+
       /* ==================== 应用设置按钮 - 简约设计 ==================== */
       .map-app-settings-btn {
         position: absolute;
-        top: 228px; /* 186 + 32 + 10 = 提醒按钮top + 提醒按钮高度 + 间距 */
+        top: 312px; /* 270 + 32 + 10 = 乘车按钮top + 乘车按钮高度 + 间距 */
         left: 20px;
         z-index: 10;
         width: 32px;
@@ -34751,6 +35032,1350 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
         color: #666;
         line-height: 1.5;
         font-weight: 500;
+      }
+
+      /* ==================== 城市乘车面板 - 黑白灰简约ins风格 ==================== */
+      /* 乘车面板遮罩 */
+      .ride-panel-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 249;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .ride-panel-overlay.show {
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      /* 乘车面板主容器 - 半屏抽屉 */
+      .ride-panel {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 58vh;
+        background: rgba(10, 10, 10, 0.75);
+        backdrop-filter: blur(24px) saturate(180%);
+        -webkit-backdrop-filter: blur(24px) saturate(180%);
+        border-top: 1px solid #2a2a2a;
+        box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.6);
+        z-index: 250;
+        overflow-y: auto;
+        overflow-x: hidden;
+        clip-path: polygon(0 3%, 3% 0, 97% 0, 100% 3%, 100% 100%, 0 100%);
+        transform: translateY(100%);
+        transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      .ride-panel.show {
+        transform: translateY(0);
+      }
+
+      .ride-panel.hide {
+        transform: translateY(100%);
+      }
+
+      /* 面板拖动手柄 */
+      .ride-panel-handle {
+        width: 48px;
+        height: 5px;
+        background: #404040;
+        border-radius: 3px;
+        margin: 12px auto 0;
+      }
+
+      /* 面板内容容器 */
+      .ride-panel-content {
+        padding: 24px 20px 40px;
+        max-width: 640px;
+        margin: 0 auto;
+      }
+
+      /* 路线信息横幅 */
+      .ride-route-banner {
+        background: linear-gradient(135deg, #2a2a2a 0%, #666 100%);
+        color: #fff;
+        padding: 14px 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+      }
+
+      .ride-route-banner-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .ride-route-icon {
+        width: 20px;
+        height: 20px;
+      }
+
+      .ride-route-text {
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 0.2px;
+      }
+
+      .ride-route-time {
+        font-size: 18px;
+        font-weight: 700;
+        font-family: 'SF Mono', 'Monaco', Consolas, monospace;
+      }
+
+      /* 位置选择区域 */
+      .ride-location-section {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 24px;
+      }
+
+      .ride-location-box {
+        background: #1a1a1a;
+        border: 1px solid #2a2a2a;
+        border-radius: 10px;
+        padding: 14px 16px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
+      }
+
+      .ride-location-box:hover {
+        background: #252525;
+        border-color: #3a3a3a;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      }
+
+      .ride-location-box.selecting {
+        border-color: #fff;
+        background: #252525;
+        animation: selectingPulse 1.5s ease-in-out infinite;
+      }
+
+      @keyframes selectingPulse {
+        0%, 100% {
+          border-color: #fff;
+        }
+        50% {
+          border-color: #666;
+        }
+      }
+
+      .ride-location-label {
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #707070;
+        margin-bottom: 6px;
+      }
+
+      .ride-location-value {
+        font-size: 13px;
+        font-weight: 500;
+        color: #fff;
+        line-height: 1.4;
+      }
+
+      .ride-location-value.placeholder {
+        color: #707070;
+        font-style: italic;
+      }
+
+      /* 区域标题 */
+      .ride-section-title {
+        font-size: 17px;
+        font-weight: 700;
+        letter-spacing: -0.3px;
+        color: #fff;
+        margin-bottom: 16px;
+      }
+
+      /* 车辆选择网格 */
+      .ride-vehicles-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 12px;
+        margin-bottom: 24px;
+      }
+
+      /* 车辆卡片 */
+      .ride-vehicle-card {
+        background: #1a1a1a;
+        border: 2px solid #2a2a2a;
+        border-radius: 14px;
+        padding: 18px 14px;
+        cursor: pointer;
+        transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .ride-vehicle-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, transparent 0%, #252525 100%);
+        opacity: 0;
+        transition: opacity 0.35s ease;
+      }
+
+      .ride-vehicle-card:hover {
+        border-color: #666;
+        transform: translateY(-4px) scale(1.02);
+        box-shadow: 0 8px 28px rgba(0, 0, 0, 0.5);
+      }
+
+      .ride-vehicle-card:hover::before {
+        opacity: 1;
+      }
+
+      .ride-vehicle-card.selected {
+        border-color: #fff;
+        background: #252525;
+        box-shadow: 0 0 0 1px #fff inset;
+      }
+
+      .ride-vehicle-card > * {
+        position: relative;
+        z-index: 1;
+      }
+
+      /* 车辆图片容器 */
+      .ride-vehicle-image {
+        width: 100%;
+        height: 70px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 14px;
+      }
+
+      .ride-vehicle-image svg {
+        max-width: 90%;
+        max-height: 100%;
+        filter: drop-shadow(2px 3px 5px rgba(0, 0, 0, 0.3));
+        transition: transform 0.35s ease;
+      }
+
+      .ride-vehicle-card:hover .ride-vehicle-image svg {
+        transform: scale(1.08);
+      }
+
+      /* 车辆信息 */
+      .ride-vehicle-name {
+        font-size: 15px;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 5px;
+        letter-spacing: -0.2px;
+      }
+
+      .ride-vehicle-capacity {
+        font-size: 11px;
+        color: #a0a0a0;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .ride-capacity-icon {
+        width: 14px;
+        height: 14px;
+      }
+
+      /* 车辆价格 */
+      .ride-vehicle-pricing {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+      }
+
+      .ride-vehicle-price {
+        font-size: 20px;
+        font-weight: 800;
+        color: #fff;
+        font-family: 'SF Mono', 'Monaco', Consolas, monospace;
+      }
+
+      .ride-vehicle-eta {
+        font-size: 10px;
+        color: #707070;
+        font-weight: 500;
+      }
+
+      /* 支付方式区域 */
+      .ride-payment-section {
+        margin-bottom: 20px;
+      }
+
+      .ride-payment-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: #fff;
+        margin-bottom: 12px;
+      }
+
+      .ride-payment-options {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+
+      .ride-payment-option {
+        background: #1a1a1a;
+        border: 2px solid #2a2a2a;
+        border-radius: 10px;
+        padding: 12px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-size: 13px;
+        font-weight: 500;
+        color: #fff;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .ride-payment-option:hover {
+        border-color: #666;
+        background: #252525;
+      }
+
+      .ride-payment-option.selected {
+        border-color: #fff;
+        background: #252525;
+      }
+
+      .ride-payment-icon {
+        width: 18px;
+        height: 18px;
+      }
+
+      /* 预订按钮 */
+      .ride-book-btn {
+        width: 100%;
+        padding: 17px 24px;
+        background: #fff;
+        color: #000;
+        border: none;
+        border-radius: 12px;
+        font-size: 15px;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
+        cursor: pointer;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .ride-book-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 28px rgba(0, 0, 0, 0.6);
+      }
+
+      .ride-book-btn:active {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+      }
+
+      .ride-book-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      /* 选择目的地提示 */
+      .ride-selection-hint {
+        position: fixed;
+        top: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(10, 10, 10, 0.75);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid #2a2a2a;
+        padding: 12px 24px;
+        border-radius: 24px;
+        font-size: 13px;
+        font-weight: 600;
+        color: #fff;
+        z-index: 260;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      }
+
+      .ride-selection-hint.show {
+        opacity: 1;
+      }
+
+      /* 地图上的路线SVG容器 */
+      .ride-route-svg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 5;
+      }
+
+      .ride-route-path {
+        fill: none;
+        stroke: #b0b0b0;
+        stroke-width: 3;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-dasharray: 12 6;
+        animation: routeFlow 25s linear infinite;
+      }
+
+      @keyframes routeFlow {
+        to {
+          stroke-dashoffset: -180;
+        }
+      }
+
+      /* 地图上的车辆标记 */
+      .ride-vehicle-marker {
+        position: absolute;
+        width: 32px;
+        height: 32px;
+        z-index: 6;
+        animation: vehicleFloat 3.5s ease-in-out infinite;
+        filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.6));
+        pointer-events: none;
+      }
+
+      .ride-vehicle-marker svg {
+        width: 100%;
+        height: 100%;
+      }
+
+      @keyframes vehicleFloat {
+        0%, 100% {
+          transform: translateY(0) rotate(0deg);
+        }
+        50% {
+          transform: translateY(-5px) rotate(2deg);
+        }
+      }
+
+      /* 选中的目的地地标发光效果 */
+      .landmark-label.ride-destination-selected .landmark-label-icon {
+        animation: destinationGlow 2s ease-in-out infinite;
+      }
+
+      @keyframes destinationGlow {
+        0%, 100% {
+          filter: drop-shadow(0 0 8px currentColor);
+        }
+        50% {
+          filter: drop-shadow(0 0 16px currentColor);
+        }
+      }
+
+      /* 滚动条样式 */
+      .ride-panel::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .ride-panel::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      .ride-panel::-webkit-scrollbar-thumb {
+        background: #404040;
+        border-radius: 3px;
+      }
+
+      .ride-panel::-webkit-scrollbar-thumb:hover {
+        background: #707070;
+      }
+
+      /* ==================== 城市乘车面板 - 亮色主题适配 ==================== */
+      #x-map-container.light-theme .ride-panel-overlay {
+        background: rgba(0, 0, 0, 0.3);
+      }
+
+      #x-map-container.light-theme .ride-panel {
+        background: rgba(255, 255, 255, 0.75);
+        border-top: 1px solid #e5e5e5;
+        box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.12);
+      }
+
+      #x-map-container.light-theme .ride-panel-handle {
+        background: #cccccc;
+      }
+
+      #x-map-container.light-theme .ride-route-banner {
+        background: linear-gradient(135deg, #2a2a2a 0%, #666 100%);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+      }
+
+      #x-map-container.light-theme .ride-location-box {
+        background: #f8f8f8;
+        border: 1px solid #e5e5e5;
+      }
+
+      #x-map-container.light-theme .ride-location-box:hover {
+        background: #f0f0f0;
+        border-color: #d0d0d0;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      }
+
+      #x-map-container.light-theme .ride-location-box.selecting {
+        border-color: #000;
+        background: #f0f0f0;
+      }
+
+      #x-map-container.light-theme .ride-location-label {
+        color: #999;
+      }
+
+      #x-map-container.light-theme .ride-location-value {
+        color: #000;
+      }
+
+      #x-map-container.light-theme .ride-location-value.placeholder {
+        color: #999;
+      }
+
+      #x-map-container.light-theme .ride-section-title {
+        color: #000;
+      }
+
+      #x-map-container.light-theme .ride-vehicle-card {
+        background: #f8f8f8;
+        border: 2px solid #e5e5e5;
+      }
+
+      #x-map-container.light-theme .ride-vehicle-card::before {
+        background: linear-gradient(135deg, transparent 0%, #f0f0f0 100%);
+      }
+
+      #x-map-container.light-theme .ride-vehicle-card:hover {
+        border-color: #666;
+        box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
+      }
+
+      #x-map-container.light-theme .ride-vehicle-card.selected {
+        border-color: #000;
+        background: #f0f0f0;
+        box-shadow: 0 0 0 1px #000 inset;
+      }
+
+      #x-map-container.light-theme .ride-vehicle-name {
+        color: #000;
+      }
+
+      #x-map-container.light-theme .ride-vehicle-capacity {
+        color: #666;
+      }
+
+      #x-map-container.light-theme .ride-vehicle-price {
+        color: #000;
+      }
+
+      #x-map-container.light-theme .ride-vehicle-eta {
+        color: #999;
+      }
+
+      #x-map-container.light-theme .ride-payment-title {
+        color: #000;
+      }
+
+      #x-map-container.light-theme .ride-payment-option {
+        background: #f8f8f8;
+        border: 2px solid #e5e5e5;
+        color: #000;
+      }
+
+      #x-map-container.light-theme .ride-payment-option:hover {
+        border-color: #666;
+        background: #f0f0f0;
+      }
+
+      #x-map-container.light-theme .ride-payment-option.selected {
+        border-color: #000;
+        background: #f0f0f0;
+      }
+
+      #x-map-container.light-theme .ride-book-btn {
+        background: #000;
+        color: #fff;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+      }
+
+      #x-map-container.light-theme .ride-book-btn:hover {
+        box-shadow: 0 8px 28px rgba(0, 0, 0, 0.16);
+      }
+
+      #x-map-container.light-theme .ride-book-btn:active {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+      }
+
+      #x-map-container.light-theme .ride-selection-hint {
+        background: rgba(255, 255, 255, 0.75);
+        border: 1px solid #e5e5e5;
+        color: #000;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+      }
+
+      #x-map-container.light-theme .ride-route-path {
+        stroke: #4a4a4a;
+      }
+
+      #x-map-container.light-theme .ride-panel::-webkit-scrollbar-thumb {
+        background: #cccccc;
+      }
+
+      #x-map-container.light-theme .ride-panel::-webkit-scrollbar-thumb:hover {
+        background: #a0a0a0;
+      }
+
+      /* ==================== 等待司机悬浮小球 ==================== */
+      .waiting-driver-float-btn {
+        position: fixed;
+        bottom: 100px;
+        right: 24px;
+        width: 64px;
+        height: 64px;
+        background: rgba(10, 10, 10, 0.85);
+        border: 2px solid #2a2a2a;
+        border-radius: 50%;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 999;
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        backdrop-filter: blur(24px) saturate(180%);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      }
+
+      .waiting-driver-float-btn.active {
+        display: flex;
+      }
+
+      .waiting-driver-float-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        animation: driverPulse 2s ease-out infinite;
+        z-index: -1;
+      }
+
+      @keyframes driverPulse {
+        0% {
+          transform: scale(1);
+          opacity: 0.8;
+        }
+        100% {
+          transform: scale(2);
+          opacity: 0;
+        }
+      }
+
+      .waiting-driver-float-btn:hover {
+        transform: scale(1.1);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+      }
+
+      .waiting-driver-float-btn svg {
+        width: 32px;
+        height: 32px;
+        stroke: #ffffff;
+        stroke-width: 1.5;
+        transition: stroke 0.3s ease;
+      }
+
+      /* 摇晃动画（车辆到达时） */
+      .waiting-driver-float-btn.shake {
+        animation: driverShake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite;
+      }
+
+      @keyframes driverShake {
+        0%, 100% { transform: translateX(0) rotate(0deg); }
+        10%, 30%, 50%, 70%, 90% { transform: translateX(-4px) rotate(-5deg); }
+        20%, 40%, 60%, 80% { transform: translateX(4px) rotate(5deg); }
+      }
+
+      /* 亮色主题适配 */
+      #x-map-container.light-theme .waiting-driver-float-btn {
+        background: rgba(255, 255, 255, 0.85);
+        border-color: #e5e5e5;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+      }
+
+      #x-map-container.light-theme .waiting-driver-float-btn::before {
+        background: rgba(42, 42, 42, 0.3);
+      }
+
+      #x-map-container.light-theme .waiting-driver-float-btn svg {
+        stroke: #000000;
+      }
+
+      #x-map-container.light-theme .waiting-driver-float-btn:hover {
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      }
+
+      /* ==================== 等待司机弹窗 ==================== */
+      .waiting-driver-modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(8px);
+        z-index: 2500;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+      }
+
+      .waiting-driver-modal-overlay.active {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .waiting-driver-modal {
+        position: relative;
+        width: 90%;
+        max-width: 420px;
+        background: rgba(10, 10, 10, 0.85);
+        border: 1px solid #2a2a2a;
+        backdrop-filter: blur(24px) saturate(180%);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        clip-path: polygon(
+          16px 0,
+          calc(100% - 16px) 0,
+          100% 16px,
+          100% calc(100% - 24px),
+          calc(100% - 24px) 100%,
+          24px 100%,
+          0 calc(100% - 24px),
+          0 16px
+        );
+        padding: 32px 24px 24px;
+        transform: scale(0.8);
+        opacity: 0;
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      .waiting-driver-modal-overlay.active .waiting-driver-modal {
+        transform: scale(1);
+        opacity: 1;
+      }
+
+      .waiting-driver-close {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        width: 32px;
+        height: 32px;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: all 0.2s ease;
+        z-index: 1;
+      }
+
+      .waiting-driver-close:hover {
+        background: #252525;
+        transform: rotate(90deg);
+      }
+
+      .waiting-driver-close svg {
+        width: 20px;
+        height: 20px;
+        stroke: #a0a0a0;
+        stroke-width: 2;
+      }
+
+      .waiting-driver-header {
+        text-align: center;
+        margin-bottom: 24px;
+      }
+
+      .waiting-driver-status {
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+        color: #707070;
+        margin-bottom: 8px;
+      }
+
+      .waiting-driver-eta {
+        font-size: 32px;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+        color: #ffffff;
+        font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+      }
+
+      .waiting-driver-eta-label {
+        font-size: 14px;
+        font-weight: 400;
+        color: #a0a0a0;
+        margin-top: 4px;
+      }
+
+      .waiting-driver-card {
+        background: #1a1a1a;
+        border: 1px solid #2a2a2a;
+        border-radius: 20px;
+        padding: 20px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+      }
+
+      .waiting-driver-card::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+        transform: rotate(45deg);
+        animation: driverCardShimmer 3s infinite;
+      }
+
+      @keyframes driverCardShimmer {
+        0% { transform: translateX(-100%) rotate(45deg); }
+        100% { transform: translateX(100%) rotate(45deg); }
+      }
+
+      .waiting-driver-avatar {
+        position: relative;
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        overflow: hidden;
+        flex-shrink: 0;
+        z-index: 1;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      }
+
+      .waiting-driver-avatar::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        border: 2px solid #d5d5d5;
+        opacity: 0.3;
+      }
+
+      .waiting-driver-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .waiting-driver-info {
+        flex: 1;
+        z-index: 1;
+      }
+
+      .waiting-driver-name {
+        font-size: 18px;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 4px;
+        letter-spacing: -0.3px;
+      }
+
+      .waiting-driver-rating {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        margin-bottom: 6px;
+      }
+
+      .waiting-driver-rating svg {
+        width: 14px;
+        height: 14px;
+        fill: #ffffff;
+      }
+
+      .waiting-driver-rating-value {
+        font-size: 13px;
+        font-weight: 600;
+        color: #ffffff;
+        margin-left: 2px;
+      }
+
+      .waiting-driver-vehicle {
+        font-size: 13px;
+        color: #a0a0a0;
+        font-weight: 500;
+      }
+
+      .waiting-driver-plate {
+        display: inline-block;
+        background: #0a0a0a;
+        border: 1px solid #2a2a2a;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        margin-left: 6px;
+        font-family: 'Courier New', monospace;
+        color: #ffffff;
+      }
+
+      .waiting-driver-route-map {
+        position: relative;
+        width: 100%;
+        height: 200px;
+        background: #151515;
+        border-radius: 16px;
+        overflow: hidden;
+        margin-bottom: 20px;
+        border: 1px solid #2a2a2a;
+      }
+
+      .waiting-driver-route-grid {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image:
+          repeating-linear-gradient(0deg, transparent, transparent 19px, #2a2a2a 19px, #2a2a2a 20px),
+          repeating-linear-gradient(90deg, transparent, transparent 19px, #2a2a2a 19px, #2a2a2a 20px);
+        opacity: 0.3;
+      }
+
+      .waiting-driver-route-line {
+        position: absolute;
+        top: 50%;
+        left: 20%;
+        width: 60%;
+        height: 2px;
+        background: transparent;
+        transform: translateY(-50%);
+      }
+
+      .waiting-driver-route-line::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: repeating-linear-gradient(
+          to right,
+          #b0b0b0 0px,
+          #b0b0b0 8px,
+          transparent 8px,
+          transparent 16px
+        );
+        animation: driverRouteFlow 1.5s linear infinite;
+      }
+
+      @keyframes driverRouteFlow {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(16px); }
+      }
+
+      .waiting-driver-user-marker {
+        position: absolute;
+        left: 80%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 2;
+      }
+
+      .waiting-driver-user-pin {
+        width: 32px;
+        height: 32px;
+        background: #d5d5d5;
+        border: 3px solid #0a0a0a;
+        border-radius: 50%;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .waiting-driver-user-pin svg {
+        width: 16px;
+        height: 16px;
+        stroke: #0a0a0a;
+        stroke-width: 2.5;
+      }
+
+      .waiting-driver-car-marker {
+        position: absolute;
+        left: 20%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 3;
+      }
+
+      .waiting-driver-car-icon {
+        width: 40px;
+        height: 40px;
+        background: #0a0a0a;
+        border: 2px solid #d5d5d5;
+        border-radius: 50%;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+      }
+
+      .waiting-driver-car-icon::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        animation: driverCarPulse 2s ease-out infinite;
+        z-index: -1;
+      }
+
+      @keyframes driverCarPulse {
+        0% {
+          transform: scale(1);
+          opacity: 0.6;
+        }
+        100% {
+          transform: scale(2.5);
+          opacity: 0;
+        }
+      }
+
+      .waiting-driver-car-icon svg {
+        width: 20px;
+        height: 20px;
+        stroke: #d5d5d5;
+        stroke-width: 2;
+      }
+
+      .waiting-driver-car-label {
+        position: absolute;
+        bottom: -28px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(10, 10, 10, 0.85);
+        border: 1px solid #2a2a2a;
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+        color: #ffffff;
+        white-space: nowrap;
+        backdrop-filter: blur(8px);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      }
+
+      .waiting-driver-distance-info {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px;
+        background: #1a1a1a;
+        border: 1px solid #2a2a2a;
+        border-radius: 12px;
+        margin-bottom: 20px;
+      }
+
+      .waiting-driver-distance-item {
+        text-align: center;
+        flex: 1;
+      }
+
+      .waiting-driver-distance-value {
+        font-size: 20px;
+        font-weight: 700;
+        color: #ffffff;
+        letter-spacing: -0.3px;
+      }
+
+      .waiting-driver-distance-label {
+        font-size: 11px;
+        color: #707070;
+        margin-top: 2px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .waiting-driver-distance-divider {
+        width: 1px;
+        height: 32px;
+        background: #2a2a2a;
+      }
+
+      .waiting-driver-actions {
+        display: flex;
+        gap: 12px;
+      }
+
+      .waiting-driver-action-btn {
+        flex: 1;
+        height: 48px;
+        border: 1px solid #2a2a2a;
+        border-radius: 12px;
+        background: #1a1a1a;
+        color: #ffffff;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.2s ease;
+      }
+
+      .waiting-driver-action-btn:hover {
+        background: #252525;
+        transform: translateY(-2px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      }
+
+      .waiting-driver-action-btn svg {
+        width: 18px;
+        height: 18px;
+        stroke: #ffffff;
+        stroke-width: 2;
+      }
+
+      .waiting-driver-action-btn.cancel {
+        background: transparent;
+        border: 2px solid #d5d5d5;
+      }
+
+      .waiting-driver-action-btn.cancel:hover {
+        background: #d5d5d5;
+        color: #0a0a0a;
+      }
+
+      .waiting-driver-action-btn.cancel:hover svg {
+        stroke: #0a0a0a;
+      }
+
+      /* 亮色主题适配 */
+      #x-map-container.light-theme .waiting-driver-modal {
+        background: rgba(255, 255, 255, 0.85);
+        border-color: #e5e5e5;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+      }
+
+      #x-map-container.light-theme .waiting-driver-close:hover {
+        background: #f0f0f0;
+      }
+
+      #x-map-container.light-theme .waiting-driver-close svg {
+        stroke: #666666;
+      }
+
+      #x-map-container.light-theme .waiting-driver-status {
+        color: #999999;
+      }
+
+      #x-map-container.light-theme .waiting-driver-eta {
+        color: #000000;
+      }
+
+      #x-map-container.light-theme .waiting-driver-eta-label {
+        color: #666666;
+      }
+
+      #x-map-container.light-theme .waiting-driver-card {
+        background: #f8f8f8;
+        border-color: #e5e5e5;
+      }
+
+      #x-map-container.light-theme .waiting-driver-card::before {
+        background: linear-gradient(45deg, transparent, rgba(0, 0, 0, 0.05), transparent);
+      }
+
+      #x-map-container.light-theme .waiting-driver-avatar::after {
+        border-color: #2a2a2a;
+      }
+
+      #x-map-container.light-theme .waiting-driver-name {
+        color: #000000;
+      }
+
+      #x-map-container.light-theme .waiting-driver-rating svg {
+        fill: #000000;
+      }
+
+      #x-map-container.light-theme .waiting-driver-rating-value {
+        color: #000000;
+      }
+
+      #x-map-container.light-theme .waiting-driver-vehicle {
+        color: #666666;
+      }
+
+      #x-map-container.light-theme .waiting-driver-plate {
+        background: #ffffff;
+        border-color: #e5e5e5;
+        color: #000000;
+      }
+
+      #x-map-container.light-theme .waiting-driver-route-map {
+        background: #ebebeb;
+        border-color: #e5e5e5;
+      }
+
+      #x-map-container.light-theme .waiting-driver-route-grid {
+        background-image:
+          repeating-linear-gradient(0deg, transparent, transparent 19px, #d5d5d5 19px, #d5d5d5 20px),
+          repeating-linear-gradient(90deg, transparent, transparent 19px, #d5d5d5 19px, #d5d5d5 20px);
+      }
+
+      #x-map-container.light-theme .waiting-driver-route-line::before {
+        background: repeating-linear-gradient(
+          to right,
+          #4a4a4a 0px,
+          #4a4a4a 8px,
+          transparent 8px,
+          transparent 16px
+        );
+      }
+
+      #x-map-container.light-theme .waiting-driver-user-pin {
+        background: #2a2a2a;
+        border-color: #ffffff;
+      }
+
+      #x-map-container.light-theme .waiting-driver-user-pin svg {
+        stroke: #ffffff;
+      }
+
+      #x-map-container.light-theme .waiting-driver-car-icon {
+        background: #ffffff;
+        border-color: #2a2a2a;
+      }
+
+      #x-map-container.light-theme .waiting-driver-car-icon::before {
+        background: rgba(42, 42, 42, 0.3);
+      }
+
+      #x-map-container.light-theme .waiting-driver-car-icon svg {
+        stroke: #2a2a2a;
+      }
+
+      #x-map-container.light-theme .waiting-driver-car-label {
+        background: rgba(255, 255, 255, 0.85);
+        border-color: #e5e5e5;
+        color: #000000;
+      }
+
+      #x-map-container.light-theme .waiting-driver-distance-info {
+        background: #f8f8f8;
+        border-color: #e5e5e5;
+      }
+
+      #x-map-container.light-theme .waiting-driver-distance-value {
+        color: #000000;
+      }
+
+      #x-map-container.light-theme .waiting-driver-distance-label {
+        color: #999999;
+      }
+
+      #x-map-container.light-theme .waiting-driver-distance-divider {
+        background: #e5e5e5;
+      }
+
+      #x-map-container.light-theme .waiting-driver-action-btn {
+        background: #f8f8f8;
+        border-color: #e5e5e5;
+        color: #000000;
+      }
+
+      #x-map-container.light-theme .waiting-driver-action-btn:hover {
+        background: #f0f0f0;
+      }
+
+      #x-map-container.light-theme .waiting-driver-action-btn svg {
+        stroke: #000000;
+      }
+
+      #x-map-container.light-theme .waiting-driver-action-btn.cancel {
+        border-color: #2a2a2a;
+      }
+
+      #x-map-container.light-theme .waiting-driver-action-btn.cancel:hover {
+        background: #2a2a2a;
+        color: #ffffff;
+      }
+
+      #x-map-container.light-theme .waiting-driver-action-btn.cancel:hover svg {
+        stroke: #ffffff;
+      }
+
+      /* 移动端适配 */
+      @media (max-width: 480px) {
+        .waiting-driver-modal {
+          width: 95%;
+          padding: 28px 20px 20px;
+        }
+
+        .waiting-driver-eta {
+          font-size: 28px;
+        }
+
+        .waiting-driver-card {
+          padding: 16px;
+        }
+
+        .waiting-driver-route-map {
+          height: 180px;
+        }
       }
 
       /* ==================== 移动端适配：提醒弹窗 ==================== */
@@ -36350,6 +37975,568 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
         stroke-linecap: round;
       }
 
+      /* ==================== 地标管理 CSS ==================== */
+
+      .map-landmark-section {
+        margin-bottom: 32px;
+      }
+
+      .map-landmark-mode-toggle {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+
+      .map-landmark-mode-btn {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 16px;
+        background: #0a0a0a;
+        border: 1.5px solid #2a2a2a;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 14px;
+        font-weight: 600;
+        color: #8e8e8e;
+      }
+
+      .map-landmark-mode-btn:hover {
+        border-color: #3a3a3a;
+        background: #0f0f0f;
+      }
+
+      .map-landmark-mode-btn.active {
+        background: #fff;
+        border-color: #fff;
+        color: #000;
+      }
+
+      .map-landmark-custom-form,
+      .map-landmark-ai-form {
+        display: none;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .map-landmark-custom-form.active,
+      .map-landmark-ai-form.active {
+        display: flex;
+      }
+
+      .map-landmark-name-input,
+      .map-landmark-desc-input,
+      .map-landmark-ai-input {
+        width: 100%;
+        padding: 12px 16px;
+        background: #0a0a0a;
+        border: 1px solid #2a2a2a;
+        border-radius: 10px;
+        color: #e5e5e5;
+        font-size: 14px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        transition: all 0.2s ease;
+        box-sizing: border-box;
+      }
+
+      .map-landmark-desc-input,
+      .map-landmark-ai-input {
+        min-height: 80px;
+        resize: vertical;
+      }
+
+      .map-landmark-name-input:focus,
+      .map-landmark-desc-input:focus,
+      .map-landmark-ai-input:focus {
+        outline: none;
+        border-color: #4a4a4a;
+        background: #0f0f0f;
+      }
+
+      .map-landmark-name-input::placeholder,
+      .map-landmark-desc-input::placeholder,
+      .map-landmark-ai-input::placeholder {
+        color: #666;
+      }
+
+      .map-landmark-icon-color-row {
+        display: flex;
+        gap: 12px;
+      }
+
+      .map-landmark-icon-selector {
+        /* 平均分配空间，对称布局 */
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .map-landmark-icon-preview {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #0a0a0a;
+        border: 1px solid #2a2a2a;
+        border-radius: 8px;
+        font-size: 20px;
+      }
+
+      .map-landmark-icon-input {
+        /* emoji只需要1-2个字符，固定宽度即可 */
+        width: 80px;
+        padding: 10px 14px;
+        background: #0a0a0a;
+        border: 1px solid #2a2a2a;
+        border-radius: 10px;
+        color: #e5e5e5;
+        font-size: 14px;
+        text-align: center;
+        transition: all 0.2s ease;
+      }
+
+      .map-landmark-icon-input:focus {
+        outline: none;
+        border-color: #4a4a4a;
+        background: #0f0f0f;
+      }
+
+      .map-landmark-color-picker-wrapper {
+        /* 平均分配空间，对称布局 */
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .map-landmark-color-preview {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        border: 1px solid #2a2a2a;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .map-landmark-color-preview:hover {
+        transform: scale(1.05);
+        border-color: #4a4a4a;
+      }
+
+      .map-landmark-color-input {
+        /* 固定宽度100px，足够显示7个字符的颜色代码，不会溢出弹窗 */
+        width: 100px;
+        padding: 10px;
+        background: #0a0a0a;
+        border: 1px solid #2a2a2a;
+        border-radius: 10px;
+        color: #e5e5e5;
+        font-size: 13px;
+        transition: all 0.2s ease;
+      }
+
+      .map-landmark-color-input:focus {
+        outline: none;
+        border-color: #4a4a4a;
+        background: #0f0f0f;
+      }
+
+      .map-landmark-pick-position {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .map-landmark-pick-btn {
+        width: 100%;
+        padding: 12px;
+        background: #1a1a1a;
+        border: 1px solid #2a2a2a;
+        border-radius: 10px;
+        color: #e5e5e5;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .map-landmark-pick-btn:hover {
+        background: #2a2a2a;
+        border-color: #3a3a3a;
+      }
+
+      .map-landmark-pick-btn.active {
+        background: #fff;
+        color: #000;
+        border-color: #fff;
+      }
+
+      .map-landmark-position-display {
+        padding: 10px 14px;
+        background: #0a0a0a;
+        border: 1px solid #2a2a2a;
+        border-radius: 10px;
+        font-size: 13px;
+        color: #8e8e8e;
+        text-align: center;
+      }
+
+      .map-landmark-position-display.has-position {
+        color: #e5e5e5;
+      }
+
+      .map-landmark-save-btn,
+      .map-landmark-generate-btn {
+        width: 100%;
+        padding: 12px;
+        background: #fff;
+        border: none;
+        border-radius: 10px;
+        color: #000;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .map-landmark-save-btn:hover,
+      .map-landmark-generate-btn:hover {
+        background: #f0f0f0;
+        transform: translateY(-1px);
+      }
+
+      .map-landmark-save-btn:active,
+      .map-landmark-generate-btn:active {
+        background: #e0e0e0;
+        transform: translateY(0);
+      }
+
+      .map-landmark-save-btn:disabled,
+      .map-landmark-generate-btn:disabled {
+        background: #2a2a2a;
+        color: #666;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      /* 地图选点模式提示条 */
+      .map-landmark-pick-hint {
+        position: fixed;
+        top: 80px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 14px 28px;
+        background: rgba(0, 0, 0, 0.92);
+        backdrop-filter: blur(10px);
+        border-radius: 16px;
+        color: #fff;
+        font-size: 15px;
+        font-weight: 600;
+        z-index: 9999;
+        display: none;
+        align-items: center;
+        gap: 12px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        pointer-events: none;
+        animation: slideDown 0.3s ease;
+        white-space: nowrap;
+      }
+
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateX(-50%) translateY(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(-50%) translateY(0);
+        }
+      }
+
+      .map-landmark-pick-hint.active {
+        display: flex;
+      }
+
+      .map-landmark-cancel-btn {
+        padding: 6px 14px;
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 10px;
+        color: #fff;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        pointer-events: auto;
+        flex-shrink: 0;
+      }
+
+      .map-landmark-cancel-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.5);
+      }
+
+      .map-landmark-cancel-btn:active {
+        transform: scale(0.95);
+      }
+
+      /* 地图选点模式：地图区域光标 */
+      .map-area.picking-landmark {
+        cursor: crosshair;
+      }
+
+      /* 地标列表 */
+      .map-landmark-list {
+        margin-top: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        max-height: 400px;
+        overflow-y: auto;
+      }
+
+      .map-landmark-list::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .map-landmark-list::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      .map-landmark-list::-webkit-scrollbar-thumb {
+        background: #2a2a2a;
+        border-radius: 3px;
+      }
+
+      .map-landmark-list::-webkit-scrollbar-thumb:hover {
+        background: #3a3a3a;
+      }
+
+      .map-landmark-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        background: #0a0a0a;
+        border: 1px solid #1a1a1a;
+        border-radius: 10px;
+        transition: all 0.2s ease;
+      }
+
+      .map-landmark-item:hover {
+        background: #0f0f0f;
+        border-color: #2a2a2a;
+      }
+
+      .map-landmark-item.selected {
+        background: #1a1a1a;
+        border-color: #3a3a3a;
+      }
+
+      .map-landmark-checkbox {
+        width: 20px;
+        height: 20px;
+        border: 2px solid #2a2a2a;
+        border-radius: 6px;
+        background: transparent;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .map-landmark-checkbox:hover {
+        border-color: #4a4a4a;
+      }
+
+      .map-landmark-checkbox.checked {
+        background: #fff;
+        border-color: #fff;
+      }
+
+      .map-landmark-checkbox.checked::after {
+        content: '✓';
+        color: #000;
+        font-size: 14px;
+        font-weight: bold;
+      }
+
+      .map-landmark-icon-display {
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        font-size: 24px;
+        flex-shrink: 0;
+        border: 1px solid #2a2a2a;
+      }
+
+      .map-landmark-info {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .map-landmark-name {
+        font-size: 15px;
+        font-weight: 600;
+        color: #e5e5e5;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .map-landmark-desc {
+        font-size: 13px;
+        color: #8e8e8e;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        line-height: 1.3;
+      }
+
+      .map-landmark-position-badge {
+        display: inline-block;
+        padding: 2px 8px;
+        background: #1a1a1a;
+        border: 1px solid #2a2a2a;
+        border-radius: 6px;
+        font-size: 11px;
+        font-weight: 600;
+        color: #8e8e8e;
+        letter-spacing: 0.3px;
+        width: fit-content;
+        margin-top: 2px;
+      }
+
+      .map-landmark-actions {
+        display: flex;
+        gap: 6px;
+        flex-shrink: 0;
+      }
+
+      .map-landmark-edit-btn,
+      .map-landmark-delete-btn {
+        width: 32px;
+        height: 32px;
+        background: transparent;
+        border: 1px solid #2a2a2a;
+        border-radius: 8px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        flex-shrink: 0;
+      }
+
+      .map-landmark-edit-btn:hover {
+        background: #1a1a1a;
+        border-color: #3a3a3a;
+      }
+
+      .map-landmark-delete-btn:hover {
+        background: #2a0000;
+        border-color: #5a0000;
+      }
+
+      .map-landmark-edit-btn:active,
+      .map-landmark-delete-btn:active {
+        transform: scale(0.95);
+      }
+
+      .map-landmark-edit-btn svg,
+      .map-landmark-delete-btn svg {
+        width: 16px;
+        height: 16px;
+        stroke: #e5e5e5;
+        fill: none;
+        stroke-width: 2;
+        stroke-linecap: round;
+      }
+
+      /* 批量操作栏 */
+      .map-landmark-batch-actions {
+        display: none;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        background: #0a0a0a;
+        border: 1px solid #2a2a2a;
+        border-radius: 10px;
+        margin-bottom: 12px;
+      }
+
+      .map-landmark-batch-actions.active {
+        display: flex;
+      }
+
+      .map-landmark-select-all-btn {
+        padding: 8px 14px;
+        background: #1a1a1a;
+        border: 1px solid #2a2a2a;
+        border-radius: 8px;
+        color: #e5e5e5;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .map-landmark-select-all-btn:hover {
+        background: #2a2a2a;
+        border-color: #3a3a3a;
+      }
+
+      .map-landmark-selected-count {
+        flex: 1;
+        font-size: 13px;
+        color: #8e8e8e;
+      }
+
+      .map-landmark-batch-delete-btn {
+        padding: 8px 16px;
+        background: #3a0000;
+        border: 1px solid #5a0000;
+        border-radius: 8px;
+        color: #ff6b6b;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .map-landmark-batch-delete-btn:hover {
+        background: #5a0000;
+        border-color: #7a0000;
+        color: #ff8888;
+      }
+
+      .map-landmark-batch-delete-btn:active {
+        transform: scale(0.97);
+      }
+
+      .map-landmark-batch-delete-btn:disabled {
+        background: #1a1a1a;
+        border-color: #2a2a2a;
+        color: #666;
+        cursor: not-allowed;
+      }
+
       /* 亮色主题覆盖 */
       #x-map-container.light-theme {
         /* CSS变量会自动切换 */
@@ -36505,6 +38692,1339 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
 
       #x-map-container.light-theme .map-avatar-delete-btn svg {
         stroke: #262626;
+      }
+
+      /* ==================== 亮色主题：地标管理 ==================== */
+
+      #x-map-container.light-theme .map-landmark-mode-btn {
+        background: #f5f5f5;
+        border-color: #e0e0e0;
+        color: #666;
+      }
+
+      #x-map-container.light-theme .map-landmark-mode-btn:hover {
+        border-color: #c0c0c0;
+        background: #efefef;
+      }
+
+      #x-map-container.light-theme .map-landmark-mode-btn.active {
+        background: #000;
+        border-color: #000;
+        color: #fff;
+      }
+
+      #x-map-container.light-theme .map-landmark-name-input,
+      #x-map-container.light-theme .map-landmark-desc-input,
+      #x-map-container.light-theme .map-landmark-ai-input {
+        background: #f5f5f5;
+        border-color: #e0e0e0;
+        color: #262626;
+      }
+
+      #x-map-container.light-theme .map-landmark-name-input:focus,
+      #x-map-container.light-theme .map-landmark-desc-input:focus,
+      #x-map-container.light-theme .map-landmark-ai-input:focus {
+        border-color: #c0c0c0;
+        background: #efefef;
+      }
+
+      #x-map-container.light-theme .map-landmark-name-input::placeholder,
+      #x-map-container.light-theme .map-landmark-desc-input::placeholder,
+      #x-map-container.light-theme .map-landmark-ai-input::placeholder {
+        color: #999;
+      }
+
+      #x-map-container.light-theme .map-landmark-icon-preview {
+        background: #f5f5f5;
+        border-color: #e0e0e0;
+      }
+
+      #x-map-container.light-theme .map-landmark-icon-input,
+      #x-map-container.light-theme .map-landmark-color-input {
+        background: #f5f5f5;
+        border-color: #e0e0e0;
+        color: #262626;
+      }
+
+      #x-map-container.light-theme .map-landmark-icon-input:focus,
+      #x-map-container.light-theme .map-landmark-color-input:focus {
+        border-color: #c0c0c0;
+        background: #efefef;
+      }
+
+      #x-map-container.light-theme .map-landmark-color-preview {
+        border-color: #e0e0e0;
+      }
+
+      #x-map-container.light-theme .map-landmark-color-preview:hover {
+        border-color: #c0c0c0;
+      }
+
+      #x-map-container.light-theme .map-landmark-pick-btn {
+        background: #e8e8e8;
+        border-color: #d0d0d0;
+        color: #262626;
+      }
+
+      #x-map-container.light-theme .map-landmark-pick-btn:hover {
+        background: #d8d8d8;
+        border-color: #c0c0c0;
+      }
+
+      #x-map-container.light-theme .map-landmark-pick-btn.active {
+        background: #000;
+        color: #fff;
+        border-color: #000;
+      }
+
+      #x-map-container.light-theme .map-landmark-position-display {
+        background: #f5f5f5;
+        border-color: #e0e0e0;
+        color: #666;
+      }
+
+      #x-map-container.light-theme .map-landmark-position-display.has-position {
+        color: #262626;
+      }
+
+      #x-map-container.light-theme .map-landmark-save-btn,
+      #x-map-container.light-theme .map-landmark-generate-btn {
+        background: #000;
+        color: #fff;
+      }
+
+      #x-map-container.light-theme .map-landmark-save-btn:hover,
+      #x-map-container.light-theme .map-landmark-generate-btn:hover {
+        background: #262626;
+      }
+
+      #x-map-container.light-theme .map-landmark-save-btn:active,
+      #x-map-container.light-theme .map-landmark-generate-btn:active {
+        background: #1a1a1a;
+      }
+
+      #x-map-container.light-theme .map-landmark-save-btn:disabled,
+      #x-map-container.light-theme .map-landmark-generate-btn:disabled {
+        background: #d0d0d0;
+        color: #999;
+      }
+
+      #x-map-container.light-theme .map-landmark-pick-overlay {
+        background: rgba(255, 255, 255, 0.7);
+      }
+
+      #x-map-container.light-theme .map-landmark-pick-hint {
+        background: rgba(0, 0, 0, 0.9);
+        color: #fff;
+      }
+
+      #x-map-container.light-theme .map-landmark-list::-webkit-scrollbar-thumb {
+        background: #d0d0d0;
+      }
+
+      #x-map-container.light-theme .map-landmark-list::-webkit-scrollbar-thumb:hover {
+        background: #b0b0b0;
+      }
+
+      #x-map-container.light-theme .map-landmark-item {
+        background: #f5f5f5;
+        border-color: #e8e8e8;
+      }
+
+      #x-map-container.light-theme .map-landmark-item:hover {
+        background: #efefef;
+        border-color: #d0d0d0;
+      }
+
+      #x-map-container.light-theme .map-landmark-item.selected {
+        background: #e8e8e8;
+        border-color: #c0c0c0;
+      }
+
+      #x-map-container.light-theme .map-landmark-checkbox {
+        border-color: #d0d0d0;
+      }
+
+      #x-map-container.light-theme .map-landmark-checkbox:hover {
+        border-color: #b0b0b0;
+      }
+
+      #x-map-container.light-theme .map-landmark-checkbox.checked {
+        background: #000;
+        border-color: #000;
+      }
+
+      #x-map-container.light-theme .map-landmark-checkbox.checked::after {
+        color: #fff;
+      }
+
+      #x-map-container.light-theme .map-landmark-icon-display {
+        border-color: #e0e0e0;
+      }
+
+      #x-map-container.light-theme .map-landmark-name {
+        color: #262626;
+      }
+
+      #x-map-container.light-theme .map-landmark-desc {
+        color: #666;
+      }
+
+      #x-map-container.light-theme .map-landmark-position-badge {
+        background: #e8e8e8;
+        border-color: #d0d0d0;
+        color: #666;
+      }
+
+      #x-map-container.light-theme .map-landmark-edit-btn,
+      #x-map-container.light-theme .map-landmark-delete-btn {
+        border-color: #d0d0d0;
+      }
+
+      #x-map-container.light-theme .map-landmark-edit-btn:hover {
+        background: #e8e8e8;
+        border-color: #c0c0c0;
+      }
+
+      #x-map-container.light-theme .map-landmark-delete-btn:hover {
+        background: #ffe8e8;
+        border-color: #ffb0b0;
+      }
+
+      #x-map-container.light-theme .map-landmark-edit-btn:active,
+      #x-map-container.light-theme .map-landmark-delete-btn:active {
+        background: #d8d8d8;
+      }
+
+      #x-map-container.light-theme .map-landmark-edit-btn svg,
+      #x-map-container.light-theme .map-landmark-delete-btn svg {
+        stroke: #262626;
+      }
+
+      #x-map-container.light-theme .map-landmark-batch-actions {
+        background: #f5f5f5;
+        border-color: #e0e0e0;
+      }
+
+      #x-map-container.light-theme .map-landmark-select-all-btn {
+        background: #e8e8e8;
+        border-color: #d0d0d0;
+        color: #262626;
+      }
+
+      #x-map-container.light-theme .map-landmark-select-all-btn:hover {
+        background: #d8d8d8;
+        border-color: #c0c0c0;
+      }
+
+      #x-map-container.light-theme .map-landmark-selected-count {
+        color: #666;
+      }
+
+      #x-map-container.light-theme .map-landmark-batch-delete-btn {
+        background: #ffe8e8;
+        border-color: #ffb0b0;
+        color: #c00000;
+      }
+
+      #x-map-container.light-theme .map-landmark-batch-delete-btn:hover {
+        background: #ffd0d0;
+        border-color: #ff8888;
+        color: #a00000;
+      }
+
+      #x-map-container.light-theme .map-landmark-batch-delete-btn:disabled {
+        background: #e8e8e8;
+        border-color: #d0d0d0;
+        color: #999;
+      }
+
+      #x-map-container.light-theme .map-landmark-pick-hint {
+        background: rgba(255, 255, 255, 0.95);
+        color: #262626;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        border: 1px solid #e0e0e0;
+      }
+
+      #x-map-container.light-theme .map-landmark-cancel-btn {
+        background: rgba(0, 0, 0, 0.05);
+        border-color: rgba(0, 0, 0, 0.15);
+        color: #262626;
+      }
+
+      #x-map-container.light-theme .map-landmark-cancel-btn:hover {
+        background: rgba(0, 0, 0, 0.1);
+        border-color: rgba(0, 0, 0, 0.25);
+      }
+
+      /* ==================== 咩三三城市报纸弹窗 - 电视机风格 ==================== */
+      /* 报纸遮罩 */
+      .map-newspaper-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 599;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .map-newspaper-overlay.show {
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      /* 报纸弹窗主容器 */
+      .map-newspaper-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: transparent;
+        z-index: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        padding: 20px;
+        box-sizing: border-box;
+      }
+
+      .map-newspaper-modal.show {
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      /* 报纸容器 - 电视机风格异形设计 */
+      .newspaper-container {
+        width: 100%;
+        max-width: 720px;
+        background: #0a0a0a;
+        position: relative;
+        animation: tvTurnOn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        border-radius: 40px 40px 60px 60px;
+        overflow: visible;
+        box-shadow:
+          0 0 0 3px #fff,
+          0 0 0 8px #2a2a2a,
+          0 0 0 10px #fff,
+          0 20px 60px rgba(255, 255, 255, 0.15);
+        padding: 12px;
+      }
+
+      #x-map-container.light-theme .newspaper-container {
+        background: #fff;
+        box-shadow:
+          0 0 0 3px #000,
+          0 0 0 8px #e0e0e0,
+          0 0 0 10px #000,
+          0 20px 60px rgba(0, 0, 0, 0.3);
+      }
+
+      @keyframes tvTurnOn {
+        0% {
+          opacity: 0;
+          transform: scale(0.8, 0.001) translateY(-100px);
+        }
+        50% {
+          opacity: 1;
+          transform: scale(1.05, 0.02) translateY(0);
+        }
+        100% {
+          opacity: 1;
+          transform: scale(1, 1) translateY(0);
+        }
+      }
+
+      /* 电视机扫描线效果 */
+      .newspaper-scanline {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          to bottom,
+          transparent 50%,
+          rgba(255, 255, 255, 0.02) 50%
+        );
+        background-size: 100% 4px;
+        pointer-events: none;
+        z-index: 999;
+        animation: scanlineMove 8s linear infinite;
+        border-radius: 40px 40px 60px 60px;
+      }
+
+      #x-map-container.light-theme .newspaper-scanline {
+        background: linear-gradient(
+          to bottom,
+          transparent 50%,
+          rgba(0, 0, 0, 0.03) 50%
+        );
+        background-size: 100% 4px;
+      }
+
+      @keyframes scanlineMove {
+        0% { transform: translateY(0); }
+        100% { transform: translateY(8px); }
+      }
+
+      /* 内容屏幕 */
+      .newspaper-screen {
+        background: #0a0a0a;
+        border-radius: 32px 32px 52px 52px;
+        overflow: hidden;
+        position: relative;
+      }
+
+      #x-map-container.light-theme .newspaper-screen {
+        background: #fff;
+      }
+
+      /* 浏览器风格顶栏 */
+      .newspaper-browser-bar {
+        background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%);
+        border-bottom: 2px solid #fff;
+        padding: 8px 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      #x-map-container.light-theme .newspaper-browser-bar {
+        background: linear-gradient(180deg, #e8e8e8 0%, #d0d0d0 100%);
+        border-bottom-color: #000;
+      }
+
+      .newspaper-browser-dots {
+        display: flex;
+        gap: 6px;
+      }
+
+      .newspaper-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        border: 2px solid #fff;
+        transition: all 0.2s;
+      }
+
+      .newspaper-dot:hover {
+        transform: scale(1.2);
+      }
+
+      #x-map-container.light-theme .newspaper-dot {
+        border-color: #000;
+      }
+
+      .newspaper-dot:nth-child(1) { background: #3a3a3a; }
+      .newspaper-dot:nth-child(2) { background: #666; }
+      .newspaper-dot:nth-child(3) { background: #999; }
+
+      #x-map-container.light-theme .newspaper-dot:nth-child(1) { background: #f5f5f5; }
+      #x-map-container.light-theme .newspaper-dot:nth-child(2) { background: #b0b0b0; }
+      #x-map-container.light-theme .newspaper-dot:nth-child(3) { background: #808080; }
+
+      .newspaper-url-bar {
+        flex: 1;
+        background: #1a1a1a;
+        border: 2px solid #fff;
+        border-radius: 12px;
+        padding: 4px 12px;
+        font-family: "Courier New", monospace;
+        font-size: 11px;
+        font-weight: 700;
+        color: #fff;
+        box-shadow: inset 0 1px 3px rgba(255,255,255,0.1);
+      }
+
+      #x-map-container.light-theme .newspaper-url-bar {
+        background: #fff;
+        border-color: #000;
+        color: #000;
+        box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+      }
+
+      /* 关闭按钮 */
+      .newspaper-close-btn {
+        width: 28px;
+        height: 28px;
+        border: 2px solid #fff;
+        background: #1a1a1a;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s;
+        clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
+      }
+
+      .newspaper-close-btn:hover {
+        transform: rotate(90deg);
+        background: #fff;
+        box-shadow: 0 0 0 2px #000;
+      }
+
+      .newspaper-close-btn:hover svg {
+        stroke: #000;
+      }
+
+      #x-map-container.light-theme .newspaper-close-btn {
+        background: #fff;
+        border-color: #000;
+      }
+
+      #x-map-container.light-theme .newspaper-close-btn:hover {
+        background: #000;
+        box-shadow: 0 0 0 2px #fff;
+      }
+
+      #x-map-container.light-theme .newspaper-close-btn:hover svg {
+        stroke: #fff;
+      }
+
+      .newspaper-close-btn svg {
+        width: 14px;
+        height: 14px;
+        stroke: #fff;
+        stroke-width: 2.5;
+        transition: stroke 0.3s;
+      }
+
+      #x-map-container.light-theme .newspaper-close-btn svg {
+        stroke: #000;
+      }
+
+      /* 主内容区 - 博客风格双栏布局 */
+      .newspaper-content {
+        display: grid;
+        grid-template-columns: 1fr 200px;
+        gap: 12px;
+        padding: 12px;
+        max-height: 70vh;
+        overflow-y: auto;
+        scrollbar-width: thin;
+      }
+
+      .newspaper-content::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .newspaper-content::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      .newspaper-content::-webkit-scrollbar-thumb {
+        background: #3a3a3a;
+        border-radius: 3px;
+      }
+
+      #x-map-container.light-theme .newspaper-content::-webkit-scrollbar-thumb {
+        background: #ccc;
+      }
+
+      /* 左侧主栏 */
+      .newspaper-main-column {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      /* 右侧边栏 */
+      .newspaper-sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        position: sticky;
+        top: 0;
+        align-self: start;
+      }
+
+      /* 头像名片 - 异形设计 */
+      .newspaper-profile-card {
+        background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
+        border: 2px solid #fff;
+        padding: 12px;
+        position: relative;
+        clip-path: polygon(0 0, 100% 0, 100% 85%, 85% 100%, 0 100%);
+        box-shadow: 2px 2px 0 rgba(255,255,255,0.1);
+      }
+
+      #x-map-container.light-theme .newspaper-profile-card {
+        background: linear-gradient(135deg, #fafafa 0%, #f0f0f0 100%);
+        border-color: #000;
+        box-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+      }
+
+      .newspaper-avatar-box {
+        position: relative;
+        width: 64px;
+        height: 64px;
+        margin: 0 auto 8px;
+      }
+
+      .newspaper-avatar {
+        width: 64px;
+        height: 64px;
+        border: 3px solid #fff;
+        background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        clip-path: polygon(20% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%, 0% 20%);
+        animation: avatarFloat 3s ease-in-out infinite;
+        box-shadow: inset 0 2px 4px rgba(255,255,255,0.1);
+      }
+
+      #x-map-container.light-theme .newspaper-avatar {
+        border-color: #000;
+        background: linear-gradient(135deg, #e8e8e8 0%, #d0d0d0 100%);
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+      }
+
+      @keyframes avatarFloat {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-6px); }
+      }
+
+      .newspaper-status-badge {
+        position: absolute;
+        bottom: -4px;
+        right: -4px;
+        background: #fff;
+        color: #000;
+        font-size: 9px;
+        font-weight: 700;
+        padding: 3px 7px;
+        border-radius: 8px;
+        border: 2px solid #0a0a0a;
+        letter-spacing: 0.5px;
+        box-shadow: 0 2px 4px rgba(255,255,255,0.3);
+      }
+
+      #x-map-container.light-theme .newspaper-status-badge {
+        background: #000;
+        color: #fff;
+        border-color: #fff;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      }
+
+      .newspaper-profile-name {
+        font-family: "Courier New", monospace;
+        font-size: 16px;
+        font-weight: 900;
+        color: #fff;
+        text-align: center;
+        margin-bottom: 4px;
+        letter-spacing: 1px;
+        text-shadow: 1px 1px 0 rgba(255,255,255,0.05);
+      }
+
+      #x-map-container.light-theme .newspaper-profile-name {
+        color: #000;
+        text-shadow: 1px 1px 0 rgba(0,0,0,0.05);
+      }
+
+      .newspaper-profile-role {
+        font-size: 10px;
+        color: #999;
+        text-align: center;
+        line-height: 1.5;
+      }
+
+      #x-map-container.light-theme .newspaper-profile-role {
+        color: #666;
+      }
+
+      /* 像素风日期时钟 */
+      .newspaper-pixel-clock {
+        background: #fff;
+        color: #000;
+        padding: 10px;
+        font-family: "Courier New", monospace;
+        font-size: 11px;
+        text-align: center;
+        border: 2px solid #fff;
+        position: relative;
+        overflow: hidden;
+        box-shadow: inset 0 0 10px rgba(255,255,255,0.5);
+      }
+
+      #x-map-container.light-theme .newspaper-pixel-clock {
+        background: #000;
+        color: #fff;
+        border-color: #000;
+        box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+      }
+
+      .newspaper-pixel-clock::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(0,0,0,0.3), transparent);
+        animation: pixelScan 3s infinite;
+      }
+
+      #x-map-container.light-theme .newspaper-pixel-clock::before {
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      }
+
+      @keyframes pixelScan {
+        0% { left: -100%; }
+        100% { left: 100%; }
+      }
+
+      .newspaper-clock-date {
+        font-weight: 700;
+        margin-bottom: 2px;
+        letter-spacing: 1px;
+      }
+
+      .newspaper-clock-time {
+        font-size: 14px;
+        font-weight: 900;
+        letter-spacing: 2px;
+      }
+
+      /* 标签云 - 博客风格 */
+      .newspaper-tags-widget {
+        background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
+        border: 2px dashed #fff;
+        padding: 10px;
+        clip-path: polygon(0 10px, 10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+      }
+
+      #x-map-container.light-theme .newspaper-tags-widget {
+        background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
+        border-color: #000;
+      }
+
+      .newspaper-widget-title {
+        font-size: 11px;
+        font-weight: 900;
+        color: #fff;
+        margin-bottom: 8px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+
+      #x-map-container.light-theme .newspaper-widget-title {
+        color: #000;
+      }
+
+      .newspaper-tag-cloud {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+      }
+
+      .newspaper-tag {
+        font-size: 10px;
+        color: #000;
+        background: #fff;
+        padding: 3px 9px;
+        border-radius: 10px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+        transform: rotate(calc(var(--random) * 1deg));
+        box-shadow: 1px 1px 2px rgba(255,255,255,0.2);
+      }
+
+      .newspaper-tag:hover {
+        transform: scale(1.15) rotate(0deg);
+        box-shadow: 2px 2px 4px rgba(255,255,255,0.3);
+      }
+
+      #x-map-container.light-theme .newspaper-tag {
+        background: #000;
+        color: #fff;
+        box-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+      }
+
+      #x-map-container.light-theme .newspaper-tag:hover {
+        box-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      }
+
+      .newspaper-tag:nth-child(1) { --random: -3; }
+      .newspaper-tag:nth-child(2) { --random: 2; }
+      .newspaper-tag:nth-child(3) { --random: -1; }
+      .newspaper-tag:nth-child(4) { --random: 3; }
+      .newspaper-tag:nth-child(5) { --random: -2; }
+
+      /* 迷你统计卡片 */
+      .newspaper-stats-mini {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4px;
+      }
+
+      .newspaper-stat-item {
+        background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
+        border: 2px solid #fff;
+        padding: 8px;
+        text-align: center;
+        clip-path: polygon(10% 0, 100% 0, 100% 90%, 90% 100%, 0 100%, 0 10%);
+        transition: all 0.3s;
+        box-shadow: 1px 1px 0 rgba(255,255,255,0.1);
+      }
+
+      .newspaper-stat-item:hover {
+        transform: scale(1.05) rotate(-2deg);
+        box-shadow: 2px 2px 4px rgba(255,255,255,0.2);
+      }
+
+      #x-map-container.light-theme .newspaper-stat-item {
+        background: linear-gradient(135deg, #fff 0%, #f5f5f5 100%);
+        border-color: #000;
+        box-shadow: 1px 1px 0 rgba(0,0,0,0.1);
+      }
+
+      #x-map-container.light-theme .newspaper-stat-item:hover {
+        box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+      }
+
+      .newspaper-stat-value {
+        font-family: "Courier New", monospace;
+        font-size: 18px;
+        font-weight: 900;
+        color: #fff;
+        text-shadow: 1px 1px 0 rgba(255,255,255,0.05);
+      }
+
+      #x-map-container.light-theme .newspaper-stat-value {
+        color: #000;
+        text-shadow: 1px 1px 0 rgba(0,0,0,0.05);
+      }
+
+      .newspaper-stat-label {
+        font-size: 9px;
+        color: #999;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        margin-top: 2px;
+      }
+
+      #x-map-container.light-theme .newspaper-stat-label {
+        color: #666;
+      }
+
+      /* 邮件通知 - 信封风格 */
+      .newspaper-mail-notice {
+        background: #1a1a1a;
+        border: 2px solid #fff;
+        padding: 10px;
+        position: relative;
+        transform: rotate(-2deg);
+        margin: 4px;
+        box-shadow: 3px 3px 0 rgba(255,255,255,0.15);
+      }
+
+      #x-map-container.light-theme .newspaper-mail-notice {
+        background: #fff;
+        border-color: #000;
+        box-shadow: 3px 3px 0 rgba(0,0,0,0.15);
+      }
+
+      .newspaper-mail-stamp {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        width: 26px;
+        height: 26px;
+        border: 2px dashed #fff;
+        border-radius: 4px;
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255,255,255,0.05);
+      }
+
+      #x-map-container.light-theme .newspaper-mail-stamp {
+        border-color: #000;
+        background: rgba(0,0,0,0.02);
+      }
+
+      .newspaper-mail-content {
+        font-size: 10px;
+        color: #fff;
+        line-height: 1.6;
+        font-family: "Courier New", monospace;
+        font-weight: 600;
+      }
+
+      #x-map-container.light-theme .newspaper-mail-content {
+        color: #000;
+      }
+
+      /* 天气预报 - 异形卡片 */
+      .newspaper-weather-card {
+        background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
+        border: 2px solid #fff;
+        padding: 14px;
+        clip-path: polygon(0 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%);
+        position: relative;
+        box-shadow: 2px 2px 0 rgba(255,255,255,0.1);
+      }
+
+      #x-map-container.light-theme .newspaper-weather-card {
+        background: linear-gradient(135deg, #f8f8f8 0%, #e8e8e8 100%);
+        border-color: #000;
+        box-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+      }
+
+      .newspaper-weather-icon-big {
+        font-size: 52px;
+        text-align: center;
+        margin-bottom: 10px;
+        animation: weatherBounce 2s ease-in-out infinite;
+        filter: drop-shadow(2px 2px 4px rgba(255,255,255,0.2));
+      }
+
+      #x-map-container.light-theme .newspaper-weather-icon-big {
+        filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.2));
+      }
+
+      @keyframes weatherBounce {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.08); }
+      }
+
+      .newspaper-weather-temp-big {
+        font-family: "Courier New", monospace;
+        font-size: 36px;
+        font-weight: 900;
+        color: #fff;
+        text-align: center;
+        margin-bottom: 6px;
+        text-shadow: 2px 2px 0 rgba(255,255,255,0.05);
+      }
+
+      #x-map-container.light-theme .newspaper-weather-temp-big {
+        color: #000;
+        text-shadow: 2px 2px 0 rgba(0,0,0,0.05);
+      }
+
+      .newspaper-weather-desc-big {
+        font-size: 12px;
+        color: #999;
+        text-align: center;
+        font-weight: 700;
+        letter-spacing: 1px;
+      }
+
+      #x-map-container.light-theme .newspaper-weather-desc-big {
+        color: #666;
+      }
+
+      /* 重大新闻 - 报纸风格 */
+      .newspaper-news-card {
+        background: #0a0a0a;
+        border: 3px double #fff;
+        padding: 16px;
+        clip-path: polygon(0 8px, 8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%);
+        position: relative;
+        box-shadow: 3px 3px 0 rgba(255,255,255,0.1);
+      }
+
+      #x-map-container.light-theme .newspaper-news-card {
+        background: #fff;
+        border-color: #000;
+        box-shadow: 3px 3px 0 rgba(0,0,0,0.1);
+      }
+
+      .newspaper-breaking-badge {
+        position: absolute;
+        top: -12px;
+        left: 14px;
+        background: #fff;
+        color: #000;
+        font-size: 10px;
+        font-weight: 900;
+        padding: 5px 14px;
+        letter-spacing: 2px;
+        clip-path: polygon(0 0, 100% 0, 95% 100%, 5% 100%);
+        box-shadow: 0 2px 4px rgba(255,255,255,0.3);
+      }
+
+      #x-map-container.light-theme .newspaper-breaking-badge {
+        background: #000;
+        color: #fff;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      }
+
+      .newspaper-news-headline {
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 20px;
+        font-weight: 900;
+        color: #fff;
+        line-height: 1.3;
+        margin-bottom: 10px;
+      }
+
+      #x-map-container.light-theme .newspaper-news-headline {
+        color: #000;
+      }
+
+      .newspaper-news-meta {
+        font-size: 11px;
+        color: #666;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-family: "Courier New", monospace;
+      }
+
+      #x-map-container.light-theme .newspaper-news-meta {
+        color: #999;
+      }
+
+      .newspaper-news-body {
+        font-size: 13px;
+        line-height: 1.7;
+        color: #ccc;
+      }
+
+      #x-map-container.light-theme .newspaper-news-body {
+        color: #333;
+      }
+
+      .newspaper-emoticon-comment {
+        font-family: "Courier New", monospace;
+        font-size: 12px;
+        color: #999;
+        font-style: italic;
+        margin-top: 10px;
+        padding: 8px 10px;
+        background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
+        border-left: 3px solid #fff;
+        box-shadow: inset 1px 1px 2px rgba(255,255,255,0.05);
+      }
+
+      #x-map-container.light-theme .newspaper-emoticon-comment {
+        color: #666;
+        background: linear-gradient(135deg, #f8f8f8 0%, #f0f0f0 100%);
+        border-left-color: #000;
+        box-shadow: inset 1px 1px 2px rgba(0,0,0,0.05);
+      }
+
+      /* 群众投稿 - 便签纸风格 */
+      .newspaper-submission-sticky {
+        border: none;
+        padding: 12px;
+        box-shadow: 4px 4px 10px rgba(0,0,0,0.5);
+        transform: rotate(calc(var(--rotate) * 1deg));
+        margin: 10px 4px;
+        position: relative;
+      }
+
+      .newspaper-submission-sticky::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 45px;
+        height: 14px;
+        background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.08) 100%);
+        border-radius: 0 0 8px 8px;
+      }
+
+      #x-map-container.light-theme .newspaper-submission-sticky::before {
+        background: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.05) 100%);
+      }
+
+      .newspaper-submission-sticky:nth-child(1) {
+        --rotate: -2;
+        background: linear-gradient(135deg, #1a1a1a 0%, #141414 100%);
+      }
+      .newspaper-submission-sticky:nth-child(2) {
+        --rotate: 1;
+        background: linear-gradient(135deg, #1f1f1f 0%, #181818 100%);
+      }
+      .newspaper-submission-sticky:nth-child(3) {
+        --rotate: -1;
+        background: linear-gradient(135deg, #252525 0%, #1c1c1c 100%);
+      }
+      .newspaper-submission-sticky:nth-child(4) {
+        --rotate: 0.5;
+        background: linear-gradient(135deg, #2a2a2a 0%, #1e1e1e 100%);
+      }
+
+      #x-map-container.light-theme .newspaper-submission-sticky:nth-child(1) {
+        background: linear-gradient(135deg, #fff 0%, #fafafa 100%);
+      }
+      #x-map-container.light-theme .newspaper-submission-sticky:nth-child(2) {
+        background: linear-gradient(135deg, #f8f8f8 0%, #f0f0f0 100%);
+      }
+      #x-map-container.light-theme .newspaper-submission-sticky:nth-child(3) {
+        background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
+      }
+      #x-map-container.light-theme .newspaper-submission-sticky:nth-child(4) {
+        background: linear-gradient(135deg, #fcfcfc 0%, #f8f8f8 100%);
+      }
+
+      .newspaper-sticky-tag {
+        font-size: 9px;
+        font-weight: 900;
+        color: #000;
+        background: #fff;
+        padding: 3px 10px;
+        border-radius: 10px;
+        display: inline-block;
+        margin-bottom: 8px;
+        letter-spacing: 1px;
+        box-shadow: 1px 1px 2px rgba(255,255,255,0.2);
+      }
+
+      #x-map-container.light-theme .newspaper-sticky-tag {
+        background: #000;
+        color: #fff;
+        box-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+      }
+
+      .newspaper-sticky-title {
+        font-weight: 700;
+        font-size: 13px;
+        color: #fff;
+        margin-bottom: 8px;
+      }
+
+      #x-map-container.light-theme .newspaper-sticky-title {
+        color: #000;
+      }
+
+      .newspaper-sticky-content {
+        font-size: 11px;
+        color: #999;
+        line-height: 1.6;
+      }
+
+      #x-map-container.light-theme .newspaper-sticky-content {
+        color: #666;
+      }
+
+      /* 广告横幅 - 异形 */
+      .newspaper-ad-banner-special {
+        background: linear-gradient(45deg, #1a1a1a 0%, #0f0f0f 100%);
+        border: 2px solid #fff;
+        padding: 14px;
+        clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px));
+        position: relative;
+        overflow: hidden;
+        margin: 10px 0;
+        box-shadow: 2px 2px 0 rgba(255,255,255,0.1);
+      }
+
+      #x-map-container.light-theme .newspaper-ad-banner-special {
+        background: linear-gradient(45deg, #f5f5f5 0%, #e8e8e8 100%);
+        border-color: #000;
+        box-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+      }
+
+      .newspaper-ad-corner {
+        position: absolute;
+        top: 6px;
+        right: 6px;
+        font-size: 9px;
+        font-weight: 900;
+        color: #666;
+        letter-spacing: 1px;
+        transform: rotate(45deg);
+        opacity: 0.5;
+      }
+
+      #x-map-container.light-theme .newspaper-ad-corner {
+        color: #999;
+      }
+
+      .newspaper-ad-title {
+        font-weight: 900;
+        font-size: 15px;
+        color: #fff;
+        margin-bottom: 8px;
+        font-family: Georgia, serif;
+      }
+
+      #x-map-container.light-theme .newspaper-ad-title {
+        color: #000;
+      }
+
+      .newspaper-ad-text {
+        font-size: 11px;
+        color: #999;
+        line-height: 1.6;
+      }
+
+      #x-map-container.light-theme .newspaper-ad-text {
+        color: #666;
+      }
+
+      /* 联系方式 - 像素风 */
+      .newspaper-contact-pixel {
+        background: #fff;
+        color: #000;
+        padding: 12px;
+        font-family: "Courier New", monospace;
+        font-size: 10px;
+        border: 2px solid #fff;
+        image-rendering: pixelated;
+        box-shadow: inset 0 0 10px rgba(255,255,255,0.5);
+      }
+
+      #x-map-container.light-theme .newspaper-contact-pixel {
+        background: #000;
+        color: #fff;
+        border-color: #000;
+        box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+      }
+
+      .newspaper-contact-line {
+        margin-bottom: 5px;
+        letter-spacing: 1px;
+        font-weight: 700;
+      }
+
+      .newspaper-contact-line:last-child {
+        margin-bottom: 0;
+      }
+
+      /* 装饰星星 */
+      .newspaper-star-deco {
+        position: absolute;
+        font-size: 14px;
+        animation: starTwinkle 2s ease-in-out infinite;
+        filter: drop-shadow(0 0 3px currentColor);
+      }
+
+      @keyframes starTwinkle {
+        0%, 100% { opacity: 0.4; transform: scale(1) rotate(0deg); }
+        50% { opacity: 1; transform: scale(1.3) rotate(180deg); }
+      }
+
+      .newspaper-star-deco:nth-child(1) { top: 5%; left: 5%; animation-delay: 0s; color: #fff; }
+      .newspaper-star-deco:nth-child(2) { top: 15%; right: 8%; animation-delay: 0.5s; color: #fff; }
+      .newspaper-star-deco:nth-child(3) { top: 60%; left: 3%; animation-delay: 1s; color: #fff; }
+      .newspaper-star-deco:nth-child(4) { bottom: 20%; right: 5%; animation-delay: 1.5s; color: #fff; }
+
+      #x-map-container.light-theme .newspaper-star-deco {
+        color: #000;
+      }
+
+      /* 对话框装饰 */
+      .newspaper-speech-bubble {
+        position: relative;
+        background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
+        border: 2px solid #fff;
+        padding: 10px;
+        border-radius: 12px;
+        margin: 10px 0;
+        font-size: 11px;
+        color: #fff;
+        box-shadow: 2px 2px 0 rgba(255,255,255,0.1);
+      }
+
+      #x-map-container.light-theme .newspaper-speech-bubble {
+        background: linear-gradient(135deg, #fff 0%, #f8f8f8 100%);
+        border-color: #000;
+        color: #000;
+        box-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+      }
+
+      .newspaper-speech-bubble::after {
+        content: '';
+        position: absolute;
+        bottom: -12px;
+        left: 22px;
+        width: 0;
+        height: 0;
+        border-left: 10px solid transparent;
+        border-right: 10px solid transparent;
+        border-top: 12px solid #fff;
+      }
+
+      #x-map-container.light-theme .newspaper-speech-bubble::after {
+        border-top-color: #000;
+      }
+
+      /* 像素装饰点 */
+      .newspaper-pixel-dots {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      .newspaper-pixel-dot {
+        position: absolute;
+        width: 3px;
+        height: 3px;
+        background: #fff;
+        opacity: 0.15;
+        image-rendering: pixelated;
+      }
+
+      #x-map-container.light-theme .newspaper-pixel-dot {
+        background: #000;
+        opacity: 0.1;
+      }
+
+      /* 底部签名 */
+      .newspaper-footer-sig {
+        text-align: center;
+        font-size: 11px;
+        color: #666;
+        font-style: italic;
+        padding: 14px;
+        margin-top: 10px;
+        border-top: 2px dashed #333;
+        font-family: "Courier New", monospace;
+      }
+
+      #x-map-container.light-theme .newspaper-footer-sig {
+        border-top-color: #e0e0e0;
+        color: #999;
+      }
+
+      /* 移动端适配 */
+      @media (max-width: 768px) {
+        .newspaper-content {
+          grid-template-columns: 1fr;
+          gap: 10px;
+          padding: 10px;
+        }
+
+        .newspaper-sidebar {
+          position: static;
+          order: -1;
+        }
+
+        .newspaper-profile-card,
+        .newspaper-tags-widget,
+        .newspaper-mail-notice {
+          transform: rotate(0);
+        }
+
+        .newspaper-submission-sticky {
+          transform: rotate(0);
+          margin: 8px 0;
+        }
       }
 
     /* ==================== 亮色主题：提醒功能 - Toast风格 ==================== */
@@ -36870,6 +40390,8 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
       /* 亮色主题下的按钮颜色调整 */
       #x-map-container.light-theme .map-app-settings-btn svg,
       #x-map-container.light-theme .map-notifications-btn svg,
+      #x-map-container.light-theme .map-newspaper-btn svg,
+      #x-map-container.light-theme .map-ride-btn svg,
       #x-map-container.light-theme .map-chats-btn svg,
       #x-map-container.light-theme .map-close-btn svg {
         stroke: #000;
@@ -37830,7 +41352,8 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
         font-size: 12px;
         font-weight: 600;
         white-space: nowrap;
-        pointer-events: none;
+        pointer-events: auto;
+        cursor: default;
         transform: translate(-50%, -100%);
         margin-top: -10px;
         /* 玻璃质感阴影：外阴影 + 内阴影 */
@@ -37851,6 +41374,11 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
       .landmark-label.visible {
         opacity: 1;
         transform: translate(-50%, -100%) scale(1);
+      }
+
+      /* 有事件的地标显示手指光标 */
+      .landmark-label.has-event {
+        cursor: pointer;
       }
 
       .landmark-label-icon {
@@ -41745,6 +45273,639 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
         width: 18px;
         height: 18px;
       }
+
+      /* ==================== 地标事件系统样式 ==================== */
+
+      /* 有事件的地标样式 */
+      .map-landmark.has-event {
+        position: relative;
+        animation: landmarkPulse 2s ease-in-out infinite;
+      }
+
+      @keyframes landmarkPulse {
+        0%, 100% {
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5), 0 0 0 0 rgba(201, 48, 44, 0.7);
+        }
+        50% {
+          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.7), 0 0 0 10px rgba(201, 48, 44, 0);
+        }
+      }
+
+      /* 事件徽章（右上角红点）*/
+      .map-landmark.has-event::after {
+        content: '';
+        position: absolute;
+        top: -2px;
+        right: -2px;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: #ff3b30;
+        border: 2px solid var(--map-bg-primary, #1a1a1a);
+        animation: badgePulse 1.5s ease-in-out infinite;
+        z-index: 1;
+      }
+
+      @keyframes badgePulse {
+        0%, 100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+        50% {
+          transform: scale(1.2);
+          opacity: 0.8;
+        }
+      }
+
+      /* 光晕效果 */
+      .map-landmark.has-event::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(201, 48, 44, 0.3) 0%, transparent 70%);
+        transform: translate(-50%, -50%);
+        animation: landmarkGlow 2s ease-in-out infinite;
+        pointer-events: none;
+        z-index: -1;
+      }
+
+      @keyframes landmarkGlow {
+        0%, 100% {
+          opacity: 0.5;
+          transform: translate(-50%, -50%) scale(1);
+        }
+        50% {
+          opacity: 0.8;
+          transform: translate(-50%, -50%) scale(1.2);
+        }
+      }
+
+      /* ==================== 事件弹窗样式 ==================== */
+
+      /* CSS变量扩展 - 事件系统专用 */
+      :root {
+        --event-bg-primary: #1a1a1a;
+        --event-bg-secondary: #252525;
+        --event-bg-tertiary: #2f2f2f;
+        --event-bg-paper: #1e1e1e;
+        --event-text-primary: #f5f5f5;
+        --event-text-secondary: #d0d0d0;
+        --event-text-muted: #909090;
+        --event-border-light: #3a3a3a;
+        --event-border-medium: #4a4a4a;
+        --event-border-dark: #2a2a2a;
+        --event-accent: #c9302c;
+        --event-accent-hover: #ac2925;
+        --event-overlay: rgba(0, 0, 0, 0.92);
+        --event-shadow-sm: rgba(0, 0, 0, 0.3);
+        --event-shadow-md: rgba(0, 0, 0, 0.5);
+        --event-shadow-lg: rgba(0, 0, 0, 0.7);
+        --event-image-filter: grayscale(0.3) contrast(1.1);
+      }
+
+      /* 浅色主题 - 事件系统变量 */
+      #x-map-container.light-theme {
+        --event-bg-primary: #fefefe;
+        --event-bg-secondary: #f8f8f8;
+        --event-bg-tertiary: #f0f0f0;
+        --event-bg-paper: #ffffff;
+        --event-text-primary: #1a1a1a;
+        --event-text-secondary: #3a3a3a;
+        --event-text-muted: #707070;
+        --event-border-light: #e0e0e0;
+        --event-border-medium: #c0c0c0;
+        --event-border-dark: #a0a0a0;
+        --event-accent: #c9302c;
+        --event-accent-hover: #ac2925;
+        --event-overlay: rgba(0, 0, 0, 0.7);
+        --event-shadow-sm: rgba(0, 0, 0, 0.08);
+        --event-shadow-md: rgba(0, 0, 0, 0.12);
+        --event-shadow-lg: rgba(0, 0, 0, 0.16);
+        --event-image-filter: grayscale(0.2) contrast(1.05);
+      }
+
+      /* Modal 结构 */
+      .event-modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: var(--event-overlay);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 100000;
+        padding: 20px;
+        animation: eventFadeIn 0.25s ease;
+        overflow-y: auto;
+        backdrop-filter: blur(8px);
+      }
+
+      .event-modal-overlay.active {
+        display: flex;
+      }
+
+      @keyframes eventFadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+
+      .event-modal-container {
+        background: var(--event-bg-paper);
+        width: 100%;
+        max-width: 720px;
+        max-height: 90vh;
+        border-radius: 4px;
+        box-shadow:
+          0 0 0 1px var(--event-border-medium),
+          0 20px 60px var(--event-shadow-lg);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        animation: eventSlideUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        position: relative;
+      }
+
+      @keyframes eventSlideUp {
+        from {
+          opacity: 0;
+          transform: translateY(40px) scale(0.96);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      .event-controls {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        display: flex;
+        gap: 10px;
+        z-index: 10;
+      }
+
+      .event-btn {
+        width: 40px;
+        height: 40px;
+        border: 1px solid var(--event-border-medium);
+        background: var(--event-bg-primary);
+        color: var(--event-text-primary);
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        transition: all 0.2s ease;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 2px 12px var(--event-shadow-md);
+      }
+
+      .event-btn:hover {
+        background: var(--event-accent);
+        border-color: var(--event-accent);
+        color: white;
+        transform: scale(1.08);
+      }
+
+      .event-btn:active {
+        transform: scale(0.92);
+      }
+
+      .event-content {
+        padding: 0;
+        overflow-y: auto;
+        flex: 1;
+      }
+
+      /* 报纸头部 */
+      .event-paper-header {
+        border-bottom: 3px double var(--event-border-dark);
+        padding: 24px 32px 16px;
+        background: var(--event-bg-secondary);
+        position: relative;
+      }
+
+      .event-paper-header::before,
+      .event-paper-header::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: var(--event-border-light);
+      }
+
+      .event-paper-header::before { top: 0; }
+      .event-paper-header::after { bottom: 0; }
+
+      .event-masthead {
+        font-family: "Playfair Display", serif;
+        font-size: 36px;
+        font-weight: 900;
+        text-align: center;
+        letter-spacing: 2px;
+        color: var(--event-text-primary);
+        margin-bottom: 8px;
+        text-transform: uppercase;
+      }
+
+      .event-tagline {
+        font-family: "Courier New", monospace;
+        font-size: 11px;
+        text-align: center;
+        color: var(--event-text-muted);
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+      }
+
+      .event-header-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid var(--event-border-light);
+        font-size: 11px;
+        color: var(--event-text-muted);
+        font-family: "Courier New", monospace;
+      }
+
+      /* 文章内容区 */
+      .event-article {
+        padding: 32px 40px 40px;
+      }
+
+      .event-tags {
+        margin-bottom: 20px;
+      }
+
+      .event-tag {
+        display: inline-block;
+        background: var(--event-accent);
+        color: white;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        padding: 5px 12px;
+        border-radius: 2px;
+        margin-right: 6px;
+        margin-bottom: 8px;
+      }
+
+      .event-tag.secondary {
+        background: var(--event-bg-tertiary);
+        color: var(--event-text-primary);
+        border: 1px solid var(--event-border-medium);
+      }
+
+      .event-headline {
+        font-family: "Playfair Display", serif;
+        font-size: 42px;
+        font-weight: 900;
+        line-height: 1.15;
+        color: var(--event-text-primary);
+        margin-bottom: 16px;
+        letter-spacing: -0.8px;
+      }
+
+      .event-subheadline {
+        font-family: "Merriweather", serif;
+        font-size: 26px;
+        font-weight: 700;
+        line-height: 1.3;
+        color: var(--event-text-primary);
+        margin-top: 32px;
+        margin-bottom: 14px;
+      }
+
+      .event-title {
+        font-family: "Merriweather", serif;
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--event-text-primary);
+        margin-top: 24px;
+        margin-bottom: 12px;
+      }
+
+      .event-lead {
+        font-family: "Libre Baskerville", serif;
+        font-size: 20px;
+        line-height: 1.7;
+        color: var(--event-text-secondary);
+        margin-bottom: 24px;
+        font-weight: 400;
+      }
+
+      .event-body {
+        font-family: "Crimson Text", serif;
+        font-size: 19px;
+        line-height: 1.8;
+        color: var(--event-text-secondary);
+        margin-bottom: 18px;
+      }
+
+      .event-body-sans {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-size: 16px;
+        line-height: 1.7;
+        color: var(--event-text-secondary);
+        margin-bottom: 16px;
+      }
+
+      .event-caption {
+        font-size: 14px;
+        line-height: 1.6;
+        color: var(--event-text-muted);
+        font-style: italic;
+      }
+
+      .event-drop-cap::first-letter {
+        font-family: "Playfair Display", serif;
+        font-size: 80px;
+        font-weight: 900;
+        line-height: 0.85;
+        float: left;
+        margin: 8px 12px 0 0;
+        color: var(--event-accent);
+      }
+
+      .event-quote {
+        font-family: "Libre Baskerville", serif;
+        font-size: 22px;
+        font-style: italic;
+        line-height: 1.65;
+        color: var(--event-text-primary);
+        border-left: 3px solid var(--event-accent);
+        padding-left: 24px;
+        margin: 32px 0;
+        position: relative;
+      }
+
+      .event-quote::before {
+        content: '"';
+        font-family: "Playfair Display", serif;
+        font-size: 60px;
+        position: absolute;
+        left: -10px;
+        top: -15px;
+        color: var(--event-accent);
+        opacity: 0.3;
+      }
+
+      .event-quote-author {
+        font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 600;
+        color: var(--event-text-muted);
+        margin-top: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+      }
+
+      .event-byline {
+        font-size: 13px;
+        color: var(--event-text-muted);
+        margin-bottom: 20px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid var(--event-border-light);
+      }
+
+      .event-byline strong {
+        color: var(--event-text-primary);
+        font-weight: 600;
+      }
+
+      .event-divider {
+        border: none;
+        border-top: 1px solid var(--event-border-light);
+        margin: 28px 0;
+      }
+
+      .event-divider-thick {
+        border: none;
+        border-top: 3px solid var(--event-text-primary);
+        margin: 32px 0;
+      }
+
+      .event-divider-double {
+        border: none;
+        border-top: 3px double var(--event-border-dark);
+        margin: 28px 0;
+      }
+
+      .event-list {
+        margin: 20px 0;
+        padding-left: 28px;
+      }
+
+      .event-list li {
+        font-family: "Crimson Text", serif;
+        font-size: 19px;
+        line-height: 1.8;
+        color: var(--event-text-secondary);
+        margin-bottom: 10px;
+      }
+
+      .event-list-clean {
+        list-style: none;
+        padding-left: 0;
+      }
+
+      .event-list-clean li {
+        padding-left: 24px;
+        position: relative;
+      }
+
+      .event-list-clean li::before {
+        content: '•';
+        position: absolute;
+        left: 8px;
+        color: var(--event-accent);
+        font-weight: bold;
+      }
+
+      .event-box {
+        background: var(--event-bg-secondary);
+        border: 1px solid var(--event-border-medium);
+        padding: 20px 24px;
+        border-radius: 3px;
+        margin: 28px 0;
+      }
+
+      .event-box-highlight {
+        background: var(--event-bg-tertiary);
+        border-left: 4px solid var(--event-accent);
+        padding: 20px 24px;
+        margin: 28px 0;
+      }
+
+      .event-box-alert {
+        background: var(--event-accent);
+        color: white;
+        padding: 20px 24px;
+        border-radius: 3px;
+        margin: 28px 0;
+        font-weight: 600;
+      }
+
+      .event-box-alert * {
+        color: white !important;
+      }
+
+      .event-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 28px 0;
+        font-size: 15px;
+        border: 1px solid var(--event-border-medium);
+      }
+
+      .event-table th {
+        background: var(--event-bg-secondary);
+        color: var(--event-text-primary);
+        font-weight: 700;
+        text-align: left;
+        padding: 14px 16px;
+        border-bottom: 2px solid var(--event-border-dark);
+        font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .event-table td {
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--event-border-light);
+        color: var(--event-text-secondary);
+        font-family: "Crimson Text", serif;
+        font-size: 17px;
+      }
+
+      .event-table tr:last-child td {
+        border-bottom: none;
+      }
+
+      .event-columns-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        margin: 28px 0;
+      }
+
+      .event-sidebar-box {
+        background: var(--event-bg-secondary);
+        border: 1px solid var(--event-border-medium);
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+
+      .event-sidebar-box h3 {
+        font-family: "Merriweather", serif;
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 12px;
+        color: var(--event-text-primary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .event-emphasis {
+        color: var(--event-accent);
+        font-weight: 600;
+      }
+
+      .event-bold {
+        font-weight: 700;
+        color: var(--event-text-primary);
+      }
+
+      .event-footer {
+        border-top: 3px double var(--event-border-dark);
+        padding: 20px 40px;
+        background: var(--event-bg-secondary);
+        text-align: center;
+        font-size: 11px;
+        color: var(--event-text-muted);
+        font-family: "Courier New", monospace;
+        letter-spacing: 1px;
+      }
+
+      /* 响应式 */
+      @media (max-width: 768px) {
+        .event-modal-overlay {
+          padding: 0;
+          align-items: flex-end;
+        }
+
+        .event-modal-container {
+          max-width: 100%;
+          max-height: 95vh;
+          border-radius: 12px 12px 0 0;
+        }
+
+        .event-paper-header {
+          padding: 20px 20px 14px;
+        }
+
+        .event-masthead {
+          font-size: 28px;
+        }
+
+        .event-article {
+          padding: 24px 20px 32px;
+        }
+
+        .event-headline {
+          font-size: 32px;
+        }
+
+        .event-subheadline {
+          font-size: 22px;
+        }
+
+        .event-lead {
+          font-size: 18px;
+        }
+
+        .event-body {
+          font-size: 17px;
+        }
+
+        .event-quote {
+          font-size: 19px;
+          padding-left: 20px;
+        }
+
+        .event-columns-2 {
+          grid-template-columns: 1fr;
+          gap: 16px;
+        }
+
+        .event-controls {
+          top: 16px;
+          right: 16px;
+        }
+
+        .event-btn {
+          width: 36px;
+          height: 36px;
+          font-size: 18px;
+        }
+
+        .event-footer {
+          padding: 16px 20px;
+        }
+      }
     `;
 
     document.head.appendChild(styleEl);
@@ -41782,6 +45943,8 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
       '<svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="2"></circle><circle cx="12" cy="12" r="2"></circle><circle cx="12" cy="19" r="2"></circle></svg>',
     arrowLeft:
       '<svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>',
+    newspaper:
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 6h3a1 1 0 0 1 1 1v11a2 2 0 0 1 -4 0v-13a1 1 0 0 0 -1 -1h-10a1 1 0 0 0 -1 1v12a3 3 0 0 0 3 3h11"/><path d="M8 8l4 0"/><path d="M8 12l4 0"/><path d="M8 16l4 0"/></svg>',
   };
 
   // 生成地图约会页面的HTML结构
@@ -41869,6 +46032,19 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
             <div class="map-notifications-badge hidden" id="mapNotificationsBadge">0</div>
           </button>
 
+          <!-- 咩三三报纸按钮 -->
+          <button class="map-newspaper-btn" id="mapNewspaperBtn" title="咩三三的城市报纸">
+            ${MapIcons.newspaper}
+          </button>
+
+          <!-- 城市乘车按钮 -->
+          <button class="map-ride-btn" id="mapRideBtn" title="城市乘车">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+              <path d="M12 17l-1 -4l-4 -1l9 -4z" />
+            </svg>
+          </button>
+
           <!-- 应用设置按钮 -->
           <button class="map-app-settings-btn" id="mapAppSettingsBtn" title="Settings">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -41906,6 +46082,15 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
             <!-- Canvas地图背景 -->
             <canvas id="mapCanvasBg"></canvas>
             <!-- 动态生成地图标记 -->
+          </div>
+
+          <!-- 地图选点提示条 -->
+          <div class="map-landmark-pick-hint" id="mapLandmarkPickHint" style="display: none;">
+            <span style="font-size: 18px;">📍</span>
+            <span>Click on the map to place your landmark</span>
+            <button class="map-landmark-cancel-btn" onclick="MapDatingController.cancelLandmarkPick()">
+              <span>✕</span>
+            </button>
           </div>
 
           <!-- 用户详情卡片 - TikTok风格 -->
@@ -42760,6 +46945,291 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
         </div>
       </div>
 
+      <!-- 🚗 城市乘车面板 - ins风格 -->
+      <!-- 选择目的地提示 -->
+      <div class="ride-selection-hint" id="rideSelectionHint">
+        点击地图上的地标选择目的地
+      </div>
+
+      <!-- 乘车面板遮罩 -->
+      <div class="ride-panel-overlay" id="ridePanelOverlay"></div>
+
+      <!-- 乘车面板 - 半屏抽屉 -->
+      <div class="ride-panel" id="ridePanel">
+        <!-- 面板拖动手柄 -->
+        <div class="ride-panel-handle"></div>
+
+        <!-- 面板内容 -->
+        <div class="ride-panel-content">
+          <!-- 路线信息横幅 -->
+          <div class="ride-route-banner">
+            <div class="ride-route-banner-left">
+              <svg class="ride-route-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
+              <span class="ride-route-text">预计到达</span>
+            </div>
+            <span class="ride-route-time" id="rideEstimatedTime">--</span>
+          </div>
+
+          <!-- 位置选择 -->
+          <div class="ride-location-section">
+            <div class="ride-location-box">
+              <div class="ride-location-label">Start</div>
+              <div class="ride-location-value">当前位置</div>
+            </div>
+            <div class="ride-location-box" id="rideDestinationBox">
+              <div class="ride-location-label">Finish</div>
+              <div class="ride-location-value placeholder" id="rideDestinationValue">点击选择目的地</div>
+            </div>
+          </div>
+
+          <!-- 车辆选择标题 -->
+          <h2 class="ride-section-title">选择车型</h2>
+
+          <!-- 车辆选择网格 -->
+          <div class="ride-vehicles-grid" id="rideVehiclesGrid">
+            <!-- 经济型 -->
+            <div class="ride-vehicle-card selected" data-type="economy" data-base-price="18" data-rate="1.2">
+              <div class="ride-vehicle-image">
+                <svg viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <ellipse cx="60" cy="68" rx="32" ry="6" fill="currentColor" opacity="0.1"/>
+                  <path d="M 24,58 L 18,50 L 18,32 L 30,24 L 90,24 L 102,32 L 102,50 L 96,58 Z" fill="currentColor" opacity="0.25"/>
+                  <ellipse cx="35" cy="58" rx="11" ry="11" fill="currentColor" opacity="0.5"/>
+                  <ellipse cx="85" cy="58" rx="11" ry="11" fill="currentColor" opacity="0.5"/>
+                  <rect x="28" y="18" width="64" height="22" rx="4" fill="currentColor" opacity="0.35"/>
+                  <rect x="42" y="12" width="36" height="10" rx="2.5" fill="currentColor" opacity="0.45"/>
+                </svg>
+              </div>
+              <div class="ride-vehicle-name">经济型</div>
+              <div class="ride-vehicle-capacity">
+                <svg class="ride-capacity-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                  <circle cx="12" cy="7" r="4"/>
+                </svg>
+                <span>1-3</span>
+              </div>
+              <div class="ride-vehicle-pricing">
+                <span class="ride-vehicle-price">¥<span class="ride-price-value">18</span></span>
+                <span class="ride-vehicle-eta">5 min</span>
+              </div>
+            </div>
+
+            <!-- 舒适型 -->
+            <div class="ride-vehicle-card" data-type="comfort" data-base-price="32" data-rate="2.0">
+              <div class="ride-vehicle-image">
+                <svg viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <ellipse cx="60" cy="68" rx="34" ry="6" fill="currentColor" opacity="0.12"/>
+                  <path d="M 22,58 L 16,49 L 16,30 L 28,21 L 92,21 L 104,30 L 104,49 L 98,58 Z" fill="currentColor" opacity="0.3"/>
+                  <ellipse cx="34" cy="58" rx="12" ry="12" fill="currentColor" opacity="0.6"/>
+                  <ellipse cx="86" cy="58" rx="12" ry="12" fill="currentColor" opacity="0.6"/>
+                  <rect x="26" y="16" width="68" height="24" rx="5" fill="currentColor" opacity="0.4"/>
+                  <rect x="40" y="10" width="40" height="11" rx="3" fill="currentColor" opacity="0.5"/>
+                </svg>
+              </div>
+              <div class="ride-vehicle-name">舒适型</div>
+              <div class="ride-vehicle-capacity">
+                <svg class="ride-capacity-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                  <circle cx="9" cy="7" r="4"/>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+                <span>1-4</span>
+              </div>
+              <div class="ride-vehicle-pricing">
+                <span class="ride-vehicle-price">¥<span class="ride-price-value">32</span></span>
+                <span class="ride-vehicle-eta">8 min</span>
+              </div>
+            </div>
+
+            <!-- 商务型 -->
+            <div class="ride-vehicle-card" data-type="business" data-base-price="56" data-rate="3.5">
+              <div class="ride-vehicle-image">
+                <svg viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <ellipse cx="60" cy="68" rx="36" ry="6" fill="currentColor" opacity="0.14"/>
+                  <path d="M 20,58 L 14,48 L 14,28 L 26,18 L 94,18 L 106,28 L 106,48 L 100,58 Z" fill="currentColor" opacity="0.35"/>
+                  <ellipse cx="33" cy="58" rx="13" ry="13" fill="currentColor" opacity="0.7"/>
+                  <ellipse cx="87" cy="58" rx="13" ry="13" fill="currentColor" opacity="0.7"/>
+                  <rect x="24" y="14" width="72" height="26" rx="6" fill="currentColor" opacity="0.45"/>
+                  <rect x="38" y="8" width="44" height="12" rx="3.5" fill="currentColor" opacity="0.55"/>
+                </svg>
+              </div>
+              <div class="ride-vehicle-name">商务型</div>
+              <div class="ride-vehicle-capacity">
+                <svg class="ride-capacity-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+                  <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+                </svg>
+                <span>1-4</span>
+              </div>
+              <div class="ride-vehicle-pricing">
+                <span class="ride-vehicle-price">¥<span class="ride-price-value">56</span></span>
+                <span class="ride-vehicle-eta">10 min</span>
+              </div>
+            </div>
+
+            <!-- 豪华型 -->
+            <div class="ride-vehicle-card" data-type="luxury" data-base-price="128" data-rate="6.0">
+              <div class="ride-vehicle-image">
+                <svg viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <ellipse cx="60" cy="68" rx="38" ry="6" fill="currentColor" opacity="0.16"/>
+                  <path d="M 18,58 L 12,47 L 12,26 L 24,15 L 96,15 L 108,26 L 108,47 L 102,58 Z" fill="currentColor" opacity="0.4"/>
+                  <ellipse cx="32" cy="58" rx="14" ry="14" fill="currentColor" opacity="0.8"/>
+                  <ellipse cx="88" cy="58" rx="14" ry="14" fill="currentColor" opacity="0.8"/>
+                  <rect x="22" y="11" width="76" height="28" rx="7" fill="currentColor" opacity="0.5"/>
+                  <rect x="36" y="5" width="48" height="13" rx="4" fill="currentColor" opacity="0.6"/>
+                </svg>
+              </div>
+              <div class="ride-vehicle-name">豪华型</div>
+              <div class="ride-vehicle-capacity">
+                <svg class="ride-capacity-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                </svg>
+                <span>1-4</span>
+              </div>
+              <div class="ride-vehicle-pricing">
+                <span class="ride-vehicle-price">¥<span class="ride-price-value">128</span></span>
+                <span class="ride-vehicle-eta">15 min</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 支付方式 -->
+          <div class="ride-payment-section">
+            <h3 class="ride-payment-title">支付方式</h3>
+            <div class="ride-payment-options">
+              <button class="ride-payment-option selected" data-payment="cash">
+                <svg class="ride-payment-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="1" x2="12" y2="23"/>
+                  <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                </svg>
+                <span>现金</span>
+              </button>
+              <button class="ride-payment-option" data-payment="online">
+                <svg class="ride-payment-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                  <line x1="1" y1="10" x2="23" y2="10"/>
+                </svg>
+                <span>在线支付</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 预订按钮 -->
+          <button class="ride-book-btn" id="rideBookBtn" disabled>请先选择目的地</button>
+        </div>
+      </div>
+
+      <!-- 等待司机悬浮小球 -->
+      <button class="waiting-driver-float-btn" id="waitingDriverFloatBtn">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M7 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+          <path d="M17 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+          <path d="M5 17h-2v-6l2 -5h9l4 5h1a2 2 0 0 1 2 2v4h-2m-4 0h-6m-6 -6h15m-6 0v-5" />
+        </svg>
+      </button>
+
+      <!-- 等待司机弹窗 -->
+      <div class="waiting-driver-modal-overlay" id="waitingDriverModalOverlay">
+        <div class="waiting-driver-modal">
+          <!-- 关闭按钮 -->
+          <button class="waiting-driver-close" id="waitingDriverCloseBtn">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 6L6 18M6 6l12 12"/>
+            </svg>
+          </button>
+
+          <!-- Header -->
+          <div class="waiting-driver-header">
+            <div class="waiting-driver-status">Driver on the way</div>
+            <div class="waiting-driver-eta" id="waitingDriverEta">0:00</div>
+            <div class="waiting-driver-eta-label">Estimated Arrival</div>
+          </div>
+
+          <!-- 司机卡片 -->
+          <div class="waiting-driver-card">
+            <div class="waiting-driver-avatar">
+              <img id="waitingDriverAvatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Crect fill='%23d5d5d5' width='64' height='64'/%3E%3Ctext x='50%25' y='50%25' fill='%23666' text-anchor='middle' dy='.3em' font-size='24' font-family='Arial'%3ED%3C/text%3E%3C/svg%3E" alt="Driver">
+            </div>
+            <div class="waiting-driver-info">
+              <div class="waiting-driver-name" id="waitingDriverName">Driver</div>
+              <div class="waiting-driver-rating">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <span class="waiting-driver-rating-value" id="waitingDriverRating">5.0</span>
+              </div>
+              <div class="waiting-driver-vehicle">
+                <span id="waitingDriverVehicle">Vehicle</span>
+                <span class="waiting-driver-plate" id="waitingDriverPlate">XXXXXXXX</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 路线图 -->
+          <div class="waiting-driver-route-map">
+            <div class="waiting-driver-route-grid"></div>
+            <div class="waiting-driver-route-line"></div>
+
+            <!-- 用户标记 -->
+            <div class="waiting-driver-user-marker">
+              <div class="waiting-driver-user-pin">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                  <circle cx="12" cy="7" r="4"/>
+                </svg>
+              </div>
+            </div>
+
+            <!-- 司机标记 -->
+            <div class="waiting-driver-car-marker" id="waitingDriverCarMarker">
+              <div class="waiting-driver-car-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M7 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+                  <path d="M17 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+                  <path d="M5 17h-2v-6l2 -5h9l4 5h1a2 2 0 0 1 2 2v4h-2m-4 0h-6m-6 -6h15m-6 0v-5" />
+                </svg>
+              </div>
+              <div class="waiting-driver-car-label" id="waitingDriverDistance">0.0 km</div>
+            </div>
+          </div>
+
+          <!-- 距离信息 -->
+          <div class="waiting-driver-distance-info">
+            <div class="waiting-driver-distance-item">
+              <div class="waiting-driver-distance-value" id="waitingDriverDistanceKm">0.0</div>
+              <div class="waiting-driver-distance-label">Distance (km)</div>
+            </div>
+            <div class="waiting-driver-distance-divider"></div>
+            <div class="waiting-driver-distance-item">
+              <div class="waiting-driver-distance-value" id="waitingDriverSpeed">0</div>
+              <div class="waiting-driver-distance-label">Speed (km/h)</div>
+            </div>
+          </div>
+
+          <!-- 操作按钮 -->
+          <div class="waiting-driver-actions">
+            <button class="waiting-driver-action-btn" id="waitingDriverContactBtn">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+              </svg>
+              <span id="waitingDriverContactText">Contact</span>
+            </button>
+            <button class="waiting-driver-action-btn cancel" id="waitingDriverCancelBtn">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M15 9l-6 6M9 9l6 6"/>
+              </svg>
+              Cancel Ride
+            </button>
+          </div>
+        </div>
+      </div>
+
       <!-- ⚙️ 应用设置弹窗 - ins风格 -->
       <div class="map-app-settings-overlay" id="mapAppSettingsOverlay"></div>
       <div class="map-app-settings-modal" id="mapAppSettingsModal">
@@ -42790,6 +47260,114 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
                     <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
                   </svg>
                 </div>
+              </div>
+            </div>
+
+            <!-- 地标管理 -->
+            <div class="map-app-setting-section map-landmark-section">
+              <div class="map-app-setting-section-title">Landmark Management</div>
+              <div class="map-app-setting-section-desc">Add custom landmarks or generate them with AI</div>
+
+              <!-- 模式切换 -->
+              <div class="map-landmark-mode-toggle">
+                <button class="map-landmark-mode-btn active" data-mode="custom">
+                  Custom Landmark
+                </button>
+                <button class="map-landmark-mode-btn" data-mode="ai">
+                  AI Generate
+                </button>
+              </div>
+
+              <!-- 自定义地标表单 -->
+              <div class="map-landmark-custom-form active">
+                <input
+                  type="text"
+                  class="map-landmark-name-input"
+                  id="mapLandmarkNameInput"
+                  placeholder="Landmark name (e.g., Starbucks, Central Park)"
+                  maxlength="50"
+                />
+
+                <textarea
+                  class="map-landmark-desc-input"
+                  id="mapLandmarkDescInput"
+                  placeholder="Landmark description (optional)"
+                  maxlength="200"
+                ></textarea>
+
+                <div class="map-landmark-icon-color-row">
+                  <!-- 图标选择 -->
+                  <div class="map-landmark-icon-selector">
+                    <div class="map-landmark-icon-preview" id="mapLandmarkIconPreview">📍</div>
+                    <input
+                      type="text"
+                      class="map-landmark-icon-input"
+                      id="mapLandmarkIconInput"
+                      placeholder="Icon emoji"
+                      maxlength="2"
+                      value="📍"
+                    />
+                  </div>
+
+                  <!-- 颜色选择 -->
+                  <div class="map-landmark-color-picker-wrapper">
+                    <div class="map-landmark-color-preview" id="mapLandmarkColorPreview" style="background-color: #ff6b6b;"></div>
+                    <input
+                      type="text"
+                      class="map-landmark-color-input"
+                      id="mapLandmarkColorInput"
+                      placeholder="Color (e.g., #ff6b6b)"
+                      maxlength="7"
+                      value="#ff6b6b"
+                    />
+                  </div>
+                </div>
+
+                <!-- 地图选点 -->
+                <div class="map-landmark-pick-position">
+                  <button class="map-landmark-pick-btn" id="mapLandmarkPickBtn">
+                    <span>📍</span>
+                    <span>Click to pick position on map</span>
+                  </button>
+                  <div class="map-landmark-position-display" id="mapLandmarkPositionDisplay">
+                    No position selected
+                  </div>
+                </div>
+
+                <button class="map-landmark-save-btn" id="mapLandmarkSaveBtn" disabled>
+                  Save Landmark
+                </button>
+              </div>
+
+              <!-- AI生成地标表单 -->
+              <div class="map-landmark-ai-form">
+                <textarea
+                  class="map-landmark-ai-input"
+                  id="mapLandmarkAiInput"
+                  placeholder="Describe what landmarks you want AI to generate (e.g., 'Generate 5-10 restaurants and cafes in downtown area')"
+                ></textarea>
+
+                <button class="map-landmark-generate-btn" id="mapLandmarkGenerateBtn">
+                  Generate Landmarks with AI
+                </button>
+              </div>
+
+              <!-- 批量操作栏 -->
+              <div class="map-landmark-batch-actions" id="mapLandmarkBatchActions">
+                <button class="map-landmark-select-all-btn" id="mapLandmarkSelectAllBtn">
+                  Select All
+                </button>
+                <span class="map-landmark-selected-count" id="mapLandmarkSelectedCount">
+                  0 selected
+                </span>
+                <button class="map-landmark-batch-delete-btn" id="mapLandmarkBatchDeleteBtn" disabled>
+                  Delete Selected
+                </button>
+              </div>
+
+              <!-- 地标列表 -->
+              <div class="map-landmark-list" id="mapLandmarkList">
+                <!-- 动态生成 -->
               </div>
             </div>
 
@@ -42828,6 +47406,122 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
               <!-- 已添加头像列表 -->
               <div class="map-avatar-list" id="mapCustomAvatarList">
                 <!-- 动态生成 -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 地标事件弹窗 -->
+      <div class="event-modal-overlay" id="eventModalOverlay">
+        <div class="event-modal-container">
+          <div class="event-controls">
+            <button class="event-btn" id="eventModalCloseBtn" title="关闭">×</button>
+          </div>
+          <div class="event-content" id="eventModalContent">
+            <!-- AI生成的事件HTML将动态注入这里 -->
+          </div>
+        </div>
+      </div>
+
+      <!-- 咩三三城市报纸弹窗 -->
+      <div class="map-newspaper-overlay" id="newspaperOverlay"></div>
+      <div class="map-newspaper-modal" id="newspaperModal">
+        <div class="newspaper-container">
+          <!-- 扫描线效果 -->
+          <div class="newspaper-scanline"></div>
+
+          <!-- 装饰星星 -->
+          <span class="newspaper-star-deco">✦</span>
+          <span class="newspaper-star-deco">✧</span>
+          <span class="newspaper-star-deco">✦</span>
+          <span class="newspaper-star-deco">✧</span>
+
+          <!-- 像素装饰点 -->
+          <div class="newspaper-pixel-dots">
+            <span class="newspaper-pixel-dot" style="top: 10%; left: 15%;"></span>
+            <span class="newspaper-pixel-dot" style="top: 25%; right: 20%;"></span>
+            <span class="newspaper-pixel-dot" style="top: 45%; left: 8%;"></span>
+            <span class="newspaper-pixel-dot" style="top: 70%; right: 12%;"></span>
+            <span class="newspaper-pixel-dot" style="bottom: 15%; left: 25%;"></span>
+          </div>
+
+          <div class="newspaper-screen">
+            <!-- 浏览器风格顶栏 -->
+            <div class="newspaper-browser-bar">
+              <div class="newspaper-browser-dots">
+                <div class="newspaper-dot"></div>
+                <div class="newspaper-dot"></div>
+                <div class="newspaper-dot"></div>
+              </div>
+              <div class="newspaper-url-bar">mie333://city-news.daily</div>
+              <button class="newspaper-close-btn" id="newspaperCloseBtn">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M18 6L6 18M6 6L18 18" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+            </div>
+
+            <!-- 主内容区 - 双栏布局 -->
+            <div class="newspaper-content">
+              <!-- 右侧边栏 -->
+              <div class="newspaper-sidebar">
+                <!-- 头像名片 -->
+                <div class="newspaper-profile-card">
+                  <div class="newspaper-avatar-box">
+                    <div class="newspaper-avatar">🐑</div>
+                    <div class="newspaper-status-badge">ONLINE</div>
+                  </div>
+                  <div class="newspaper-profile-name">MIE333</div>
+                  <div class="newspaper-profile-role">News Reporter<br>Weather Reporter<br>Merchant</div>
+                </div>
+
+                <!-- 像素时钟 -->
+                <div class="newspaper-pixel-clock">
+                  <div class="newspaper-clock-date" id="newspaperClockDate">2024-01-15</div>
+                  <div class="newspaper-clock-time" id="newspaperClockTime">10:23 PM</div>
+                </div>
+
+                <!-- 标签云 -->
+                <div class="newspaper-tags-widget">
+                  <div class="newspaper-widget-title">TAGS</div>
+                  <div class="newspaper-tag-cloud">
+                    <span class="newspaper-tag">NEWS</span>
+                    <span class="newspaper-tag">WEATHER</span>
+                    <span class="newspaper-tag">TIPS</span>
+                    <span class="newspaper-tag">ADS</span>
+                    <span class="newspaper-tag">STORY</span>
+                  </div>
+                </div>
+
+                <!-- 迷你统计 -->
+                <div class="newspaper-stats-mini">
+                  <div class="newspaper-stat-item">
+                    <div class="newspaper-stat-value" id="newspaperViewsCount">0</div>
+                    <div class="newspaper-stat-label">Views</div>
+                  </div>
+                  <div class="newspaper-stat-item">
+                    <div class="newspaper-stat-value" id="newspaperTipsCount">0</div>
+                    <div class="newspaper-stat-label">Tips</div>
+                  </div>
+                </div>
+
+                <!-- 邮件通知 -->
+                <div class="newspaper-mail-notice">
+                  <div class="newspaper-mail-stamp">📮</div>
+                  <div class="newspaper-mail-content">
+                    Contact via<br>
+                    mie333@city-news.com
+                  </div>
+                </div>
+              </div>
+
+              <!-- 左侧主栏 -->
+              <div class="newspaper-main-column" id="newspaperMainContent">
+                <!-- AI生成的报纸内容将动态注入这里 -->
+                <div style="padding: 40px; text-align: center; color: var(--map-text-secondary);">
+                  Loading...
+                </div>
               </div>
             </div>
           </div>
@@ -42987,8 +47681,13 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
     },
 
     init(canvasId) {
+      console.log('🗺️ [MapGenerator.init] 开始初始化地图, canvasId:', canvasId);
+      console.log('🗺️ [MapGenerator.init] 当前landmarks数量:', this.landmarks?.length || 0);
       const canvas = document.getElementById(canvasId);
-      if (!canvas) return;
+      if (!canvas) {
+        console.error('❌ [MapGenerator.init] 找不到canvas元素:', canvasId);
+        return;
+      }
 
       const mapCanvas = document.getElementById('mapCanvas');
       const width = mapCanvas.offsetWidth;
@@ -43019,6 +47718,7 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
       this.drawRoadDetails();
       this.generateLandmarks();
       this.drawLandmarks();
+      console.log('✅ [MapGenerator.init] 地图初始化完成');
     },
 
     generateLandmarks() {
@@ -43057,29 +47757,49 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
     drawLandmarks() {
       const { ctx, landmarks, colors } = this;
 
+      const landmarksWithEvents = landmarks.filter(l => l.event);
+      if (landmarksWithEvents.length > 0) {
+        console.log(`🗺️ [地图绘制] 总共${landmarks.length}个地标，其中${landmarksWithEvents.length}个有事件:`, landmarksWithEvents.map(l => l.name));
+      }
+
       // 根据主题选择描边颜色
       const strokeColor = colors === this.lightColors ? '#000' : '#fff';
       const highlightColor = colors === this.lightColors ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.5)';
 
       landmarks.forEach(landmark => {
+        // 外圈光晕
         ctx.beginPath();
         ctx.arc(landmark.x, landmark.y, 8, 0, Math.PI * 2);
         ctx.fillStyle = landmark.color + '20';
         ctx.fill();
 
+        // 主圆点
         ctx.beginPath();
         ctx.arc(landmark.x, landmark.y, 5, 0, Math.PI * 2);
         ctx.fillStyle = landmark.color;
         ctx.fill();
 
-        ctx.strokeStyle = strokeColor;
-        ctx.lineWidth = 2;
+        // 边框（有事件的地标使用红色边框）
+        ctx.strokeStyle = landmark.event ? '#ff3b30' : strokeColor;
+        ctx.lineWidth = landmark.event ? 3 : 2;
         ctx.stroke();
 
+        // 高光
         ctx.beginPath();
         ctx.arc(landmark.x - 1, landmark.y - 1, 2, 0, Math.PI * 2);
         ctx.fillStyle = highlightColor;
         ctx.fill();
+
+        // 如果有事件，绘制右上角红点徽章
+        if (landmark.event) {
+          ctx.beginPath();
+          ctx.arc(landmark.x + 4, landmark.y - 4, 3, 0, Math.PI * 2);
+          ctx.fillStyle = '#ff3b30';
+          ctx.fill();
+          ctx.strokeStyle = colors === this.lightColors ? '#fff' : '#1a1a1a';
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+        }
       });
     },
 
@@ -44199,9 +48919,15 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
     MAP_SIZE_MULTIPLIER: 3,
 
     // ▼▼▼ 【第十五个情景】地图约会数据AI生成器 ▼▼▼
-    async generateMapDatingData(onlyUsers = false) {
+    async generateMapDatingData(onlyUsers = false, onlyLandmarks = false, customRequirements = '') {
       try {
-        console.log(onlyUsers ? '🔄 [第十五个情景] 刷新附近的人...' : '🗺️ [第十五个情景] 地图约会数据生成器启动...');
+        console.log(
+          onlyUsers
+            ? '🔄 [第十五个情景] 刷新附近的人...'
+            : onlyLandmarks
+            ? '📍 [第十五个情景] AI生成地标...'
+            : '🗺️ [第十五个情景] 地图约会数据生成器启动...',
+        );
 
         // 🔧 1. 使用统一的API配置加载工具
         // 合并后所有模块都在同一个IIFE作用域内，可以直接访问 APIUtils、StringBuilders、TokenUtils
@@ -44217,6 +48943,8 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
         let firstMapEnterTime = null; // 首次进入地图的时间
         let lastWeatherRefreshTime = null; // 上次天气刷新的时间
         let weatherWasRefreshed = false; // 天气是否被刷新（需要更新lastWeatherRefreshTime）
+        let mapWeatherType = null; // 天气类型（只在非landmark-only模式使用）
+        let mapWeatherInfo = null; // 天气信息对象（只在非landmark-only模式使用）
 
         if (onlyUsers) {
           const dataId = `mapDatingData_${currentAccountId || 'main'}`;
@@ -44278,42 +49006,48 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
           }
         }
 
-        // 🔧 2. 构建用户X个人资料信息
-        const userXProfileInfo = StringBuilders.buildUserXProfileInfo(window.userProfileData);
+        // 🔧 2. 构建用户X个人资料信息（只在需要时）
+        const userXProfileInfo = onlyLandmarks ? null : StringBuilders.buildUserXProfileInfo(window.userProfileData);
 
         // 🔧 3. Token计数器初始化
         let tokenCount = 0;
 
-        // 🔧 5. 时间感知（北京时间）
-        const now = new Date();
-        const timeInfo = `
+        // 🔧 5. 时间感知（北京时间）- 只在生成附近的人时需要
+        let systemPrompt = '';
+
+        if (!onlyLandmarks) {
+          // 只在生成附近的人时才添加时间感知
+          const now = new Date();
+          const timeInfo = `
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ⏰ 时间感知
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 当前北京时间：${now.toLocaleString('zh-CN', {
-          timeZone: 'Asia/Shanghai',
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-          hour: '2-digit',
-          minute: '2-digit',
-          weekday: 'long',
-        })}
+            timeZone: 'Asia/Shanghai',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            weekday: 'long',
+          })}
 【时间相关提示】：
 - 生成的附近的人状态应该符合当前时间段（早晨、中午、下午、晚上、深夜）
 - 例如：早晨可能在"晨跑中"，中午可能在"吃午饭"，晚上可能在"看电影"等
 - 在线状态也应该考虑时间因素（深夜在线率较低）
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 `;
+          systemPrompt = timeInfo;
+          tokenCount = TokenUtils.logTokenUsage('地图约会生成器', '时间感知', timeInfo, tokenCount);
+        }
 
         // 🔧 6. 基础系统提示词
-        let systemPrompt =
-          timeInfo +
+        systemPrompt +=
           StringBuilders.buildBaseSystemPrompt({
             userPrompt,
             worldSetting,
           });
-        tokenCount = TokenUtils.logTokenUsage('地图约会生成器', '时间感知+基础系统提示词', systemPrompt, tokenCount);
+        tokenCount = TokenUtils.logTokenUsage('地图约会生成器', '基础系统提示词', systemPrompt, tokenCount);
 
         // 🔧 7. 获取适用的世界书内容
         const worldBooksContent = await StringBuilders.getApplicableWorldBooks('mapDating', {
@@ -44324,13 +49058,15 @@ ${index + 1}. ${comment.user.name} (${comment.user.handle}): ${
           tokenCount = TokenUtils.logTokenUsage('地图约会生成器', '世界书内容', worldBooksContent, tokenCount);
         }
 
-        // 🔧 8. 读取世界运转大事件（如果启用）
-        const worldEventsDataId = `worldEvents_${window.currentAccountId || 'main'}`;
-        const worldEventsRecord = await xDb.xWorldEvents.get(worldEventsDataId);
+        // 🔧 8. 读取世界运转大事件（如果启用）- 只在生成附近的人时需要
+        if (!onlyLandmarks) {
+          // 只在生成附近的人时才读取世界运转大事件和天气规则
+          const worldEventsDataId = `worldEvents_${window.currentAccountId || 'main'}`;
+          const worldEventsRecord = await xDb.xWorldEvents.get(worldEventsDataId);
 
-        // 🌤️ 解析天气类型（从全局大事件或随机生成，或使用已有天气）
-        let mapWeatherType = existingWeather || this.getRandomWeather(); // 如果是刷新用户且有原天气，使用原天气
-        let mapWeatherInfo = null;
+          // 🌤️ 解析天气类型（从全局大事件或随机生成，或使用已有天气）
+          mapWeatherType = existingWeather || this.getRandomWeather(); // 如果是刷新用户且有原天气，使用原天气
+          mapWeatherInfo = null;
 
         if (
           worldEventsRecord &&
@@ -44515,6 +49251,7 @@ ${
           );
           console.log('ℹ️ [地图约会生成器] 世界大事件未启用或无数据，仅注入天气规则');
         }
+        } // 结束 if (!onlyLandmarks) - 天气和世界运转大事件部分
 
         // 🔧 9. 核心任务说明 - 根据是否只刷新用户选择不同的提示词
         if (onlyUsers) {
@@ -44591,6 +49328,111 @@ ${this.advancedFilter.type ? `- 其他要求：${this.advancedFilter.type}` : ''
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 `;
           }
+        } else if (onlyLandmarks) {
+          // 只生成地标模式
+          systemPrompt += `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 核心任务说明 🎯
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+你是地标数据生成器。请根据世界观、世界书和用户要求生成独一无二的地标数据。
+
+🚨 **重要：你必须只返回有效的JSON格式数据，任何语法错误都会导致系统崩溃！** 🚨
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【用户自定义要求】：
+${customRequirements || '无特殊要求，根据世界观自由生成即可。'}
+${
+  this.customLandmarks && this.customLandmarks.length > 0
+    ? `
+
+【现有自定义地标】：
+系统中已存在 ${this.customLandmarks.length} 个自定义地标，请注意：
+1. **为这些地标生成事件**：约20%的现有地标应该生成事件（如果它们还没有event字段）
+2. **深度结合description字段**：如果地标有description字段，必须深度结合其内容生成事件
+3. **避免重复**：不要生成与现有地标名称相同的新地标
+4. **返回时必须包含所有现有地标**（无论是否添加事件），并与新生成的地标一起返回
+
+现有地标数据：
+\`\`\`json
+${JSON.stringify(this.customLandmarks, null, 2)}
+\`\`\`
+`
+    : ''
+}
+
+【生成要求】：
+
+## 地标数据（landmarks）
+- 根据世界观和用户要求生成**新的**地标
+- 如果用户指定了地标类型或数量，优先满足用户要求
+- 如果用户没有指定，根据世界观关键词随机生成，类型分布合理：
+  * 教育类（🎓）：15-25%
+  * 餐饮类（☕🍜🍕）：20-30%
+  * 娱乐类（🎮🎬🎪）：15-25%
+  * 商业类（🛒💼🏢）：15-25%
+  * 公共类（🏥⛪🏛️）：10-20%
+- **严禁生成重复的地标**，每个地标名称必须唯一
+- 地标数量：根据用户要求，默认5-15个
+- 每个地标包含：
+  * id: 唯一标识（字符串）
+  * name: 地标名称（字符串）
+  * icon: emoji图标（字符串）
+  * color: 颜色（#十六进制字符串）
+  * **注意：x, y坐标由系统自动分配，不需要生成**
+
+【输出JSON格式】：
+\`\`\`json
+{
+  "landmarks": [
+    {
+      "id": "landmark_001",
+      "name": "星巴克咖啡（市中心店）",
+      "icon": "☕",
+      "color": "#00a862"
+      // 无事件的地标不需要event字段
+    },
+    {
+      "id": "landmark_002",
+      "name": "中央公园",
+      "icon": "🌳",
+      "color": "#4caf50",
+      "event": {
+        "eventType": "alert",
+        "accentColor": "#c9302c",
+        "eventHTML": "<div class=\\"event-paper-header\\" style=\\"background: #c9302c;\\">...</div><div class=\\"event-article\\">...</div><div class=\\"event-footer\\">...</div>"
+      }
+    },
+    {
+      "id": "landmark_003",
+      "name": "好莱坞工厂",
+      "icon": "🏭",
+      "color": "#9e9e9e",
+      "event": {
+        "eventType": "news",
+        "accentColor": "#2c5aa0",
+        "eventHTML": "<div class=\\"event-paper-header\\"><div class=\\"event-masthead\\">City Daily</div>...</div>..."
+      }
+    }
+    // ... 更多地标（约20%有event，80%无event）
+  ],
+  "newspaper": {
+    "weather": { "icon": "☀", "temp": "18°C", "desc": "TODAY · SUNNY" },
+    "news": [ { "headline": "...", "location": "...", "time": "...", "body": "...", "comment": "..." } ],
+    "bubble": "✧ ...",
+    "submissions": [ { "tag": "MISSING", "title": "...", "content": "..." } ],
+    "ads": [ { "title": "...", "text": "..." } ]
+  }
+}
+\`\`\`
+
+🚨 **重要**：
+- 必须返回 **landmarks数组** 和 **newspaper对象**
+- newspaper字段是必须的，包含结构化的报纸数据（非HTML字符串）
+- JSON必须合法，不能有语法错误
+- 所有字段名必须用双引号
+- 最后一个对象后面不能有逗号
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
         } else {
           // 完整生成
           systemPrompt += `
@@ -44603,6 +49445,24 @@ ${this.advancedFilter.type ? `- 其他要求：${this.advancedFilter.type}` : ''
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 【生成要求】：
+${
+  this.customLandmarks && this.customLandmarks.length > 0
+    ? `
+
+【现有自定义地标】：
+系统中已存在 ${this.customLandmarks.length} 个自定义地标，请注意：
+1. **为这些地标生成事件**：约20%的现有地标应该生成事件（如果它们还没有event字段）
+2. **深度结合description字段**：如果地标有description字段，必须深度结合其内容生成事件
+3. **避免重复**：不要生成与现有地标名称相同的新地标
+4. **返回时必须包含所有现有地标**（无论是否添加事件），并与新生成的地标一起返回
+
+现有地标数据：
+\`\`\`json
+${JSON.stringify(this.customLandmarks, null, 2)}
+\`\`\`
+`
+    : ''
+}
 
 ## 1. 地图配置（mapConfig）
 根据世界观描述动态调整地图元素比例：
@@ -44627,13 +49487,183 @@ ${this.advancedFilter.type ? `- 其他要求：${this.advancedFilter.type}` : ''
   * icon: emoji图标（字符串）
   * color: 颜色（#十六进制字符串）
   * **注意：x, y坐标由系统自动分配，不需要生成**
+  * event: 地标事件对象（可选，**约20%的地标应该有事件**）
+    - eventType: 事件类型字符串（"news"新闻/"alert"警报/"scandal"丑闻/"wanted"通缉/"business"商业/"government"政府/"incident"事件等）
+    - eventHTML: 事件HTML内容（字符串，**必须严格遵循下方的HTML生成规范**）
+    - accentColor: 强调色（#十六进制字符串，**可以自由选择任何深色系颜色，根据事件性质和氛围选择最合适的颜色，禁止使用荧光色和emoji**）
+
+### 2.1 地标事件生成规则（仅适用于约20%的地标）
+
+**事件分配原则**：
+- 随机选择约20%的地标赋予事件
+- 事件类型必须与地标性质高度相关（如：工厂→火灾新闻、公园→可疑物品警报、商场→开业活动、酒吧→斗殴事件）
+- 事件内容必须符合世界观设定、当前时间、天气状况
+- **如果地标有description字段（自定义地标），必须深度结合description内容生成事件**
+
+**事件类型示例**（颜色可自由选择，以下仅为参考）：
+1. **报纸新闻** (news)：火灾、事故、重大发现、历史建筑、名人事件
+2. **紧急警报** (alert)：可疑物品、治安事件、自然灾害预警、交通管制
+3. **娱乐丑闻** (scandal)：名人绯闻、商业内幕、隐私泄露、争议事件
+4. **通缉令** (wanted)：在逃人员、悬赏通缉、协查通报、犯罪预警
+5. **商业活动** (business)：新店开业、促销活动、品牌发布、商场庆典
+6. **政府公告** (government)：工程施工、政策通知、公共服务、市政改造
+7. **血腥事件** (incident)：暴力事件、重大伤亡、犯罪现场、恐怖袭击
+8. **抓马事件** (drama)：情感纠纷、八卦爆料、社区冲突、邻里矛盾
+9. **其他创意类型**：根据地标性质和世界观自由发挥，不限于以上分类
+
+### 2.2 事件HTML生成规范（极其重要！）
+
+**生成的eventHTML必须严格遵守以下规范**：
+
+#### 设计要求（强制）：
+1. **色彩系统**：
+   - 主色调：只能使用黑色、白色、各级灰色
+   - 强调色：accentColor字段用于指定强调色（深蓝/深红/深绿/紫色/深灰，**绝对禁止荧光色**）
+   - **绝对禁止**：Emoji表情符号、荧光色、彩虹色、粉色、亮绿色
+   - **颜色使用规则（极其重要）**：
+     * 只在JSON的accentColor字段中指定颜色值（如 "#8E44AD"）
+     * HTML中绝对不要写任何颜色代码（不要用style="color: xxx"之类）
+     * HTML中只使用提供的CSS类（如 event-tag, event-emphasis 等）
+     * 系统会自动将accentColor设置为CSS变量 --event-accent
+     * CSS类会自动应用这个变量，你不需要手动指定颜色
+
+2. **排版类库（必须使用提供的CSS类）**：
+   - **报纸头部**：
+     * event-paper-header（头部容器）
+     * event-masthead（报社名称，大标题）
+     * event-tagline（标语口号）
+     * event-header-meta（元信息：期数、日期等）
+
+   - **标题类**：
+     * event-headline（主标题，42px，粗体衬线）
+     * event-subheadline（副标题，26px）
+     * event-title（小标题，20px）
+
+   - **正文类**：
+     * event-lead（导语，20px，加粗）
+     * event-body（正文，19px，衬线字体）
+     * event-body-sans（无衬线正文，16px）
+     * event-byline（署名行）
+
+   - **装饰类**：
+     * event-drop-cap（首字母下沉，用于正文第一段）
+     * event-quote（引用块，灰色背景+主题色左边框）
+     * event-quote-author（引用来源）
+     * event-emphasis（强调文字，主题色文字颜色）
+     * event-bold（加粗）
+     * event-caption（说明文字，小字号灰色）
+
+   - **容器类（注意区分用途）**：
+     * event-box（基础信息框，灰色背景）
+     * event-box-highlight（高亮信息框，灰色背景+主题色左边框）
+     * event-box-alert（警告框，**主题色背景+白色文字**）
+
+   - **标签类**：
+     * event-tag（主标签，**主题色背景+白色文字**）
+     * event-tag secondary（次要标签，灰色背景+普通文字）
+
+   - **分隔线**：
+     * event-divider（细线）
+     * event-divider-thick（粗线）
+     * event-divider-double（双线）
+
+   - **列表和表格**：
+     * event-list（有序/无序列表）
+     * event-list-clean（无样式列表）
+     * event-table（表格）
+
+   - **布局**：
+     * event-columns-2（双栏布局）
+     * event-footer（页脚）
+
+3. **内容质量标准**：
+   - 长度：300-1000字，根据事件重要性调整
+   - 深度：必须有具体细节、人物对话、数据支持、时间线
+   - 真实感：符合地标性质、世界观设定、时间线逻辑、天气状况
+   - **自定义地标**：如果landmark有description字段，必须深度结合其内容生成事件
+   - 避免空洞、模板化的描述
+
+4. **HTML结构模板**：
+\`\`\`html
+<div class="event-paper-header">
+  <div class="event-masthead">报社名称</div>
+  <div class="event-tagline">标语口号</div>
+  <div class="event-header-meta">
+    <span>期数/编号</span>
+    <span>日期</span>
+    <span>其他信息</span>
+  </div>
+</div>
+
+<div class="event-article">
+  <div class="event-tags">
+    <span class="event-tag">标签1</span>
+    <span class="event-tag secondary">标签2</span>
+  </div>
+
+  <h1 class="event-headline">主标题<br>可以换行</h1>
+
+  <div class="event-byline">
+    <strong>记者/来源</strong> · 时间/地点
+  </div>
+
+  <p class="event-lead">导语：简明扼要概括事件核心，吸引读者注意...</p>
+
+  <hr class="event-divider-thick">
+
+  <p class="event-body event-drop-cap">正文第一段使用首字母下沉效果。内容要具体生动，包含时间、地点、人物、经过、结果等要素...</p>
+
+  <div class="event-quote">
+    引用的话语内容，可以是目击者证词、专家评论等...
+    <div class="event-quote-author">— 引用来源</div>
+  </div>
+
+  <h2 class="event-subheadline">副标题</h2>
+
+  <p class="event-body">继续叙述...</p>
+
+  <div class="event-box">
+    <strong class="event-bold">相关信息</strong><br>
+    <span class="event-caption">补充说明...</span>
+  </div>
+</div>
+
+<div class="event-footer">
+  版权信息或其他页脚内容
+</div>
+\`\`\`
+
+5. **事件类型特定要求**：
+   - **报纸新闻**：使用报纸头部、首字母下沉、引用块、相关报道框
+   - **紧急警报**：红色警告框、时间线表格、受影响区域列表、公众提醒
+   - **政府公告**：邮件头部样式、阶段表格、联系方式框、正式语气
+   - **娱乐丑闻**：双栏证词框、爆料风格、免责声明、阅读量统计
+   - **通缉令**：人物信息表、悬赏公告、举报方式、案情描述
+   - **商业活动**：优惠信息、活动详情、营业时间、联系方式
+   - **血腥事件**：严肃措辞、警方通报格式、深色调、避免过度描写
+
+**重要提醒**：
+- eventHTML只输出HTML片段，不要包含 <html>, <head>, <body> 等外层标签
+- 不要添加额外的 <style> 或 <script>
+- **所有样式必须且只能使用提供的CSS类，绝对禁止任何内联style样式！**
+- **强调色必须且只能通过CSS类实现，系统会自动设置CSS变量值，绝对不要在HTML中写任何颜色代码！**
+- **CSS类使用规则（极其重要，避免颜色混淆）**：
+  * 需要"主题色背景+白字"效果时：使用 event-tag 或 event-box-alert
+  * 需要"灰色背景+主题色边框"效果时：使用 event-box-highlight 或 event-quote
+  * 需要"主题色文字"效果时：使用 event-emphasis 或在span/strong上添加event-emphasis类
+  * 需要普通信息框时：使用 event-box（灰色背景，无主题色）
+  * **绝对不要混淆背景和文字的颜色使用场景！**
+  * **绝对不要把主题色背景用在应该用灰色背景的地方，反之亦然！**
+- 必须适配深色和浅色主题（使用CSS变量）
+- 必须在移动端（竖屏）完美显示
 
 ## 3. 附近的人（nearbyUsers）- Instagram风格资料卡
 - 生成10-30个附近的人`;
         }
 
-        // 继续添加通用的附近的人详细说明
-        systemPrompt += `
+        // 🔧 继续添加附近的人和提醒的详细说明 - 只在生成附近的人时需要
+        if (!onlyLandmarks) {
+          systemPrompt += `
 - 人物应符合世界观背景和大事件影响
 - **地域限制**：如果有绑定角色，检查角色的居住地/活动地点。外国角色、异地角色不能出现在附近的人中！只能生成与当前地点相符的本地人。
 - 每个人包含：
@@ -44715,13 +49745,17 @@ ${this.advancedFilter.type ? `- 其他要求：${this.advancedFilter.type}` : ''
 - interested和message类型比例大约1:1
 - message类型中，60%生成1条消息，30%生成2条消息，10%生成3条消息
 `;
+        } // 结束 if (!onlyLandmarks) - 附近的人和提醒详细说明部分
+
         const coreTaskSection = systemPrompt.substring(
           tokenCount > 0 ? systemPrompt.lastIndexOf('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━') : 0,
         );
         tokenCount = TokenUtils.logTokenUsage('地图约会生成器', '核心任务说明', coreTaskSection, tokenCount);
 
-        // 🔧 10. 角色资料（如果有绑定角色）+ 地域判断提示
-        const charactersInfo = await StringBuilders.buildCompleteCharacterInfo(
+        // 🔧 10-13. 角色资料、关系网络、用户约束、天气决策 - 只在生成附近的人时需要
+        if (!onlyLandmarks) {
+          // 🔧 10. 角色资料（如果有绑定角色）+ 地域判断提示
+          const charactersInfo = await StringBuilders.buildCompleteCharacterInfo(
           boundCharacters,
           userXProfileInfo,
           'mapDating',
@@ -44840,9 +49874,162 @@ ${
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 `;
         }
+        } // 结束 if (!onlyLandmarks) - 角色资料、关系网络、用户约束、天气决策部分
+
+        // 🔧 13.5. 咩三三城市报纸生成提示词（只在非onlyUsers模式）
+        let shouldGenerateNewspaper = false;
+        if (!onlyUsers) {
+          // 检查12小时内的生成次数限制
+          const now = Date.now();
+          const twelveHoursMs = 12 * 60 * 60 * 1000; // 12小时的毫秒数
+
+          // 读取生成历史
+          let generateHistory = [];
+          try {
+            const historyStr = localStorage.getItem('newspaperGenerateHistory');
+            if (historyStr) {
+              generateHistory = JSON.parse(historyStr);
+            }
+          } catch (error) {
+            console.error('❌ [咩三三报纸] 读取生成历史失败:', error);
+            generateHistory = [];
+          }
+
+          // 清理12小时之前的记录
+          generateHistory = generateHistory.filter(timestamp => (now - timestamp) < twelveHoursMs);
+
+          // 检查是否可以生成
+          if (generateHistory.length < 2) {
+            shouldGenerateNewspaper = true;
+            console.log(`✅ [咩三三报纸] 12小时内已生成 ${generateHistory.length} 次，允许再次生成`);
+          } else {
+            shouldGenerateNewspaper = false;
+            const oldestTimestamp = Math.min(...generateHistory);
+            const waitMinutes = Math.ceil((twelveHoursMs - (now - oldestTimestamp)) / 60000);
+            console.warn(`⚠️ [咩三三报纸] 12小时内已生成 ${generateHistory.length} 次，达到上限。需等待 ${waitMinutes} 分钟后才能再次生成`);
+          }
+
+          // 保存清理后的历史记录
+          try {
+            localStorage.setItem('newspaperGenerateHistory', JSON.stringify(generateHistory));
+          } catch (error) {
+            console.error('❌ [咩三三报纸] 保存生成历史失败:', error);
+          }
+        }
+
+        if (!onlyUsers && shouldGenerateNewspaper) {
+          const newspaperPrompt = `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🐑 咩三三城市报纸数据生成任务
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+除了生成地图约会数据外，你还需要生成一份由"咩三三"播报的城市报纸数据。
+
+【角色设定：咩三三】
+- 名字：咩三三（Mie333）
+- 身份：城市报纸的新闻/天气播报员
+- 性格特征：
+  * 说话习惯第三人称（"咩三三认为..."、"咩三三发现..."）
+  * 喜欢使用表情符号增添可爱感（✨😊🌟💫等）
+  * 正义感驱动：看到不公会义愤填膺，热心报道真相
+  * 自利性格：也会考虑自己的利益和安全，不会完全无私
+  * 播报风格：专业但不失可爱，严肃中带点俏皮
+
+【报纸数据结构要求】
+生成结构化的JSON数据，系统会用模板渲染。
+
+## 1. 天气数据（weather）
+- **重要**：天气图标和类型必须与当前地图天气（${mapWeatherInfo?.icon || '☀️'} ${mapWeatherInfo?.name || '晴天'}）保持一致！
+- 包含字段：
+  * icon: 天气图标（必须使用 ${mapWeatherInfo?.icon || '☀️'}）
+  * temp: 温度字符串（如"18°C"，根据季节和天气类型合理生成）
+  * desc: 天气英文描述（大写，如"TODAY · SUNNY"）
+
+## 2. 重大新闻数组（news，1-2条）
+- 新闻内容必须符合世界观设定和世界运转大事件（如果有）
+- 可以是积极的（新店开业、节日庆典）或负面的（事故、犯罪）
+- 每条新闻包含字段：
+  * headline: 新闻标题（简洁有力）
+  * location: 地点（英文大写，如"DOWNTOWN"）
+  * time: 发生时间（如"2H AGO", "30MIN AGO"）
+  * body: 新闻正文（3-5句话，咩三三第三人称播报风格，带表情符号）
+  * comment: 咩三三的个人评论（1句话，可用颜文字如(￣ー￣)，体现真实想法）
+
+## 3. 咩三三的真实想法（bubble，可选）
+- 一句话吐槽或真心话，前缀"✧"（如"✧ 咩三三的真实想法：不如去便利店买罐装咖啡实在！"）
+
+## 4. 公众投稿数组（submissions，3-4条）
+- 类型分布：寻人/寻宠启事30%，任务悬赏/求助30%，市民故事/分享20%，投诉/建议20%
+- 可以结合世界观和当前地图的地标
+- 每条投稿包含字段：
+  * tag: 类型标签（"MISSING", "TASK", "STORY", "COMPLAINT"之一）
+  * title: 投稿标题（简短）
+  * content: 投稿内容（2-3行，口语化，真实感，可含咩三三的点评）
+
+## 5. 赞助商广告数组（ads，1-2条）
+- 广告内容应该创意、有趣
+- 可以是虚构的商家或基于地标的真实商家
+- 每条广告包含字段：
+  * title: 广告标题
+  * text: 广告文案（2-3句话，可含咩三三的俏皮推荐，可用颜文字）
+
+【newspaper字段JSON格式示例】
+\`\`\`json
+{
+  "weather": {
+    "icon": "${mapWeatherInfo?.icon || '☀️'}",
+    "temp": "18°C",
+    "desc": "TODAY · ${(mapWeatherInfo?.name || 'SUNNY').toUpperCase()}"
+  },
+  "news": [
+    {
+      "headline": "市中心星巴克咖啡盛大开业",
+      "location": "DOWNTOWN",
+      "time": "2H AGO",
+      "body": "咩三三我今天路过市中心商业街，发现那边新开了家星巴克。门口排了好长的队，都是冲着开业优惠去的。😊",
+      "comment": "(￣ー￣) 咩三三觉得这种开业活动就是套路..."
+    }
+  ],
+  "bubble": "✧ 咩三三的真实想法：不如去便利店买罐装咖啡实在！",
+  "submissions": [
+    {
+      "tag": "MISSING",
+      "title": "寻找走失的金毛犬",
+      "content": "昨晚在公园走失，红色项圈，请联系138****5678。重谢！"
+    },
+    {
+      "tag": "COMPLAINT",
+      "title": "楼上邻居深夜扰民",
+      "content": "301室每晚12点后蹦迪！咩三三：直接找物业。(눈_눈)"
+    }
+  ],
+  "ads": [
+    {
+      "title": "咩三三的杂货铺",
+      "text": "各种稀奇古怪的小玩意儿都有卖！价格公道童叟无欺。地址：商业街99号 | 营业时间：看心情 (￣y▽￣)╭"
+    }
+  ]
+}
+\`\`\`
+
+**重要规则**：
+1. 天气icon和desc必须与当前地图天气（${mapWeatherInfo?.icon || '☀️'} ${mapWeatherInfo?.name || '晴天'}）一致
+2. 新闻内容必须符合世界观和世界大事件（如果有）
+3. 咩三三的语气要保持一致（第三人称+表情符号+颜文字）
+4. 公众投稿要多样化，类型分布合理
+5. 所有文本内容都是纯文本，不要包含HTML标签
+6. newspaper字段返回结构化的JSON对象，不是HTML字符串
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
+          systemPrompt += newspaperPrompt;
+          tokenCount = TokenUtils.logTokenUsage('地图约会生成器', '咩三三报纸生成提示词', newspaperPrompt, tokenCount);
+          console.log('🐑 [地图约会生成器] 已注入咩三三城市报纸生成提示词');
+        }
 
         // 🔧 14. JSON返回格式要求
-        if (onlyUsers) {
+        if (onlyLandmarks) {
+          // 只生成地标时，JSON格式已在之前定义，跳过
+        } else if (onlyUsers) {
           systemPrompt += `
 【JSON返回格式】：
 \`\`\`json
@@ -44866,14 +50053,28 @@ ${
       "name": "字符串",
       "icon": "emoji",
       "color": "#十六进制"
+      // 约80%地标无event字段
+    },
+    {
+      "id": "字符串",
+      "name": "字符串",
+      "icon": "emoji",
+      "color": "#十六进制",
+      "event": {
+        "eventType": "事件类型字符串",
+        "accentColor": "#十六进制（深蓝/深红/深绿/紫色/深灰）",
+        "eventHTML": "完整的事件HTML字符串（必须严格遵循前面的HTML生成规范）"
+      }
+      // 约20%地标有event字段
     }
   ],
   "nearbyUsers": [
     {`;
         }
 
-        // 继续添加通用的 nearbyUsers 字段说明
-        systemPrompt += `
+        // 继续添加通用的 nearbyUsers 字段说明（只在不是只生成地标时）
+        if (!onlyLandmarks) {
+          systemPrompt += `
       "nickname": "字符串",
       "handle": "字符串（纯英文小写+数字+下划线）",
       "avatarBubble": "emoji或颜文字",
@@ -44949,7 +50150,14 @@ ${
       },
       "messages": ["字符串1（第1条私信）", "字符串2（第2条私信，可选）", "字符串3（第3条私信，可选）"]
     }
-  ]
+  ],
+  "newspaper": {
+    "weather": { "icon": "☀", "temp": "18°C", "desc": "TODAY · SUNNY" },
+    "news": [ { "headline": "...", "location": "...", "time": "...", "body": "...", "comment": "..." } ],
+    "bubble": "✧ ...",
+    "submissions": [ { "tag": "MISSING", "title": "...", "content": "..." } ],
+    "ads": [ { "title": "...", "text": "..." } ]
+  }
 }
 \`\`\`
 
@@ -44958,49 +50166,45 @@ ${
 2. gender必须是 "male"、"female" 或 "unisex" 之一
 3. 所有数字必须是纯数字，不带引号`;
 
+        // 动态计算规则序号
+        let ruleNumber = 4;
+
         if (!onlyUsers) {
           systemPrompt += `
-4. **landmarks不需要生成x、y坐标**（系统自动分配）`;
+${ruleNumber}. **landmarks不需要生成x、y坐标**（系统自动分配）`;
+          ruleNumber++;
+        }
+
+        if (!onlyUsers && shouldGenerateNewspaper) {
+          systemPrompt += `
+${ruleNumber}. **newspaper字段是必须的**，包含结构化的报纸数据对象（非HTML字符串），包含weather/news/bubble/submissions/ads字段`;
+          ruleNumber++;
         }
 
         systemPrompt += `
-${onlyUsers ? '4' : '5'}. **nearbyUsers不需要生成avatar、id、position**（系统自动处理）
-${onlyUsers ? '5' : '6'}. 可选字段不使用时完全省略，不要设为null
-${
-  onlyUsers ? '6' : '7'
-}. **bio字段必须使用\\n分隔多行**，第一行格式："年龄 | 感情状态"，例如："24岁 | 单身\\n热爱旅行和摄影\\n周末常去咖啡馆"
-${
-  onlyUsers ? '7' : '8'
-}. **handle字段必须符合Instagram用户名规范**：纯英文小写+数字+下划线，5-15个字符，例如："lihua_dev"、"xiaoming2024"
-${onlyUsers ? '8' : '9'}. **avatarBubble字段必须是单个emoji或1-2个颜文字**，表达个性或心情
-${onlyUsers ? '9' : '10'}. **followers和likes必须是合理的数字**：followers为100-50000，likes为followers的10-50倍
-${onlyUsers ? '10' : '11'}. **avgRating可选字段**：0-5小数（保留1位），0表示无评价，有评价时范围3.0-5.0
-${onlyUsers ? '11' : '12'}. **reviews可选字段**：数组长度0-8，评价内容应真实反映约会体验（赞美、警告、投诉等）
-${onlyUsers ? '12' : '13'}. **reviews不需要生成reviewerAvatar字段**（系统自动从头像库随机分配）
-${onlyUsers ? '13' : '14'}. **isAnonymous约30%概率为true**，匿名时reviewerName应为"匿名用户"
-${onlyUsers ? '14' : '15'}. **timestamp应在最近1-30天内**，格式："2024-01-15T10:30:00Z"
-${
-  onlyUsers ? '15' : '16'
-}. **publicPersonality必填**：数组，10-15个关键词，描述网络上表现出来的性格（可以是正面的、积极的）
-${
-  onlyUsers ? '16' : '17'
-}. **realPersonality必填**：数组，10-15个关键词，描述真实内在性格（可以是负面的、复杂的、矛盾的）
-${
-  onlyUsers ? '17' : '18'
-}. **publicPersonality和realPersonality可以相同**（表里如一）或完全不同（双面性），要真实反映人性多面性
-${
-  onlyUsers ? '18' : '19'
-}. **appearance必填**：数组，10-15个关键词，描述外貌身材特征（发色、眼睛、身高体重、三围、配饰、体型、脸型、五官等）
-${onlyUsers ? '19' : '20'}. **notifications可选字段**：30-50%概率生成0-3条提醒，50-70%概率返回空数组[]
-${
-  onlyUsers ? '20' : '21'
-}. **notifications中的fromUser**是完整的用户对象，必须包含所有字段（nickname, handle, avatarBubble, gender, distance, online, status, bio, publicPersonality, realPersonality, appearance, tags, followers, likes, avgRating, reviews），distance可以较大（5-50km），可以来自其他城市/国家，不需要生成avatar/id/position字段
-${onlyUsers ? '21' : '22'}. **notifications不需要生成id、timestamp、isRead字段**（系统自动生成）
-${onlyUsers ? '22' : '23'}. **notifications的type字段**必须是"interested"或"message"之一
-${onlyUsers ? '23' : '24'}. **interested类型**：必须有content字段（10-30字兴趣表达），不需要messages字段
-${onlyUsers ? '24' : '25'}. **message类型**：必须有messages数组字段（1-3条私信内容），不需要content字段
-${onlyUsers ? '25' : '26'}. **messages数组**：message类型专用，包含1-3个字符串，每个字符串15-50字，代表对方发送的私信
-${onlyUsers ? '26' : '27'}. **secret可选字段**：30-40%概率生成，描述用户隐藏的秘密，增加人设多样性和戏剧性
+${ruleNumber}. **nearbyUsers不需要生成avatar、id、position**（系统自动处理）
+${ruleNumber + 1}. 可选字段不使用时完全省略，不要设为null
+${ruleNumber + 2}. **bio字段必须使用\\n分隔多行**，第一行格式："年龄 | 感情状态"，例如："24岁 | 单身\\n热爱旅行和摄影\\n周末常去咖啡馆"
+${ruleNumber + 3}. **handle字段必须符合Instagram用户名规范**：纯英文小写+数字+下划线，5-15个字符，例如："lihua_dev"、"xiaoming2024"
+${ruleNumber + 4}. **avatarBubble字段必须是单个emoji或1-2个颜文字**，表达个性或心情
+${ruleNumber + 5}. **followers和likes必须是合理的数字**：followers为100-50000，likes为followers的10-50倍
+${ruleNumber + 6}. **avgRating可选字段**：0-5小数（保留1位），0表示无评价，有评价时范围3.0-5.0
+${ruleNumber + 7}. **reviews可选字段**：数组长度0-8，评价内容应真实反映约会体验（赞美、警告、投诉等）
+${ruleNumber + 8}. **reviews不需要生成reviewerAvatar字段**（系统自动从头像库随机分配）
+${ruleNumber + 9}. **isAnonymous约30%概率为true**，匿名时reviewerName应为"匿名用户"
+${ruleNumber + 10}. **timestamp应在最近1-30天内**，格式："2024-01-15T10:30:00Z"
+${ruleNumber + 11}. **publicPersonality必填**：数组，10-15个关键词，描述网络上表现出来的性格（可以是正面的、积极的）
+${ruleNumber + 12}. **realPersonality必填**：数组，10-15个关键词，描述真实内在性格（可以是负面的、复杂的、矛盾的）
+${ruleNumber + 13}. **publicPersonality和realPersonality可以相同**（表里如一）或完全不同（双面性），要真实反映人性多面性
+${ruleNumber + 14}. **appearance必填**：数组，10-15个关键词，描述外貌身材特征（发色、眼睛、身高体重、三围、配饰、体型、脸型、五官等）
+${ruleNumber + 15}. **notifications可选字段**：30-50%概率生成0-3条提醒，50-70%概率返回空数组[]
+${ruleNumber + 16}. **notifications中的fromUser**是完整的用户对象，必须包含所有字段（nickname, handle, avatarBubble, gender, distance, online, status, bio, publicPersonality, realPersonality, appearance, tags, followers, likes, avgRating, reviews），distance可以较大（5-50km），可以来自其他城市/国家，不需要生成avatar/id/position字段
+${ruleNumber + 17}. **notifications不需要生成id、timestamp、isRead字段**（系统自动生成）
+${ruleNumber + 18}. **notifications的type字段**必须是"interested"或"message"之一
+${ruleNumber + 19}. **interested类型**：必须有content字段（10-30字兴趣表达），不需要messages字段
+${ruleNumber + 20}. **message类型**：必须有messages数组字段（1-3条私信内容），不需要content字段
+${ruleNumber + 21}. **messages数组**：message类型专用，包含1-3个字符串，每个字符串15-50字，代表对方发送的私信
+${ruleNumber + 22}. **secret可选字段**：30-40%概率生成，描述用户隐藏的秘密，增加人设多样性和戏剧性
    - 生成概率：30-40%的用户有秘密，60-70%没有
    - 秘密类型示例（但不限于此）：
      * 感情状态造假："简介写单身，实际已婚有娃"、"说在恋爱中，实际刚分手"
@@ -45016,18 +50220,34 @@ ${onlyUsers ? '26' : '27'}. **secret可选字段**：30-40%概率生成，描述
    - 重要：秘密应该戏剧化、有冲突性，能引发故事发展
    - 如果不生成秘密，完全省略该字段，不要写null或空字符串
 `;
+        } // 结束 if (!onlyLandmarks) - nearbyUsers字段说明部分
+
         const formatSection = systemPrompt.substring(systemPrompt.lastIndexOf('【JSON返回格式】'));
         tokenCount = TokenUtils.logTokenUsage('地图约会生成器', 'JSON格式要求', formatSection, tokenCount);
 
         // 🔧 15. 构建消息并记录最终提示词
-        const messages = [{ role: 'user', content: '请根据世界观、世界书和大事件生成地图约会数据' }];
+        let userMessage = '';
+        if (onlyLandmarks) {
+          // 只生成地标时，使用用户自定义要求
+          userMessage = customRequirements
+            ? `请根据以下要求生成地标数据：${customRequirements}`
+            : '请根据世界观生成地标数据';
+        } else if (onlyUsers) {
+          // 只刷新用户
+          userMessage = '请根据世界观、世界书和大事件生成新的附近的人数据';
+        } else {
+          // 完整生成
+          userMessage = '请根据世界观、世界书和大事件生成完整的地图约会数据';
+        }
+        const messages = [{ role: 'user', content: userMessage }];
 
         // 最终统计
         TokenUtils.logFinalPrompt('地图约会生成器', systemPrompt, messages[0].content);
 
         // 🔧 16. 使用统一的AI请求工具
         console.log('🚀 [API请求] 开始发送AI请求，请等待响应...');
-        console.log(`  |- 模式: ${onlyUsers ? '仅刷新用户' : '完整生成'}`);
+        console.log(`  |- 模式: ${onlyLandmarks ? '仅生成地标' : onlyUsers ? '仅刷新用户' : '完整生成'}`);
+        console.log(`  |- 用户消息: ${userMessage}`);
         console.log(`  |- 温度参数: 0.8`);
         const requestStartTime = Date.now();
         const aiResponseContent = await APIUtils.sendAIRequest({
@@ -45047,6 +50267,40 @@ ${onlyUsers ? '26' : '27'}. **secret可选字段**：30-40%概率生成，描述
 
         // 🔧 18. 使用统一的后处理工具（虽然地图约会数据可能不需要太多后处理）
         generatedData = await APIUtils.postProcessData(generatedData, userXProfileInfo);
+
+        // 🔧 18.3. 提取并保存报纸数据（只在非onlyUsers模式）
+        if (!onlyUsers && generatedData.newspaper) {
+          console.log('🐑 [咩三三报纸] 检测到AI生成的报纸数据（JSON对象），开始保存');
+          try {
+            // 保存报纸JSON数据到localStorage
+            const newspaperDataStr = JSON.stringify(generatedData.newspaper);
+            localStorage.setItem('newspaperCachedData', newspaperDataStr);
+            console.log(`✅ [咩三三报纸] 报纸数据已保存到localStorage，长度: ${newspaperDataStr.length} 字符`);
+
+            // 更新生成历史记录（添加当前时间戳）
+            let generateHistory = [];
+            try {
+              const historyStr = localStorage.getItem('newspaperGenerateHistory');
+              if (historyStr) {
+                generateHistory = JSON.parse(historyStr);
+              }
+            } catch (error) {
+              console.error('❌ [咩三三报纸] 读取生成历史失败:', error);
+              generateHistory = [];
+            }
+
+            // 添加当前时间戳
+            generateHistory.push(Date.now());
+
+            // 保存更新后的历史记录
+            localStorage.setItem('newspaperGenerateHistory', JSON.stringify(generateHistory));
+            console.log(`✅ [咩三三报纸] 生成历史已更新，当前12小时内生成次数: ${generateHistory.length}`);
+          } catch (error) {
+            console.error('❌ [咩三三报纸] 保存报纸数据失败:', error);
+          }
+        } else if (!onlyUsers) {
+          console.warn('⚠️ [咩三三报纸] AI未返回报纸数据（newspaper字段缺失）');
+        }
 
         // 🔧 18.5. 如果只刷新用户，合并原有的地图配置和地标
         if (onlyUsers) {
@@ -45076,6 +50330,32 @@ ${onlyUsers ? '26' : '27'}. **secret可选字段**：30-40%概率生成，描述
           }
 
           console.log('✅ [第十五个情景] AI生成新用户数据验证通过，已合并原有地图配置和地标');
+        } else if (onlyLandmarks) {
+          // 只生成地标模式
+          // 验证只生成了地标数据
+          if (!generatedData.landmarks || !Array.isArray(generatedData.landmarks)) {
+            throw new Error('AI返回的数据格式不完整，缺少 landmarks 字段或格式错误');
+          }
+
+          console.log(`✅ [第十五个情景] AI生成了 ${generatedData.landmarks.length} 个地标`);
+
+          // 为地标添加随机坐标（x, y）
+          generatedData.landmarks.forEach(landmark => {
+            landmark.x = Math.floor(Math.random() * 1800) + 100; // 100-1900范围
+            landmark.y = Math.floor(Math.random() * 1800) + 100; // 100-1900范围
+          });
+
+          // 将生成的地标添加到自定义地标数组
+          this.customLandmarks.push(...generatedData.landmarks);
+
+          // 保存到localStorage（按账户隔离）
+          const accountId = window.currentAccountId || 'main';
+          localStorage.setItem(`xMapCustomLandmarks_${accountId}`, JSON.stringify(this.customLandmarks));
+
+          console.log(`📍 [地标管理] 成功生成并保存了 ${generatedData.landmarks.length} 个地标到账户${accountId}`);
+
+          // 只生成地标时，直接返回，不需要保存到数据库
+          return;
         } else {
           // 验证完整数据格式
           if (!generatedData.mapConfig || !generatedData.landmarks || !generatedData.nearbyUsers) {
@@ -45278,6 +50558,9 @@ ${onlyUsers ? '26' : '27'}. **secret可选字段**：30-40%概率生成，描述
         // 🔧 加载自定义头像
         this.loadCustomAvatars();
 
+        // 📍 初始化地标管理功能
+        this.initLandmarkManagement();
+
         // 🎯 初始化真实度系统
         this.initAuthenticityScore();
 
@@ -45344,14 +50627,17 @@ ${onlyUsers ? '26' : '27'}. **secret可选字段**：30-40%概率生成，描述
 
           // 使用AI生成的地标
           if (mapData.landmarks && mapData.landmarks.length > 0) {
+            // 保存AI地标到this.aiLandmarks（分开存储）
+            this.aiLandmarks = mapData.landmarks;
             MapGenerator.landmarks = mapData.landmarks;
-            console.log(`✅ [地图约会] 已设置地标数据: ${mapData.landmarks.length}个`);
+            console.log(`✅ [地图约会] 已设置AI地标数据: ${mapData.landmarks.length}个`);
             console.log(
               '🔧 [地图约会] MapGenerator.landmarks前5个:',
               MapGenerator.landmarks.slice(0, 5).map(l => l.name),
             );
           } else {
             console.log('⚠️ [地图约会] AI数据中没有地标，将使用默认随机生成');
+            this.aiLandmarks = []; // 没有AI地标
           }
         } else {
           console.log('⚠️ [地图约会] mapData为null，使用默认数据');
@@ -45363,7 +50649,19 @@ ${onlyUsers ? '26' : '27'}. **secret可选字段**：30-40%概率生成，描述
         // 渲染地图
         this.renderUserList();
         this.renderMapMarkers();
+
+        // 📍 在MapGenerator.init()之前，合并AI地标和自定义地标（无论customLandmarks是否为空，都要合并）
+        MapGenerator.landmarks = [...this.aiLandmarks, ...this.customLandmarks];
+
+        console.log(`📍 [地图约会] 合并地标到MapGenerator:`, {
+          AI地标: this.aiLandmarks.length,
+          自定义地标: this.customLandmarks.length,
+          总计: MapGenerator.landmarks.length,
+        });
+
+        // 初始化地图（如果MapGenerator.landmarks已有数据，不会重新生成默认地标）
         MapGenerator.init('mapCanvasBg');
+
         this.renderLandmarkLabels();
         this.initEventListeners();
 
@@ -45395,6 +50693,12 @@ ${onlyUsers ? '26' : '27'}. **secret可选字段**：30-40%概率生成，描述
           if (hint) hint.classList.add('hidden');
         }, 3000);
 
+        // 🚗 初始化城市乘车状态
+        this.initRideMode();
+
+        // 🚗 初始化等待司机功能
+        this.initWaitingDriver();
+
         // 初始化用户地图资料
         await this.initUserMapProfile();
       } catch (error) {
@@ -45404,12 +50708,38 @@ ${onlyUsers ? '26' : '27'}. **secret可选字段**：30-40%概率生成，描述
         this.currentUsers = [...this.mockUsers];
         this.renderUserList();
         this.renderMapMarkers();
+
+        // 📍 失败时让init生成默认地标，然后合并自定义地标
         MapGenerator.init('mapCanvasBg');
+
+        // 📍 失败时在init后合并自定义地标（无论customLandmarks是否为空，都要合并）
+        // init生成的默认地标保存到aiLandmarks（失败时没有AI地标）
+        this.aiLandmarks = MapGenerator.landmarks || [];
+
+        // 合并：默认地标 + 自定义地标
+        MapGenerator.landmarks = [...this.aiLandmarks, ...this.customLandmarks];
+        console.log(`✅ [地图约会] 已合并地标:`, {
+          默认地标: this.aiLandmarks.length,
+          自定义地标: this.customLandmarks.length,
+          总计: MapGenerator.landmarks.length,
+        });
+
+        // 重新绘制地标
+        if (MapGenerator.ctx) {
+          MapGenerator.drawLandmarks();
+        }
+
         this.renderLandmarkLabels();
         this.initEventListeners();
 
         // ⚙️ 初始化主题设置（失败时也要初始化）
         this.initThemeSettings();
+
+        // 🚗 初始化城市乘车状态
+        this.initRideMode();
+
+        // 🚗 初始化等待司机功能
+        this.initWaitingDriver();
 
         this.initMapDrag();
         this.initMapPosition();
@@ -45427,6 +50757,29 @@ ${onlyUsers ? '26' : '27'}. **secret可选字段**：30-40%概率生成，描述
       document.getElementById('mapBackBtn')?.addEventListener('click', () => this.closeSidebar());
       document.getElementById('mapCloseBtn')?.addEventListener('click', () => this.closeMapPage());
       document.getElementById('mapRefreshBtn')?.addEventListener('click', () => this.refreshNearbyUsers());
+
+      // 咩三三报纸相关
+      document.getElementById('mapNewspaperBtn')?.addEventListener('click', () => this.openNewspaper());
+      document.getElementById('newspaperCloseBtn')?.addEventListener('click', () => this.closeNewspaper());
+      document.getElementById('newspaperOverlay')?.addEventListener('click', () => this.closeNewspaper());
+
+      // 🚗 城市乘车相关
+      document.getElementById('mapRideBtn')?.addEventListener('click', () => this.openRidePanel());
+      document.getElementById('ridePanelOverlay')?.addEventListener('click', () => this.closeRidePanel());
+      document.getElementById('rideDestinationBox')?.addEventListener('click', () => this.startSelectingDestination());
+
+      // 乘车面板内的按钮事件
+      const vehicleCards = document.querySelectorAll('.ride-vehicle-card');
+      vehicleCards.forEach(card => {
+        card.addEventListener('click', () => this.selectVehicle(card));
+      });
+
+      const paymentOptions = document.querySelectorAll('.ride-payment-option');
+      paymentOptions.forEach(option => {
+        option.addEventListener('click', () => this.selectPaymentOption(option));
+      });
+
+      document.getElementById('rideBookBtn')?.addEventListener('click', () => this.bookRide());
 
       // 搜索和筛选
       document.getElementById('mapSearchInput')?.addEventListener('input', e => this.filterUsers(e.target.value));
@@ -45893,6 +51246,304 @@ ${onlyUsers ? '26' : '27'}. **secret可选字段**：30-40%概率生成，描述
       }
     },
 
+    // ==================== 咩三三城市报纸功能 ====================
+
+    // 打开报纸弹窗
+    async openNewspaper() {
+      console.log('🐑 [咩三三报纸] 打开报纸弹窗');
+
+      // 显示弹窗
+      document.getElementById('newspaperOverlay')?.classList.add('show');
+      document.getElementById('newspaperModal')?.classList.add('show');
+
+      // 更新时钟
+      this.updateNewspaperClock();
+
+      // 更新统计数字
+      this.updateNewspaperStats();
+
+      // 加载报纸内容（从localStorage读取AI生成的内容，或使用静态placeholder）
+      await this.generateNewspaper();
+    },
+
+    // 关闭报纸弹窗
+    closeNewspaper() {
+      console.log('🐑 [咩三三报纸] 关闭报纸弹窗');
+      document.getElementById('newspaperOverlay')?.classList.remove('show');
+      document.getElementById('newspaperModal')?.classList.remove('show');
+    },
+
+    // 更新报纸时钟
+    updateNewspaperClock() {
+      const updateClock = () => {
+        const now = new Date();
+        const dateStr = now.toISOString().split('T')[0];
+        const timeStr = now.toLocaleTimeString('en-US', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: true
+        });
+
+        const clockDate = document.getElementById('newspaperClockDate');
+        const clockTime = document.getElementById('newspaperClockTime');
+
+        if (clockDate) clockDate.textContent = dateStr;
+        if (clockTime) clockTime.textContent = timeStr;
+      };
+
+      updateClock();
+      // 每分钟更新一次
+      if (this.newspaperClockInterval) {
+        clearInterval(this.newspaperClockInterval);
+      }
+      this.newspaperClockInterval = setInterval(updateClock, 60000);
+    },
+
+    // 更新报纸统计数据（浏览量和打赏数）
+    updateNewspaperStats() {
+      console.log('📊 [咩三三报纸] 更新统计数据');
+
+      // 从localStorage读取统计数据
+      let stats = JSON.parse(localStorage.getItem('newspaperStats') || '{"views": 0, "tips": 0}');
+
+      // 每次打开报纸，浏览量+1
+      stats.views += 1;
+
+      // 小概率增加打赏数（20%概率）
+      if (Math.random() < 0.2) {
+        stats.tips += Math.floor(Math.random() * 3) + 1; // 随机增加1-3个打赏
+      }
+
+      // 保存回localStorage
+      localStorage.setItem('newspaperStats', JSON.stringify(stats));
+
+      // 更新DOM显示
+      const viewsElement = document.getElementById('newspaperViewsCount');
+      const tipsElement = document.getElementById('newspaperTipsCount');
+
+      if (viewsElement) {
+        viewsElement.textContent = stats.views.toLocaleString(); // 格式化数字（如1,234）
+      }
+      if (tipsElement) {
+        tipsElement.textContent = stats.tips.toLocaleString();
+      }
+
+      console.log(`📊 [咩三三报纸] 统计更新完成 - Views: ${stats.views}, Tips: ${stats.tips}`);
+    },
+
+    // 渲染报纸HTML（根据AI数据）
+    renderNewspaperHTML(data) {
+      let html = '';
+
+      // 1. 天气预报
+      if (data.weather) {
+        html += `
+          <div class="newspaper-weather-card">
+            <div class="newspaper-weather-icon-big">${data.weather.icon || '☀'}</div>
+            <div class="newspaper-weather-temp-big">${data.weather.temp || '18°C'}</div>
+            <div class="newspaper-weather-desc-big">${data.weather.desc || 'TODAY · SUNNY'}</div>
+          </div>
+        `;
+      }
+
+      // 2. 重大新闻
+      if (data.news && Array.isArray(data.news)) {
+        data.news.forEach(newsItem => {
+          html += `
+            <div class="newspaper-news-card">
+              <div class="newspaper-breaking-badge">BREAKING</div>
+              <h2 class="newspaper-news-headline">${newsItem.headline || '无标题'}</h2>
+              <div class="newspaper-news-meta">
+                <span>📍 ${newsItem.location || 'UNKNOWN'}</span>
+                <span>•</span>
+                <span>${newsItem.time || 'RECENTLY'}</span>
+                <span>•</span>
+                <span>BY MIE333</span>
+              </div>
+              <div class="newspaper-news-body">
+                ${newsItem.body || ''}
+              </div>
+              ${newsItem.comment ? `<div class="newspaper-emoticon-comment">${newsItem.comment}</div>` : ''}
+            </div>
+          `;
+        });
+      }
+
+      // 3. 咩三三的真实想法气泡
+      if (data.bubble) {
+        html += `
+          <div class="newspaper-speech-bubble">
+            ${data.bubble}
+          </div>
+        `;
+      }
+
+      // 4. 公众投稿
+      if (data.submissions && Array.isArray(data.submissions) && data.submissions.length > 0) {
+        html += '<div style="margin-top: 12px;"><div class="newspaper-widget-title" style="margin-bottom: 8px;">群众投稿</div>';
+        data.submissions.forEach(sub => {
+          html += `
+            <div class="newspaper-submission-sticky">
+              <span class="newspaper-sticky-tag">${sub.tag || 'INFO'}</span>
+              <div class="newspaper-sticky-title">${sub.title || '无标题'}</div>
+              <div class="newspaper-sticky-content">${sub.content || ''}</div>
+            </div>
+          `;
+        });
+        html += '</div>';
+      }
+
+      // 5. 赞助商广告
+      if (data.ads && Array.isArray(data.ads)) {
+        data.ads.forEach(ad => {
+          html += `
+            <div class="newspaper-ad-banner-special">
+              <div class="newspaper-ad-corner">AD</div>
+              <div class="newspaper-ad-title">${ad.title || '广告'}</div>
+              <div class="newspaper-ad-text">${ad.text || ''}</div>
+            </div>
+          `;
+        });
+      }
+
+      // 6. 联系方式（固定内容）
+      html += `
+        <div class="newspaper-contact-pixel">
+          <div class="newspaper-contact-line">> EMAIL: mie333@city-news.com</div>
+          <div class="newspaper-contact-line">> TIPS: tips@mie333.com</div>
+          <div class="newspaper-contact-line">> AD: ad@mie333.com</div>
+        </div>
+      `;
+
+      // 7. 底部签名
+      html += `
+        <div class="newspaper-footer-sig">
+          "咩三三我虽然利己主义，但报道绝对真实。( •̀ ω •́ )✧"<br>
+          — MIE333 CITY NEWS · DAILY UPDATE —
+        </div>
+      `;
+
+      return html;
+    },
+
+    // 渲染报纸内容（使用AI数据）
+    async generateNewspaper() {
+      const mainContent = document.getElementById('newspaperMainContent');
+      if (!mainContent) return;
+
+      mainContent.innerHTML = '<div style="padding: 40px; text-align: center; color: var(--map-text-secondary);">🐑 咩三三正在撰写报纸...</div>';
+
+      try {
+        console.log('🐑 [咩三三报纸] 开始加载报纸内容');
+
+        // 从localStorage读取AI生成的数据（JSON对象）
+        const cachedDataStr = localStorage.getItem('newspaperCachedData');
+
+        let newspaperData = null;
+        if (cachedDataStr) {
+          try {
+            newspaperData = JSON.parse(cachedDataStr);
+            console.log('📰 [咩三三报纸] 成功读取AI生成的报纸数据');
+          } catch (error) {
+            console.error('❌ [咩三三报纸] 解析报纸数据失败:', error);
+          }
+        }
+
+        let content = '';
+
+        if (newspaperData && newspaperData.weather) {
+          console.log('🎨 [咩三三报纸] 使用AI数据渲染HTML');
+          // 使用AI数据渲染HTML模板
+          content = this.renderNewspaperHTML(newspaperData);
+        } else {
+          console.log('⚠️ [咩三三报纸] 未找到AI数据，使用静态placeholder');
+          // 静态placeholder内容作为fallback
+          content = `
+          <!-- 天气预报 -->
+          <div class="newspaper-weather-card">
+            <div class="newspaper-weather-icon-big">☀</div>
+            <div class="newspaper-weather-temp-big">18°C</div>
+            <div class="newspaper-weather-desc-big">TODAY · SUNNY</div>
+          </div>
+
+          <!-- 重大新闻 -->
+          <div class="newspaper-news-card">
+            <div class="newspaper-breaking-badge">BREAKING</div>
+            <h2 class="newspaper-news-headline">市中心星巴克咖啡盛大开业</h2>
+            <div class="newspaper-news-meta">
+              <span>📍 DOWNTOWN</span>
+              <span>•</span>
+              <span>2H AGO</span>
+              <span>•</span>
+              <span>BY MIE333</span>
+            </div>
+            <div class="newspaper-news-body">
+              咩三三我今天路过市中心商业街，发现那边新开了家星巴克。门口排了好长的队，都是冲着开业优惠去的。
+            </div>
+            <div class="newspaper-emoticon-comment">
+              (￣ー￣) 咩三三觉得这种开业活动就是套路...
+            </div>
+          </div>
+
+          <!-- 对话框 -->
+          <div class="newspaper-speech-bubble">
+            ✧ 咩三三的真实想法：不如去便利店买罐装咖啡实在！
+          </div>
+
+          <!-- 群众投稿 -->
+          <div style="margin-top: 12px;">
+            <div class="newspaper-widget-title" style="margin-bottom: 8px;">群众投稿</div>
+
+            <div class="newspaper-submission-sticky">
+              <span class="newspaper-sticky-tag">MISSING</span>
+              <div class="newspaper-sticky-title">寻找走失的金毛犬</div>
+              <div class="newspaper-sticky-content">昨晚在公园走失，红色项圈，请联系138****5678。重谢！</div>
+            </div>
+
+            <div class="newspaper-submission-sticky">
+              <span class="newspaper-sticky-tag">COMPLAINT</span>
+              <div class="newspaper-sticky-title">楼上邻居深夜扰民</div>
+              <div class="newspaper-sticky-content">301室每晚12点后蹦迪！咩三三：直接找物业。(눈_눈)</div>
+            </div>
+
+            <div class="newspaper-submission-sticky">
+              <span class="newspaper-sticky-tag">STORY</span>
+              <div class="newspaper-sticky-title">地铁上捡到钱包</div>
+              <div class="newspaper-sticky-content">已交给地铁工作人员，失主可去2号线客服中心认领。</div>
+            </div>
+          </div>
+
+          <!-- 广告 -->
+          <div class="newspaper-ad-banner-special">
+            <div class="newspaper-ad-corner">AD</div>
+            <div class="newspaper-ad-title">咩三三的杂货铺</div>
+            <div class="newspaper-ad-text">各种稀奇古怪的小玩意儿都有卖！价格公道童叟无欺。地址：商业街99号 | 营业时间：看心情 (￣y▽￣)╭</div>
+          </div>
+
+          <!-- 联系方式 -->
+          <div class="newspaper-contact-pixel">
+            <div class="newspaper-contact-line">> EMAIL: mie333@city-news.com</div>
+            <div class="newspaper-contact-line">> TIPS: tips@mie333.com</div>
+            <div class="newspaper-contact-line">> AD: ad@mie333.com</div>
+          </div>
+
+          <!-- 底部签名 -->
+          <div class="newspaper-footer-sig">
+            "咩三三我虽然利己主义，但报道绝对真实。( •̀ ω •́ )✧"<br>
+            — MIE333 CITY NEWS · DAILY UPDATE —
+          </div>
+        `;
+        }
+
+        mainContent.innerHTML = content;
+
+        console.log('✅ [咩三三报纸] 报纸内容加载完成');
+      } catch (error) {
+        console.error('❌ [咩三三报纸] 生成失败:', error);
+        mainContent.innerHTML = '<div style="padding: 40px; text-align: center; color: var(--map-text-secondary);">报纸生成失败，请稍后重试</div>';
+      }
+    },
+
     // 渲染用户列表
     renderUserList() {
       const userList = document.getElementById('mapUserList');
@@ -46031,18 +51682,28 @@ ${onlyUsers ? '26' : '27'}. **secret可选字段**：30-40%概率生成，描述
 
     // 渲染地标标签
     renderLandmarkLabels() {
+      console.log('🏷️ [renderLandmarkLabels] 开始渲染地标标签');
       const mapCanvas = document.getElementById('mapCanvas');
-      if (!mapCanvas) return;
+      if (!mapCanvas) {
+        console.error('❌ [renderLandmarkLabels] 找不到 mapCanvas 元素');
+        return;
+      }
 
       const existingLabels = mapCanvas.querySelectorAll('.landmark-label');
       existingLabels.forEach(l => l.remove());
 
       const landmarks = MapGenerator.landmarks;
-      if (!landmarks || landmarks.length === 0) return;
+      console.log('🏷️ [renderLandmarkLabels] landmarks数据:', landmarks);
+      if (!landmarks || landmarks.length === 0) {
+        console.warn('⚠️ [renderLandmarkLabels] landmarks为空或不存在');
+        return;
+      }
+      console.log(`🏷️ [renderLandmarkLabels] 准备渲染 ${landmarks.length} 个地标`);
 
       landmarks.forEach(landmark => {
         const label = document.createElement('div');
-        label.className = 'landmark-label';
+        // 添加has-event和visible类标记
+        label.className = landmark.event ? 'landmark-label has-event visible' : 'landmark-label visible';
         label.id = landmark.id;
         label.style.left = `${landmark.x}px`;
         label.style.top = `${landmark.y}px`;
@@ -46052,10 +51713,98 @@ ${onlyUsers ? '26' : '27'}. **secret可选字段**：30-40%概率生成，描述
           </span>
           <span>${landmark.name}</span>
         `;
+
+        // 添加点击处理（所有地标都可点击）
+        label.addEventListener('click', (e) => {
+          e.stopPropagation();
+
+          // 如果在乘车模式的选择目的地状态，优先处理乘车选择
+          if (this.rideMode && this.rideSelectingDestination) {
+            console.log(`🚗 [乘车模式] 选择目的地: ${landmark.name}`);
+            this.selectRideDestination(landmark);
+            return;
+          }
+
+          // 否则，如果有事件，打开事件弹窗
+          if (landmark.event) {
+            console.log(`🖱️ [地标点击] 点击了 ${landmark.name}`, landmark.event);
+            this.openLandmarkEvent(landmark);
+          }
+        });
+
         mapCanvas.appendChild(label);
       });
 
       this.updateLandmarkLabelsVisibility();
+    },
+
+    // 打开地标事件弹窗
+    openLandmarkEvent(landmark) {
+      if (!landmark || !landmark.event) {
+        return;
+      }
+
+      const overlay = document.getElementById('eventModalOverlay');
+      const content = document.getElementById('eventModalContent');
+      const closeBtn = document.getElementById('eventModalCloseBtn');
+
+      if (!overlay || !content) {
+        return;
+      }
+
+      // 设置强调色CSS变量（设置到x-map-container上，覆盖CSS默认值）
+      if (landmark.event.accentColor) {
+        const mapContainer = document.getElementById('x-map-container');
+        if (mapContainer) {
+          mapContainer.style.setProperty('--event-accent', landmark.event.accentColor);
+          const hoverColor = this.shadeColor(landmark.event.accentColor, -20);
+          mapContainer.style.setProperty('--event-accent-hover', hoverColor);
+        }
+      }
+
+      // 注入事件HTML内容
+      content.innerHTML = landmark.event.eventHTML || '<p style="padding: 40px; text-align: center;">暂无事件内容</p>';
+
+      // 显示弹窗
+      overlay.classList.add('active');
+
+      // 绑定关闭事件（只绑定一次）
+      if (!closeBtn.dataset.bound) {
+        closeBtn.addEventListener('click', () => this.closeLandmarkEvent());
+        closeBtn.dataset.bound = 'true';
+      }
+
+      // 点击遮罩关闭
+      if (!overlay.dataset.bound) {
+        overlay.addEventListener('click', (e) => {
+          if (e.target === overlay) {
+            this.closeLandmarkEvent();
+          }
+        });
+        overlay.dataset.bound = 'true';
+      }
+    },
+
+    // 关闭地标事件弹窗
+    closeLandmarkEvent() {
+      const overlay = document.getElementById('eventModalOverlay');
+      if (overlay) {
+        overlay.classList.remove('active');
+      }
+      console.log('✅ [地标事件] 弹窗已关闭');
+    },
+
+    // 颜色加深/变浅工具函数
+    shadeColor(color, percent) {
+      const num = parseInt(color.replace('#', ''), 16);
+      const amt = Math.round(2.55 * percent);
+      const R = (num >> 16) + amt;
+      const G = (num >> 8 & 0x00FF) + amt;
+      const B = (num & 0x0000FF) + amt;
+      return '#' + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
+        (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 +
+        (B < 255 ? B < 1 ? 0 : B : 255))
+        .toString(16).slice(1);
     },
 
     // 选择用户
@@ -47621,6 +53370,1024 @@ ${onlyUsers ? '26' : '27'}. **secret可选字段**：30-40%概率生成，描述
     },
 
     // ==========================================
+    // 🚗 城市乘车功能
+    // ==========================================
+
+    // 初始化乘车模式状态
+    initRideMode() {
+      this.rideMode = false; // 是否在乘车模式
+      this.rideSelectingDestination = false; // 是否正在选择目的地
+      this.rideSelectedDestination = null; // 已选目的地
+      this.rideVehicleMarkers = []; // 地图上的车辆标记
+
+      console.log('🚗 [乘车功能] 初始化完成');
+    },
+
+    // 打开乘车面板
+    openRidePanel() {
+      console.log('🚗 [乘车功能] 打开乘车面板');
+
+      // 艹，确保状态已初始化
+      if (!this.rideVehicleMarkers) {
+        this.rideVehicleMarkers = [];
+      }
+
+      // 设置乘车模式
+      this.rideMode = true;
+
+      // 显示面板和遮罩
+      const panel = document.getElementById('ridePanel');
+      const overlay = document.getElementById('ridePanelOverlay');
+
+      if (panel) {
+        panel.classList.add('show');
+        panel.classList.remove('hide');
+      }
+
+      if (overlay) {
+        overlay.classList.add('show');
+      }
+
+      // 生成随机车辆标记在地图上
+      this.generateVehicleMarkers();
+
+      console.log('✅ [乘车功能] 面板已打开');
+    },
+
+    // 关闭乘车面板
+    closeRidePanel() {
+      console.log('🚗 [乘车功能] 关闭乘车面板');
+
+      // 退出乘车模式
+      this.rideMode = false;
+      this.rideSelectingDestination = false;
+
+      // 隐藏面板和遮罩
+      const panel = document.getElementById('ridePanel');
+      const overlay = document.getElementById('ridePanelOverlay');
+      const hint = document.getElementById('rideSelectionHint');
+
+      if (panel) {
+        panel.classList.remove('show');
+        panel.classList.add('hide');
+      }
+
+      if (overlay) {
+        overlay.classList.remove('show');
+      }
+
+      if (hint) {
+        hint.classList.remove('show');
+      }
+
+      // 移除所有车辆标记
+      this.clearVehicleMarkers();
+
+      // 清除路线
+      this.clearRideRoute();
+
+      // 重置选中的目的地
+      if (this.rideSelectedDestination) {
+        const landmarkLabel = document.getElementById(this.rideSelectedDestination.id);
+        if (landmarkLabel) {
+          landmarkLabel.classList.remove('ride-destination-selected');
+        }
+        this.rideSelectedDestination = null;
+      }
+
+      // 重置UI
+      this.resetRideUI();
+
+      console.log('✅ [乘车功能] 面板已关闭');
+    },
+
+    // 开始选择目的地
+    startSelectingDestination() {
+      console.log('🚗 [乘车功能] 开始选择目的地');
+
+      this.rideSelectingDestination = true;
+
+      // 高亮目的地框
+      const destBox = document.getElementById('rideDestinationBox');
+      if (destBox) {
+        destBox.classList.add('selecting');
+      }
+
+      // 显示选择提示
+      const hint = document.getElementById('rideSelectionHint');
+      if (hint) {
+        hint.classList.add('show');
+      }
+
+      // 隐藏面板让用户可以选择地标
+      const panel = document.getElementById('ridePanel');
+      if (panel) {
+        panel.classList.add('hide');
+        panel.classList.remove('show');
+      }
+
+      // 艹，也要隐藏遮罩层，不然会挡住地标！
+      const overlay = document.getElementById('ridePanelOverlay');
+      if (overlay) {
+        overlay.classList.remove('show');
+      }
+    },
+
+    // 选择目的地
+    selectRideDestination(landmark) {
+      console.log('🚗 [乘车功能] 选择目的地:', landmark.name);
+
+      // 移除之前选中的目的地高亮
+      if (this.rideSelectedDestination) {
+        const prevLabel = document.getElementById(this.rideSelectedDestination.id);
+        if (prevLabel) {
+          prevLabel.classList.remove('ride-destination-selected');
+        }
+      }
+
+      // 设置新目的地
+      this.rideSelectedDestination = landmark;
+      this.rideSelectingDestination = false;
+
+      // 添加选中高亮
+      const landmarkLabel = document.getElementById(landmark.id);
+      if (landmarkLabel) {
+        landmarkLabel.classList.add('ride-destination-selected');
+      }
+
+      // 更新UI
+      const destValue = document.getElementById('rideDestinationValue');
+      const destBox = document.getElementById('rideDestinationBox');
+      const hint = document.getElementById('rideSelectionHint');
+
+      if (destValue) {
+        destValue.textContent = landmark.name;
+        destValue.classList.remove('placeholder');
+      }
+
+      if (destBox) {
+        destBox.classList.remove('selecting');
+      }
+
+      if (hint) {
+        hint.classList.remove('show');
+      }
+
+      // 计算距离和更新价格
+      this.calculateAndUpdateRoute();
+
+      // 重新显示面板和遮罩层
+      const panel = document.getElementById('ridePanel');
+      const overlay = document.getElementById('ridePanelOverlay');
+      if (panel) {
+        setTimeout(() => {
+          panel.classList.add('show');
+          panel.classList.remove('hide');
+
+          // 艹，也要重新显示遮罩层
+          if (overlay) {
+            overlay.classList.add('show');
+          }
+        }, 300);
+      }
+    },
+
+    // 计算距离并更新路线
+    calculateAndUpdateRoute() {
+      if (!this.rideSelectedDestination) return;
+
+      console.log('🚗 [乘车功能] 计算路线和价格');
+
+      // 地图中心点作为当前位置 (50%, 50%)
+      const currentPos = { x: 50, y: 50 };
+      const destPos = {
+        x: (this.rideSelectedDestination.x / window.innerWidth) * 100,
+        y: (this.rideSelectedDestination.y / window.innerHeight) * 100
+      };
+
+      // 计算欧几里得距离
+      const dx = destPos.x - currentPos.x;
+      const dy = destPos.y - currentPos.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+
+      // 转换为预计时间（假设 1% 距离 ≈ 0.5 分钟）
+      const estimatedMinutes = Math.max(Math.round(distance * 0.5), 1);
+
+      // 更新预计时间显示
+      const timeElement = document.getElementById('rideEstimatedTime');
+      if (timeElement) {
+        timeElement.textContent = `${estimatedMinutes} min`;
+      }
+
+      // 更新所有车型价格
+      const vehicleCards = document.querySelectorAll('.ride-vehicle-card');
+      vehicleCards.forEach(card => {
+        const basePrice = parseFloat(card.dataset.basePrice);
+        const rate = parseFloat(card.dataset.rate);
+        const finalPrice = Math.round(basePrice + (estimatedMinutes * rate));
+
+        const priceValue = card.querySelector('.ride-price-value');
+        if (priceValue) {
+          priceValue.textContent = finalPrice;
+        }
+      });
+
+      // 绘制路线
+      this.drawRideRoute(currentPos, destPos);
+
+      // 启用预订按钮
+      const bookBtn = document.getElementById('rideBookBtn');
+      if (bookBtn) {
+        bookBtn.disabled = false;
+        bookBtn.textContent = '立即预订';
+      }
+
+      console.log(`✅ [乘车功能] 路线计算完成 - 预计 ${estimatedMinutes} 分钟`);
+    },
+
+    // 绘制乘车路线
+    drawRideRoute(start, end) {
+      // 清除之前的路线
+      this.clearRideRoute();
+
+      const mapCanvas = document.querySelector('.map-canvas');
+      if (!mapCanvas) return;
+
+      // 创建SVG容器
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.classList.add('ride-route-svg');
+      svg.id = 'rideRouteSvg';
+      svg.setAttribute('viewBox', '0 0 100 100');
+      svg.setAttribute('preserveAspectRatio', 'none');
+
+      // 计算控制点（随机弯曲）
+      const midX = (start.x + end.x) / 2;
+      const midY = (start.y + end.y) / 2;
+      const offsetX = (Math.random() - 0.5) * 20;
+      const offsetY = (Math.random() - 0.5) * 20;
+      const controlX = midX + offsetX;
+      const controlY = midY + offsetY;
+
+      // 创建路径
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.classList.add('ride-route-path');
+      path.setAttribute('d', `M ${start.x},${start.y} Q ${controlX},${controlY} ${end.x},${end.y}`);
+
+      svg.appendChild(path);
+      mapCanvas.appendChild(svg);
+
+      console.log('✅ [乘车功能] 路线已绘制');
+    },
+
+    // 清除乘车路线
+    clearRideRoute() {
+      const routeSvg = document.getElementById('rideRouteSvg');
+      if (routeSvg) {
+        routeSvg.remove();
+      }
+    },
+
+    // 生成随机车辆标记
+    generateVehicleMarkers() {
+      this.clearVehicleMarkers();
+
+      const mapCanvas = document.querySelector('.map-canvas');
+      if (!mapCanvas) return;
+
+      const vehicleCount = Math.floor(Math.random() * 4) + 5; // 5-8个车辆
+
+      const vehicleSvg = `
+        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="32" cy="52" rx="18" ry="4" fill="currentColor" opacity="0.15"/>
+          <path d="M 16,38 L 12,32 L 12,20 L 20,14 L 44,14 L 52,20 L 52,32 L 48,38 Z" fill="currentColor" opacity="0.3"/>
+          <ellipse cx="20" cy="38" rx="6" ry="6" fill="currentColor" opacity="0.6"/>
+          <ellipse cx="44" cy="38" rx="6" ry="6" fill="currentColor" opacity="0.6"/>
+          <rect x="18" y="10" width="28" height="16" rx="3" fill="currentColor" opacity="0.4"/>
+          <rect x="24" y="6" width="16" height="6" rx="1.5" fill="currentColor" opacity="0.5"/>
+        </svg>
+      `;
+
+      for (let i = 0; i < vehicleCount; i++) {
+        const vehicle = document.createElement('div');
+        vehicle.classList.add('ride-vehicle-marker');
+
+        // 随机位置（避免中心区域）
+        let x, y, tooClose;
+        do {
+          x = Math.random() * 80 + 10; // 10%-90%
+          y = Math.random() * 80 + 10;
+
+          // 检查距离中心的距离
+          const distFromCenter = Math.sqrt(
+            Math.pow(x - 50, 2) + Math.pow(y - 50, 2)
+          );
+
+          tooClose = distFromCenter < 15; // 至少距离中心15%
+        } while (tooClose);
+
+        vehicle.style.left = `${x}%`;
+        vehicle.style.top = `${y}%`;
+        vehicle.style.animationDelay = `${Math.random() * 2}s`;
+        vehicle.innerHTML = vehicleSvg;
+
+        mapCanvas.appendChild(vehicle);
+        this.rideVehicleMarkers.push(vehicle);
+      }
+
+      console.log(`✅ [乘车功能] 生成了 ${vehicleCount} 个车辆标记`);
+    },
+
+    // 清除车辆标记
+    clearVehicleMarkers() {
+      // 艹，确保数组存在
+      if (!this.rideVehicleMarkers) {
+        this.rideVehicleMarkers = [];
+        return;
+      }
+      this.rideVehicleMarkers.forEach(marker => marker.remove());
+      this.rideVehicleMarkers = [];
+    },
+
+    // 选择车型
+    selectVehicle(card) {
+      // 移除其他卡片的选中状态
+      document.querySelectorAll('.ride-vehicle-card').forEach(c => {
+        c.classList.remove('selected');
+      });
+
+      // 选中当前卡片
+      card.classList.add('selected');
+
+      console.log('🚗 [乘车功能] 选择车型:', card.dataset.type);
+    },
+
+    // 选择支付方式
+    selectPaymentOption(option) {
+      // 移除其他选项的选中状态
+      document.querySelectorAll('.ride-payment-option').forEach(o => {
+        o.classList.remove('selected');
+      });
+
+      // 选中当前选项
+      option.classList.add('selected');
+
+      console.log('🚗 [乘车功能] 选择支付方式:', option.dataset.payment);
+    },
+
+    // 预订乘车
+    async bookRide() {
+      if (!this.rideSelectedDestination) {
+        alert('请先选择目的地');
+        return;
+      }
+
+      const selectedVehicle = document.querySelector('.ride-vehicle-card.selected');
+      const selectedPayment = document.querySelector('.ride-payment-option.selected');
+
+      if (!selectedVehicle || !selectedPayment) {
+        alert('请选择车型和支付方式');
+        return;
+      }
+
+      const vehicleType = selectedVehicle.querySelector('.ride-vehicle-name').textContent;
+      const originalPrice = parseFloat(selectedVehicle.querySelector('.ride-price-value').textContent);
+      const destination = this.rideSelectedDestination.name;
+      const time = document.getElementById('rideEstimatedTime').textContent;
+      const paymentType = selectedPayment.dataset.payment; // 'cash' 或 'online'
+      const paymentName = paymentType === 'cash' ? '现金' : '在线支付';
+
+      const bookBtn = document.getElementById('rideBookBtn');
+      if (bookBtn) {
+        bookBtn.textContent = '处理中...';
+        bookBtn.style.opacity = '0.7';
+      }
+
+      try {
+        // 计算最终价格（在线支付可能有折扣）
+        let finalPrice = originalPrice;
+        let discountPercent = 0;
+        let hasDiscount = false;
+
+        if (paymentType === 'online') {
+          // 30%概率获得10%-20%随机折扣
+          if (Math.random() < 0.3) {
+            hasDiscount = true;
+            discountPercent = Math.floor(Math.random() * 11) + 10; // 10-20
+            finalPrice = originalPrice * (1 - discountPercent / 100);
+            console.log(`🎉 [乘车功能] 在线支付获得${discountPercent}%折扣！原价¥${originalPrice} → 实付¥${finalPrice.toFixed(2)}`);
+          }
+        }
+
+        console.log('🚗 [乘车功能] 预订信息:', {
+          vehicleType,
+          originalPrice,
+          finalPrice,
+          discountPercent,
+          destination,
+          time,
+          paymentName
+        });
+
+        // 在线支付需要扣除钱包金额
+        if (paymentType === 'online') {
+          // 艹，加载钱包数据
+          if (typeof loadWalletData === 'function' && typeof saveWalletData === 'function') {
+            await loadWalletData();
+
+            if (!walletData.isActivated) {
+              alert('请先激活钱包才能使用在线支付');
+              if (bookBtn) {
+                bookBtn.textContent = '立即预订';
+                bookBtn.style.opacity = '1';
+              }
+              return;
+            }
+
+            if (walletData.balance < finalPrice) {
+              alert(`余额不足！当前余额：$${walletData.balance.toFixed(2)}，需要：$${finalPrice.toFixed(2)}`);
+              if (bookBtn) {
+                bookBtn.textContent = '立即预订';
+                bookBtn.style.opacity = '1';
+              }
+              return;
+            }
+
+            // 扣除金额
+            walletData.balance -= finalPrice;
+
+            // 创建交易记录
+            const transaction = {
+              id: 'ride_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+              description: hasDiscount
+                ? `City Ride to ${destination} (${discountPercent}% Off)`
+                : `City Ride to ${destination}`,
+              amount: -finalPrice,
+              timestamp: new Date().toISOString(),
+              type: 'ride_payment',
+            };
+            walletData.transactions.unshift(transaction);
+            await saveWalletData();
+
+            console.log(`💰 [乘车功能] 已扣除$${finalPrice.toFixed(2)}，当前余额: $${walletData.balance.toFixed(2)}`);
+          } else {
+            console.warn('⚠️ [乘车功能] 钱包函数未定义，跳过扣款');
+          }
+        }
+
+        // 显示手机样式通知
+        if (typeof showPhoneNotification === 'function') {
+          let message = '';
+          if (paymentType === 'online') {
+            message = hasDiscount
+              ? `-$${finalPrice.toFixed(2)} (${discountPercent}% Off). Balance: $${walletData.balance.toFixed(2)}`
+              : `-$${finalPrice.toFixed(2)}. Balance: $${walletData.balance.toFixed(2)}`;
+          } else {
+            message = `Cash Payment ¥${finalPrice.toFixed(2)}. Driver arriving in ${time}.`;
+          }
+
+          showPhoneNotification({
+            title: 'Ride Booked',
+            message: `${vehicleType} → ${destination}. ${message}`,
+            avatar: window.userProfileData?.avatar,
+            leftIcon: 'x',
+            duration: 5000,
+          });
+        }
+
+        // 等待一下再关闭面板
+        setTimeout(() => {
+          if (bookBtn) {
+            bookBtn.textContent = '立即预订';
+            bookBtn.style.opacity = '1';
+          }
+
+          // 关闭面板
+          this.closeRidePanel();
+
+          // 创建订单并显示悬浮小球
+          this.createRideOrder(vehicleType, finalPrice, destination);
+
+          console.log('✅ [乘车功能] 预订成功');
+        }, 1000);
+
+      } catch (error) {
+        console.error('❌ [乘车功能] 预订失败:', error);
+        alert('预订失败，请重试');
+
+        if (bookBtn) {
+          bookBtn.textContent = '立即预订';
+          bookBtn.style.opacity = '1';
+        }
+      }
+    },
+
+    // ==================== 等待司机功能 ====================
+
+    // 订单localStorage存储
+    saveRideOrder(orderData) {
+      try {
+        localStorage.setItem('x_ride_order', JSON.stringify(orderData));
+        console.log('✅ [等待司机] 订单已保存', orderData);
+      } catch (error) {
+        console.error('❌ [等待司机] 保存订单失败:', error);
+      }
+    },
+
+    loadRideOrder() {
+      try {
+        const data = localStorage.getItem('x_ride_order');
+        return data ? JSON.parse(data) : null;
+      } catch (error) {
+        console.error('❌ [等待司机] 加载订单失败:', error);
+        return null;
+      }
+    },
+
+    clearRideOrder() {
+      try {
+        localStorage.removeItem('x_ride_order');
+        console.log('✅ [等待司机] 订单已清除');
+      } catch (error) {
+        console.error('❌ [等待司机] 清除订单失败:', error);
+      }
+    },
+
+    // 生成随机司机数据
+    generateDriverData() {
+      const names = ['Ethan', 'James', 'Sophia', 'Mason', 'Lucas', 'Oliver', 'Emma', 'Ava', 'Liam', 'Noah'];
+      const vehicles = ['Skoda Fabla', 'Ford Focus', 'BMW X5', 'Opel Vectra', 'Audi A4', 'Mercedes Benz', 'Toyota Camry'];
+      const generatePlate = () => {
+        const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const numbers = '0123456789';
+        return letters[Math.floor(Math.random() * 26)] +
+               letters[Math.floor(Math.random() * 26)] +
+               numbers[Math.floor(Math.random() * 10)] +
+               numbers[Math.floor(Math.random() * 10)] +
+               numbers[Math.floor(Math.random() * 10)] +
+               numbers[Math.floor(Math.random() * 10)] +
+               letters[Math.floor(Math.random() * 26)] +
+               numbers[Math.floor(Math.random() * 10)];
+      };
+
+      const name = names[Math.floor(Math.random() * names.length)];
+      const vehicle = vehicles[Math.floor(Math.random() * vehicles.length)];
+      const initial = name.charAt(0);
+
+      return {
+        name,
+        rating: (4.5 + Math.random() * 0.5).toFixed(1),
+        vehicle,
+        plate: generatePlate(),
+        avatar: `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Crect fill='%23d5d5d5' width='64' height='64'/%3E%3Ctext x='50%25' y='50%25' fill='%23666' text-anchor='middle' dy='.3em' font-size='24' font-family='Arial'%3E${initial}%3C/text%3E%3C/svg%3E`
+      };
+    },
+
+    // 计算预计到达时间（金额越大，时间越短）
+    calculateEstimatedTime(distance, price) {
+      // 基础速度30km/h，时间=距离/速度*60分钟
+      const baseTimeMinutes = (distance / 30) * 60;
+      // 价格系数：每100元减少20%时间，最多减少50%
+      const priceCoefficient = Math.min(0.5, (price / 100) * 0.2);
+      // 最终时间
+      const finalTimeMinutes = Math.max(1, baseTimeMinutes * (1 - priceCoefficient));
+      return Math.ceil(finalTimeMinutes * 60); // 返回秒数
+    },
+
+    // 初始化等待司机功能（在init中调用）
+    initWaitingDriver() {
+      console.log('🔧 [等待司机] 初始化等待司机功能');
+      const floatBtn = document.getElementById('waitingDriverFloatBtn');
+      const modalOverlay = document.getElementById('waitingDriverModalOverlay');
+      const closeBtn = document.getElementById('waitingDriverCloseBtn');
+      const contactBtn = document.getElementById('waitingDriverContactBtn');
+      const cancelBtn = document.getElementById('waitingDriverCancelBtn');
+
+      console.log('🔧 [等待司机] 元素检查:', {
+        floatBtn: !!floatBtn,
+        modalOverlay: !!modalOverlay,
+        closeBtn: !!closeBtn,
+        contactBtn: !!contactBtn,
+        cancelBtn: !!cancelBtn
+      });
+
+      if (floatBtn) {
+        console.log('✅ [等待司机] 悬浮球元素找到，绑定点击事件');
+        floatBtn.addEventListener('click', () => {
+          console.log('🚗 [等待司机] 点击悬浮小球');
+          this.openWaitingDriverModal();
+        });
+      } else {
+        console.error('❌ [等待司机] 悬浮球元素未找到！');
+      }
+
+      if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+          console.log('🚗 [等待司机] 关闭弹窗');
+          this.closeWaitingDriverModal();
+        });
+      }
+
+      if (modalOverlay) {
+        modalOverlay.addEventListener('click', (e) => {
+          if (e.target === modalOverlay) {
+            this.closeWaitingDriverModal();
+          }
+        });
+      }
+
+      if (contactBtn) {
+        contactBtn.addEventListener('click', () => {
+          this.contactDriver();
+        });
+      }
+
+      if (cancelBtn) {
+        cancelBtn.addEventListener('click', () => {
+          this.cancelRideOrder();
+        });
+      }
+
+      // 页面加载时恢复订单状态
+      this.restoreRideOrder();
+    },
+
+    // 创建订单并显示悬浮小球
+    createRideOrder(vehicleType, price, destination) {
+      const driver = this.generateDriverData();
+      const distance = parseFloat(document.getElementById('rideDistance')?.textContent || '2.3');
+      const estimatedSeconds = this.calculateEstimatedTime(distance, price);
+
+      const orderData = {
+        orderId: 'ride_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+        status: 'waiting',
+        startTime: Date.now(),
+        estimatedSeconds: estimatedSeconds,
+        price: price,
+        vehicleType: vehicleType,
+        destination: destination,
+        driver: driver,
+        distance: distance
+      };
+
+      this.saveRideOrder(orderData);
+
+      // 显示悬浮小球
+      const floatBtn = document.getElementById('waitingDriverFloatBtn');
+      if (floatBtn) {
+        floatBtn.classList.add('active');
+      }
+
+      console.log('✅ [等待司机] 订单已创建', orderData);
+      return orderData;
+    },
+
+    // 打开等待司机弹窗
+    openWaitingDriverModal() {
+      console.log('🔍 [等待司机] 尝试打开弹窗');
+      const order = this.loadRideOrder();
+      console.log('🔍 [等待司机] 订单数据:', order);
+      if (!order) {
+        console.warn('⚠️ [等待司机] 没有订单数据');
+        alert('没有进行中的订单');
+        return;
+      }
+
+      const modal = document.getElementById('waitingDriverModalOverlay');
+      if (!modal) return;
+
+      // 填充司机信息
+      document.getElementById('waitingDriverName').textContent = order.driver.name;
+      document.getElementById('waitingDriverRating').textContent = order.driver.rating;
+      document.getElementById('waitingDriverVehicle').textContent = order.driver.vehicle;
+      document.getElementById('waitingDriverPlate').textContent = order.driver.plate;
+      document.getElementById('waitingDriverAvatar').src = order.driver.avatar;
+
+      // 计算剩余时间
+      const elapsedSeconds = Math.floor((Date.now() - order.startTime) / 1000);
+      const remainingSeconds = Math.max(0, order.estimatedSeconds - elapsedSeconds);
+
+      // 显示弹窗
+      modal.classList.add('active');
+
+      // 启动动画和倒计时
+      setTimeout(() => {
+        this.startWaitingDriverAnimations(order, remainingSeconds);
+      }, 500);
+
+      console.log('✅ [等待司机] 弹窗已打开', { remainingSeconds });
+    },
+
+    // 关闭等待司机弹窗
+    closeWaitingDriverModal() {
+      const modal = document.getElementById('waitingDriverModalOverlay');
+      if (modal) {
+        modal.classList.remove('active');
+      }
+
+      // 清除所有定时器
+      if (this.waitingDriverCountdownInterval) {
+        clearInterval(this.waitingDriverCountdownInterval);
+        this.waitingDriverCountdownInterval = null;
+      }
+      if (this.waitingDriverDistanceInterval) {
+        clearInterval(this.waitingDriverDistanceInterval);
+        this.waitingDriverDistanceInterval = null;
+      }
+      if (this.waitingDriverShakeTimeout) {
+        clearTimeout(this.waitingDriverShakeTimeout);
+        this.waitingDriverShakeTimeout = null;
+      }
+
+      console.log('✅ [等待司机] 弹窗已关闭');
+    },
+
+    // 启动等待司机动画
+    startWaitingDriverAnimations(order, remainingSeconds) {
+      // 清除之前的定时器
+      if (this.waitingDriverCountdownInterval) {
+        clearInterval(this.waitingDriverCountdownInterval);
+      }
+      if (this.waitingDriverDistanceInterval) {
+        clearInterval(this.waitingDriverDistanceInterval);
+      }
+
+      const etaElement = document.getElementById('waitingDriverEta');
+      const distanceKmElement = document.getElementById('waitingDriverDistanceKm');
+      const distanceLabelElement = document.getElementById('waitingDriverDistance');
+      const speedElement = document.getElementById('waitingDriverSpeed');
+      const carMarker = document.getElementById('waitingDriverCarMarker');
+
+      let currentSeconds = remainingSeconds;
+      const initialDistance = order.distance;
+
+      // 设置车辆移动动画时间
+      if (carMarker && currentSeconds > 0) {
+        carMarker.style.transition = `left ${currentSeconds}s linear`;
+        setTimeout(() => {
+          carMarker.style.left = '70%';
+        }, 100);
+      }
+
+      // 倒计时
+      const updateCountdown = () => {
+        if (currentSeconds <= 0) {
+          etaElement.textContent = '0:00';
+          clearInterval(this.waitingDriverCountdownInterval);
+          this.onDriverArrived(order);
+          return;
+        }
+
+        const minutes = Math.floor(currentSeconds / 60);
+        const seconds = currentSeconds % 60;
+        etaElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        currentSeconds--;
+      };
+
+      updateCountdown();
+      this.waitingDriverCountdownInterval = setInterval(updateCountdown, 1000);
+
+      // 距离更新
+      const decreasePerSecond = initialDistance / remainingSeconds;
+      let currentDistance = initialDistance;
+      let elapsedSeconds = 0;
+
+      const updateDistance = () => {
+        elapsedSeconds++;
+        currentDistance = Math.max(0, initialDistance - (decreasePerSecond * elapsedSeconds));
+
+        if (currentDistance <= 0 || elapsedSeconds >= remainingSeconds) {
+          currentDistance = 0;
+          clearInterval(this.waitingDriverDistanceInterval);
+        }
+
+        distanceKmElement.textContent = currentDistance.toFixed(1);
+        distanceLabelElement.textContent = currentDistance.toFixed(1) + ' km';
+
+        // 速度波动
+        const avgSpeed = Math.round((initialDistance / (remainingSeconds / 3600)));
+        const speed = Math.max(5, avgSpeed + Math.floor(Math.random() * 15) - 7);
+        speedElement.textContent = speed;
+      };
+
+      updateDistance();
+      this.waitingDriverDistanceInterval = setInterval(updateDistance, 1000);
+    },
+
+    // 司机到达
+    onDriverArrived(order) {
+      console.log('✅ [等待司机] 司机已到达');
+
+      // 更新订单状态
+      order.status = 'arrived';
+      this.saveRideOrder(order);
+
+      // 停止车辆移动动画
+      const carMarker = document.getElementById('waitingDriverCarMarker');
+      if (carMarker) {
+        carMarker.style.transition = 'none';
+        carMarker.style.left = '70%';
+      }
+
+      // 摇晃悬浮小球5秒
+      const floatBtn = document.getElementById('waitingDriverFloatBtn');
+      if (floatBtn) {
+        floatBtn.classList.add('shake');
+        this.waitingDriverShakeTimeout = setTimeout(() => {
+          floatBtn.classList.remove('shake');
+        }, 5000);
+      }
+
+      // 切换Contact按钮为Get In按钮
+      const contactBtn = document.getElementById('waitingDriverContactBtn');
+      const contactText = document.getElementById('waitingDriverContactText');
+      if (contactBtn && contactText) {
+        contactText.textContent = 'Get In';
+        contactBtn.innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M13.8 12H3"/>
+          </svg>
+          <span id="waitingDriverContactText">Get In</span>
+        `;
+
+        // 移除旧的监听器，添加新的上车监听器
+        const newBtn = contactBtn.cloneNode(true);
+        contactBtn.parentNode.replaceChild(newBtn, contactBtn);
+        newBtn.addEventListener('click', () => {
+          this.getInCar();
+        });
+      }
+    },
+
+    // 联系司机
+    contactDriver() {
+      const order = this.loadRideOrder();
+      if (!order) return;
+
+      alert(`Calling ${order.driver.name}...`);
+      console.log('📞 [等待司机] 联系司机', order.driver);
+    },
+
+    // 上车
+    getInCar() {
+      const order = this.loadRideOrder();
+      if (!order || order.status !== 'arrived') {
+        alert('司机还未到达');
+        return;
+      }
+
+      console.log('🚗 [等待司机] 上车');
+
+      // 更新订单状态
+      order.status = 'completed';
+      this.saveRideOrder(order);
+
+      // 显示手机通知
+      if (typeof showPhoneNotification === 'function') {
+        showPhoneNotification({
+          title: 'Ride Started',
+          message: `Have a safe trip to ${order.destination}!`,
+          avatar: window.userProfileData?.avatar,
+          leftIcon: 'x',
+          duration: 4000,
+        });
+      }
+
+      // 关闭弹窗
+      this.closeWaitingDriverModal();
+
+      // 延迟清除订单和隐藏悬浮小球
+      setTimeout(() => {
+        this.clearRideOrder();
+        const floatBtn = document.getElementById('waitingDriverFloatBtn');
+        if (floatBtn) {
+          floatBtn.classList.remove('active', 'shake');
+        }
+      }, 1000);
+    },
+
+    // 取消订单
+    cancelRideOrder() {
+      const order = this.loadRideOrder();
+      if (!order) return;
+
+      const confirmText = order.status === 'arrived'
+        ? 'The driver has arrived. Are you sure you want to cancel?'
+        : 'Are you sure you want to cancel this ride?';
+
+      if (!confirm(confirmText)) {
+        return;
+      }
+
+      console.log('❌ [等待司机] 取消订单');
+
+      // 显示手机通知
+      if (typeof showPhoneNotification === 'function') {
+        showPhoneNotification({
+          title: 'Ride Cancelled',
+          message: `Your ride to ${order.destination} has been cancelled.`,
+          avatar: window.userProfileData?.avatar,
+          leftIcon: 'x',
+          duration: 4000,
+        });
+      }
+
+      // 清除订单
+      this.clearRideOrder();
+
+      // 隐藏悬浮小球
+      const floatBtn = document.getElementById('waitingDriverFloatBtn');
+      if (floatBtn) {
+        floatBtn.classList.remove('active', 'shake');
+      }
+
+      // 关闭弹窗
+      this.closeWaitingDriverModal();
+    },
+
+    // 恢复订单状态（页面加载时调用）
+    restoreRideOrder() {
+      const order = this.loadRideOrder();
+      if (!order) return;
+
+      console.log('🔄 [等待司机] 恢复订单状态', order);
+
+      // 计算剩余时间
+      const elapsedSeconds = Math.floor((Date.now() - order.startTime) / 1000);
+      const remainingSeconds = Math.max(0, order.estimatedSeconds - elapsedSeconds);
+
+      // 如果订单已完成或取消，清除并返回
+      if (order.status === 'completed' || order.status === 'cancelled' || remainingSeconds === 0) {
+        if (remainingSeconds === 0 && order.status !== 'arrived') {
+          order.status = 'arrived';
+          this.saveRideOrder(order);
+        }
+      }
+
+      // 显示悬浮小球
+      const floatBtn = document.getElementById('waitingDriverFloatBtn');
+      if (floatBtn) {
+        floatBtn.classList.add('active');
+
+        // 如果已到达，添加摇晃动画
+        if (order.status === 'arrived') {
+          floatBtn.classList.add('shake');
+        }
+      }
+
+      console.log('✅ [等待司机] 订单状态已恢复', { status: order.status, remainingSeconds });
+    },
+
+    // 重置乘车UI
+    resetRideUI() {
+      // 重置目的地显示
+      const destValue = document.getElementById('rideDestinationValue');
+      if (destValue) {
+        destValue.textContent = '点击选择目的地';
+        destValue.classList.add('placeholder');
+      }
+
+      // 重置时间显示
+      const timeElement = document.getElementById('rideEstimatedTime');
+      if (timeElement) {
+        timeElement.textContent = '--';
+      }
+
+      // 重置所有车型价格为基础价格
+      const vehicleCards = document.querySelectorAll('.ride-vehicle-card');
+      vehicleCards.forEach(card => {
+        const basePrice = card.dataset.basePrice;
+        const priceValue = card.querySelector('.ride-price-value');
+        if (priceValue) {
+          priceValue.textContent = basePrice;
+        }
+
+        // 重置第一个为选中状态
+        if (card === vehicleCards[0]) {
+          card.classList.add('selected');
+        } else {
+          card.classList.remove('selected');
+        }
+      });
+
+      // 重置支付方式（第一个为选中）
+      const paymentOptions = document.querySelectorAll('.ride-payment-option');
+      paymentOptions.forEach((option, index) => {
+        if (index === 0) {
+          option.classList.add('selected');
+        } else {
+          option.classList.remove('selected');
+        }
+      });
+
+      // 禁用预订按钮
+      const bookBtn = document.getElementById('rideBookBtn');
+      if (bookBtn) {
+        bookBtn.disabled = true;
+        bookBtn.textContent = '请先选择目的地';
+      }
+    },
+
+    // ==========================================
     // 自定义头像管理功能
     // ==========================================
 
@@ -47769,6 +54536,779 @@ ${onlyUsers ? '26' : '27'}. **secret可选字段**：30-40%概率生成，描述
       `,
         )
         .join('');
+    },
+
+    // ==========================================
+    // 📍 地标管理功能
+    // ==========================================
+
+    // AI生成的地标（从数据库加载，不可编辑）
+    aiLandmarks: [],
+
+    // 自定义地标数据（从localStorage加载，可编辑）
+    customLandmarks: [],
+
+    // 地标选点模式状态
+    landmarkPickMode: false,
+    tempLandmarkPosition: null, // {x, y} - 临时保存的位置
+    tempLandmarkPreview: null, // 临时地标预览对象
+    editingLandmarkId: null, // 正在编辑的地标ID
+
+    // 初始化地标管理功能
+    initLandmarkManagement() {
+      console.log('📍 [地标管理] 初始化地标管理功能');
+
+      // 模式切换按钮
+      const modeBtns = document.querySelectorAll('.map-landmark-mode-btn');
+      modeBtns.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const mode = btn.dataset.mode;
+          this.toggleLandmarkMode(mode);
+        });
+      });
+
+      // 图标输入 - 实时预览
+      const iconInput = document.getElementById('mapLandmarkIconInput');
+      const iconPreview = document.getElementById('mapLandmarkIconPreview');
+      if (iconInput && iconPreview) {
+        iconInput.addEventListener('input', (e) => {
+          const value = e.target.value;
+          iconPreview.textContent = value || '📍';
+        });
+
+        // 点击预览区域也能聚焦输入框
+        iconPreview.addEventListener('click', () => {
+          iconInput.focus();
+        });
+      }
+
+      // 颜色输入 - 实时预览
+      const colorInput = document.getElementById('mapLandmarkColorInput');
+      const colorPreview = document.getElementById('mapLandmarkColorPreview');
+      if (colorInput && colorPreview) {
+        colorInput.addEventListener('input', (e) => {
+          const value = e.target.value;
+          if (/^#[0-9A-Fa-f]{6}$/.test(value)) {
+            colorPreview.style.backgroundColor = value;
+          }
+        });
+
+        // 点击颜色预览，触发颜色选择器
+        colorPreview.addEventListener('click', () => {
+          // 创建临时的color input
+          const tempColorInput = document.createElement('input');
+          tempColorInput.type = 'color';
+          tempColorInput.value = colorInput.value || '#ff6b6b';
+          tempColorInput.style.opacity = '0';
+          tempColorInput.style.position = 'absolute';
+          document.body.appendChild(tempColorInput);
+
+          tempColorInput.addEventListener('change', (e) => {
+            const newColor = e.target.value;
+            colorInput.value = newColor;
+            colorPreview.style.backgroundColor = newColor;
+            document.body.removeChild(tempColorInput);
+          });
+
+          tempColorInput.click();
+        });
+      }
+
+      // 地图选点按钮
+      const pickBtn = document.getElementById('mapLandmarkPickBtn');
+      if (pickBtn) {
+        pickBtn.addEventListener('click', () => {
+          this.togglePickMode();
+        });
+      }
+
+      // 名称输入 - 验证保存按钮状态
+      const nameInput = document.getElementById('mapLandmarkNameInput');
+      const saveBtn = document.getElementById('mapLandmarkSaveBtn');
+      if (nameInput && saveBtn) {
+        nameInput.addEventListener('input', () => {
+          const hasName = nameInput.value.trim().length > 0;
+          const hasPosition = this.tempLandmarkPosition !== null;
+          saveBtn.disabled = !(hasName && hasPosition);
+        });
+      }
+
+      // 保存地标按钮
+      if (saveBtn) {
+        saveBtn.addEventListener('click', () => {
+          this.saveLandmark();
+        });
+      }
+
+      // AI生成地标按钮
+      const generateBtn = document.getElementById('mapLandmarkGenerateBtn');
+      if (generateBtn) {
+        generateBtn.addEventListener('click', () => {
+          this.generateLandmarksWithAI();
+        });
+      }
+
+      // 批量操作按钮
+      const selectAllBtn = document.getElementById('mapLandmarkSelectAllBtn');
+      if (selectAllBtn) {
+        selectAllBtn.addEventListener('click', () => {
+          this.selectAllLandmarks();
+        });
+      }
+
+      const batchDeleteBtn = document.getElementById('mapLandmarkBatchDeleteBtn');
+      if (batchDeleteBtn) {
+        batchDeleteBtn.addEventListener('click', () => {
+          this.batchDeleteLandmarks();
+        });
+      }
+
+      // 从数据库加载已有地标
+      this.loadCustomLandmarks();
+      this.loadLandmarkList();
+    },
+
+    // 切换地标模式（自定义 / AI生成）
+    toggleLandmarkMode(mode) {
+      const modeBtns = document.querySelectorAll('.map-landmark-mode-btn');
+      const customForm = document.querySelector('.map-landmark-custom-form');
+      const aiForm = document.querySelector('.map-landmark-ai-form');
+
+      modeBtns.forEach((btn) => {
+        if (btn.dataset.mode === mode) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+
+      if (mode === 'custom') {
+        customForm?.classList.add('active');
+        aiForm?.classList.remove('active');
+      } else {
+        customForm?.classList.remove('active');
+        aiForm?.classList.add('active');
+      }
+    },
+
+    // 切换地图选点模式
+    togglePickMode() {
+      this.landmarkPickMode = !this.landmarkPickMode;
+
+      const hintBar = document.getElementById('mapLandmarkPickHint');
+      const pickBtn = document.getElementById('mapLandmarkPickBtn');
+      const settingsModal = document.getElementById('mapAppSettingsModal');
+      const mapArea = document.querySelector('.map-area');
+
+      if (this.landmarkPickMode) {
+        // ========== 进入选点模式 ==========
+
+        // 1. 关闭设置弹窗，回到地图主界面
+        if (settingsModal) {
+          settingsModal.style.display = 'none';
+        }
+
+        // 2. 显示顶部提示条
+        if (hintBar) {
+          hintBar.style.display = 'flex';
+          hintBar.classList.add('active');
+        }
+
+        // 3. 给地图区域添加类（改变鼠标样式为十字准星）
+        if (mapArea) {
+          mapArea.classList.add('picking-landmark');
+        }
+
+        // 4. 绑定点击事件到map-canvas（父容器，没有pointer-events: none限制）
+        const mapCanvas = document.querySelector('.map-canvas');
+        if (mapCanvas) {
+          // 移除旧的监听器（避免重复绑定）
+          mapCanvas.removeEventListener('click', this.handleMapClickForLandmark);
+          // 添加新的监听器
+          mapCanvas.addEventListener('click', this.handleMapClickForLandmark.bind(this));
+          console.log('✅ [地标管理] 已绑定点击事件到.map-canvas');
+        } else {
+          console.error('❌ [地标管理] 找不到.map-canvas元素');
+        }
+
+        console.log('📍 [地标管理] 进入地图选点模式 - 用户可以看到完整地图');
+      } else {
+        // ========== 退出选点模式 ==========
+
+        // 1. 隐藏顶部提示条
+        if (hintBar) {
+          hintBar.style.display = 'none';
+          hintBar.classList.remove('active');
+        }
+
+        // 2. 移除地图区域的十字准星样式
+        if (mapArea) {
+          mapArea.classList.remove('picking-landmark');
+        }
+
+        // 3. 移除点击事件监听
+        const mapCanvas = document.querySelector('.map-canvas');
+        if (mapCanvas) {
+          mapCanvas.removeEventListener('click', this.handleMapClickForLandmark);
+        }
+
+        // 4. 如果已经选择了位置，重新打开设置弹窗
+        if (settingsModal && this.tempLandmarkPosition) {
+          settingsModal.style.display = 'flex';
+        }
+
+        console.log('📍 [地标管理] 退出地图选点模式');
+      }
+    },
+
+    // 处理地图点击事件（用于选点）
+    handleMapClickForLandmark(e) {
+      if (!this.landmarkPickMode) return;
+
+      // ========== 获取点击位置（使用背景canvas，确保覆盖整个地图区域） ==========
+      const bgCanvas = document.getElementById('mapCanvasBg');
+      if (!bgCanvas) {
+        console.error('❌ [地标管理] 找不到mapCanvasBg元素');
+        return;
+      }
+
+      // 获取canvas相对于视口的位置
+      const rect = bgCanvas.getBoundingClientRect();
+
+      // 计算点击位置相对于canvas的坐标
+      const clickX = e.clientX - rect.left;
+      const clickY = e.clientY - rect.top;
+
+      // 获取canvas的实际渲染尺寸（CSS缩放后的尺寸）
+      const scaleX = bgCanvas.width / rect.width;
+      const scaleY = bgCanvas.height / rect.height;
+
+      // 转换为canvas内部坐标（考虑CSS缩放）
+      const canvasX = clickX * scaleX;
+      const canvasY = clickY * scaleY;
+
+      console.log('📍 [地标管理] 点击坐标信息:', {
+        屏幕坐标: { x: e.clientX, y: e.clientY },
+        Canvas相对坐标: { clickX, clickY },
+        Canvas实际尺寸: { width: bgCanvas.width, height: bgCanvas.height },
+        CSS显示尺寸: { width: rect.width, height: rect.height },
+        缩放比例: { scaleX, scaleY },
+        最终坐标: { canvasX, canvasY },
+      });
+
+      // 检查坐标是否在canvas范围内
+      if (canvasX < 0 || canvasX > bgCanvas.width || canvasY < 0 || canvasY > bgCanvas.height) {
+        console.warn('⚠️ [地标管理] 点击位置超出地图范围');
+        // 继续处理，但可能需要提示用户
+      }
+
+      // 保存位置（四舍五入到整数）
+      this.tempLandmarkPosition = {
+        x: Math.round(canvasX),
+        y: Math.round(canvasY),
+      };
+
+      console.log('✅ [地标管理] 成功选中位置:', this.tempLandmarkPosition);
+
+      // ========== 立即创建临时地标预览 ==========
+      const iconInput = document.getElementById('mapLandmarkIconInput');
+      const colorInput = document.getElementById('mapLandmarkColorInput');
+
+      this.tempLandmarkPreview = {
+        id: 'temp_preview',
+        x: this.tempLandmarkPosition.x,
+        y: this.tempLandmarkPosition.y,
+        name: 'Preview',
+        emoji: iconInput ? iconInput.value : '📍',
+        color: colorInput ? colorInput.value : '#ff6b6b',
+      };
+
+      // 立即渲染到地图上（让用户看到选中的位置）
+      this.renderMapLandmarks();
+      console.log('✅ [地标管理] 已在地图上显示临时地标预览');
+
+      // 更新位置显示
+      const positionDisplay = document.getElementById('mapLandmarkPositionDisplay');
+      if (positionDisplay) {
+        positionDisplay.textContent = `Position: (${this.tempLandmarkPosition.x}, ${this.tempLandmarkPosition.y})`;
+        positionDisplay.classList.add('has-position');
+      }
+
+      // 更新保存按钮状态（只要有名称就可以保存了）
+      const nameInput = document.getElementById('mapLandmarkNameInput');
+      const saveBtn = document.getElementById('mapLandmarkSaveBtn');
+      if (nameInput && saveBtn) {
+        const hasName = nameInput.value.trim().length > 0;
+        saveBtn.disabled = !hasName; // 有位置 + 有名称 = 可保存
+      }
+
+      // 退出选点模式（会自动重新打开设置弹窗）
+      this.togglePickMode();
+    },
+
+    // 取消地标选点
+    cancelLandmarkPick() {
+      console.log('📍 [地标管理] 用户取消选点');
+
+      // 如果当前在选点模式，退出
+      if (this.landmarkPickMode) {
+        // 清除临时位置和预览（不保存）
+        this.tempLandmarkPosition = null;
+        this.tempLandmarkPreview = null;
+
+        // 重新渲染地图（移除临时预览地标）
+        this.renderMapLandmarks();
+
+        // 退出选点模式
+        this.landmarkPickMode = true; // 设为true，然后togglePickMode会切换为false
+        this.togglePickMode();
+
+        // 手动打开设置弹窗（因为没有选择位置，togglePickMode不会自动打开）
+        const settingsModal = document.getElementById('mapAppSettingsModal');
+        if (settingsModal) {
+          settingsModal.style.display = 'flex';
+        }
+      }
+    },
+
+    // 保存地标到数据库
+    async saveLandmark() {
+      const nameInput = document.getElementById('mapLandmarkNameInput');
+      const descInput = document.getElementById('mapLandmarkDescInput');
+      const iconInput = document.getElementById('mapLandmarkIconInput');
+      const colorInput = document.getElementById('mapLandmarkColorInput');
+
+      if (!nameInput || !this.tempLandmarkPosition) {
+        console.error('❌ [地标管理] 缺少必要信息');
+        return;
+      }
+
+      const landmark = {
+        id: this.editingLandmarkId || `landmark_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        name: nameInput.value.trim(),
+        description: descInput?.value.trim() || '',
+        icon: iconInput?.value || '📍',
+        color: colorInput?.value || '#ff6b6b',
+        x: this.tempLandmarkPosition.x,
+        y: this.tempLandmarkPosition.y,
+        createdAt: this.editingLandmarkId ? undefined : new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+
+      try {
+        // 保存到数据库（使用localStorage作为简单存储）
+        if (this.editingLandmarkId) {
+          // 更新现有地标
+          const index = this.customLandmarks.findIndex((l) => l.id === this.editingLandmarkId);
+          if (index !== -1) {
+            this.customLandmarks[index] = { ...this.customLandmarks[index], ...landmark };
+          }
+          console.log('✅ [地标管理] 更新地标:', landmark.name);
+        } else {
+          // 添加新地标
+          this.customLandmarks.push(landmark);
+          console.log('✅ [地标管理] 添加地标:', landmark.name);
+        }
+
+        // 保存到localStorage（按账户隔离）
+        const accountId = window.currentAccountId || 'main';
+        localStorage.setItem(`xMapCustomLandmarks_${accountId}`, JSON.stringify(this.customLandmarks));
+
+        // 清空表单
+        this.resetLandmarkForm();
+
+        // 刷新地标列表
+        this.loadLandmarkList();
+
+        // 重新绘制地图（添加新地标到地图上）
+        this.renderMapLandmarks();
+
+        alert(this.editingLandmarkId ? 'Landmark updated successfully!' : 'Landmark added successfully!');
+      } catch (error) {
+        console.error('❌ [地标管理] 保存地标失败:', error);
+        alert('Failed to save landmark. Please try again.');
+      }
+    },
+
+    // 重置地标表单
+    resetLandmarkForm() {
+      const nameInput = document.getElementById('mapLandmarkNameInput');
+      const descInput = document.getElementById('mapLandmarkDescInput');
+      const iconInput = document.getElementById('mapLandmarkIconInput');
+      const colorInput = document.getElementById('mapLandmarkColorInput');
+      const iconPreview = document.getElementById('mapLandmarkIconPreview');
+      const colorPreview = document.getElementById('mapLandmarkColorPreview');
+      const positionDisplay = document.getElementById('mapLandmarkPositionDisplay');
+      const saveBtn = document.getElementById('mapLandmarkSaveBtn');
+
+      if (nameInput) nameInput.value = '';
+      if (descInput) descInput.value = '';
+      if (iconInput) iconInput.value = '📍';
+      if (colorInput) colorInput.value = '#ff6b6b';
+      if (iconPreview) iconPreview.textContent = '📍';
+      if (colorPreview) colorPreview.style.backgroundColor = '#ff6b6b';
+      if (positionDisplay) {
+        positionDisplay.textContent = 'No position selected';
+        positionDisplay.classList.remove('has-position');
+      }
+      if (saveBtn) saveBtn.disabled = true;
+
+      this.tempLandmarkPosition = null;
+      this.tempLandmarkPreview = null; // 清除临时预览
+      this.editingLandmarkId = null;
+    },
+
+    // 从数据库加载自定义地标
+    loadCustomLandmarks() {
+      try {
+        const accountId = window.currentAccountId || 'main';
+        const saved = localStorage.getItem(`xMapCustomLandmarks_${accountId}`);
+        if (saved) {
+          this.customLandmarks = JSON.parse(saved);
+          console.log(`📍 [地标管理] 账户${accountId}加载了 ${this.customLandmarks.length} 个自定义地标`);
+        } else {
+          this.customLandmarks = [];
+        }
+      } catch (error) {
+        console.error('❌ [地标管理] 加载地标失败:', error);
+        this.customLandmarks = [];
+      }
+    },
+
+    // 渲染地标列表
+    loadLandmarkList() {
+      const listContainer = document.getElementById('mapLandmarkList');
+      if (!listContainer) return;
+
+      if (this.customLandmarks.length === 0) {
+        listContainer.innerHTML = `
+          <div style="padding: 40px 20px; text-align: center; color: #8e8e8e;">
+            <div style="font-size: 48px; margin-bottom: 12px;">📍</div>
+            <div style="font-size: 14px; font-weight: 500; margin-bottom: 4px;">No landmarks yet</div>
+            <div style="font-size: 13px;">Add custom landmarks or generate with AI</div>
+          </div>
+        `;
+
+        // 隐藏批量操作栏
+        const batchActions = document.getElementById('mapLandmarkBatchActions');
+        if (batchActions) batchActions.classList.remove('active');
+
+        return;
+      }
+
+      // 显示批量操作栏
+      const batchActions = document.getElementById('mapLandmarkBatchActions');
+      if (batchActions) batchActions.classList.add('active');
+
+      // 渲染地标列表
+      listContainer.innerHTML = this.customLandmarks
+        .map(
+          (landmark) => `
+        <div class="map-landmark-item" data-id="${landmark.id}">
+          <div class="map-landmark-checkbox" data-id="${landmark.id}"></div>
+          <div class="map-landmark-icon-display" style="background-color: ${landmark.color}">
+            ${landmark.icon}
+          </div>
+          <div class="map-landmark-info">
+            <div class="map-landmark-name">${landmark.name}</div>
+            ${landmark.description ? `<div class="map-landmark-desc">${landmark.description}</div>` : ''}
+            <div class="map-landmark-position-badge">📍 (${landmark.x}, ${landmark.y})</div>
+          </div>
+          <div class="map-landmark-actions">
+            <button class="map-landmark-edit-btn" data-id="${landmark.id}">
+              <svg viewBox="0 0 24 24">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+              </svg>
+            </button>
+            <button class="map-landmark-delete-btn" data-id="${landmark.id}">
+              <svg viewBox="0 0 24 24">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                <line x1="10" y1="11" x2="10" y2="17"></line>
+                <line x1="14" y1="11" x2="14" y2="17"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+      `,
+        )
+        .join('');
+
+      // 绑定事件
+      this.bindLandmarkListEvents();
+    },
+
+    // 绑定地标列表事件
+    bindLandmarkListEvents() {
+      // 复选框点击
+      const checkboxes = document.querySelectorAll('.map-landmark-checkbox');
+      checkboxes.forEach((checkbox) => {
+        checkbox.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const id = checkbox.dataset.id;
+          this.toggleLandmarkSelection(id);
+        });
+      });
+
+      // 编辑按钮
+      const editBtns = document.querySelectorAll('.map-landmark-edit-btn');
+      editBtns.forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const id = btn.dataset.id;
+          this.editLandmark(id);
+        });
+      });
+
+      // 删除按钮
+      const deleteBtns = document.querySelectorAll('.map-landmark-delete-btn');
+      deleteBtns.forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const id = btn.dataset.id;
+          this.deleteLandmark(id);
+        });
+      });
+    },
+
+    // 切换地标选中状态
+    toggleLandmarkSelection(id) {
+      const checkbox = document.querySelector(`.map-landmark-checkbox[data-id="${id}"]`);
+      const item = document.querySelector(`.map-landmark-item[data-id="${id}"]`);
+
+      if (!checkbox || !item) return;
+
+      const isChecked = checkbox.classList.contains('checked');
+
+      if (isChecked) {
+        checkbox.classList.remove('checked');
+        item.classList.remove('selected');
+      } else {
+        checkbox.classList.add('checked');
+        item.classList.add('selected');
+      }
+
+      // 更新批量操作栏状态
+      this.updateBatchActionsState();
+    },
+
+    // 全选/取消全选
+    selectAllLandmarks() {
+      const checkboxes = document.querySelectorAll('.map-landmark-checkbox');
+      const allChecked = Array.from(checkboxes).every((cb) => cb.classList.contains('checked'));
+
+      checkboxes.forEach((checkbox) => {
+        const item = checkbox.closest('.map-landmark-item');
+        if (allChecked) {
+          checkbox.classList.remove('checked');
+          item?.classList.remove('selected');
+        } else {
+          checkbox.classList.add('checked');
+          item?.classList.add('selected');
+        }
+      });
+
+      this.updateBatchActionsState();
+    },
+
+    // 更新批量操作栏状态
+    updateBatchActionsState() {
+      const selectedCount = document.querySelectorAll('.map-landmark-checkbox.checked').length;
+      const countEl = document.getElementById('mapLandmarkSelectedCount');
+      const deleteBtn = document.getElementById('mapLandmarkBatchDeleteBtn');
+
+      if (countEl) {
+        countEl.textContent = `${selectedCount} selected`;
+      }
+
+      if (deleteBtn) {
+        deleteBtn.disabled = selectedCount === 0;
+      }
+    },
+
+    // 编辑地标
+    editLandmark(id) {
+      const landmark = this.customLandmarks.find((l) => l.id === id);
+      if (!landmark) {
+        console.error('❌ [地标管理] 未找到地标:', id);
+        return;
+      }
+
+      // 切换到自定义模式
+      this.toggleLandmarkMode('custom');
+
+      // 填充表单
+      const nameInput = document.getElementById('mapLandmarkNameInput');
+      const descInput = document.getElementById('mapLandmarkDescInput');
+      const iconInput = document.getElementById('mapLandmarkIconInput');
+      const colorInput = document.getElementById('mapLandmarkColorInput');
+      const iconPreview = document.getElementById('mapLandmarkIconPreview');
+      const colorPreview = document.getElementById('mapLandmarkColorPreview');
+      const positionDisplay = document.getElementById('mapLandmarkPositionDisplay');
+      const saveBtn = document.getElementById('mapLandmarkSaveBtn');
+
+      if (nameInput) nameInput.value = landmark.name;
+      if (descInput) descInput.value = landmark.description || '';
+      if (iconInput) iconInput.value = landmark.icon;
+      if (colorInput) colorInput.value = landmark.color;
+      if (iconPreview) iconPreview.textContent = landmark.icon;
+      if (colorPreview) colorPreview.style.backgroundColor = landmark.color;
+
+      // 设置位置
+      this.tempLandmarkPosition = { x: landmark.x, y: landmark.y };
+      if (positionDisplay) {
+        positionDisplay.textContent = `Position: (${landmark.x}, ${landmark.y})`;
+        positionDisplay.classList.add('has-position');
+      }
+
+      // 设置编辑模式
+      this.editingLandmarkId = id;
+
+      // 启用保存按钮
+      if (saveBtn) {
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Update Landmark';
+      }
+
+      // 滚动到表单顶部
+      const section = document.querySelector('.map-landmark-section');
+      if (section) {
+        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+
+      console.log('📍 [地标管理] 编辑地标:', landmark.name);
+    },
+
+    // 删除单个地标
+    deleteLandmark(id) {
+      const landmark = this.customLandmarks.find((l) => l.id === id);
+      if (!landmark) return;
+
+      if (!confirm(`Delete landmark "${landmark.name}"?`)) {
+        return;
+      }
+
+      this.customLandmarks = this.customLandmarks.filter((l) => l.id !== id);
+
+      // 保存到localStorage（按账户隔离）
+      const accountId = window.currentAccountId || 'main';
+      localStorage.setItem(`xMapCustomLandmarks_${accountId}`, JSON.stringify(this.customLandmarks));
+
+      this.loadLandmarkList();
+      this.renderMapLandmarks();
+
+      console.log('🗑️ [地标管理] 删除地标:', landmark.name);
+    },
+
+    // 批量删除地标
+    batchDeleteLandmarks() {
+      const selectedCheckboxes = document.querySelectorAll('.map-landmark-checkbox.checked');
+      const selectedIds = Array.from(selectedCheckboxes).map((cb) => cb.dataset.id);
+
+      if (selectedIds.length === 0) return;
+
+      if (!confirm(`Delete ${selectedIds.length} landmarks?`)) {
+        return;
+      }
+
+      this.customLandmarks = this.customLandmarks.filter((l) => !selectedIds.includes(l.id));
+
+      // 保存到localStorage（按账户隔离）
+      const accountId = window.currentAccountId || 'main';
+      localStorage.setItem(`xMapCustomLandmarks_${accountId}`, JSON.stringify(this.customLandmarks));
+
+      this.loadLandmarkList();
+      this.renderMapLandmarks();
+
+      console.log(`🗑️ [地标管理] 批量删除了 ${selectedIds.length} 个地标`);
+    },
+
+    // 渲染地图上的自定义地标
+    renderMapLandmarks() {
+      console.log('🗺️ [地标管理] 重新绘制地图地标，当前地标数量:', this.customLandmarks.length);
+
+      // 检查MapGenerator是否存在
+      if (!window.MapGenerator) {
+        console.warn('⚠️ [地标管理] MapGenerator未初始化，无法渲染地标');
+        return;
+      }
+
+      // ========== 简单合并：AI地标 + 自定义地标 + 临时预览地标 ==========
+      // AI地标和自定义地标分开存储，直接合并即可
+
+      console.log('📍 [地标管理] 合并地标数据:', {
+        AI地标: this.aiLandmarks.length,
+        自定义地标: this.customLandmarks.length,
+        临时预览: this.tempLandmarkPreview ? 1 : 0,
+      });
+
+      // 直接合并：AI地标 + 自定义地标 + 临时预览地标（如果有）
+      const allLandmarks = [...this.aiLandmarks, ...this.customLandmarks];
+      if (this.tempLandmarkPreview) {
+        allLandmarks.push(this.tempLandmarkPreview);
+      }
+
+      window.MapGenerator.landmarks = allLandmarks;
+
+      console.log('📍 [地标管理] 已同步地标到MapGenerator:', {
+        最终总数: window.MapGenerator.landmarks.length,
+      });
+
+      // 重新绘制地图（包含圆点）
+      if (typeof window.MapGenerator.redraw === 'function') {
+        window.MapGenerator.redraw();
+        console.log('✅ [地标管理] 地图canvas已重新绘制');
+      } else {
+        console.warn('⚠️ [地标管理] MapGenerator没有redraw方法，尝试手动重绘');
+
+        // 如果没有redraw方法，尝试清空并重新绘制地标
+        if (window.MapGenerator.ctx) {
+          // 只清除地标层，不影响地图主体
+          // 直接调用drawLandmarks重新绘制所有地标
+          window.MapGenerator.drawLandmarks();
+          console.log('✅ [地标管理] 地标canvas已手动重绘');
+        }
+      }
+
+      // ⚠️ 重要：重新渲染地标label（气泡）
+      this.renderLandmarkLabels();
+      console.log('✅ [地标管理] 地标label已重新渲染');
+    },
+
+    // AI生成地标（调用第十五情景）
+    async generateLandmarksWithAI() {
+      const aiInput = document.getElementById('mapLandmarkAiInput');
+      const generateBtn = document.getElementById('mapLandmarkGenerateBtn');
+
+      if (!aiInput || !generateBtn) return;
+
+      const userRequirements = aiInput.value.trim();
+
+      // 禁用按钮，显示加载状态
+      generateBtn.disabled = true;
+      generateBtn.textContent = 'Generating...';
+
+      try {
+        console.log('🤖 [地标管理] 开始AI生成地标');
+
+        // 调用第十五情景，传入onlyLandmarks参数
+        await this.generateMapDatingData(false, true, userRequirements);
+
+        // 成功后重新加载地标列表
+        this.loadCustomLandmarks();
+        this.loadLandmarkList();
+        this.renderMapLandmarks();
+
+        alert('Landmarks generated successfully!');
+        aiInput.value = '';
+      } catch (error) {
+        console.error('❌ [地标管理] AI生成地标失败:', error);
+        alert('Failed to generate landmarks. Please try again.');
+      } finally {
+        generateBtn.disabled = false;
+        generateBtn.textContent = 'Generate Landmarks with AI';
+      }
     },
 
     // ==========================================
@@ -53918,6 +61458,3208 @@ ${
   window.MapDatingController = MapDatingController;
   window.MapGenerator = MapGenerator;
 
+  // 第一部分：道具系统CSS样式注入
+  // ============================================
+  function injectToolStyles() {
+    const styleId = 'x-tool-styles';
+
+    // 删除旧的style标签（如果存在）
+    const existingStyle = document.getElementById(styleId);
+    if (existingStyle) {
+      existingStyle.remove();
+      console.log('🔄 已删除旧的CSS样式，重新注入');
+    }
+
+    const style = document.createElement('style');
+    style.id = styleId;
+    style.textContent = `
+/* ========== 道具系统主题变量 ========== */
+#x-tool-modal {
+  --tool-bg-primary: #1a1a1a;
+  --tool-bg-secondary: #000;
+  --tool-text-primary: #fff;
+  --tool-text-secondary: rgba(255, 255, 255, 0.6);
+  --tool-border-primary: rgba(255, 255, 255, 0.15);
+  --tool-border-secondary: rgba(255, 255, 255, 0.08);
+  --tool-card-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
+  --tool-card-border: rgba(255, 255, 255, 0.12);
+  --tool-shadow: rgba(0, 0, 0, 0.6);
+  --tool-grid-line: rgba(255, 255, 255, 0.02);
+}
+
+/* 日间模式 */
+#x-social-screen.x-theme-light #x-tool-modal {
+  --tool-bg-primary: #e5e5e5;
+  --tool-bg-secondary: #fff;
+  --tool-text-primary: #333;
+  --tool-text-secondary: rgba(0, 0, 0, 0.5);
+  --tool-border-primary: rgba(0, 0, 0, 0.12);
+  --tool-border-secondary: rgba(0, 0, 0, 0.08);
+  --tool-card-bg: linear-gradient(135deg, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0.02) 100%);
+  --tool-card-border: rgba(0, 0, 0, 0.1);
+  --tool-shadow: rgba(0, 0, 0, 0.2);
+  --tool-grid-line: rgba(0, 0, 0, 0.03);
+}
+
+/* 道具弹窗遮罩 */
+#x-tool-modal {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 10000;
+  backdrop-filter: blur(20px);
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  overflow: hidden;
+}
+
+#x-social-screen.x-theme-light #x-tool-modal {
+  background: rgba(255, 255, 255, 0.85);
+}
+
+/* 背景网格纹理 */
+#x-tool-modal::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image:
+    linear-gradient(var(--tool-grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--tool-grid-line) 1px, transparent 1px);
+  background-size: 20px 20px;
+  pointer-events: none;
+}
+
+/* ========== 开机画面 ========== */
+.tool-boot-screen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--tool-bg-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10001;
+  /* 🔧 移除自动淡出动画，改为JavaScript手动控制 */
+}
+
+@keyframes toolBootFadeOut {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+.tool-boot-shell {
+  width: 90%;
+  max-width: 380px;
+  background: rgba(0, 0, 0, 0.95);
+  border: 3px solid var(--tool-border-primary);
+  padding: 24px;
+  position: relative;
+  clip-path: polygon(
+    16px 0,
+    calc(100% - 8px) 0,
+    100% 8px,
+    100% calc(100% - 60px),
+    calc(100% - 30px) calc(100% - 30px),
+    calc(100% - 60px) 100%,
+    0 100%,
+    0 16px
+  );
+  box-shadow: 0 20px 60px var(--tool-shadow);
+}
+
+#x-social-screen.x-theme-light .tool-boot-shell {
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.tool-boot-logo {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--tool-text-primary);
+  letter-spacing: 8px;
+  margin-bottom: 32px;
+  animation: logoGlow 2s ease-in-out infinite;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+@keyframes logoGlow {
+  0%, 100% {
+    opacity: 1;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+  }
+  50% {
+    opacity: 0.7;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
+  }
+}
+
+.tool-boot-icon {
+  font-size: 48px;
+  margin-bottom: 24px;
+  animation: iconPulse 1.5s ease-in-out infinite;
+  text-align: center;
+}
+
+@keyframes iconPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.tool-boot-info {
+  font-size: 10px;
+  color: var(--tool-text-secondary);
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+
+.tool-boot-info-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--tool-border-secondary);
+  margin-bottom: 4px;
+}
+
+.tool-boot-progress {
+  margin-top: 32px;
+  position: relative;
+}
+
+.tool-boot-progress-label {
+  font-size: 9px;
+  color: var(--tool-text-secondary);
+  margin-bottom: 8px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.tool-boot-progress-bar {
+  width: 100%;
+  height: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--tool-border-primary);
+  position: relative;
+  overflow: hidden;
+  clip-path: polygon(6px 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 0 100%, 0 6px);
+}
+
+#x-social-screen.x-theme-light .tool-boot-progress-bar {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.tool-boot-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg,
+    rgba(255, 255, 255, 0.3) 0%,
+    rgba(255, 255, 255, 0.5) 50%,
+    rgba(255, 255, 255, 0.3) 100%);
+  width: 0%;
+  /* 🔧 移除CSS自动动画，改为JavaScript控制width */
+  position: relative;
+  transition: width 0.3s ease-out; /* 平滑过渡 */
+}
+
+#x-social-screen.x-theme-light .tool-boot-progress-fill {
+  background: linear-gradient(90deg,
+    rgba(0, 0, 0, 0.2) 0%,
+    rgba(0, 0, 0, 0.3) 50%,
+    rgba(0, 0, 0, 0.2) 100%);
+}
+
+/* 🔧 移除CSS自动进度条动画，改为JavaScript手动控制 */
+/* @keyframes progressLoad 已禁用，进度条由JavaScript控制 */
+
+.tool-boot-progress-fill::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 4px,
+    rgba(255, 255, 255, 0.1) 4px,
+    rgba(255, 255, 255, 0.1) 8px
+  );
+}
+
+.tool-boot-progress-percent {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  font-size: 8px;
+  font-weight: 700;
+  color: var(--tool-text-primary);
+  /* 🔧 移除百分比动画，改为JavaScript控制 */
+}
+
+/* 🔧 移除百分比淡入动画 */
+
+.tool-boot-scanline {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: scanMove 2s linear infinite;
+}
+
+#x-social-screen.x-theme-light .tool-boot-scanline {
+  background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.2), transparent);
+}
+
+@keyframes scanMove {
+  from { transform: translateY(0); }
+  to { transform: translateY(300px); }
+}
+
+/* ========== PSP掌机外壳 ========== */
+.psp-shell {
+  width: 100%;
+  max-width: 380px;
+  background: rgba(0, 0, 0, 0.85);
+  border: 3px solid var(--tool-border-primary);
+  padding: 12px;
+  position: relative;
+  backdrop-filter: blur(20px);
+  box-shadow:
+    0 25px 80px var(--tool-shadow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.5);
+  clip-path: polygon(
+    16px 0,
+    calc(100% - 8px) 0,
+    100% 8px,
+    100% calc(100% - 60px),
+    calc(100% - 30px) calc(100% - 30px),
+    calc(100% - 60px) 100%,
+    0 100%,
+    0 16px
+  );
+  opacity: 1; /* 🔧 移除自动淡入动画，改为直接显示 */
+}
+
+/* 🔧 移除CSS自动淡入动画，PSP shell由JavaScript手动控制 */
+
+#x-social-screen.x-theme-light .psp-shell {
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow:
+    0 25px 80px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+}
+
+.psp-shell::before,
+.psp-shell::after {
+  content: '';
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1));
+  border: 1px solid var(--tool-border-primary);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+#x-social-screen.x-theme-light .psp-shell::before,
+#x-social-screen.x-theme-light .psp-shell::after {
+  background: radial-gradient(circle at 30% 30%, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.08));
+}
+
+.psp-shell::before {
+  top: 20px;
+  left: 8px;
+}
+
+.psp-shell::after {
+  top: 20px;
+  right: 8px;
+}
+
+.psp-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  margin-bottom: 10px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%);
+  border: 1px solid var(--tool-border-secondary);
+  clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+  position: relative;
+}
+
+#x-social-screen.x-theme-light .psp-top {
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.04) 0%, rgba(0, 0, 0, 0.01) 100%);
+}
+
+.psp-top::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 20%;
+  right: 20%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+}
+
+#x-social-screen.x-theme-light .psp-top::before {
+  background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.15), transparent);
+}
+
+.psp-logo {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--tool-text-primary);
+  letter-spacing: 2px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.psp-leds {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.led {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.3);
+  animation: blink 2s infinite;
+}
+
+#x-social-screen.x-theme-light .led {
+  background: rgba(0, 0, 0, 0.15);
+  border-color: rgba(0, 0, 0, 0.2);
+}
+
+.led:nth-child(1) { animation-delay: 0s; }
+.led:nth-child(2) { animation-delay: 0.5s; }
+.led:nth-child(3) { animation-delay: 1s; }
+
+@keyframes blink {
+  0%, 100% { opacity: 0.3; }
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.3);
+  }
+}
+
+.psp-screen {
+  background: rgba(0, 0, 0, 0.7);
+  border: 2px solid var(--tool-border-secondary);
+  padding: 12px;
+  position: relative;
+  overflow: hidden;
+  box-shadow:
+    inset 0 2px 10px rgba(0, 0, 0, 0.6),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%);
+}
+
+#x-social-screen.x-theme-light .psp-screen {
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow:
+    inset 0 2px 10px rgba(0, 0, 0, 0.1),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+
+.screen-dots {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  display: flex;
+  gap: 3px;
+  z-index: 5;
+}
+
+.screen-dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+#x-social-screen.x-theme-light .screen-dot {
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.screen-scanline {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(255, 255, 255, 0.03) 2px,
+    rgba(255, 255, 255, 0.03) 4px
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+#x-social-screen.x-theme-light .screen-scanline {
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.02) 2px,
+    rgba(0, 0, 0, 0.02) 4px
+  );
+}
+
+.tool-close-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--tool-border-primary);
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+#x-social-screen.x-theme-light .tool-close-btn {
+  background: rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.tool-close-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: rotate(90deg);
+}
+
+#x-social-screen.x-theme-light .tool-close-btn:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.tool-close-btn:active {
+  transform: rotate(90deg) scale(0.9);
+}
+
+.tool-close-btn::before,
+.tool-close-btn::after {
+  content: '';
+  position: absolute;
+  width: 12px;
+  height: 2px;
+  background: var(--tool-text-primary);
+  border-radius: 1px;
+}
+
+.tool-close-btn::before { transform: rotate(45deg); }
+.tool-close-btn::after { transform: rotate(-45deg); }
+
+.screen-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--tool-text-primary);
+  letter-spacing: 3px;
+  text-align: center;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  position: relative;
+  z-index: 2;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+#x-social-screen.x-theme-light .screen-title {
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+}
+
+.content-split {
+  display: grid;
+  grid-template-columns: 1fr 110px;
+  gap: 10px;
+  position: relative;
+  z-index: 2;
+}
+
+.cards-area {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.item-card {
+  aspect-ratio: 0.7;
+  background: var(--tool-card-bg);
+  border: 1px solid var(--tool-card-border);
+  padding: 6px;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.item-card:nth-child(6n+1) {
+  clip-path: polygon(10px 0, 100% 0, 100% 100%, 0 100%, 0 10px);
+}
+
+.item-card:nth-child(6n+2) {
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
+}
+
+.item-card:nth-child(6n+3) {
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+}
+
+.item-card:nth-child(6n+4) {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+}
+
+.item-card:nth-child(6n+5) {
+  clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+}
+
+.item-card:nth-child(6n+6) {
+  clip-path: polygon(0 8px, 8px 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
+}
+
+.item-card:hover {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.06) 100%);
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+#x-social-screen.x-theme-light .item-card:hover {
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.08) 0%, rgba(0, 0, 0, 0.04) 100%);
+  border-color: rgba(0, 0, 0, 0.2);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.item-card.has {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+}
+
+#x-social-screen.x-theme-light .item-card.has {
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.06) 0%, rgba(0, 0, 0, 0.03) 100%);
+}
+
+.envelope-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+  z-index: 1;
+}
+
+#x-social-screen.x-theme-light .envelope-line {
+  background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.1), transparent);
+}
+
+.envelope-line::before,
+.envelope-line::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  width: 1px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+#x-social-screen.x-theme-light .envelope-line::before,
+#x-social-screen.x-theme-light .envelope-line::after {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.envelope-line::before { left: 30%; transform: rotate(25deg); }
+.envelope-line::after { right: 30%; transform: rotate(-25deg); }
+
+.card-corner-dots {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.card-corner-dots::before,
+.card-corner-dots::after {
+  content: '';
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+}
+
+#x-social-screen.x-theme-light .card-corner-dots::before,
+#x-social-screen.x-theme-light .card-corner-dots::after {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.card-corner-dots::before {
+  top: 3px;
+  left: 3px;
+}
+
+.card-corner-dots::after {
+  bottom: 3px;
+  right: 3px;
+}
+
+.item-icon {
+  font-size: 22px;
+  margin-bottom: 4px;
+  line-height: 1;
+  position: relative;
+  z-index: 2;
+}
+
+.item-name {
+  font-size: 7px;
+  color: var(--tool-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+
+.item-count {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  background: rgba(0, 0, 0, 0.7);
+  color: #ffffff;
+  font-size: 8px;
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-weight: 700;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  z-index: 3;
+}
+
+#x-social-screen.x-theme-light .item-count {
+  background: rgba(0, 0, 0, 0.65);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.rarity-corner {
+  position: absolute;
+  bottom: 3px;
+  left: 3px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  z-index: 3;
+}
+
+#x-social-screen.x-theme-light .rarity-corner {
+  background: rgba(0, 0, 0, 0.2);
+  border-color: rgba(0, 0, 0, 0.15);
+}
+
+.item-card.rare .rarity-corner {
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.6);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+#x-social-screen.x-theme-light .item-card.rare .rarity-corner {
+  background: rgba(0, 0, 0, 0.6);
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.4);
+  border-color: rgba(0, 0, 0, 0.4);
+}
+
+.gacha-machine {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 400px;
+}
+
+.gacha-dome {
+  aspect-ratio: 1;
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow:
+    inset 0 -10px 20px rgba(0, 0, 0, 0.3),
+    inset 0 2px 4px rgba(255, 255, 255, 0.1),
+    0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+#x-social-screen.x-theme-light .gacha-dome {
+  background: radial-gradient(circle at 30% 30%, rgba(0, 0, 0, 0.08) 0%, rgba(0, 0, 0, 0.03) 100%);
+  border-color: rgba(0, 0, 0, 0.15);
+  box-shadow:
+    inset 0 -10px 20px rgba(0, 0, 0, 0.1),
+    inset 0 2px 4px rgba(255, 255, 255, 0.3),
+    0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.gacha-dome::before {
+  content: '';
+  position: absolute;
+  top: 15%;
+  left: 20%;
+  width: 40%;
+  height: 30%;
+  background: radial-gradient(ellipse, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+  border-radius: 50%;
+  filter: blur(8px);
+}
+
+#x-social-screen.x-theme-light .gacha-dome::before {
+  background: radial-gradient(ellipse, rgba(255, 255, 255, 0.6) 0%, transparent 70%);
+}
+
+.gacha-dome::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 20%;
+  right: 20%;
+  height: 8px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+  border: 1px solid var(--tool-border-primary);
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+}
+
+#x-social-screen.x-theme-light .gacha-dome::after {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.06) 0%, rgba(0, 0, 0, 0.03) 100%);
+}
+
+.gacha-ball {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.1) 100%);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  position: relative;
+  animation: float 3s ease-in-out infinite;
+  cursor: pointer;
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.3),
+    inset 0 2px 4px rgba(255, 255, 255, 0.2);
+}
+
+#x-social-screen.x-theme-light .gacha-ball {
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.12) 0%, rgba(0, 0, 0, 0.06) 100%);
+  border-color: rgba(0, 0, 0, 0.2);
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.2),
+    inset 0 2px 4px rgba(255, 255, 255, 0.3);
+}
+
+.gacha-ball::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-50%);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+#x-social-screen.x-theme-light .gacha-ball::before {
+  background: rgba(0, 0, 0, 0.2);
+  box-shadow: 0 1px 2px rgba(255, 255, 255, 0.3);
+}
+
+.gacha-ball::after {
+  content: '';
+  position: absolute;
+  top: 20%;
+  left: 25%;
+  width: 12px;
+  height: 12px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  filter: blur(3px);
+}
+
+#x-social-screen.x-theme-light .gacha-ball::after {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.gacha-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.gacha-btn {
+  padding: 8px 6px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+  border: 1px solid var(--tool-border-primary);
+  color: var(--tool-text-primary);
+  font-family: 'Courier New', monospace;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-align: center;
+  clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+#x-social-screen.x-theme-light .gacha-btn {
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.06) 0%, rgba(0, 0, 0, 0.03) 100%);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.gacha-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.gacha-btn:hover::before {
+  left: 100%;
+}
+
+.gacha-btn:hover {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.08) 100%);
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+#x-social-screen.x-theme-light .gacha-btn:hover {
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.05) 100%);
+  border-color: rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.gacha-btn:active {
+  transform: translateY(0) scale(0.95);
+}
+
+.gacha-cost {
+  font-size: 7px;
+  opacity: 0.6;
+  margin-top: 2px;
+}
+
+/* ========== 翻页控制器 ========== */
+.pagination-control {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 8px;
+  background: linear-gradient(0deg, rgba(255, 255, 255, 0.04) 0%, transparent 100%);
+  border: 1px solid var(--tool-border-secondary);
+  clip-path: polygon(0 6px, 6px 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 0 100%);
+  position: relative;
+  margin-top: auto;
+  margin-bottom: 6px;
+}
+
+#x-social-screen.x-theme-light .pagination-control {
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.03) 0%, transparent 100%);
+}
+
+.pagination-control::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 20%;
+  right: 20%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+}
+
+#x-social-screen.x-theme-light .pagination-control::before {
+  background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.1), transparent);
+}
+
+.page-arrow {
+  width: 28px;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--tool-border-primary);
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+#x-social-screen.x-theme-light .page-arrow {
+  background: rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.page-arrow.left {
+  clip-path: polygon(0 50%, 100% 0, 100% 100%);
+}
+
+.page-arrow.right {
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+}
+
+.page-arrow:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: scale(1.1);
+}
+
+#x-social-screen.x-theme-light .page-arrow:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.page-arrow:active {
+  transform: scale(0.9);
+}
+
+.page-arrow.disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.page-arrow::before {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-left: 2px solid var(--tool-text-primary);
+  border-bottom: 2px solid var(--tool-text-primary);
+}
+
+.page-arrow.left::before {
+  transform: rotate(45deg);
+  margin-left: 2px;
+}
+
+.page-arrow.right::before {
+  transform: rotate(-135deg);
+  margin-right: 2px;
+}
+
+.page-info {
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--tool-text-primary);
+  letter-spacing: 1px;
+  min-width: 50px;
+  text-align: center;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+#x-social-screen.x-theme-light .page-info {
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+}
+
+/* ========== 商店和兑换按钮 ========== */
+.utility-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.utility-btn {
+  padding: 8px 6px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.03) 100%);
+  border: 1px solid var(--tool-border-primary);
+  color: var(--tool-text-primary);
+  font-family: 'Courier New', monospace;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-align: center;
+  clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+#x-social-screen.x-theme-light .utility-btn {
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.04) 0%, rgba(0, 0, 0, 0.02) 100%);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.utility-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+  transition: left 0.5s;
+}
+
+.utility-btn:hover::before {
+  left: 100%;
+}
+
+.utility-btn:hover {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+#x-social-screen.x-theme-light .utility-btn:hover {
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.08) 0%, rgba(0, 0, 0, 0.04) 100%);
+  border-color: rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.utility-btn:active {
+  transform: translateY(0) scale(0.95);
+}
+
+.utility-btn svg {
+  width: 10px;
+  height: 10px;
+  fill: var(--tool-text-primary);
+}
+
+.stats-bar {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin-top: 10px;
+  position: relative;
+  z-index: 2;
+}
+
+.stat {
+  padding: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--tool-border-secondary);
+  text-align: center;
+  clip-path: polygon(6px 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 0 100%, 0 6px);
+  position: relative;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#x-social-screen.x-theme-light .stat {
+  background: rgba(0, 0, 0, 0.03);
+  box-shadow:
+    inset 0 1px 0 rgba(0, 0, 0, 0.05),
+    0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.stat::before {
+  content: attr(data-icon);
+  position: absolute;
+  top: 50%;
+  left: 8px;
+  transform: translateY(-50%);
+  font-size: 10px;
+  opacity: 0.3;
+}
+
+.stat-val {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--tool-text-primary);
+  line-height: 1;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+#x-social-screen.x-theme-light .stat-val {
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+}
+
+.psp-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+  padding: 10px 12px;
+  background: linear-gradient(0deg, rgba(255, 255, 255, 0.04) 0%, transparent 100%);
+  border: 1px solid var(--tool-border-secondary);
+  clip-path: polygon(0 8px, 8px 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
+  position: relative;
+}
+
+#x-social-screen.x-theme-light .psp-controls {
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.03) 0%, transparent 100%);
+}
+
+.psp-controls::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 20%;
+  right: 20%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+}
+
+#x-social-screen.x-theme-light .psp-controls::before {
+  background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.1), transparent);
+}
+
+.dpad {
+  width: 50px;
+  height: 50px;
+  position: relative;
+}
+
+.dpad-btn {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--tool-border-primary);
+  transition: all 0.2s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+#x-social-screen.x-theme-light .dpad-btn {
+  background: rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.dpad-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: scale(1.05);
+}
+
+#x-social-screen.x-theme-light .dpad-btn:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.dpad-btn.up {
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+
+.dpad-btn.down {
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+}
+
+.dpad-btn.left {
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  clip-path: polygon(0 50%, 100% 0, 100% 100%);
+}
+
+.dpad-btn.right {
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+}
+
+.action-btns {
+  display: flex;
+  gap: 8px;
+}
+
+@keyframes roll {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.15); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+.gacha-ball.rolling {
+  animation: roll 1s ease-in-out;
+}
+
+@keyframes cardPop {
+  0% {
+    transform: scale(0) rotate(-90deg);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.15) rotate(5deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+.item-card.new {
+  animation: cardPop 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@media (max-width: 360px) {
+  .cards-area {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
+  }
+
+  .content-split {
+    grid-template-columns: 1fr 100px;
+    gap: 8px;
+  }
+
+  .item-icon {
+    font-size: 20px;
+  }
+
+  .item-name {
+    font-size: 6px;
+  }
+}
+`;
+
+    document.head.appendChild(style);
+    console.log('✅ X Tool System: 样式已注入');
+  }
+
+  // ============================================
+  // 第二部分：道具数据管理
+  // ============================================
+
+  // 道具数据数组
+  let toolItems = [];
+
+  // 金币数量
+  let toolCoins = 1000;
+
+  // 当前页码
+  let currentPage = 1;
+
+  // 每页显示的道具数量
+  const ITEMS_PER_PAGE = 12;
+
+  // 扭蛋池配置（默认值，会从数据库加载AI生成的扭蛋池）
+  let gachaPool = [{ name: '默认道具', icon: '❓', rarity: 'common', weight: 10, category: '特殊道具' }];
+
+  // 数据库schema已在x-core.js的getXDB中定义，此函数仅做日志记录
+  async function ensureToolDatabaseSchema() {
+    console.log('✅ 道具数据库表schema已在x-core.js中定义');
+  }
+
+  // ▼▼▼ 【主要！！！】第十七情景：道具系统初始化生成器 ▼▼▼
+  async function generateToolScenario() {
+    try {
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      console.log('🎮 [第十七情景] 道具系统初始化生成器启动');
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+
+      // Token计数器
+      let tokenCount = 0;
+
+      // 1. 使用统一的API配置加载工具
+      console.log('📦 [第十七情景] 正在加载API配置和用户设置...');
+      const { apiConfig, xSettings, xDb } = await APIUtils.loadConfigAndSettings();
+      const { userPrompt, worldSetting } = xSettings;
+      console.log('✅ [第十七情景] API配置加载完成');
+
+      // 2. 获取用户X个人资料信息
+      console.log('👤 [第十七情景] 正在读取用户个人资料...');
+      const userProfileData = window.userProfileData || {};
+      const publicIdentity = userProfileData.publicIdentity || '';
+      const userName = userProfileData.name || '用户';
+      const userHandle = userProfileData.handle || '@user';
+      const userBio = userProfileData.bio || '';
+
+      console.log('📋 [第十七情景] 用户信息:');
+      console.log(`   - 用户名: ${userName}`);
+      console.log(`   - 句柄: ${userHandle}`);
+      console.log(`   - 公众身份: ${publicIdentity || '普通人'}`);
+      console.log(`   - 个人简介: ${userBio ? userBio.substring(0, 50) + (userBio.length > 50 ? '...' : '') : '无'}`);
+
+      // 3. 🔧 初始coins由AI根据用户身份和世界观智能判断，不再硬编码
+      console.log('💰 [第十七情景] 初始coins将由AI根据用户身份智能分配');
+
+      // 4. 构建系统提示词
+      let systemPrompt = '';
+
+      // 4.1 用户自定义提示词
+      if (userPrompt.trim()) {
+        systemPrompt += userPrompt.trim() + '\n\n';
+        tokenCount = TokenUtils.logTokenUsage('道具系统初始化生成器', '用户自定义提示词', systemPrompt, tokenCount);
+      }
+
+      // 4.2 世界观设定
+      const worldSettingStart = systemPrompt.length;
+      systemPrompt += '【世界观设定约束】：\n';
+      if (worldSetting.trim()) {
+        systemPrompt += `${worldSetting.trim()}\n上述世界观设定是最高优先级的约束条件，必须严格遵守。\n\n`;
+        console.log('🌍 [第十七情景] 已注入世界观设定');
+      } else {
+        systemPrompt += '无特殊世界观限制，但内容需健康正面，符合常识。\n\n';
+        console.log('ℹ️ [第十七情景] 无自定义世界观设定，使用默认规则');
+      }
+      const worldSettingSection = systemPrompt.substring(worldSettingStart);
+      tokenCount = TokenUtils.logTokenUsage('道具系统初始化生成器', '世界观设定约束', worldSettingSection, tokenCount);
+
+      // 4.3 核心任务说明
+      const coreTaskStart = systemPrompt.length;
+      systemPrompt += `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 核心任务：道具系统初始化生成器（第十七情景）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+你是道具系统的初始化生成器。你的任务是为用户生成完整的初始道具背包和扭蛋池数据库。
+
+【用户信息】：
+- 用户名：${userName}
+- 用户句柄：${userHandle}
+- 公众身份：${publicIdentity || '普通人'}
+- 个人简介：${userBio || '无'}
+
+【强制性生成要求】：
+
+0️⃣ **初始金币（initialCoins）智能分配**（必须由你根据用户信息判断）：
+   🚨 **硬性要求**：
+   - 必须根据用户的公众身份、个人简介、世界观设定进行综合判断
+   - 不要使用固定值，要根据实际情况灵活分配
+
+   💰 **分配参考标准**（仅供参考，可灵活调整）：
+   - 富豪/企业家/商人：4000-6000 coins
+   - 明星/艺人/网红/博主：2000-4000 coins
+   - 专业人士（医生/律师/教师/艺术家/作家）：1000-2000 coins
+   - 普通白领/职员：500-1000 coins
+   - 学生/实习生/新人：200-500 coins
+   - 其他情况：根据具体身份和世界观合理判断
+
+   📋 **判断依据**：
+   - 优先根据公众身份判断社会地位和经济实力
+   - 参考个人简介中的职业、成就、背景信息
+   - 符合当前世界观设定（例如末世背景coins应该少，富裕时代coins可以多）
+   - 确保分配合理，不要过高或过低
+
+   ⚠️ **重要**：initialCoins必须是100-10000之间的整数（100的倍数最佳）
+
+1️⃣ **初始道具背包**（必须生成6-10个道具）：
+   🚨 **硬性要求**：
+   - 最少6个，最多10个，建议8-10个
+   - 每个道具必须100%符合用户的公众身份"${publicIdentity || '普通人'}"
+   - 绝对不允许脱离人设（例如：学生不能有豪车、普通人不能有私人飞机）
+   - 道具必须合理、实用、符合日常生活
+
+   📋 **必需字段**（缺一不可）：
+   - name: 中文名称，简短精确（2-6个汉字）
+   - icon: 单个emoji或符号（如📱🔑💰）
+   - count: 数量（1-10之间的整数）
+   - rarity: 稀有度（"common" 或 "rare"，初始道具以common为主，rare不超过2个）
+   - category: 中文分类（自由创造，符合道具特性即可）
+
+2️⃣ **扭蛋池道具库**（必须生成100-300个道具）：
+   🚨 **硬性要求**：
+   - **最少100个，推荐150-300个** - 这是强制要求，不得少于100个！
+   - 必须严格符合当前世界观设定（绝对禁止出现超越世界观的物品）
+   - 道具名称要富有创意、有趣、多样化，避免重复和单调
+   - 分类要多样化且有趣，可以自由创造新分类
+
+   📊 **稀有度分布**（严格遵守）：
+   - common（普通）：70-75%，权重范围 20-30
+   - rare（稀有）：25-30%，权重范围 2-10
+   - 示例：如果生成150个道具，则common约105-112个，rare约38-45个
+
+   📋 **必需字段**（缺一不可）：
+   - name: 中文名称，简短有趣（2-6个汉字）
+   - icon: 单个emoji或符号
+   - rarity: "common" 或 "rare"
+   - weight: 整数权重（common: 20-30, rare: 2-10）
+   - category: 中文分类（自由创造，符合道具特性即可）
+
+3️⃣ **道具分类创造指南**（鼓励创意，以下仅为参考）：
+
+   💡 **分类创造原则**（重要！）：
+   - ✨ **自由发挥**：可以创造任何有趣的中文分类名称
+   - 🎨 **富有创意**：鼓励使用有趣、新颖、贴切的分类名
+   - 📝 **简短有力**：分类名称2-4个汉字最佳
+   - 🌈 **多样化**：建议创造5-10个不同分类
+   - 🎯 **符合世界观**：分类要贴合当前世界观和用户身份
+
+   📚 **分类示例参考**（不强制使用，激发灵感用）：
+
+   **常规分类**：
+   - 日用品、装备、消耗品、收藏品、特殊道具
+
+   **创意分类**（鼓励使用这类有趣的分类）：
+   - 治愈系、青春记忆、奇幻小物、情感寄托、幸运物
+   - 神秘物品、时光宝盒、心愿物语、温暖时刻、魔法碎片
+   - 怀旧珍藏、惊喜盲盒、梦想碎片、回忆拼图、奇迹见证
+
+   **根据世界观自创**：
+   - 如果是现代都市：时尚单品、数码产品、潮流饰品、网红好物
+   - 如果是古代背景：江湖奇物、文房四宝、古董珍玩、武林秘宝
+   - 如果是校园青春：学习用品、社团装备、青春纪念、校园回忆
+
+   **道具示例**（仅供参考）：
+   - 手机、钥匙、钱包、背包、雨伞、充电宝、耳机、水杯
+   - 帽子、围巾、手套、眼镜、手表、项链、戒指、耳环
+   - 零食、饮料、水果、药品、糖果、咖啡、茶叶
+   - 照片、明信片、纪念币、海报、手办、签名、卡片
+   - 幸运符、许愿币、神秘钥匙、古董、限定版物品
+
+【世界观一致性检查】：
+${
+  worldSetting
+    ? `当前世界观：${worldSetting}\n   ⚠️ 所有道具必须100%符合上述世界观，禁止出现不符合时代/设定的物品！`
+    : '⚠️ 现代都市背景，禁止出现科幻/魔法/古代/未来物品！'
+}
+
+【质量标准】：
+✅ **必须做到**：
+- 🎨 **创造性**：道具名称有创意、有趣、独特，避免千篇一律
+- 🌟 **趣味性**：分类命名富有想象力，能让人会心一笑
+- 🎯 **多样性**：道具类型丰富多彩，不要重复单调
+- 💯 **符合性**：完美匹配用户身份和世界观设定
+- 😊 **生动性**：emoji图标选择恰当、形象、有趣
+- 🔥 **惊喜感**：让每个道具都有存在的意义和故事感
+
+❌ **绝对禁止**：
+- 重复的道具名称（每个道具都应该是独一无二的）
+- 不符合世界观的物品（严格遵守设定）
+- 脱离用户身份的奢侈品（除非用户是富豪/明星）
+- 分类命名单调乏味（要有创意和趣味性！）
+- 道具数量不足（扭蛋池少于100个）
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🚨🚨🚨 JSON格式强制规范 🚨🚨🚨
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚠️ **你必须严格遵守以下JSON格式要求，否则会导致系统崩溃！**
+
+【返回内容规则】：
+✅ **只能返回纯JSON对象**，从 { 开始，到 } 结束
+❌ **绝对禁止**：
+   - 不要任何解释、说明、注释文字
+   - 不要 \`\`\`json 或 \`\`\` 代码块标记
+   - 不要 "好的"、"明白"、"以下是" 等开头语
+   - 不要 "完成"、"已生成" 等结尾语
+   - 不要任何中文或英文的额外说明
+
+【JSON格式规范】：
+1. 使用标准JSON格式，所有字符串必须用双引号 "
+2. 每个对象最后一个字段后面不要逗号
+3. 数组最后一个元素后面不要逗号
+4. 数字类型不要加引号（如 count: 1 而不是 "1"）
+5. 字符串内容可以包含emoji表情符号
+
+【完整JSON示例】（请严格参考此格式）：
+
+{
+  "initialCoins": 800,
+  "initialItems": [
+    {
+      "name": "智能手机",
+      "icon": "📱",
+      "count": 1,
+      "rarity": "common",
+      "category": "数码产品"
+    },
+    {
+      "name": "幸运手链",
+      "icon": "💝",
+      "count": 1,
+      "rarity": "rare",
+      "category": "情感寄托"
+    },
+    {
+      "name": "背包",
+      "icon": "🎒",
+      "count": 1,
+      "rarity": "common",
+      "category": "日用品"
+    },
+    {
+      "name": "钥匙串",
+      "icon": "🔑",
+      "count": 1,
+      "rarity": "common",
+      "category": "日用品"
+    },
+    {
+      "name": "水杯",
+      "icon": "🥤",
+      "count": 1,
+      "rarity": "common",
+      "category": "日用品"
+    },
+    {
+      "name": "耳机",
+      "icon": "🎧",
+      "count": 1,
+      "rarity": "common",
+      "category": "数码产品"
+    }
+  ],
+  "gachaPool": [
+    {
+      "name": "四叶草书签",
+      "icon": "🍀",
+      "rarity": "rare",
+      "weight": 5,
+      "category": "幸运物"
+    },
+    {
+      "name": "樱花糖果",
+      "icon": "🌸",
+      "rarity": "common",
+      "weight": 25,
+      "category": "治愈系"
+    },
+    {
+      "name": "复古相机",
+      "icon": "📷",
+      "rarity": "rare",
+      "weight": 8,
+      "category": "青春记忆"
+    },
+    {
+      "name": "星空明信片",
+      "icon": "✉️",
+      "rarity": "common",
+      "weight": 22,
+      "category": "情感寄托"
+    },
+    {
+      "name": "幸运硬币",
+      "icon": "🪙",
+      "rarity": "rare",
+      "weight": 6,
+      "category": "幸运物"
+    }
+  ]
+}
+
+🔴 **错误示例**（绝对不要这样返回）：
+
+错误1：带有说明文字
+\`\`\`
+好的，我为你生成了以下道具数据：
+{"initialCoins": 800, ...}
+已完成生成。
+\`\`\`
+
+错误2：使用代码块标记
+\`\`\`json
+{"initialCoins": 800, ...}
+\`\`\`
+
+错误3：多余逗号
+{
+  "initialCoins": 800,
+  "initialItems": [...],  ← 最后一个字段后面有逗号，错误！
+}
+
+错误4：字符串没加引号
+{
+  name: "手机"  ← 错误！应该是 "name": "手机"
+}
+
+✅ **正确示例**（必须这样返回）：
+
+{"initialCoins":800,"initialItems":[{"name":"智能手机","icon":"📱","count":1,"rarity":"common","category":"数码产品"}],"gachaPool":[{"name":"四叶草书签","icon":"🍀","rarity":"rare","weight":5,"category":"幸运物"}]}
+
+或者格式化的（推荐）：
+
+{
+  "initialCoins": 800,
+  "initialItems": [
+    {"name": "智能手机", "icon": "📱", "count": 1, "rarity": "common", "category": "数码产品"}
+  ],
+  "gachaPool": [
+    {"name": "四叶草书签", "icon": "🍀", "rarity": "rare", "weight": 5, "category": "幸运物"}
+  ]
+}
+
+🚨 **再次强调**：
+- 你的整个回复必须从 { 开始，以 } 结束
+- 不要任何其他字符、说明、解释
+- 直接返回JSON对象，其他什么都不要
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💡 **分类创意提示**：
+- 不要只用"日用品"、"消耗品"等常规分类
+- 可以用"治愈系"、"青春记忆"、"情感寄托"、"幸运物"等有趣分类
+- 让每个分类都有故事感和情感共鸣
+
+💡 **数量要求**：
+- initialItems: 必须6-10个道具
+- gachaPool: 必须100-300个道具（推荐150-300个）
+
+🚨 **最终检查清单**：
+在返回前，请逐项确认：
+☑️ JSON格式100%正确：从{开始到}结束，不含任何额外文字
+☑️ 没有代码块标记（不要\`\`\`json或\`\`\`）
+☑️ 没有多余逗号（对象最后字段后、数组最后元素后）
+☑️ 所有字符串使用双引号"
+☑️ 数字类型不加引号（count、weight、initialCoins）
+☑️ initialCoins 已根据用户身份智能判断（100-10000之间的整数）
+☑️ initialItems 有 6-10 个道具
+☑️ gachaPool 有 100-300 个道具（最少100个，推荐150-300个！）
+☑️ 所有道具都符合用户身份"${publicIdentity || '普通人'}"
+☑️ 所有道具都符合世界观设定
+☑️ 所有字段都是中文（name, category）
+☑️ 稀有度分布合理（70%普通 + 30%稀有）
+☑️ 分类富有创意和趣味性（不要只用常规分类）
+☑️ 道具名称独特有趣，没有重复
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
+      const coreTaskSection = systemPrompt.substring(coreTaskStart);
+      tokenCount = TokenUtils.logTokenUsage(
+        '道具系统初始化生成器',
+        '核心任务说明+用户信息+生成要求+JSON格式',
+        coreTaskSection,
+        tokenCount,
+      );
+
+      // 5. 调用AI生成道具数据
+      const messages = [
+        {
+          role: 'user',
+          content: '请为用户生成初始道具背包和扭蛋池数据',
+        },
+      ];
+
+      // 最终统计
+      TokenUtils.logFinalPrompt('道具系统初始化生成器', systemPrompt, messages[0].content);
+
+      console.log('📤 [第十七情景] 正在向AI发送请求...');
+      console.log(`   - Temperature: 0.8`);
+      console.log(`   - 预期生成: 3-10个初始道具, 50-100个扭蛋池道具`);
+
+      const aiResponseContent = await APIUtils.sendAIRequest({
+        apiConfig,
+        systemPrompt,
+        messages,
+        temperature: 0.8,
+      });
+
+      console.log('📥 [第十七情景] AI响应已接收');
+      console.log(`   - 响应长度: ${aiResponseContent.length} 字符`);
+
+      // 6. 解析AI响应
+      console.log('🔍 [第十七情景] 正在解析JSON数据...');
+      let toolData = APIUtils.parseJSONResponse(aiResponseContent);
+
+      // 🔧 验证AI返回的数据格式（必须包含initialCoins、initialItems、gachaPool）
+      if (!toolData.initialCoins || !toolData.initialItems || !toolData.gachaPool) {
+        throw new Error('AI返回的数据格式不正确，缺少initialCoins、initialItems或gachaPool字段');
+      }
+
+      // 🔧 验证initialCoins的合理性
+      if (typeof toolData.initialCoins !== 'number' || toolData.initialCoins < 100 || toolData.initialCoins > 10000) {
+        console.warn(`⚠️ AI返回的initialCoins值不合理: ${toolData.initialCoins}，使用默认值500`);
+        toolData.initialCoins = 500;
+      }
+
+      console.log('✅ [第十七情景] JSON解析成功');
+      console.log(`   - AI分配的初始coins: ${toolData.initialCoins}`);
+      console.log(`   - 初始道具数量: ${toolData.initialItems.length}个`);
+      console.log(`   - 扭蛋池道具数量: ${toolData.gachaPool.length}个`);
+
+      // 显示生成的道具示例
+      if (toolData.initialItems.length > 0) {
+        console.log('🎁 [第十七情景] 初始道具示例:');
+        toolData.initialItems.slice(0, 3).forEach((item, idx) => {
+          console.log(`   ${idx + 1}. ${item.icon} ${item.name} x${item.count} [${item.rarity}] (${item.category})`);
+        });
+        if (toolData.initialItems.length > 3) {
+          console.log(`   ... 还有 ${toolData.initialItems.length - 3} 个道具`);
+        }
+      }
+
+      if (toolData.gachaPool.length > 0) {
+        console.log('🎰 [第十七情景] 扭蛋池道具示例:');
+        toolData.gachaPool.slice(0, 5).forEach((item, idx) => {
+          console.log(
+            `   ${idx + 1}. ${item.icon} ${item.name} [${item.rarity}] 权重:${item.weight} (${item.category})`,
+          );
+        });
+        if (toolData.gachaPool.length > 5) {
+          console.log(`   ... 还有 ${toolData.gachaPool.length - 5} 个道具`);
+        }
+      }
+
+      // 7. 保存数据到数据库并更新全局变量
+      console.log('💾 [第十七情景] 正在保存数据到数据库...');
+      const accountId = currentAccountId || 'main';
+      const toolDataId = `tools_${accountId}`;
+
+      // 🔧 更新全局变量（使用AI返回的initialCoins）
+      toolItems = toolData.initialItems;
+      toolCoins = toolData.initialCoins; // 🔧 从AI返回的数据中读取coins
+      gachaPool = toolData.gachaPool; // 🔧 关键：更新全局扭蛋池
+
+      await xDb.xTools.put({
+        id: toolDataId,
+        accountId: accountId,
+        items: toolItems,
+        coins: toolCoins,
+        gachaPool: toolData.gachaPool,
+        scenarioGenerated: true,
+        generatedAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      });
+
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      console.log('✅ [第十七情景] 道具系统初始化完成！');
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      console.log(`📦 数据已保存到数据库 (ID: ${toolDataId})`);
+      console.log(`🎁 初始道具: ${toolItems.length}个`);
+      console.log(`🎰 扭蛋池: ${toolData.gachaPool.length}个道具`);
+      console.log(`💰 初始coins: ${toolCoins}`);
+      console.log(`🕐 生成时间: ${new Date().toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' })}`);
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+
+      // 8. 🔧 AI生成完毕后，快速完成进度条动画，然后关闭开机画面
+      console.log('⏱️ [第十七情景] AI生成完毕，准备完成开机动画...');
+
+      // 步骤1：快速完成进度条（90% → 100%）
+      finishBootAnimation();
+
+      // 步骤2：等待1秒让用户看到100%完成状态，然后关闭开机画面
+      setTimeout(() => {
+        const bootScreen = document.querySelector('.tool-boot-screen');
+        if (bootScreen) {
+          bootScreen.style.animation = 'toolBootFadeOut 0.5s ease-out forwards';
+        }
+        console.log('🎬 [第十七情景] 开机画面已关闭');
+
+        // 9. 在开机画面关闭后显示成功提示
+        setTimeout(() => {
+          showXToast(`道具系统初始化完成！获得 ${toolItems.length} 个初始道具和 ${toolCoins} coins`, 'success');
+        }, 500); // 开机画面关闭动画后0.5秒显示提示
+      }, 1500); // 等待1.5秒，让用户看到进度条完成
+    } catch (error) {
+      console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      console.error('❌ [第十七情景] 生成道具数据失败');
+      console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      console.error('错误类型:', error.name);
+      console.error('错误信息:', error.message);
+      console.error('错误堆栈:', error.stack);
+      console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+
+      showXToast('道具系统初始化失败: ' + error.message, 'error');
+
+      // 🔧 清理开机动画interval
+      if (bootAnimationInterval) {
+        clearInterval(bootAnimationInterval);
+        bootAnimationInterval = null;
+      }
+
+      // 发生错误也要关闭开机画面
+      setTimeout(() => {
+        const bootScreen = document.querySelector('.tool-boot-screen');
+        if (bootScreen) {
+          bootScreen.style.animation = 'toolBootFadeOut 0.5s ease-out forwards';
+        }
+        console.log('🎬 [第十七情景] 错误恢复：开机画面已关闭');
+      }, 1000);
+    }
+  }
+  // ▲▲▲ 【主要！！！】第十七情景：道具系统初始化生成器 ▲▲▲
+
+  // 加载道具数据
+  async function loadToolData() {
+    try {
+      const db = getXDB();
+      const accountId = currentAccountId || 'main';
+      const toolDataId = `tools_${accountId}`;
+
+      const toolData = await db.xTools.get(toolDataId);
+
+      if (toolData) {
+        toolItems = toolData.items || [];
+        toolCoins = toolData.coins || 0;
+
+        // 🔧 关键：加载AI生成的扭蛋池
+        if (toolData.gachaPool && toolData.gachaPool.length > 0) {
+          gachaPool = toolData.gachaPool;
+          console.log(
+            '✅ 道具数据已加载:',
+            toolItems.length,
+            '个道具,',
+            toolCoins,
+            'coins,',
+            gachaPool.length,
+            '个扭蛋池道具',
+          );
+        } else {
+          console.warn('⚠️ 扭蛋池数据缺失，使用默认扭蛋池');
+        }
+      } else {
+        // 这种情况不应该发生，因为首次进入会触发第十七情景生成
+        console.warn('⚠️ 未找到道具数据，应该先触发情景生成');
+        toolItems = [];
+        toolCoins = 0;
+      }
+    } catch (error) {
+      console.error('❌ 加载道具数据失败:', error);
+    }
+  }
+
+  // 保存道具数据
+  async function saveToolData() {
+    try {
+      const db = getXDB();
+      const accountId = currentAccountId || 'main';
+      const toolDataId = `tools_${accountId}`;
+
+      // 获取现有数据以保留gachaPool和其他字段
+      const existingData = await db.xTools.get(toolDataId);
+
+      await db.xTools.put({
+        id: toolDataId,
+        accountId: accountId,
+        items: toolItems,
+        coins: toolCoins,
+        gachaPool: existingData?.gachaPool || gachaPool, // 🔧 保留扭蛋池数据
+        scenarioGenerated: existingData?.scenarioGenerated || false,
+        generatedAt: existingData?.generatedAt,
+        updatedAt: new Date().toISOString(),
+      });
+
+      console.log('✅ 道具数据已保存');
+    } catch (error) {
+      console.error('❌ 保存道具数据失败:', error);
+    }
+  }
+
+  // ============================================
+  // 第三部分：扭蛋系统逻辑
+  // ============================================
+
+  // 按权重随机抽取道具
+  function getRandomItem() {
+    const totalWeight = gachaPool.reduce((sum, item) => sum + item.weight, 0);
+    let random = Math.random() * totalWeight;
+
+    for (const item of gachaPool) {
+      random -= item.weight;
+      if (random <= 0) {
+        return { ...item };
+      }
+    }
+
+    return { ...gachaPool[0] };
+  }
+
+  // 单抽
+  async function rollOne() {
+    if (toolCoins < 100) {
+      showXToast('金币不足！需要100金币', 'error');
+      return;
+    }
+
+    toolCoins -= 100;
+    updateToolStats();
+
+    const ball = document.getElementById('gacha-ball');
+    if (ball) {
+      ball.classList.add('rolling');
+    }
+
+    setTimeout(async () => {
+      if (ball) {
+        ball.classList.remove('rolling');
+      }
+
+      const newItem = getRandomItem();
+
+      // 检查是否已有该道具
+      const existingItem = toolItems.find(item => item.name === newItem.name);
+      if (existingItem) {
+        existingItem.count += 1;
+      } else {
+        toolItems.push({
+          name: newItem.name,
+          icon: newItem.icon,
+          count: 1,
+          rarity: newItem.rarity,
+        });
+      }
+
+      await saveToolData();
+      renderToolCards();
+
+      // 添加弹出动画
+      setTimeout(() => {
+        const cards = document.querySelectorAll('.item-card.has');
+        const targetCard = Array.from(cards).find(card => {
+          const nameEl = card.querySelector('.item-name');
+          return nameEl && nameEl.textContent === newItem.name;
+        });
+
+        if (targetCard) {
+          targetCard.classList.add('new');
+          setTimeout(() => targetCard.classList.remove('new'), 500);
+        }
+      }, 100);
+
+      showXToast(`获得道具: ${newItem.icon} ${newItem.name} ${newItem.rarity === 'rare' ? '(稀有)' : ''}`, 'success');
+    }, 1000);
+  }
+
+  // 十连抽
+  async function rollTen() {
+    if (toolCoins < 900) {
+      showXToast('金币不足！需要900金币', 'error');
+      return;
+    }
+
+    toolCoins -= 900;
+    updateToolStats();
+
+    const ball = document.getElementById('gacha-ball');
+    if (ball) {
+      ball.classList.add('rolling');
+    }
+
+    setTimeout(async () => {
+      if (ball) {
+        ball.classList.remove('rolling');
+      }
+
+      const results = [];
+      for (let i = 0; i < 10; i++) {
+        const item = getRandomItem();
+        results.push(item);
+
+        const existingItem = toolItems.find(t => t.name === item.name);
+        if (existingItem) {
+          existingItem.count += 1;
+        } else {
+          toolItems.push({
+            name: item.name,
+            icon: item.icon,
+            count: 1,
+            rarity: item.rarity,
+          });
+        }
+      }
+
+      await saveToolData();
+      renderToolCards();
+
+      const rareCount = results.filter(r => r.rarity === 'rare').length;
+      showXToast(`十连抽完成！获得 ${results.length} 个道具 (${rareCount} 稀有)`, 'success');
+    }, 1000);
+  }
+
+  // 摇晃扭蛋球
+  function shakeBall() {
+    const ball = document.getElementById('gacha-ball');
+    if (ball) {
+      ball.style.animation = 'none';
+      setTimeout(() => {
+        ball.style.animation = 'float 3s ease-in-out infinite';
+      }, 10);
+    }
+  }
+
+  // ============================================
+  // 第四部分：UI渲染函数
+  // ============================================
+
+  // 计算总页数
+  function getTotalPages() {
+    return Math.max(1, Math.ceil(toolItems.length / ITEMS_PER_PAGE));
+  }
+
+  // 上一页
+  function previousPage() {
+    if (currentPage > 1) {
+      currentPage--;
+      renderToolCards();
+      updatePaginationUI();
+    }
+  }
+
+  // 下一页
+  function nextPage() {
+    const totalPages = getTotalPages();
+    if (currentPage < totalPages) {
+      currentPage++;
+      renderToolCards();
+      updatePaginationUI();
+    }
+  }
+
+  // 更新翻页UI状态
+  function updatePaginationUI() {
+    const pageInfo = document.getElementById('page-info');
+    const prevBtn = document.getElementById('page-prev');
+    const nextBtn = document.getElementById('page-next');
+    const totalPages = getTotalPages();
+
+    if (pageInfo) {
+      pageInfo.textContent = `${currentPage}/${totalPages}`;
+    }
+
+    if (prevBtn) {
+      if (currentPage === 1) {
+        prevBtn.classList.add('disabled');
+        prevBtn.style.opacity = '0.3';
+        prevBtn.style.cursor = 'not-allowed';
+      } else {
+        prevBtn.classList.remove('disabled');
+        prevBtn.style.opacity = '1';
+        prevBtn.style.cursor = 'pointer';
+      }
+    }
+
+    if (nextBtn) {
+      if (currentPage >= totalPages) {
+        nextBtn.classList.add('disabled');
+        nextBtn.style.opacity = '0.3';
+        nextBtn.style.cursor = 'not-allowed';
+      } else {
+        nextBtn.classList.remove('disabled');
+        nextBtn.style.opacity = '1';
+        nextBtn.style.cursor = 'pointer';
+      }
+    }
+  }
+
+  // 打开金币兑换
+  async function openCoinExchange() {
+    try {
+      // 🔧 加载钱包数据
+      if (typeof loadWalletData === 'function') {
+        await loadWalletData();
+      } else {
+        showXToast('钱包系统未加载，请刷新页面重试', 'error');
+        return;
+      }
+
+      // 🔧 检查钱包是否激活
+      if (!walletData || !walletData.isActivated) {
+        showXToast('请先激活钱包才能使用兑换功能', 'error');
+        return;
+      }
+
+      // 🔧 显示兑换弹窗
+      showExchangeModal();
+    } catch (error) {
+      console.error('❌ 打开兑换弹窗失败:', error);
+      showXToast('打开兑换功能失败: ' + error.message, 'error');
+    }
+  }
+
+  // 显示兑换弹窗
+  function showExchangeModal() {
+    // 检查主题模式
+    const xSocialScreen = document.getElementById('x-social-screen');
+    const isLightMode = xSocialScreen && xSocialScreen.classList.contains('x-theme-light');
+
+    // 创建弹窗遮罩（参考x-tool-modal的设计）
+    const modal = document.createElement('div');
+    modal.id = 'exchange-modal';
+    modal.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: ${isLightMode ? 'rgba(255, 255, 255, 0.85)' : 'rgba(0, 0, 0, 0.85)'};
+      backdrop-filter: blur(20px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 28;
+      animation: fadeIn 0.2s ease-out;
+    `;
+
+    // 创建弹窗内容
+    const modalContent = document.createElement('div');
+    modalContent.style.cssText = `
+      width: 90%;
+      max-width: 380px;
+      background: ${isLightMode ? 'rgba(255, 255, 255, 0.95)' : 'rgba(0, 0, 0, 0.95)'};
+      border: 3px solid ${isLightMode ? 'rgba(0, 0, 0, 0.12)' : 'rgba(255, 255, 255, 0.15)'};
+      padding: 16px;
+      position: relative;
+      backdrop-filter: blur(20px);
+      box-shadow: ${
+        isLightMode
+          ? '0 25px 80px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.8), inset 0 -1px 0 rgba(0, 0, 0, 0.1)'
+          : '0 25px 80px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1), inset 0 -1px 0 rgba(0, 0, 0, 0.5)'
+      };
+      clip-path: polygon(
+        16px 0,
+        calc(100% - 8px) 0,
+        100% 8px,
+        100% calc(100% - 40px),
+        calc(100% - 20px) calc(100% - 20px),
+        calc(100% - 40px) 100%,
+        0 100%,
+        0 16px
+      );
+    `;
+
+    modalContent.innerHTML = `
+      <style>
+        @keyframes exchangeFadeIn {
+          from { opacity: 0; transform: scale(0.95); }
+          to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes exchangeScanMove {
+          from { transform: translateY(0); }
+          to { transform: translateY(400px); }
+        }
+        @keyframes exchangePulse {
+          0%, 100% { opacity: 0.3; }
+          50% { opacity: 1; box-shadow: 0 0 8px ${isLightMode ? 'rgba(0, 0, 0, 0.6)' : 'rgba(255, 255, 255, 0.6)'}; }
+        }
+        @keyframes exchangeFloat {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-6px); }
+        }
+        #exchange-modal-content {
+          animation: exchangeFadeIn 0.3s ease-out;
+        }
+      </style>
+
+      <!-- 装饰螺丝钉 -->
+      <div style="
+        position: absolute;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: ${
+          isLightMode
+            ? 'radial-gradient(circle at 30% 30%, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.08))'
+            : 'radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1))'
+        };
+        border: 1px solid ${isLightMode ? 'rgba(0, 0, 0, 0.2)' : 'rgba(255, 255, 255, 0.15)'};
+        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3);
+        top: 20px;
+        left: 8px;
+      "></div>
+      <div style="
+        position: absolute;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: ${
+          isLightMode
+            ? 'radial-gradient(circle at 30% 30%, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.08))'
+            : 'radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1))'
+        };
+        border: 1px solid ${isLightMode ? 'rgba(0, 0, 0, 0.2)' : 'rgba(255, 255, 255, 0.15)'};
+        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3);
+        top: 20px;
+        right: 8px;
+      "></div>
+
+      <!-- 顶部标题栏 -->
+      <div style="
+        padding: 8px 12px;
+        margin-bottom: 12px;
+        background: linear-gradient(135deg, ${isLightMode ? 'rgba(0, 0, 0, 0.04)' : 'rgba(255, 255, 255, 0.06)'} 0%, ${
+      isLightMode ? 'rgba(0, 0, 0, 0.01)' : 'rgba(255, 255, 255, 0.02)'
+    } 100%);
+        border: 1px solid ${isLightMode ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.08)'};
+        clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      ">
+        <div style="
+          position: absolute;
+          bottom: 0;
+          left: 20%;
+          right: 20%;
+          height: 1px;
+          background: linear-gradient(90deg, transparent, ${
+            isLightMode ? 'rgba(0, 0, 0, 0.15)' : 'rgba(255, 255, 255, 0.2)'
+          }, transparent);
+        "></div>
+
+        <div style="
+          font-size: 10px;
+          font-weight: 700;
+          color: var(--text-primary);
+          letter-spacing: 2px;
+          display: flex;
+          align-items: center;
+          gap: 4px;
+        ">
+          <span style="opacity: 0.5;">◆</span>
+          EXCHANGE
+        </div>
+
+        <div style="display: flex; gap: 6px; align-items: center;">
+          <div style="
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: ${isLightMode ? 'rgba(0, 0, 0, 0.15)' : 'rgba(255, 255, 255, 0.2)'};
+            border: 1px solid ${isLightMode ? 'rgba(0, 0, 0, 0.2)' : 'rgba(255, 255, 255, 0.3)'};
+            animation: exchangePulse 2s infinite;
+          "></div>
+          <div style="
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: ${isLightMode ? 'rgba(0, 0, 0, 0.15)' : 'rgba(255, 255, 255, 0.2)'};
+            border: 1px solid ${isLightMode ? 'rgba(0, 0, 0, 0.2)' : 'rgba(255, 255, 255, 0.3)'};
+            animation: exchangePulse 2s infinite 0.5s;
+          "></div>
+          <div style="
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: ${isLightMode ? 'rgba(0, 0, 0, 0.15)' : 'rgba(255, 255, 255, 0.2)'};
+            border: 1px solid ${isLightMode ? 'rgba(0, 0, 0, 0.2)' : 'rgba(255, 255, 255, 0.3)'};
+            animation: exchangePulse 2s infinite 1s;
+          "></div>
+        </div>
+      </div>
+
+      <!-- 主屏幕区域 -->
+      <div style="
+        background: ${isLightMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.7)'};
+        border: 2px solid ${isLightMode ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.08)'};
+        padding: 14px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: ${
+          isLightMode
+            ? 'inset 0 2px 10px rgba(0, 0, 0, 0.1), inset 0 0 0 1px rgba(0, 0, 0, 0.05)'
+            : 'inset 0 2px 10px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.05)'
+        };
+        clip-path: polygon(0 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%);
+      ">
+        <!-- 扫描线 -->
+        <div style="
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 100%;
+          background: repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 2px,
+            ${isLightMode ? 'rgba(0, 0, 0, 0.02)' : 'rgba(255, 255, 255, 0.03)'} 2px,
+            ${isLightMode ? 'rgba(0, 0, 0, 0.02)' : 'rgba(255, 255, 255, 0.03)'} 4px
+          );
+          pointer-events: none;
+          z-index: 1;
+        "></div>
+
+        <!-- 装饰点 -->
+        <div style="
+          position: absolute;
+          top: 6px;
+          left: 6px;
+          display: flex;
+          gap: 3px;
+          z-index: 5;
+        ">
+          <div style="width: 3px; height: 3px; border-radius: 50%; background: ${
+            isLightMode ? 'rgba(0, 0, 0, 0.15)' : 'rgba(255, 255, 255, 0.2)'
+          };"></div>
+          <div style="width: 3px; height: 3px; border-radius: 50%; background: ${
+            isLightMode ? 'rgba(0, 0, 0, 0.15)' : 'rgba(255, 255, 255, 0.2)'
+          };"></div>
+          <div style="width: 3px; height: 3px; border-radius: 50%; background: ${
+            isLightMode ? 'rgba(0, 0, 0, 0.15)' : 'rgba(255, 255, 255, 0.2)'
+          };"></div>
+        </div>
+
+        <!-- 关闭按钮 -->
+        <div onclick="document.getElementById('exchange-modal').remove();" style="
+          position: absolute;
+          top: 8px;
+          right: 8px;
+          width: 28px;
+          height: 28px;
+          background: ${isLightMode ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.08)'};
+          border: 1px solid ${isLightMode ? 'rgba(0, 0, 0, 0.12)' : 'rgba(255, 255, 255, 0.15)'};
+          border-radius: 50%;
+          cursor: pointer;
+          z-index: 10;
+          transition: all 0.3s;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 2px 8px ${isLightMode ? 'rgba(0, 0, 0, 0.1)' : 'rgba(0, 0, 0, 0.2)'};
+        " onmouseover="this.style.background='${
+          isLightMode ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.15)'
+        }'; this.style.transform='rotate(90deg)';" onmouseout="this.style.background='${
+      isLightMode ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.08)'
+    }'; this.style.transform='rotate(0deg)';">
+          <div style="position: relative; width: 100%; height: 100%;">
+            <div style="
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              width: 12px;
+              height: 2px;
+              background: var(--text-primary);
+              border-radius: 1px;
+              transform: translate(-50%, -50%) rotate(45deg);
+            "></div>
+            <div style="
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              width: 12px;
+              height: 2px;
+              background: var(--text-primary);
+              border-radius: 1px;
+              transform: translate(-50%, -50%) rotate(-45deg);
+            "></div>
+          </div>
+        </div>
+
+        <!-- 标题 -->
+        <div style="
+          font-size: 11px;
+          font-weight: 700;
+          color: var(--text-primary);
+          letter-spacing: 3px;
+          text-align: center;
+          margin-bottom: 14px;
+          text-transform: uppercase;
+          position: relative;
+          z-index: 2;
+          text-shadow: 0 1px 2px ${isLightMode ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.3)'};
+        ">▪ COIN EXCHANGE ▪</div>
+
+        <!-- 余额和币显示 -->
+        <div style="
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 8px;
+          margin-bottom: 12px;
+          position: relative;
+          z-index: 2;
+        ">
+          <div style="
+            padding: 10px;
+            background: ${isLightMode ? 'rgba(0, 0, 0, 0.04)' : 'rgba(255, 255, 255, 0.04)'};
+            border: 1px solid ${isLightMode ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.08)'};
+            clip-path: polygon(8px 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%, 0 8px);
+            position: relative;
+            box-shadow: ${
+              isLightMode
+                ? 'inset 0 1px 0 rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.05)'
+                : 'inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 2px 4px rgba(0, 0, 0, 0.1)'
+            };
+          ">
+            <div style="
+              position: absolute;
+              top: 50%;
+              left: 6px;
+              transform: translateY(-50%);
+              font-size: 12px;
+              opacity: 0.3;
+            ">$</div>
+            <div style="
+              font-size: 8px;
+              color: ${isLightMode ? 'rgba(0, 0, 0, 0.5)' : 'rgba(255, 255, 255, 0.6)'};
+              text-transform: uppercase;
+              letter-spacing: 1px;
+              margin-bottom: 4px;
+              text-align: center;
+            ">WALLET</div>
+            <div style="
+              font-size: 16px;
+              font-weight: 700;
+              color: var(--text-primary);
+              font-family: 'Courier New', monospace;
+              text-align: center;
+              text-shadow: 0 1px 2px ${isLightMode ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.3)'};
+            ">${walletData.balance.toFixed(2)}</div>
+          </div>
+
+          <div style="
+            padding: 10px;
+            background: ${isLightMode ? 'rgba(0, 0, 0, 0.04)' : 'rgba(255, 255, 255, 0.04)'};
+            border: 1px solid ${isLightMode ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.08)'};
+            clip-path: polygon(8px 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%, 0 8px);
+            position: relative;
+            box-shadow: ${
+              isLightMode
+                ? 'inset 0 1px 0 rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.05)'
+                : 'inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 2px 4px rgba(0, 0, 0, 0.1)'
+            };
+          ">
+            <div style="
+              position: absolute;
+              top: 50%;
+              left: 6px;
+              transform: translateY(-50%);
+              font-size: 12px;
+              opacity: 0.3;
+            ">●</div>
+            <div style="
+              font-size: 8px;
+              color: ${isLightMode ? 'rgba(0, 0, 0, 0.5)' : 'rgba(255, 255, 255, 0.6)'};
+              text-transform: uppercase;
+              letter-spacing: 1px;
+              margin-bottom: 4px;
+              text-align: center;
+            ">COINS</div>
+            <div style="
+              font-size: 16px;
+              font-weight: 700;
+              color: var(--text-primary);
+              font-family: 'Courier New', monospace;
+              text-align: center;
+              text-shadow: 0 1px 2px ${isLightMode ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.3)'};
+            ">${toolCoins}</div>
+          </div>
+        </div>
+
+        <!-- 兑换率说明 -->
+        <div style="
+          padding: 8px 10px;
+          background: ${isLightMode ? 'rgba(0, 0, 0, 0.03)' : 'rgba(255, 255, 255, 0.04)'};
+          border: 1px solid ${isLightMode ? 'rgba(0, 0, 0, 0.06)' : 'rgba(255, 255, 255, 0.06)'};
+          margin-bottom: 12px;
+          position: relative;
+          z-index: 2;
+          clip-path: polygon(6px 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 0 100%, 0 6px);
+        ">
+          <div style="
+            font-size: 9px;
+            color: ${isLightMode ? 'rgba(0, 0, 0, 0.5)' : 'rgba(255, 255, 255, 0.6)'};
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 0.5px;
+          ">RATE: $100 = 1 COIN</div>
+        </div>
+
+        <!-- 输入区域 -->
+        <div style="margin-bottom: 12px; position: relative; z-index: 2;">
+          <label style="
+            display: block;
+            font-size: 8px;
+            color: ${isLightMode ? 'rgba(0, 0, 0, 0.5)' : 'rgba(255, 255, 255, 0.6)'};
+            margin-bottom: 6px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+          ">AMOUNT ($)</label>
+          <input
+            type="number"
+            id="exchange-amount-input"
+            placeholder="0.00"
+            min="0"
+            step="0.01"
+            style="
+              width: 100%;
+              padding: 10px 12px;
+              background: ${isLightMode ? 'rgba(255, 255, 255, 0.8)' : 'rgba(0, 0, 0, 0.4)'};
+              border: 2px solid ${isLightMode ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.15)'};
+              font-size: 16px;
+              color: var(--text-primary);
+              font-family: 'Courier New', monospace;
+              font-weight: 700;
+              transition: all 0.2s;
+              box-sizing: border-box;
+              clip-path: polygon(6px 0, calc(100% - 6px) 0, 100% 6px, 100% calc(100% - 6px), calc(100% - 6px) 100%, 6px 100%, 0 calc(100% - 6px), 0 6px);
+              box-shadow: ${
+                isLightMode
+                  ? 'inset 0 2px 4px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.05)'
+                  : 'inset 0 2px 4px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.1)'
+              };
+            "
+            oninput="updateExchangePreview()"
+            onfocus="this.style.borderColor='${
+              isLightMode ? 'rgba(0, 0, 0, 0.25)' : 'rgba(255, 255, 255, 0.3)'
+            }'; this.style.background='${isLightMode ? 'rgba(255, 255, 255, 1)' : 'rgba(0, 0, 0, 0.6)'}'"
+            onblur="this.style.borderColor='${
+              isLightMode ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.15)'
+            }'; this.style.background='${isLightMode ? 'rgba(255, 255, 255, 0.8)' : 'rgba(0, 0, 0, 0.4)'}'"
+          />
+        </div>
+
+        <!-- 预览区域 -->
+        <div id="exchange-preview" style="
+          padding: 14px;
+          background: ${isLightMode ? 'rgba(0, 0, 0, 0.04)' : 'rgba(255, 255, 255, 0.06)'};
+          border: 1px solid ${isLightMode ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.08)'};
+          margin-bottom: 12px;
+          min-height: 60px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          position: relative;
+          z-index: 2;
+          clip-path: polygon(0 6px, 6px 0, calc(100% - 6px) 0, 100% 6px, 100% calc(100% - 6px), calc(100% - 6px) 100%, 6px 100%, 0 calc(100% - 6px));
+          box-shadow: ${isLightMode ? 'inset 0 2px 6px rgba(0, 0, 0, 0.06)' : 'inset 0 2px 6px rgba(0, 0, 0, 0.3)'};
+        ">
+          <div style="
+            font-size: 10px;
+            color: ${isLightMode ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.4)'};
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 0.5px;
+          ">ENTER AMOUNT</div>
+        </div>
+
+        <!-- 按钮组 -->
+        <div style="display: flex; gap: 8px; position: relative; z-index: 2;">
+          <button onclick="document.getElementById('exchange-modal').remove();" style="
+            flex: 1;
+            padding: 10px 6px;
+            background: linear-gradient(135deg, ${
+              isLightMode ? 'rgba(0, 0, 0, 0.06)' : 'rgba(255, 255, 255, 0.06)'
+            } 0%, ${isLightMode ? 'rgba(0, 0, 0, 0.03)' : 'rgba(255, 255, 255, 0.03)'} 100%);
+            border: 1px solid ${isLightMode ? 'rgba(0, 0, 0, 0.12)' : 'rgba(255, 255, 255, 0.15)'};
+            color: var(--text-primary);
+            font-family: 'Courier New', monospace;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 2px 6px ${isLightMode ? 'rgba(0, 0, 0, 0.1)' : 'rgba(0, 0, 0, 0.2)'};
+          " onmouseover="this.style.background='linear-gradient(135deg, ${
+            isLightMode ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)'
+          } 0%, ${
+      isLightMode ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.05)'
+    } 100%)'; this.style.transform='translateY(-2px)';" onmouseout="this.style.background='linear-gradient(135deg, ${
+      isLightMode ? 'rgba(0, 0, 0, 0.06)' : 'rgba(255, 255, 255, 0.06)'
+    } 0%, ${
+      isLightMode ? 'rgba(0, 0, 0, 0.03)' : 'rgba(255, 255, 255, 0.03)'
+    } 100%)'; this.style.transform='translateY(0)';">
+            CANCEL
+          </button>
+
+          <button onclick="confirmExchange()" style="
+            flex: 1;
+            padding: 10px 6px;
+            background: linear-gradient(135deg, ${
+              isLightMode ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)'
+            } 0%, ${isLightMode ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.05)'} 100%);
+            border: 1px solid ${isLightMode ? 'rgba(0, 0, 0, 0.15)' : 'rgba(255, 255, 255, 0.15)'};
+            color: var(--text-primary);
+            font-family: 'Courier New', monospace;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 2px 6px ${isLightMode ? 'rgba(0, 0, 0, 0.1)' : 'rgba(0, 0, 0, 0.2)'};
+          " onmouseover="this.style.background='linear-gradient(135deg, ${
+            isLightMode ? 'rgba(0, 0, 0, 0.15)' : 'rgba(255, 255, 255, 0.15)'
+          } 0%, ${
+      isLightMode ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.08)'
+    } 100%)'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 10px ${
+      isLightMode ? 'rgba(0, 0, 0, 0.15)' : 'rgba(0, 0, 0, 0.3)'
+    }'" onmouseout="this.style.background='linear-gradient(135deg, ${
+      isLightMode ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)'
+    } 0%, ${
+      isLightMode ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.05)'
+    } 100%)'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 6px ${
+      isLightMode ? 'rgba(0, 0, 0, 0.1)' : 'rgba(0, 0, 0, 0.2)'
+    }'">
+            CONFIRM
+          </button>
+        </div>
+      </div>
+    `;
+
+    modal.appendChild(modalContent);
+    document.body.appendChild(modal);
+
+    // 点击遮罩关闭
+    modal.addEventListener('click', function (e) {
+      if (e.target === modal) {
+        modal.remove();
+      }
+    });
+
+    // 聚焦输入框
+    setTimeout(() => {
+      const input = document.getElementById('exchange-amount-input');
+      if (input) input.focus();
+    }, 100);
+  }
+
+  // 更新兑换预览
+  function updateExchangePreview() {
+    const input = document.getElementById('exchange-amount-input');
+    const preview = document.getElementById('exchange-preview');
+
+    if (!input || !preview) return;
+
+    const amount = parseFloat(input.value) || 0;
+    const xSocialScreen = document.getElementById('x-social-screen');
+    const isLightMode = xSocialScreen && xSocialScreen.classList.contains('x-theme-light');
+
+    if (amount <= 0) {
+      preview.innerHTML = `
+        <div style="
+          font-size: 10px;
+          color: ${isLightMode ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.4)'};
+          text-align: center;
+          font-family: 'Courier New', monospace;
+          letter-spacing: 0.5px;
+        ">ENTER AMOUNT</div>
+      `;
+      return;
+    }
+
+    const coinsToGet = Math.floor(amount / 100);
+
+    if (coinsToGet === 0) {
+      preview.innerHTML = `
+        <div style="
+          font-size: 9px;
+          color: ${isLightMode ? 'rgba(0, 0, 0, 0.5)' : 'rgba(255, 255, 255, 0.5)'};
+          text-align: center;
+          font-family: 'Courier New', monospace;
+          letter-spacing: 0.5px;
+          line-height: 1.4;
+        ">MIN: $100<br>FOR 1 COIN</div>
+      `;
+    } else {
+      preview.innerHTML = `
+        <div style="text-align: center;">
+          <div style="
+            font-size: 8px;
+            color: ${isLightMode ? 'rgba(0, 0, 0, 0.5)' : 'rgba(255, 255, 255, 0.6)'};
+            margin-bottom: 6px;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+          ">YOU WILL GET</div>
+          <div style="
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+            font-family: 'Courier New', monospace;
+            text-shadow: 0 1px 2px ${isLightMode ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.3)'};
+          ">+${coinsToGet} COIN${coinsToGet > 1 ? 'S' : ''}</div>
+          ${
+            amount % 100 !== 0
+              ? `
+            <div style="
+              font-size: 7px;
+              color: ${isLightMode ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.4)'};
+              margin-top: 6px;
+              font-family: 'Courier New', monospace;
+              letter-spacing: 0.5px;
+            ">REMAIN: $${(amount % 100).toFixed(2)}</div>
+          `
+              : ''
+          }
+        </div>
+      `;
+    }
+  }
+
+  // 确认兑换
+  async function confirmExchange() {
+    const input = document.getElementById('exchange-amount-input');
+    if (!input) return;
+
+    const amount = parseFloat(input.value) || 0;
+
+    // 验证输入
+    if (amount <= 0) {
+      showXToast('请输入有效的兑换金额', 'error');
+      return;
+    }
+
+    if (amount < 100) {
+      showXToast('最少需要 $100 才能兑换', 'error');
+      return;
+    }
+
+    // 计算能兑换的coins（向下取整）
+    const coinsToAdd = Math.floor(amount / 100);
+    const actualCost = coinsToAdd * 100;
+
+    // 检查余额
+    if (walletData.balance < actualCost) {
+      showXToast(`余额不足！需要 $${actualCost.toFixed(2)}，当前余额 $${walletData.balance.toFixed(2)}`, 'error');
+      return;
+    }
+
+    try {
+      // 扣除钱包金额
+      walletData.balance -= actualCost;
+
+      // 增加 toolCoins
+      toolCoins += coinsToAdd;
+
+      // 创建交易记录
+      const transaction = {
+        id: 'coin_exchange_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+        description: `Exchange to ${coinsToAdd} Coin${coinsToAdd > 1 ? 's' : ''}`,
+        amount: -actualCost,
+        timestamp: new Date().toISOString(),
+        type: 'coin_exchange',
+      };
+      walletData.transactions.unshift(transaction);
+
+      // 保存钱包数据
+      if (typeof saveWalletData === 'function') {
+        await saveWalletData();
+      }
+
+      // 保存道具数据
+      await saveToolData();
+
+      // 更新UI
+      updateToolStats();
+
+      // 关闭弹窗
+      const modal = document.getElementById('exchange-modal');
+      if (modal) modal.remove();
+
+      // 显示成功提示
+      showXToast(`兑换成功！获得 ${coinsToAdd} Coin${coinsToAdd > 1 ? 's' : ''}`, 'success');
+
+      console.log(`✅ 兑换成功: $${actualCost} → ${coinsToAdd} Coins`);
+    } catch (error) {
+      console.error('❌ 兑换失败:', error);
+      showXToast('兑换失败: ' + error.message, 'error');
+
+      // 回滚数据
+      walletData.balance += actualCost;
+      toolCoins -= coinsToAdd;
+    }
+  }
+
+  // 渲染道具卡片（支持分页）
+  function renderToolCards() {
+    const grid = document.getElementById('tool-cards-grid');
+    if (!grid) return;
+
+    grid.innerHTML = '';
+
+    // 计算当前页的道具范围
+    const startIdx = (currentPage - 1) * ITEMS_PER_PAGE;
+    const endIdx = startIdx + ITEMS_PER_PAGE;
+    const pageItems = toolItems.slice(startIdx, endIdx);
+
+    // 渲染当前页的12个卡片槽位
+    for (let i = 0; i < ITEMS_PER_PAGE; i++) {
+      const card = document.createElement('div');
+      card.className = 'item-card';
+
+      if (i < pageItems.length) {
+        const item = pageItems[i];
+        card.classList.add('has');
+        if (item.rarity === 'rare') card.classList.add('rare');
+
+        card.innerHTML = `
+          <div class="envelope-line"></div>
+          <div class="card-corner-dots"></div>
+          <div class="item-icon">${item.icon}</div>
+          <div class="item-name">${item.name}</div>
+          <div class="item-count">${item.count}</div>
+          <div class="rarity-corner"></div>
+        `;
+      }
+
+      grid.appendChild(card);
+    }
+
+    updatePaginationUI();
+    updateToolStats();
+  }
+
+  // 更新统计数据
+  function updateToolStats() {
+    const totalEl = document.getElementById('tool-total');
+    const typesEl = document.getElementById('tool-types');
+    const coinsEl = document.getElementById('tool-coins');
+
+    if (totalEl) {
+      const total = toolItems.reduce((sum, item) => sum + item.count, 0);
+      totalEl.textContent = total;
+    }
+
+    if (typesEl) {
+      typesEl.textContent = toolItems.length;
+    }
+
+    if (coinsEl) {
+      coinsEl.textContent = toolCoins;
+    }
+  }
+
+  // 开机进度条动画（全局引用，用于AI生成完毕后控制）
+  let bootAnimationInterval = null;
+  let bootAnimationPercent = 0;
+
+  // 开机进度条动画
+  function startBootAnimation() {
+    bootAnimationPercent = 0;
+    const percentEl = document.getElementById('tool-boot-percent');
+    const fillEl = document.querySelector('.tool-boot-progress-fill'); // 🔧 获取进度条fill元素
+
+    console.log('🎬 [开机动画] 启动缓慢的开机进度条...');
+
+    // 🔧 非常缓慢的进度条：每次增加0.5%，间隔300ms
+    // 到达90%需要：(90/0.5) * 300ms = 54秒
+    // 这样即使AI生成很慢，进度条也不会先跑完
+    bootAnimationInterval = setInterval(() => {
+      if (bootAnimationPercent < 90) {
+        bootAnimationPercent += 0.5;
+        if (percentEl) {
+          percentEl.textContent = Math.floor(bootAnimationPercent) + '%';
+        }
+        // 🔧 手动控制进度条宽度（CSS自动动画已禁用）
+        if (fillEl) {
+          fillEl.style.width = bootAnimationPercent + '%';
+        }
+      } else {
+        // 到达90%后暂停，等待AI生成完毕
+        if (bootAnimationPercent === 90 || bootAnimationPercent === 90.5) {
+          console.log('⏸️ [开机动画] 进度条到达90%，等待AI生成完毕...');
+        }
+      }
+    }, 300); // 每300ms增加0.5%
+  }
+
+  // 完成开机动画（AI生成完毕后调用）
+  function finishBootAnimation() {
+    const percentEl = document.getElementById('tool-boot-percent');
+    const fillEl = document.querySelector('.tool-boot-progress-fill'); // 🔧 获取进度条fill元素
+
+    console.log('🚀 [开机动画] AI生成完毕，快速完成进度条...');
+
+    // 清除原有的慢速interval
+    if (bootAnimationInterval) {
+      clearInterval(bootAnimationInterval);
+      bootAnimationInterval = null;
+    }
+
+    // 快速从当前进度跑到100%
+    const fastInterval = setInterval(() => {
+      if (bootAnimationPercent < 100) {
+        bootAnimationPercent += 5; // 快速增加5%
+        if (percentEl) {
+          percentEl.textContent = Math.floor(bootAnimationPercent) + '%';
+        }
+        // 🔧 手动控制进度条宽度（CSS自动动画已禁用）
+        if (fillEl) {
+          fillEl.style.width = bootAnimationPercent + '%';
+        }
+      } else {
+        clearInterval(fastInterval);
+        console.log('✅ [开机动画] 进度条已完成100%');
+      }
+    }, 50); // 每50ms增加5%，快速完成
+  }
+
+  // ============================================
+  // 第五部分：弹窗创建和控制
+  // ============================================
+
+  // 创建道具弹窗HTML
+  function createToolModal() {
+    const existingModal = document.getElementById('x-tool-modal');
+    if (existingModal) {
+      console.log('⚠️ 道具弹窗已存在，跳过创建');
+      return;
+    }
+
+    const modalContainer = document.createElement('div');
+    modalContainer.id = 'x-tool-modal';
+    modalContainer.innerHTML = `
+      <!-- 开机画面 -->
+      <div class="tool-boot-screen" id="tool-boot-screen">
+        <div class="tool-boot-shell">
+          <div class="tool-boot-scanline"></div>
+          <div class="tool-boot-content">
+            <div class="tool-boot-icon">◆</div>
+            <div class="tool-boot-logo">INVENTORY</div>
+            <div class="tool-boot-info">
+              <div class="tool-boot-info-item">
+                <span>SYSTEM</span>
+                <span>v3.0.1</span>
+              </div>
+              <div class="tool-boot-info-item">
+                <span>BUILD</span>
+                <span>20250129</span>
+              </div>
+              <div class="tool-boot-info-item">
+                <span>MODE</span>
+                <span>STANDARD</span>
+              </div>
+            </div>
+            <div class="tool-boot-progress">
+              <div class="tool-boot-progress-label">Loading Assets...</div>
+              <div class="tool-boot-progress-bar">
+                <div class="tool-boot-progress-fill"></div>
+                <div class="tool-boot-progress-percent" id="tool-boot-percent">0%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PSP掌机外壳 -->
+      <div class="psp-shell">
+        <div class="psp-top">
+          <div class="psp-logo">
+            <span>◆</span>
+            INVENTORY
+          </div>
+          <div class="psp-leds">
+            <div class="led"></div>
+            <div class="led"></div>
+            <div class="led"></div>
+          </div>
+        </div>
+
+        <div class="psp-screen">
+          <div class="screen-scanline"></div>
+          <div class="screen-dots">
+            <div class="screen-dot"></div>
+            <div class="screen-dot"></div>
+            <div class="screen-dot"></div>
+          </div>
+          <div class="tool-close-btn" onclick="closeToolModal()"></div>
+
+          <div class="screen-title">▪ ITEMS ▪</div>
+
+          <div class="content-split">
+            <div class="cards-area" id="tool-cards-grid"></div>
+
+            <div class="gacha-machine">
+              <div class="gacha-dome">
+                <div class="gacha-ball" id="gacha-ball" onclick="shakeBall()"></div>
+              </div>
+              <div class="gacha-btns">
+                <button class="gacha-btn" onclick="rollOne()">
+                  ROLL 1
+                  <div class="gacha-cost">-100</div>
+                </button>
+                <button class="gacha-btn" onclick="rollTen()">
+                  ROLL 10
+                  <div class="gacha-cost">-900</div>
+                </button>
+              </div>
+              <div class="utility-btns">
+                <button class="utility-btn" onclick="openToolShop()">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+                  </svg>
+                  SHOP
+                </button>
+                <button class="utility-btn" onclick="openCoinExchange()">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
+                    <path d="M7.41 8.59L6 10l6 6 6-6-1.41-1.41L12 13.17z" transform="rotate(180 12 12)"/>
+                  </svg>
+                  EXCHANGE
+                </button>
+              </div>
+
+              <div class="pagination-control">
+                <div class="page-arrow left" id="page-prev" onclick="previousPage()"></div>
+                <div class="page-info" id="page-info">1/1</div>
+                <div class="page-arrow right" id="page-next" onclick="nextPage()"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="stats-bar">
+            <div class="stat" data-icon="■">
+              <div class="stat-val" id="tool-total">0</div>
+              <div class="shop-stat-label">Total</div>
+            </div>
+            <div class="stat" data-icon="◆">
+              <div class="stat-val" id="tool-types">0</div>
+              <div class="shop-stat-label">Types</div>
+            </div>
+            <div class="stat" data-icon="●">
+              <div class="stat-val" id="tool-coins">1000</div>
+              <div class="shop-stat-label">Coins</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="psp-controls">
+          <div class="dpad">
+            <div class="dpad-btn up"></div>
+            <div class="dpad-btn down"></div>
+            <div class="dpad-btn left"></div>
+            <div class="dpad-btn right"></div>
+          </div>
+          <div class="action-btns">
+            <div class="shop-action-btn">×</div>
+            <div class="shop-action-btn">○</div>
+            <div class="shop-action-btn">□</div>
+            <div class="shop-action-btn">△</div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    // 添加到#x-social-screen容器内，确保主题样式生效
+    const xSocialScreen = document.getElementById('x-social-screen');
+    if (xSocialScreen) {
+      xSocialScreen.appendChild(modalContainer);
+      console.log('✅ 道具弹窗HTML已创建（已添加到x-social-screen内）');
+    } else {
+      document.body.appendChild(modalContainer);
+      console.log('⚠️ 道具弹窗HTML已创建（降级到body）');
+    }
+  }
+
+  // 打开道具弹窗
+  async function openToolModal() {
+    try {
+      // 确保数据库表存在
+      await ensureToolDatabaseSchema();
+
+      // 确保样式已注入
+      injectToolStyles();
+
+      // 确保弹窗HTML已创建
+      createToolModal();
+
+      // 显示弹窗
+      const modal = document.getElementById('x-tool-modal');
+      if (modal) {
+        modal.style.display = 'flex';
+      }
+
+      // 启动开机动画
+      startBootAnimation();
+
+      // 检查是否首次进入（触发第十七情景）
+      const db = getXDB();
+      const accountId = currentAccountId || 'main';
+      const toolDataId = `tools_${accountId}`;
+      const existingData = await db.xTools.get(toolDataId);
+
+      if (!existingData || !existingData.scenarioGenerated) {
+        // 首次进入，触发第十七情景生成
+        console.log('🎮 [第十七情景] 首次进入道具系统，开始生成初始化数据...');
+        await generateToolScenario();
+      } else {
+        // 非首次进入，直接加载数据
+        console.log('📦 [道具系统] 非首次进入，快速加载数据...');
+        await loadToolData();
+
+        // 🔧 数据加载完毕后，快速完成进度条并关闭开机画面
+        finishBootAnimation();
+
+        setTimeout(() => {
+          const bootScreen = document.querySelector('.tool-boot-screen');
+          if (bootScreen) {
+            bootScreen.style.animation = 'toolBootFadeOut 0.5s ease-out forwards';
+          }
+          console.log('🎬 [道具系统] 开机画面已关闭（非首次进入）');
+        }, 1500); // 等待进度条完成
+      }
+
+      // 渲染道具卡片
+      renderToolCards();
+
+      console.log('✅ 道具弹窗已打开');
+    } catch (error) {
+      console.error('❌ 打开道具弹窗失败:', error);
+      showXToast('打开道具系统失败: ' + error.message, 'error');
+    }
+  }
+
+  // 关闭道具弹窗
+  function closeToolModal() {
+    const modal = document.getElementById('x-tool-modal');
+    if (modal) {
+      modal.style.display = 'none';
+    }
+    console.log('✅ 道具弹窗已关闭');
+  }
+
+  // ============================================
+  // 第六部分：初始化
+  // ============================================
+
+  // 将函数暴露到全局（供HTML onclick调用）
+  window.openToolModal = openToolModal;
+  window.closeToolModal = closeToolModal;
+  window.rollOne = rollOne;
+  window.rollTen = rollTen;
+  window.shakeBall = shakeBall;
+  window.updateExchangePreview = updateExchangePreview;
+  window.confirmExchange = confirmExchange;
+
+  console.log('📦 X Tool System 模块已加载');
+
   // 第四部分: 初始化和对外接口
   // ============================================
   // 初始化X社交应用
@@ -54020,10 +64762,10 @@ ${
   async function showWelcomePopup() {
     try {
       // 🆕 定义当前弹窗内容版本（内容变化时修改此版本号）
-      const currentPopupVersion = "v2.6"; // 修改版本号以触发重新显示
-      const currentPopupContent = `地图更新
-+一点新的 好感度解锁动态+社交圈 顺便把时间修复了
-+天气会变化哦`;
+      const currentPopupVersion = "v2.7"; // 修改版本号以触发重新显示
+      const currentPopupContent = `地图更新+道具更新
++城市日报和地标事件+道具系统的一部分简陋内容
++乘车功能未完善请不要使用！！`;
 
       // 检查是否已经显示过此版本的弹窗
       const lastShownVersion = localStorage.getItem(
@@ -54136,9 +64878,9 @@ ${
  font-family: 'Fusion Pixel 10px P zh_hans', monospace;
  ">
  <div style="font-weight: bold; margin-bottom: 6px;">吃点羊提醒您：</div>
-            <div style="font-weight: bold; margin-bottom: 8px;">地图更新</div>
-            <div style="margin-bottom: 4px;">+一点新的 好感度解锁动态+社交圈 顺便把时间修复了</div>
-            <div style="margin-bottom: 4px;">+天气会变化哦</div>
+            <div style="font-weight: bold; margin-bottom: 8px;">地图更新+道具更新</div>
+            <div style="margin-bottom: 4px;">+城市日报和地标事件+道具系统的一部分简陋内容</div>
+            <div style="margin-bottom: 4px;">+乘车功能未完善请不要使用！！</div>
             <div>+一些小彩蛋</div>
  </div>
  </div>
@@ -74068,6 +84810,15 @@ ${
   window.sendDanmaku = sendDanmaku;
   window.sendLike = sendLike;
   window.showLiveRoomMenu = showLiveRoomMenu;
+  // 道具系统相关函数
+  window.openToolModal = openToolModal;
+  window.closeToolModal = closeToolModal;
+  window.rollOne = rollOne;
+  window.rollTen = rollTen;
+  window.shakeBall = shakeBall;
+  window.previousPage = previousPage;
+  window.nextPage = nextPage;
+  window.openCoinExchange = openCoinExchange;
   // 创建 XSocialApp 对象以兼容HTML检查
   window.XSocialApp = {
     init: initXSocialApp,
@@ -74112,4 +84863,3 @@ ${
 // 4. 需要的依赖:
 // - Dexie.js (数据库)
 // - 确保有 showScreen() 全局函数
-
